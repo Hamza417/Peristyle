@@ -9,7 +9,7 @@ import com.bumptech.glide.load.data.DataFetcher
 
 class WallpaperFetcher(private val wallpaper: Wallpaper) : DataFetcher<Bitmap> {
     override fun loadData(priority: Priority, callback: DataFetcher.DataCallback<in Bitmap>) {
-        wallpaper.context.contentResolver.openInputStream(wallpaper.wallpaper.uri?.toUri()!!)?.use {
+        wallpaper.context.contentResolver.openInputStream(wallpaper.wallpaper.uri.toUri())?.use {
             callback.onDataReady(BitmapFactory.decodeStream(it))
         }
     }

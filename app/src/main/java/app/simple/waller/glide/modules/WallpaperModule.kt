@@ -22,8 +22,8 @@ class WallpaperModule : AppGlideModule() {
     override fun applyOptions(context: Context, builder: GlideBuilder) {
         builder.setDefaultTransitionOptions(Bitmap::class.java, BitmapTransitionOptions.withCrossFade())
         builder.setDefaultRequestOptions(
-                RequestOptions()
-                    .format(DecodeFormat.PREFER_ARGB_8888)
+            RequestOptions()
+                .format(DecodeFormat.PREFER_ARGB_8888)
         )
     }
 

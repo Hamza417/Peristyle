@@ -1,13 +1,15 @@
 package app.simple.waller.models
 
 import android.annotation.SuppressLint
+import android.os.Parcel
+import android.os.Parcelable
 import androidx.annotation.NonNull
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "wallpapers")
-class Wallpaper {
+class Wallpaper : Parcelable {
 
     @ColumnInfo(name = "name")
     var name: String? = null
@@ -23,6 +25,13 @@ class Wallpaper {
 
     @ColumnInfo(name = "height")
     var height: Int? = null
+
+    constructor(parcel: Parcel) : this() {
+        name = parcel.readString()
+        uri = parcel.readString().toString()
+        width = parcel.readValue(Int::class.java.classLoader) as? Int
+        height = parcel.readValue(Int::class.java.classLoader) as? Int
+    }
 
     constructor(name: String?, uri: String, width: Int?, height: Int?) {
         this.name = name
@@ -60,4 +69,26 @@ class Wallpaper {
     fun isNull(): Boolean {
         return name == null && uri == null // && width == null && height == null
     }
+
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeString(name)
+        parcel.writeString(uri)
+        parcel.writeValue(width)
+        parcel.writeValue(height)
+    }
+
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    companion object CREATOR : Parcelable.Creator<Wallpaper> {
+        override fun createFromParcel(parcel: Parcel): Wallpaper {
+            return Wallpaper(parcel)
+        }
+
+        override fun newArray(size: Int): Array<Wallpaper?> {
+            return arrayOfNulls(size)
+        }
+    }
+
 }
