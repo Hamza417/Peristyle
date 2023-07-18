@@ -1,4 +1,4 @@
-package app.simple.waller.glide
+package app.simple.waller.glide.utils
 
 import android.widget.ImageView
 import app.simple.waller.glide.modules.GlideApp
