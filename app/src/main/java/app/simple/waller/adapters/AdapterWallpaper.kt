@@ -44,10 +44,10 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>) : RecyclerV
             set.setDimensionRatio(binding.wallpaperImageView.id, ratio)
             set.applyTo(binding.wallpaperContainer)
             binding.wallpaperImageView.loadWallpaper(wallpaper)
-            binding.wallpaperImageView.transitionName = wallpaper.uri
+            binding.wallpaperContainer.transitionName = wallpaper.uri
 
             binding.wallpaperContainer.setOnClickListener {
-                wallpaperCallbacks?.onWallpaperClicked(wallpaper, position, binding.wallpaperImageView)
+                wallpaperCallbacks?.onWallpaperClicked(wallpaper, position, binding.wallpaperContainer)
             }
 
             binding.wallpaperContainer.setOnLongClickListener {

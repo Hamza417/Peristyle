@@ -10,7 +10,7 @@ import app.simple.waller.models.Wallpaper
 
 @Dao
 interface WallpaperDao {
-    @Query("SELECT * FROM wallpapers")
+    @Query("SELECT * FROM wallpapers ORDER BY dateModified DESC")
     fun getWallpapers(): List<Wallpaper>
 
     /**

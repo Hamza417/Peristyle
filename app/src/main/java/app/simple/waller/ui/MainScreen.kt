@@ -5,7 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -13,8 +13,8 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import app.simple.waller.R
 import app.simple.waller.adapters.AdapterWallpaper
-import app.simple.waller.interfaces.WallpaperCallbacks
 import app.simple.waller.databinding.FragmentMainScreenBinding
+import app.simple.waller.interfaces.WallpaperCallbacks
 import app.simple.waller.models.Wallpaper
 import app.simple.waller.viewmodels.WallpaperViewModel
 
@@ -39,9 +39,9 @@ class MainScreen : Fragment() {
             adapterWallpaper?.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.ALLOW
 
             adapterWallpaper!!.setWallpaperCallbacks(object : WallpaperCallbacks {
-                override fun onWallpaperClicked(wallpaper: Wallpaper?, position: Int, imageView: ImageView?) {
+                override fun onWallpaperClicked(wallpaper: Wallpaper?, position: Int, constraintLayout: ConstraintLayout?) {
                     requireActivity().supportFragmentManager.beginTransaction()
-                        .addSharedElement(imageView!!, imageView.transitionName)
+                        .addSharedElement(constraintLayout!!, constraintLayout.transitionName)
                         .replace(R.id.mainContainer, WallpaperScreen.newInstance(wallpaper!!), "WallpaperScreen")
                         .addToBackStack("WallpaperScreen")
                         .commit()

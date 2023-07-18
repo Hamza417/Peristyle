@@ -26,18 +26,23 @@ class Wallpaper : Parcelable {
     @ColumnInfo(name = "height")
     var height: Int? = null
 
+    @ColumnInfo(name = "dateModified")
+    var dateModified: Long = 0
+
     constructor(parcel: Parcel) : this() {
         name = parcel.readString()
         uri = parcel.readString().toString()
         width = parcel.readValue(Int::class.java.classLoader) as? Int
         height = parcel.readValue(Int::class.java.classLoader) as? Int
+        dateModified = parcel.readLong()
     }
 
-    constructor(name: String?, uri: String, width: Int?, height: Int?) {
+    constructor(name: String?, uri: String, width: Int?, height: Int?, date: Long) : this() {
         this.name = name
         this.uri = uri
         this.width = width
         this.height = height
+        this.dateModified = date
     }
 
     constructor()
@@ -75,6 +80,7 @@ class Wallpaper : Parcelable {
         parcel.writeString(uri)
         parcel.writeValue(width)
         parcel.writeValue(height)
+        parcel.writeLong(dateModified)
     }
 
     override fun describeContents(): Int {

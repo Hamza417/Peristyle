@@ -8,7 +8,7 @@ import app.simple.waller.database.dao.WallpaperDao
 import app.simple.waller.models.Wallpaper
 import app.simple.waller.utils.ConditionUtils.invert
 
-@Database(entities = [Wallpaper::class], version = 1)
+@Database(entities = [Wallpaper::class], version = 2)
 abstract class WallpaperDatabase : RoomDatabase() {
     abstract fun wallpaperDao(): WallpaperDao
 

@@ -2,10 +2,13 @@ package app.simple.waller.activities
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.WindowCompat
 import app.simple.waller.databinding.ActivityMainBinding
 import app.simple.waller.preferences.MainPreferences
 import app.simple.waller.preferences.SharedPreferences
@@ -44,6 +47,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding?.root)
+        makeAppFullScreen()
 
         if (MainPreferences.getStorageUri() == null) {
             Log.d("MainActivity", "Storage Uri: no permission")
@@ -58,6 +62,14 @@ class MainActivity : AppCompatActivity() {
                         .commit()
                 }
             }
+        }
+    }
+
+    private fun makeAppFullScreen() {
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        window.statusBarColor = Color.TRANSPARENT
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            window.navigationBarDividerColor = Color.TRANSPARENT
         }
     }
 }

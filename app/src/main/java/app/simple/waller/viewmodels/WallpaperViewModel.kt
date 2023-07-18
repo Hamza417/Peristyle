@@ -53,6 +53,7 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
                         if (file.isFile && file.isImageFile()) {
                             wallpaper.name = file.name
                             wallpaper.uri = file.uri.toString()
+                            wallpaper.dateModified = file.lastModified()
 
                             getApplication<Application>().contentResolver.openInputStream(file.uri)?.use { inputStream ->
                                 val options = BitmapFactory.Options()
@@ -68,6 +69,7 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
                 } else if (it.isFile && it.isImageFile()) {
                     wallpaper.name = it.name
                     wallpaper.uri = it.uri.toString()
+                    wallpaper.dateModified = it.lastModified()
 
                     getApplication<Application>().contentResolver.openInputStream(it.uri)?.use { inputStream ->
                         val options = BitmapFactory.Options()
