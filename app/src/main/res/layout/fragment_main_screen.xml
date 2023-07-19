@@ -7,32 +7,44 @@
     android:background="@color/mainBackground"
     tools:context=".activities.MainActivity">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/topAppBar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/mainBackground"
-        android:elevation="10dp"
-        android:fitsSystemWindows="true"
-        app:liftOnScroll="true"
-        app:liftOnScrollTargetViewId="@id/recyclerView">
-
-        <com.google.android.material.appbar.MaterialToolbar
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:elevation="25dp"
-            app:contentInsetEnd="16dp"
-            app:layout_scrollFlags="scroll|enterAlways|snap"
-            app:menu="@menu/top_bar_menu"
-            app:subtitle="@string/wallpaper_browser"
-            app:title="@string/app_name" />
-
-    </com.google.android.material.appbar.AppBarLayout>
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+    <com.google.android.material.bottomappbar.BottomAppBar
+        android:id="@+id/bottomAppBar"
+        style="@style/Widget.Material3.BottomAppBar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_gravity="bottom"
+        app:addElevationShadow="true"
+        app:backgroundTint="@color/mainBackground"
+        app:elevation="10dp"
+        app:fabAlignmentMode="end"
+        app:fabAnchorMode="cradle"
+        app:fabAnimationMode="scale"
+        app:fabCradleRoundedCornerRadius="5dp"
+        app:hideOnScroll="true"
+        app:menu="@menu/top_bar_menu"
+        app:menuAlignmentMode="auto"
+        app:srcCompat="@mipmap/ic_launcher_round"
+        app:title="@string/app_name" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/wallpaper_settings"
+        android:src="@drawable/ic_wallpaper"
+        app:layout_anchor="@id/bottomAppBar" />
+
+    <TextView
+        android:id="@+id/loading_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:textColor="@color/textPrimary" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

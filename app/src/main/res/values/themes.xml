@@ -1,10 +1,10 @@
 <resources>
     <!-- Base application theme. -->
-    <style name="Base.Theme.Waller" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Base.Theme.Peri" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
         <item name="android:statusBarColor">@color/mainBackground</item>
         <item name="android:windowLightStatusBar">true</item>
     </style>
 
-    <style name="Theme.Waller" parent="Base.Theme.Waller" />
+    <style name="Theme.Peri" parent="Base.Theme.Peri" />
 </resources>
