@@ -2,16 +2,21 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.Peri" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
-        <item name="android:statusBarColor">@color/mainBackground</item>
-        <item name="android:windowLightStatusBar">true</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryContainer">@color/colorPrimaryContainer</item>
+        <item name="colorSurface">@color/colorSurface</item>
+        <item name="colorOnSurface">@color/colorOnSurface</item>
+        <item name="android:colorBackground">@color/mainBackground</item>
+
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">false</item>
         <item name="textAppearanceLargePopupMenu">@style/TextAppearance.App.BodyLarge</item>
         <item name="textAppearanceSmallPopupMenu">@style/TextAppearance.App.BodyLarge</item>
         <item name="popupMenuBackground">@drawable/bg_popup</item>
     </style>
 
-    <style name="Theme.Peri" parent="Base.Theme.Peri" />
-
     <style name="TextAppearance.App.BodyLarge" parent="TextAppearance.Material3.BodyLarge">
         <item name="android:textColor">@color/textPrimary</item>
     </style>
+
 </resources>

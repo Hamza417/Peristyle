@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="mainBackground">#3E3E3E</color>
+    <color name="mainBackground">#151515</color>
     <color name="textPrimary">#FAFAFA</color>
-    <color name="textSecondary">#CFCFCF</color>
-    <color name="textWhite">#9C9C9C</color>
+    <color name="textSecondary">#E1E1E1</color>
+    <color name="textWhite">#B8B8B8</color>
+
+    <color name="colorPrimary">#F3F3F3</color>
+    <color name="colorPrimaryContainer">#4E4E4E</color>
+    <color name="colorSurface">#303030</color>
+    <color name="colorOnSurface">#E8E8E8</color>
 </resources>

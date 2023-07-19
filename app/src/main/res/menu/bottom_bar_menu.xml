@@ -5,6 +5,7 @@
         android:id="@+id/sort"
         android:contentDescription="@string/sort"
         android:icon="@drawable/ic_sort"
+        app:iconTint="?attr/colorOnSurface"
         android:title="@string/sort"
         app:showAsAction="ifRoom" />
 
@@ -12,6 +13,7 @@
         android:id="@+id/info"
         android:contentDescription="@string/info"
         android:icon="@drawable/ic_info"
+        app:iconTint="?attr/colorOnSurface"
         android:title="@string/info"
         app:showAsAction="ifRoom" />
 

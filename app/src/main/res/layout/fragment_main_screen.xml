@@ -20,8 +20,6 @@
         android:layout_height="?attr/actionBarSize"
         android:layout_gravity="bottom"
         app:addElevationShadow="true"
-        app:backgroundTint="@color/mainBackground"
-        app:elevation="10dp"
         app:fabAlignmentMode="end"
         app:fabAnchorMode="cradle"
         app:fabAnimationMode="scale"
