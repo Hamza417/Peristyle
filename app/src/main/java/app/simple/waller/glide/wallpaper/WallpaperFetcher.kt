@@ -1,6 +1,7 @@
 package app.simple.waller.glide.wallpaper
 
 import android.content.Context
+import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
@@ -20,7 +21,13 @@ class WallpaperFetcher(private val wallpaper: Wallpaper) : DataFetcher<Bitmap> {
     override fun loadData(priority: Priority, callback: DataFetcher.DataCallback<in Bitmap>) {
         try {
             wallpaper.context.contentResolver.openInputStream(wallpaper.wallpaper.uri.toUri())?.use {
-                callback.onDataReady(getBitmap(wallpaper.wallpaper.uri.toUri(), wallpaper.context))
+                val bitmap = BitmapFactory.decodeStream(it, null, BitmapFactory.Options().apply {
+                    inPreferredConfig = Bitmap.Config.ARGB_8888
+                    inSampleSize = calculateInSampleSize(this, 540, wallpaper.wallpaper.height?.div(8)!!)
+                    inJustDecodeBounds = false
+                })
+
+                callback.onDataReady(bitmap)
             }
         } catch (e: FileNotFoundException) {
             callback.onLoadFailed(e)
@@ -42,7 +49,7 @@ class WallpaperFetcher(private val wallpaper: Wallpaper) : DataFetcher<Bitmap> {
     }
 
     override fun getDataSource(): DataSource {
-        return DataSource.LOCAL
+        return DataSource.DATA_DISK_CACHE
     }
 
     private fun getBitmap(uri: Uri, context: Context): Bitmap? {
@@ -60,7 +67,7 @@ class WallpaperFetcher(private val wallpaper: Wallpaper) : DataFetcher<Bitmap> {
             while (options.outWidth * options.outHeight * (1 / scale.toDouble().pow(2.0)) > IMAGE_MAX_SIZE) {
                 scale++
             }
-            Log.d(TAG, "scale = " + scale + ", orig-width: " + options.outWidth + ", orig-height: " + options.outHeight)
+            // Log.d(TAG, "scale = " + scale + ", orig-width: " + options.outWidth + ", orig-height: " + options.outHeight)
             var resultBitmap: Bitmap?
             inputStream = context.contentResolver.openInputStream(uri)
             if (scale > 1) {
@@ -79,9 +86,9 @@ class WallpaperFetcher(private val wallpaper: Wallpaper) : DataFetcher<Bitmap> {
                 // resize to desired dimensions
                 val height = resultBitmap!!.height
                 val width = resultBitmap.width
-                Log.d(TAG, "1th scale operation dimensions - width: $width, height: $height")
+                // Log.d(TAG, "1th scale operation dimensions - width: $width, height: $height")
                 val y = sqrt(IMAGE_MAX_SIZE
-                                          / (width.toDouble() / height))
+                                     / (width.toDouble() / height))
                 val x = y / height * width
                 val scaledBitmap = Bitmap.createScaledBitmap(resultBitmap, x.toInt(), y.toInt(), true)
                 resultBitmap.recycle()
@@ -91,12 +98,32 @@ class WallpaperFetcher(private val wallpaper: Wallpaper) : DataFetcher<Bitmap> {
                 resultBitmap = BitmapFactory.decodeStream(inputStream)
             }
             inputStream!!.close()
-            Log.d(TAG, "bitmap size - width: " + resultBitmap!!.width + ", height: " + resultBitmap.height)
+            // Log.d(TAG, "bitmap size - width: " + resultBitmap!!.width + ", height: " + resultBitmap.height)
             resultBitmap
         } catch (e: IOException) {
             Log.e(TAG, e.message, e)
             null
         }
+    }
+
+    private fun calculateInSampleSize(options: BitmapFactory.Options, reqWidth: Int, reqHeight: Int): Int {
+        // Raw height and width of image
+        val (height: Int, width: Int) = options.run { outHeight to outWidth }
+        var inSampleSize = 1
+
+        if (height > reqHeight || width > reqWidth) {
+
+            val halfHeight: Int = height / 2
+            val halfWidth: Int = width / 2
+
+            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
+            // height and width larger than the requested height and width.
+            while (halfHeight / inSampleSize >= reqHeight && halfWidth / inSampleSize >= reqWidth) {
+                inSampleSize *= 2
+            }
+        }
+
+        return inSampleSize
     }
 
     companion object {

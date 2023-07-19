@@ -81,6 +81,7 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
                                 wallpaper.name = file.name
                                 wallpaper.uri = file.uri.toString()
                                 wallpaper.dateModified = file.lastModified()
+                                wallpaper.size = file.length()
 
                                 getApplication<Application>().contentResolver.openInputStream(file.uri)?.use { inputStream ->
                                     val options = BitmapFactory.Options()
@@ -90,9 +91,9 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
                                     wallpaper.height = options.outHeight
                                 }
 
-                                Log.d(TAG, "loadWallpaperImages: ${wallpaper.name}, ${wallpaper.width}, ${wallpaper.height}")
+                                // Log.d(TAG, "loadWallpaperImages: ${wallpaper.name}, ${wallpaper.width}, ${wallpaper.height}")
                             } else {
-                                Log.d(TAG, "loadWallpaperImages: ${file.name} already loaded")
+                                // Log.d(TAG, "loadWallpaperImages: ${file.name} already loaded")
                                 alreadyLoadedWallpaper = true
                             }
                         }
@@ -108,6 +109,7 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
                         wallpaper.name = it.name
                         wallpaper.uri = it.uri.toString()
                         wallpaper.dateModified = it.lastModified()
+                        wallpaper.size = it.length()
 
                         getApplication<Application>().contentResolver.openInputStream(it.uri)?.use { inputStream ->
                             val options = BitmapFactory.Options()
@@ -117,9 +119,9 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
                             wallpaper.height = options.outHeight
                         }
 
-                        Log.d(TAG, "loadWallpaperImages: ${wallpaper.name}, ${wallpaper.width}, ${wallpaper.height}")
+                        // Log.d(TAG, "loadWallpaperImages: ${wallpaper.name}, ${wallpaper.width}, ${wallpaper.height}")
                     } else {
-                        Log.d(TAG, "loadWallpaperImages: ${it.name} already loaded")
+                        // Log.d(TAG, "loadWallpaperImages: ${it.name} already loaded")
                         alreadyLoadedWallpaper = true
                     }
                 }
@@ -127,7 +129,9 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
                 if (wallpaper.isNull().invert()) {
                     if (alreadyLoadedWallpaper.invert()) {
                         wallpapers.add(wallpaper)
-                        newWallpapersData.postValue(wallpaper)
+                        if (alreadyLoaded?.isNotEmpty() == true) {
+                            newWallpapersData.postValue(wallpaper)
+                        }
                         Log.d(TAG, "loadWallpaperImages: ${wallpaper.name} added")
                     }
                 }
@@ -145,10 +149,10 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
             wallpaperDao?.getWallpapers()?.forEach {
                 try {
                     getApplication<Application>().contentResolver.openInputStream(Uri.parse(it.uri))?.use { _ ->
-                        Log.d(TAG, "initDatabase: ${it.name} exists")
+                        // Log.d(TAG, "initDatabase: ${it.name} exists")
                     }
                 } catch (e: Exception) {
-                    Log.d(TAG, "initDatabase: ${it.name} doesn't exist")
+                    // Log.d(TAG, "initDatabase: ${it.name} doesn't exist")
                     wallpaperDao.delete(it)
                     removedWallpapersData.postValue(it)
                 }

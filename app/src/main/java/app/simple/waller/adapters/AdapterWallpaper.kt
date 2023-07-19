@@ -9,6 +9,7 @@ import app.simple.waller.databinding.AdapterWallpaperBinding
 import app.simple.waller.glide.utils.GlideUtils.loadWallpaper
 import app.simple.waller.interfaces.WallpaperCallbacks
 import app.simple.waller.models.Wallpaper
+import app.simple.waller.utils.FileUtils.toSize
 import com.bumptech.glide.Glide
 
 class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>) : RecyclerView.Adapter<AdapterWallpaper.WallpaperViewHolder>() {
@@ -82,7 +83,6 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>) : RecyclerV
             set.clone(binding.wallpaperContainer)
             set.setDimensionRatio(binding.wallpaperImageView.id, ratio)
             set.applyTo(binding.wallpaperContainer)
-            binding.wallpaperImageView.loadWallpaper(wallpaper)
             binding.wallpaperContainer.transitionName = wallpaper.uri
 
             binding.wallpaperContainer.setOnClickListener {
@@ -92,6 +92,12 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>) : RecyclerV
             binding.wallpaperContainer.setOnLongClickListener {
                 wallpaperCallbacks?.onWallpaperLongClicked(wallpaper, position)
                 true
+            }
+
+            binding.resolution.text = String.format("%dx%d • %s", wallpaper.width, wallpaper.height, wallpaper.size.toSize())
+
+            binding.wallpaperImageView.post {
+                binding.wallpaperImageView.loadWallpaper(wallpaper)
             }
         }
     }

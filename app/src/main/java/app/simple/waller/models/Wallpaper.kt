@@ -29,6 +29,9 @@ class Wallpaper : Parcelable {
     @ColumnInfo(name = "dateModified")
     var dateModified: Long = 0
 
+    @ColumnInfo(name = "size")
+    var size: Long = 0
+
     constructor(parcel: Parcel) : this() {
         name = parcel.readString()
         uri = parcel.readString().toString()

@@ -5,12 +5,20 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
-        android:id="@+id/wallpaper"
+    <HorizontalScrollView
+        android:id="@+id/wallpaper_scroll_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:importantForAccessibility="no"
-        tools:ignore="ContentDescription" />
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/wallpaper"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:importantForAccessibility="no"
+            android:scaleType="fitCenter"
+            tools:ignore="ContentDescription" />
+
+    </HorizontalScrollView>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/set_as_wallpaper"

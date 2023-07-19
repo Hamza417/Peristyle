@@ -1,10 +1,12 @@
 package app.simple.waller.ui
 
+import android.graphics.Rect
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
@@ -18,6 +20,7 @@ import app.simple.waller.interfaces.WallpaperCallbacks
 import app.simple.waller.models.Wallpaper
 import app.simple.waller.utils.ConditionUtils.isNotNull
 import app.simple.waller.viewmodels.WallpaperViewModel
+import com.google.android.material.shape.MaterialShapeDrawable
 
 class MainScreen : Fragment() {
 
@@ -77,6 +80,18 @@ class MainScreen : Fragment() {
                 wallpaperViewModel.getRemovedWallpapersLiveData().value = null
             }
         }
+    }
+
+    /**
+     * Get status bar height using window object
+     *
+     * @param window instance of the activity
+     * @return int
+     */
+    fun getStatusBarHeight(window: Window): Int {
+        val rectangle = Rect()
+        window.decorView.getWindowVisibleDisplayFrame(rectangle)
+        return rectangle.top - window.findViewById<View>(Window.ID_ANDROID_CONTENT).top
     }
 
     companion object {

@@ -8,20 +8,23 @@
     tools:context=".activities.MainActivity">
 
     <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/topAppBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/mainBackground"
         android:elevation="10dp"
-
-        app:liftOnScroll="true">
+        android:fitsSystemWindows="true"
+        app:liftOnScroll="true"
+        app:liftOnScrollTargetViewId="@id/recyclerView">
 
         <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/topAppBar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:elevation="10dp"
+            android:elevation="25dp"
+            app:contentInsetEnd="16dp"
             app:layout_scrollFlags="scroll|enterAlways|snap"
             app:menu="@menu/top_bar_menu"
+            app:subtitle="@string/wallpaper_browser"
             app:title="@string/app_name" />
 
     </com.google.android.material.appbar.AppBarLayout>
