@@ -77,6 +77,10 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>) : RecyclerV
         notifyItemRangeChanged(idx, this.wallpapers.size)
     }
 
+    fun getRandomWallpaper(): Wallpaper {
+        return wallpapers[(0 until wallpapers.size).random()]
+    }
+
     inner class WallpaperViewHolder(private val binding: AdapterWallpaperBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(wallpaper: Wallpaper, position: Int) {
             val ratio = String.format("%d:%d", wallpaper.width, wallpaper.height)

@@ -22,12 +22,15 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import app.simple.peri.R
 import app.simple.peri.adapters.AdapterWallpaper
+import app.simple.peri.constants.BundleConstants
 import app.simple.peri.databinding.FragmentMainScreenBinding
 import app.simple.peri.interfaces.WallpaperCallbacks
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.utils.ConditionUtils.isNotNull
 import app.simple.peri.utils.FileUtils.toUri
 import app.simple.peri.viewmodels.WallpaperViewModel
+import com.google.android.material.transition.MaterialElevationScale
+import com.google.android.material.transition.MaterialSharedAxis
 
 class MainScreen : Fragment() {
 
@@ -44,6 +47,12 @@ class MainScreen : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         postponeEnterTransition()
+        allowEnterTransitionOverlap = true
+        allowReturnTransitionOverlap = true
+        enterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, /* forward = */ true)
+        exitTransition = MaterialSharedAxis(MaterialSharedAxis.Z, /* forward = */ true)
+        reenterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, /* forward = */ false)
+        binding?.fab?.transitionName = requireArguments().getString(BundleConstants.FAB_TRANSITION)
 
         wallpaperViewModel.getWallpapersLiveData().observe(requireActivity()) { wallpapers ->
             if (wallpapers.isNotEmpty()) {
@@ -55,6 +64,8 @@ class MainScreen : Fragment() {
 
             adapterWallpaper!!.setWallpaperCallbacks(object : WallpaperCallbacks {
                 override fun onWallpaperClicked(wallpaper: Wallpaper?, position: Int, constraintLayout: ConstraintLayout?) {
+                    binding?.fab?.transitionName = null // remove transition name to prevent shared element transition
+
                     requireActivity().supportFragmentManager.beginTransaction()
                         .addSharedElement(constraintLayout!!, constraintLayout.transitionName)
                         .replace(R.id.mainContainer, WallpaperScreen.newInstance(wallpaper!!), "WallpaperScreen")
@@ -139,8 +150,17 @@ class MainScreen : Fragment() {
         }
 
         binding?.fab?.setOnClickListener {
-            // Open wallpaper settings
-
+            // Pick a random wallpaper from the list
+            val randomWallpaper = adapterWallpaper?.getRandomWallpaper()
+            binding?.fab?.transitionName = randomWallpaper?.uri.toString()
+            requireArguments().putString(BundleConstants.FAB_TRANSITION, randomWallpaper?.uri.toString())
+            if (randomWallpaper.isNotNull()) {
+                requireActivity().supportFragmentManager.beginTransaction()
+                    .addSharedElement(binding!!.fab, binding!!.fab.transitionName)
+                    .replace(R.id.mainContainer, WallpaperScreen.newInstance(randomWallpaper!!), "WallpaperScreen")
+                    .addToBackStack("WallpaperScreen")
+                    .commit()
+            }
         }
     }
 

@@ -17,6 +17,7 @@ import app.simple.peri.models.Wallpaper
 import app.simple.peri.utils.FileUtils.toUri
 import app.simple.peri.utils.ParcelUtils.parcelable
 import com.google.android.material.transition.MaterialContainerTransform
+import com.google.android.material.transition.MaterialSharedAxis
 
 class WallpaperScreen : Fragment() {
 
@@ -35,6 +36,11 @@ class WallpaperScreen : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         postponeEnterTransition()
+        allowEnterTransitionOverlap = true
+        allowReturnTransitionOverlap = true
+        enterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, /* forward = */ true)
+        returnTransition = MaterialSharedAxis(MaterialSharedAxis.Z, /* forward = */ false)
+        exitTransition = MaterialSharedAxis(MaterialSharedAxis.Z, /* forward = */ true)
 
         sharedElementEnterTransition = MaterialContainerTransform().apply {
             duration = resources.getInteger(R.integer.animation_duration).toLong()

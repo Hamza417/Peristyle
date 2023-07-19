@@ -37,7 +37,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:contentDescription="@string/wallpaper_settings"
-        android:src="@drawable/ic_wallpaper"
+        android:src="@drawable/ic_shuffle"
         app:layout_anchor="@id/bottomAppBar" />
 
     <TextView
