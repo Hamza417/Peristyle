@@ -2,6 +2,7 @@ package app.simple.peri.adapters
 
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.recyclerview.widget.RecyclerView
@@ -12,7 +13,9 @@ import app.simple.peri.models.Wallpaper
 import app.simple.peri.utils.FileUtils.toSize
 import com.bumptech.glide.Glide
 
-class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>) : RecyclerView.Adapter<AdapterWallpaper.WallpaperViewHolder>() {
+class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>,
+                       private val displayWidth: Int,
+                       private val displayHeight: Int) : RecyclerView.Adapter<AdapterWallpaper.WallpaperViewHolder>() {
 
     private val set = ConstraintSet()
     private var wallpaperCallbacks: WallpaperCallbacks? = null
@@ -89,6 +92,12 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>) : RecyclerV
             set.applyTo(binding.wallpaperContainer)
             binding.wallpaperContainer.transitionName = wallpaper.uri
             binding.wallpaperImageView.loadWallpaper(wallpaper)
+
+            if (wallpaper.width!! < displayWidth || wallpaper.height!! < displayHeight) {
+                binding.error.visibility = View.VISIBLE
+            } else {
+                binding.error.visibility = View.GONE
+            }
 
             binding.wallpaperContainer.setOnClickListener {
                 wallpaperCallbacks?.onWallpaperClicked(wallpaper, position, binding.wallpaperContainer)

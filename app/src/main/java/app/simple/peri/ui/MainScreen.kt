@@ -47,6 +47,9 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
     private var staggeredGridLayoutManager: StaggeredGridLayoutManager? = null
     private var binding: FragmentMainScreenBinding? = null
 
+    private var displayWidth: Int = 0
+    private var displayHeight: Int = 0
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = FragmentMainScreenBinding.inflate(inflater, container, false)
         return binding?.root
@@ -62,6 +65,9 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
         exitTransition = MaterialSharedAxis(MaterialSharedAxis.Z, /* forward = */ true)
         reenterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, /* forward = */ false)
         binding?.fab?.transitionName = requireArguments().getString(BundleConstants.FAB_TRANSITION)
+
+        displayWidth = requireContext().resources.displayMetrics.widthPixels
+        displayHeight = requireContext().resources.displayMetrics.heightPixels
 
         binding?.bottomAppBar?.setOnMenuItemClickListener {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -178,7 +184,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                 binding?.loadingStatus?.visibility = View.GONE
             }
 
-            adapterWallpaper = AdapterWallpaper(wallpapers)
+            adapterWallpaper = AdapterWallpaper(wallpapers, displayWidth, displayHeight)
             adapterWallpaper?.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.ALLOW
 
             adapterWallpaper!!.setWallpaperCallbacks(object : WallpaperCallbacks {
