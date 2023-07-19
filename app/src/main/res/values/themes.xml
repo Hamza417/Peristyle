@@ -4,7 +4,14 @@
         <!-- Customize your light theme here. -->
         <item name="android:statusBarColor">@color/mainBackground</item>
         <item name="android:windowLightStatusBar">true</item>
+        <item name="textAppearanceLargePopupMenu">@style/TextAppearance.App.BodyLarge</item>
+        <item name="textAppearanceSmallPopupMenu">@style/TextAppearance.App.BodyLarge</item>
+        <item name="popupMenuBackground">@drawable/bg_popup</item>
     </style>
 
     <style name="Theme.Peri" parent="Base.Theme.Peri" />
+
+    <style name="TextAppearance.App.BodyLarge" parent="TextAppearance.Material3.BodyLarge">
+        <item name="android:textColor">@color/textPrimary</item>
+    </style>
 </resources>

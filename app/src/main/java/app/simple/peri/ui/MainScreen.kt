@@ -1,6 +1,8 @@
 package app.simple.peri.ui
 
+import android.annotation.SuppressLint
 import android.app.WallpaperManager
+import android.content.SharedPreferences
 import android.graphics.Rect
 import android.graphics.RenderEffect
 import android.graphics.Shader
@@ -26,13 +28,16 @@ import app.simple.peri.constants.BundleConstants
 import app.simple.peri.databinding.FragmentMainScreenBinding
 import app.simple.peri.interfaces.WallpaperCallbacks
 import app.simple.peri.models.Wallpaper
+import app.simple.peri.preferences.MainPreferences
+import app.simple.peri.preferences.SharedPreferences.registerSharedPreferenceChangeListener
+import app.simple.peri.preferences.SharedPreferences.unregisterSharedPreferenceChangeListener
 import app.simple.peri.utils.ConditionUtils.isNotNull
 import app.simple.peri.utils.FileUtils.toUri
+import app.simple.peri.utils.WallpaperSort
 import app.simple.peri.viewmodels.WallpaperViewModel
-import com.google.android.material.transition.MaterialElevationScale
 import com.google.android.material.transition.MaterialSharedAxis
 
-class MainScreen : Fragment() {
+class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListener {
 
     private val wallpaperViewModel: WallpaperViewModel by viewModels()
     private var adapterWallpaper: AdapterWallpaper? = null
@@ -44,6 +49,7 @@ class MainScreen : Fragment() {
         return binding?.root
     }
 
+    @SuppressLint("CutPasteId")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         postponeEnterTransition()
@@ -53,6 +59,89 @@ class MainScreen : Fragment() {
         exitTransition = MaterialSharedAxis(MaterialSharedAxis.Z, /* forward = */ true)
         reenterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, /* forward = */ false)
         binding?.fab?.transitionName = requireArguments().getString(BundleConstants.FAB_TRANSITION)
+
+        binding?.bottomAppBar?.setOnMenuItemClickListener {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                binding?.root?.setRenderEffect(RenderEffect.createBlurEffect(100F, 100F, Shader.TileMode.MIRROR))
+            }
+
+            when (it.itemId) {
+                R.id.sort -> {
+                    val popup = PopupMenu(requireContext(), binding?.bottomAppBar?.findViewById(R.id.sort)!!, Gravity.START)
+                    popup.menuInflater.inflate(R.menu.wallpaper_sort, popup.menu)
+
+                    popup.setOnMenuItemClickListener { item ->
+                        when (item.itemId) {
+                            R.id.name -> {
+                                MainPreferences.setSort(WallpaperSort.NAME)
+                            }
+
+                            R.id.date -> {
+                                MainPreferences.setSort(WallpaperSort.DATE)
+                            }
+
+                            R.id.size -> {
+                                MainPreferences.setSort(WallpaperSort.SIZE)
+                            }
+
+                            R.id.width -> {
+                                MainPreferences.setSort(WallpaperSort.WIDTH)
+                            }
+
+                            R.id.height -> {
+                                MainPreferences.setSort(WallpaperSort.HEIGHT)
+                            }
+
+                            R.id.order -> {
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                                    binding?.root?.setRenderEffect(RenderEffect.createBlurEffect(100F, 100F, Shader.TileMode.MIRROR))
+                                }
+
+                                val popupOrder = PopupMenu(requireContext(), binding?.bottomAppBar?.findViewById(R.id.sort)!!, Gravity.START)
+                                popupOrder.menuInflater.inflate(R.menu.wallpaper_order, popupOrder.menu)
+
+                                popupOrder.setOnMenuItemClickListener { itemOrder ->
+                                    when (itemOrder.itemId) {
+                                        R.id.ascending -> {
+                                            MainPreferences.setOrder(WallpaperSort.ASC)
+                                        }
+
+                                        R.id.descending -> {
+                                            MainPreferences.setOrder(WallpaperSort.DESC)
+                                        }
+                                    }
+
+                                    true
+                                }
+
+                                popupOrder.setOnDismissListener {
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                                        binding?.root?.setRenderEffect(null)
+                                    }
+                                }
+
+                                popupOrder.show()
+                            }
+                        }
+
+                        true
+                    }
+
+                    popup.setOnDismissListener {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                            binding?.root?.setRenderEffect(null)
+                        }
+                    }
+
+                    popup.show()
+                }
+
+                R.id.settings -> {
+
+                }
+            }
+            true
+        }
 
         wallpaperViewModel.getWallpapersLiveData().observe(requireActivity()) { wallpapers ->
             if (wallpapers.isNotEmpty()) {
@@ -76,7 +165,6 @@ class MainScreen : Fragment() {
                 override fun onWallpaperLongClicked(wallpaper: Wallpaper, position: Int, view: View) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                         binding?.root?.setRenderEffect(RenderEffect.createBlurEffect(100F, 100F, Shader.TileMode.MIRROR))
-                        view.setRenderEffect(null)
                     }
 
                     val popup = PopupMenu(requireContext(), view, Gravity.CENTER)
@@ -176,12 +264,31 @@ class MainScreen : Fragment() {
         return rectangle.top - window.findViewById<View>(Window.ID_ANDROID_CONTENT).top
     }
 
+    override fun onResume() {
+        super.onResume()
+        registerSharedPreferenceChangeListener()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        unregisterSharedPreferenceChangeListener()
+    }
+
     companion object {
         fun newInstance(): MainScreen {
             val args = Bundle()
             val fragment = MainScreen()
             fragment.arguments = args
             return fragment
+        }
+    }
+
+    override fun onSharedPreferenceChanged(p0: SharedPreferences?, p1: String?) {
+        when (p1) {
+            MainPreferences.sort,
+            MainPreferences.order -> {
+                wallpaperViewModel.sortWallpapers()
+            }
         }
     }
 }

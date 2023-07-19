@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/date"
+        android:title="@string/date" />
+
+    <item
+        android:id="@+id/name"
+        android:title="@string/name" />
+
+    <item
+        android:id="@+id/size"
+        android:title="@string/size" />
+
+    <item
+        android:id="@+id/width"
+        android:title="@string/width" />
+
+    <item
+        android:id="@+id/height"
+        android:title="@string/height" />
+
+    <item
+        android:id="@+id/order"
+        android:title="@string/order" />
+
+</menu>

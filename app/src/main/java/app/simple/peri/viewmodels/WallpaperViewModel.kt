@@ -12,12 +12,13 @@ import app.simple.peri.models.Wallpaper
 import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.utils.ConditionUtils.invert
 import app.simple.peri.utils.FileUtils.isImageFile
+import app.simple.peri.utils.WallpaperSort.getSortedList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class WallpaperViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val wallpapers: ArrayList<Wallpaper> = ArrayList()
+    private var wallpapers: ArrayList<Wallpaper> = ArrayList()
 
     private val wallpapersData: MutableLiveData<ArrayList<Wallpaper>> by lazy {
         MutableLiveData<ArrayList<Wallpaper>>().also {
@@ -58,7 +59,8 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
             val wallpaperDatabase = WallpaperDatabase.getInstance(getApplication())
             val wallpaperDao = wallpaperDatabase?.wallpaperDao()
             val wallpaperList = wallpaperDao?.getWallpapers()
-            wallpapersData.postValue(wallpaperList as ArrayList<Wallpaper>)
+            (wallpaperList as ArrayList<Wallpaper>).getSortedList()
+            wallpapersData.postValue(wallpaperList)
 
             loadWallpaperImages()
         }
@@ -70,7 +72,7 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
             val storageUri = MainPreferences.getStorageUri()
             val pickedDirectory = DocumentFile.fromTreeUri(getApplication(), Uri.parse(storageUri))
             var count = 0
-            var total = pickedDirectory?.listFiles()?.size ?: 0
+            val total = pickedDirectory?.listFiles()?.size ?: 0
 
             pickedDirectory?.listFiles()?.forEach {
                 val wallpaper = Wallpaper()
@@ -149,6 +151,7 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
             wallpapers.sortByDescending { it.dateModified }
 
             if (alreadyLoaded?.isEmpty() == true) {
+                wallpapers.getSortedList()
                 wallpapersData.postValue(wallpapers)
             }
 
@@ -185,6 +188,12 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
             hashMap[it.dateModified] = it
         }
         return hashMap
+    }
+
+    fun sortWallpapers() {
+        wallpapers = wallpapersData.value ?: ArrayList()
+        wallpapers.getSortedList()
+        wallpapersData.postValue(wallpapers)
     }
 
     companion object {
