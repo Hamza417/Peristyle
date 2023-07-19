@@ -8,6 +8,7 @@ import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.load.resource.bitmap.BitmapTransitionOptions
+import com.bumptech.glide.load.resource.bitmap.Downsampler
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 
@@ -28,6 +29,7 @@ object GlideUtils {
             .load(app.simple.waller.glide.wallpaper.Wallpaper(wallpaper, context))
             .transition(BitmapTransitionOptions.withCrossFade())
             .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .set(Downsampler.ALLOW_HARDWARE_CONFIG, true)
             .addListener(object : RequestListener<Bitmap> {
                 override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Bitmap>?, isFirstResource: Boolean): Boolean {
                     /* no-op */

@@ -2,10 +2,15 @@ package app.simple.waller.ui
 
 import android.app.WallpaperManager
 import android.graphics.Color
+import android.graphics.Rect
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
+import android.widget.HorizontalScrollView
+import androidx.core.view.doOnLayout
 import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import app.simple.waller.R
@@ -45,8 +50,13 @@ class WallpaperScreen : Fragment() {
             /**
              * Scroll to center when wallpaper is loaded
              */
-            binding?.wallpaper?.doOnPreDraw {
-                binding?.wallpaperScrollView?.scrollX = binding?.wallpaper?.width!! / 2
+            binding?.wallpaper?.doOnLayout {
+                binding?.wallpaperScrollView?.afterMeasured {
+                    val scrollTo = binding?.wallpaper?.width?.div(2)?.minus(binding?.wallpaperScrollView?.width?.div(2)!!)
+                    if (scrollTo != null) {
+                        scrollTo(scrollTo, 0)
+                    }
+                }
             }
 
             startPostponedEnterTransition()
@@ -56,6 +66,17 @@ class WallpaperScreen : Fragment() {
             val intent = WallpaperManager.getInstance(requireContext()).getCropAndSetWallpaperIntent(wallpaper?.uri?.toUri())
             startActivity(intent)
         }
+    }
+
+    private inline fun <T : View> T.afterMeasured(crossinline f: T.() -> Unit) {
+        viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                if (measuredWidth > 0 && measuredHeight > 0) {
+                    viewTreeObserver.removeOnGlobalLayoutListener(this)
+                    f()
+                }
+            }
+        })
     }
 
     companion object {

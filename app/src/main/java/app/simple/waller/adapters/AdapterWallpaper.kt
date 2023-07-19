@@ -95,7 +95,9 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>) : RecyclerV
                 true
             }
 
-            binding.resolution.text = String.format("%dx%d • %s", wallpaper.width, wallpaper.height, wallpaper.size.toSize())
+            binding.resolution.text = String.format(
+                    "%dx%d • %s",
+                    wallpaper.width, wallpaper.height, wallpaper.size.toSize())
         }
     }
 }

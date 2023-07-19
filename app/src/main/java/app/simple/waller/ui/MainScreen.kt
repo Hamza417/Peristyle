@@ -20,7 +20,12 @@ import app.simple.waller.interfaces.WallpaperCallbacks
 import app.simple.waller.models.Wallpaper
 import app.simple.waller.utils.ConditionUtils.isNotNull
 import app.simple.waller.viewmodels.WallpaperViewModel
-import com.google.android.material.shape.MaterialShapeDrawable
+import com.bumptech.glide.Glide
+import com.bumptech.glide.ListPreloader.PreloadModelProvider
+import com.bumptech.glide.ListPreloader.PreloadSizeProvider
+import com.bumptech.glide.RequestBuilder
+import com.bumptech.glide.integration.recyclerview.RecyclerViewPreloader
+import com.bumptech.glide.util.ViewPreloadSizeProvider
 
 class MainScreen : Fragment() {
 
