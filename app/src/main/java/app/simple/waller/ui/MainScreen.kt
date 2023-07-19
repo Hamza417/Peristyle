@@ -16,6 +16,7 @@ import app.simple.waller.adapters.AdapterWallpaper
 import app.simple.waller.databinding.FragmentMainScreenBinding
 import app.simple.waller.interfaces.WallpaperCallbacks
 import app.simple.waller.models.Wallpaper
+import app.simple.waller.utils.ConditionUtils.isNotNull
 import app.simple.waller.viewmodels.WallpaperViewModel
 
 class MainScreen : Fragment() {
@@ -60,6 +61,20 @@ class MainScreen : Fragment() {
 
             (view.parent as? ViewGroup)?.doOnPreDraw {
                 startPostponedEnterTransition()
+            }
+        }
+
+        wallpaperViewModel.getNewWallpapersLiveData().observe(requireActivity()) { wallpaper ->
+            if (wallpaper.isNotNull()) {
+                adapterWallpaper?.addWallpaper(wallpaper)
+                wallpaperViewModel.getNewWallpapersLiveData().value = null
+            }
+        }
+
+        wallpaperViewModel.getRemovedWallpapersLiveData().observe(requireActivity()) { wallpaper ->
+            if (wallpaper.isNotNull()) {
+                adapterWallpaper?.removeWallpaper(wallpaper)
+                wallpaperViewModel.getRemovedWallpapersLiveData().value = null
             }
         }
     }

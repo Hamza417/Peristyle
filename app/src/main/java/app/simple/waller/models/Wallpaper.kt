@@ -72,7 +72,7 @@ class Wallpaper : Parcelable {
     }
 
     fun isNull(): Boolean {
-        return name == null && uri == null // && width == null && height == null
+        return name == null || uri.isEmpty() || width == null || height == null
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {

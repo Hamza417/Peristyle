@@ -1,5 +1,6 @@
 package app.simple.waller.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintSet
@@ -35,6 +36,44 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>) : RecyclerV
 
     fun setWallpaperCallbacks(wallpaperCallbacks: WallpaperCallbacks) {
         this.wallpaperCallbacks = wallpaperCallbacks
+    }
+
+    fun addWallpapers(wallpapers: java.util.ArrayList<Wallpaper>?) {
+        wallpapers?.forEach {
+            for (wallpaper in this.wallpapers) {
+                if (it.dateModified < wallpaper.dateModified) {
+                    this.wallpapers.add(this.wallpapers.indexOf(wallpaper), it)
+                    notifyItemInserted(this.wallpapers.indexOf(wallpaper))
+                    notifyItemRangeChanged(this.wallpapers.indexOf(wallpaper), this.wallpapers.size)
+                    break
+                }
+            }
+        }
+    }
+
+    fun addWallpaper(wallpaper: Wallpaper) {
+        Log.d("Wallpaper", "Adding wallpaper: $wallpaper")
+        wallpapers.add(0, wallpaper)
+        notifyItemInserted(wallpapers.indexOf(wallpaper))
+        notifyItemRangeChanged(wallpapers.indexOf(wallpaper), wallpapers.size)
+    }
+
+    fun removeWallpapers(wallpapers: java.util.ArrayList<Wallpaper>?) {
+        wallpapers?.forEach {
+            Log.d("Wallpaper", "Removing wallpaper: $it")
+            val idx = this.wallpapers.indexOf(it)
+            Log.d("Wallpaper", "Removing wallpaper at index: $idx")
+            this.wallpapers.remove(it)
+            notifyItemRemoved(idx)
+            notifyItemRangeChanged(idx, this.wallpapers.size)
+        }
+    }
+
+    fun removeWallpaper(wallpaper: Wallpaper) {
+        val idx = this.wallpapers.indexOf(wallpaper)
+        this.wallpapers.remove(wallpaper)
+        notifyItemRemoved(idx)
+        notifyItemRangeChanged(idx, this.wallpapers.size)
     }
 
     inner class WallpaperViewHolder(private val binding: AdapterWallpaperBinding) : RecyclerView.ViewHolder(binding.root) {
