@@ -20,14 +20,16 @@ import kotlin.math.sqrt
 class WallpaperFetcher(private val wallpaper: Wallpaper) : DataFetcher<Bitmap> {
     override fun loadData(priority: Priority, callback: DataFetcher.DataCallback<in Bitmap>) {
         try {
-            wallpaper.context.contentResolver.openInputStream(wallpaper.wallpaper.uri.toUri())?.use {
-                val bitmap = BitmapFactory.decodeStream(it, null, BitmapFactory.Options().apply {
+            wallpaper.context.contentResolver.openFileDescriptor(wallpaper.wallpaper.uri.toUri(), "r")?.use {
+                val bitmap = BitmapFactory.decodeFileDescriptor(it.fileDescriptor, null, BitmapFactory.Options().apply {
                     inPreferredConfig = Bitmap.Config.ARGB_8888
-                    inSampleSize = calculateInSampleSize(this, 540, wallpaper.wallpaper.height?.div(8)!!)
+                    inSampleSize = calculateInSampleSize(this, 540, 540)
                     inJustDecodeBounds = false
                 })
 
                 callback.onDataReady(bitmap)
+
+                bitmap?.recycle()
             }
         } catch (e: FileNotFoundException) {
             callback.onLoadFailed(e)

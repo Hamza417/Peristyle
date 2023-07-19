@@ -84,6 +84,7 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>) : RecyclerV
             set.setDimensionRatio(binding.wallpaperImageView.id, ratio)
             set.applyTo(binding.wallpaperContainer)
             binding.wallpaperContainer.transitionName = wallpaper.uri
+            binding.wallpaperImageView.loadWallpaper(wallpaper)
 
             binding.wallpaperContainer.setOnClickListener {
                 wallpaperCallbacks?.onWallpaperClicked(wallpaper, position, binding.wallpaperContainer)
@@ -95,10 +96,6 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>) : RecyclerV
             }
 
             binding.resolution.text = String.format("%dx%d • %s", wallpaper.width, wallpaper.height, wallpaper.size.toSize())
-
-            binding.wallpaperImageView.post {
-                binding.wallpaperImageView.loadWallpaper(wallpaper)
-            }
         }
     }
 }
