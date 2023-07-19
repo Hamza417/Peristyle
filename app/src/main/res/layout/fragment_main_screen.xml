@@ -27,7 +27,7 @@
         app:fabAnimationMode="scale"
         app:fabCradleRoundedCornerRadius="5dp"
         app:hideOnScroll="true"
-        app:menu="@menu/top_bar_menu"
+        app:menu="@menu/bottom_bar_menu"
         app:menuAlignmentMode="auto"
         app:srcCompat="@mipmap/ic_launcher_round"
         app:title="@string/app_name" />

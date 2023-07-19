@@ -2,10 +2,12 @@ package app.simple.peri.ui
 
 import android.annotation.SuppressLint
 import android.app.WallpaperManager
+import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Rect
 import android.graphics.RenderEffect
 import android.graphics.Shader
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.Gravity
@@ -35,6 +37,7 @@ import app.simple.peri.utils.ConditionUtils.isNotNull
 import app.simple.peri.utils.FileUtils.toUri
 import app.simple.peri.utils.WallpaperSort
 import app.simple.peri.viewmodels.WallpaperViewModel
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.MaterialSharedAxis
 
 class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListener {
@@ -136,8 +139,35 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                     popup.show()
                 }
 
-                R.id.settings -> {
+                R.id.info -> {
+                    MaterialAlertDialogBuilder(requireContext())
+                        .setTitle(R.string.info)
+                        .setMessage(R.string.full_info)
+                        .setNeutralButton(R.string.close) { dialog, _ ->
+                            dialog.dismiss()
+                        }
+                        .setPositiveButton(R.string.inure_app_manager) { dialog, _ ->
+                            val url = "https://github.com/Hamza417/Inure"
+                            val intent = Intent(Intent.ACTION_VIEW)
+                            intent.data = Uri.parse(url)
+                            startActivity(intent)
 
+                            dialog.dismiss()
+                        }
+                        .setNegativeButton(R.string.positional) { dialog, _ ->
+                            val url = "https://github.com/Hamza417/Positional"
+                            val intent = Intent(Intent.ACTION_VIEW)
+                            intent.data = Uri.parse(url)
+                            startActivity(intent)
+
+                            dialog.dismiss()
+                        }
+                        .setOnDismissListener {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                                binding?.root?.setRenderEffect(null)
+                            }
+                        }
+                        .show()
                 }
             }
             true
