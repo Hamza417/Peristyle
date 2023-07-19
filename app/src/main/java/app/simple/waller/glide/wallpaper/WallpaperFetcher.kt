@@ -20,8 +20,7 @@ class WallpaperFetcher(private val wallpaper: Wallpaper) : DataFetcher<Bitmap> {
     override fun loadData(priority: Priority, callback: DataFetcher.DataCallback<in Bitmap>) {
         try {
             wallpaper.context.contentResolver.openInputStream(wallpaper.wallpaper.uri.toUri())?.use {
-                val bitmap = getBitmap(wallpaper.wallpaper.uri.toUri(), wallpaper.context)
-                callback.onDataReady(bitmap)
+                callback.onDataReady(getBitmap(wallpaper.wallpaper.uri.toUri(), wallpaper.context))
             }
         } catch (e: FileNotFoundException) {
             callback.onLoadFailed(e)

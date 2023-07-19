@@ -11,7 +11,6 @@ import androidx.fragment.app.Fragment
 import app.simple.waller.R
 import app.simple.waller.constants.BundleConstants
 import app.simple.waller.databinding.FragmentWallpaperScreenBinding
-import app.simple.waller.glide.utils.GlideUtils.loadWallpaper
 import app.simple.waller.models.Wallpaper
 import app.simple.waller.utils.FileUtils.toUri
 import app.simple.waller.utils.ParcelUtils.parcelable
@@ -20,6 +19,8 @@ import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
+import com.davemorrissey.labs.subscaleview.ImageSource
+import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
 import com.google.android.material.transition.MaterialContainerTransform
 
 class WallpaperScreen : Fragment() {
@@ -52,15 +53,17 @@ class WallpaperScreen : Fragment() {
             .addListener(object : RequestListener<Bitmap> {
                 override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Bitmap>?, isFirstResource: Boolean): Boolean {
                     startPostponedEnterTransition()
-                    return false
+                    return true
                 }
 
                 override fun onResourceReady(resource: Bitmap?, model: Any?, target: Target<Bitmap>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
+                    binding?.wallpaper?.setImage(ImageSource.cachedBitmap(resource!!))
+                    binding?.wallpaper?.setMinimumScaleType(SubsamplingScaleImageView.SCALE_TYPE_CENTER_CROP)
                     startPostponedEnterTransition()
-                    return false
+                    return true
                 }
             })
-            .into(binding?.wallpaper!!)
+            .preload()
 
         binding?.setAsWallpaper?.setOnClickListener {
             val intent = WallpaperManager.getInstance(requireContext()).getCropAndSetWallpaperIntent(wallpaper?.uri?.toUri())
