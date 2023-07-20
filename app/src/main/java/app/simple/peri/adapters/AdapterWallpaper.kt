@@ -1,5 +1,6 @@
 package app.simple.peri.adapters
 
+import android.annotation.SuppressLint
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -20,13 +21,21 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>,
     private val set = ConstraintSet()
     private var wallpaperCallbacks: WallpaperCallbacks? = null
 
+    var selectionMode = false
+        set(value) {
+            field = value
+            for (i in 0 until wallpapers.size) {
+                notifyItemChanged(i)
+            }
+        }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WallpaperViewHolder {
         val binding = AdapterWallpaperBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return WallpaperViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: WallpaperViewHolder, position: Int) {
-        holder.bind(wallpapers[position], position)
+        holder.bind(wallpapers[position])
     }
 
     override fun getItemCount(): Int {
@@ -84,14 +93,42 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>,
         return wallpapers[(0 until wallpapers.size).random()]
     }
 
+    fun selectWallpaper(wallpaper: Wallpaper) {
+        selectionMode = true
+        val idx = wallpapers.indexOf(wallpaper)
+        wallpaper.isSelected = true
+        wallpapers[idx] = wallpaper
+        notifyItemChanged(idx)
+    }
+
+    fun getSelectedWallpapers(): ArrayList<Wallpaper> {
+        val selectedWallpapers = ArrayList<Wallpaper>()
+        for (wallpaper in wallpapers) {
+            if (wallpaper.isSelected) {
+                selectedWallpapers.add(wallpaper)
+            }
+        }
+        return selectedWallpapers
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun cancelSelection() {
+        selectionMode = false
+        for (wallpaper in wallpapers) {
+            wallpaper.isSelected = false
+        }
+        notifyDataSetChanged()
+    }
+
     inner class WallpaperViewHolder(private val binding: AdapterWallpaperBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(wallpaper: Wallpaper, position: Int) {
+        fun bind(wallpaper: Wallpaper) {
             val ratio = String.format("%d:%d", wallpaper.width, wallpaper.height)
             set.clone(binding.wallpaperContainer)
             set.setDimensionRatio(binding.wallpaperImageView.id, ratio)
             set.applyTo(binding.wallpaperContainer)
             binding.wallpaperContainer.transitionName = wallpaper.uri
             binding.wallpaperImageView.loadWallpaper(wallpaper)
+            binding.name.text = wallpaper.name
 
             if (wallpaper.width!! < displayWidth || wallpaper.height!! < displayHeight) {
                 binding.error.visibility = View.VISIBLE
@@ -99,12 +136,26 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>,
                 binding.error.visibility = View.GONE
             }
 
+            if (selectionMode) {
+                binding.checkBox.visibility = View.VISIBLE
+                binding.checkBox.isChecked = wallpaper.isSelected
+            } else {
+                binding.checkBox.visibility = View.GONE
+                binding.checkBox.isChecked = false
+            }
+
             binding.wallpaperContainer.setOnClickListener {
-                wallpaperCallbacks?.onWallpaperClicked(wallpaper, position, binding.wallpaperContainer)
+                if (selectionMode) {
+                    binding.checkBox.isChecked = !binding.checkBox.isChecked
+                    wallpaper.isSelected = binding.checkBox.isChecked
+                    selectionMode = wallpapers.any { wallpaper -> wallpaper.isSelected }
+                } else {
+                    wallpaperCallbacks?.onWallpaperClicked(wallpaper, bindingAdapterPosition, binding.wallpaperContainer)
+                }
             }
 
             binding.wallpaperContainer.setOnLongClickListener {
-                wallpaperCallbacks?.onWallpaperLongClicked(wallpaper, position, it)
+                wallpaperCallbacks?.onWallpaperLongClicked(wallpaper, bindingAdapterPosition, it, binding.checkBox)
                 true
             }
 

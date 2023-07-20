@@ -21,4 +21,7 @@
     <string name="inure_app_manager" translatable="false">Inure App Manager</string>
     <string name="positional" translatable="false">Positional</string>
     <string name="close">Close</string>
+    <string name="delete_message">You are deleting %1$s wallpapers, are you sure?</string>
+    <string name="no_wallpaper_selected">No wallpaper selected</string>
+    <string name="send_message">You are sending %1$s wallpapers, are you sure?</string>
 </resources>

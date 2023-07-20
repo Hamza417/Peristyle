@@ -15,6 +15,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
+import androidx.activity.addCallback
 import androidx.appcompat.widget.PopupMenu
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ShareCompat
@@ -33,10 +34,12 @@ import app.simple.peri.models.Wallpaper
 import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.preferences.SharedPreferences.registerSharedPreferenceChangeListener
 import app.simple.peri.preferences.SharedPreferences.unregisterSharedPreferenceChangeListener
+import app.simple.peri.utils.ConditionUtils.invert
 import app.simple.peri.utils.ConditionUtils.isNotNull
 import app.simple.peri.utils.FileUtils.toUri
 import app.simple.peri.utils.WallpaperSort
 import app.simple.peri.viewmodels.WallpaperViewModel
+import com.google.android.material.checkbox.MaterialCheckBox
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.MaterialSharedAxis
 
@@ -49,6 +52,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
 
     private var displayWidth: Int = 0
     private var displayHeight: Int = 0
+    private val blurRadius: Float = 75F
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = FragmentMainScreenBinding.inflate(inflater, container, false)
@@ -71,7 +75,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
 
         binding?.bottomAppBar?.setOnMenuItemClickListener {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                binding?.root?.setRenderEffect(RenderEffect.createBlurEffect(100F, 100F, Shader.TileMode.MIRROR))
+                binding?.root?.setRenderEffect(RenderEffect.createBlurEffect(blurRadius, blurRadius, Shader.TileMode.MIRROR))
             }
 
             when (it.itemId) {
@@ -103,7 +107,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
 
                             R.id.order -> {
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                                    binding?.root?.setRenderEffect(RenderEffect.createBlurEffect(100F, 100F, Shader.TileMode.MIRROR))
+                                    binding?.root?.setRenderEffect(RenderEffect.createBlurEffect(blurRadius, blurRadius, Shader.TileMode.MIRROR))
                                 }
 
                                 val popupOrder = PopupMenu(requireContext(), binding?.bottomAppBar?.findViewById(R.id.sort)!!, Gravity.START)
@@ -143,6 +147,115 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                     }
 
                     popup.show()
+                }
+
+                R.id.delete -> {
+                    val wallpapers = adapterWallpaper?.getSelectedWallpapers()
+                    if (wallpapers.isNullOrEmpty().invert()) {
+                        MaterialAlertDialogBuilder(requireContext())
+                            .setTitle(R.string.delete)
+                            .setMessage(getString(R.string.delete_message, wallpapers?.size.toString()))
+                            .setNeutralButton(R.string.close) { dialog, _ ->
+                                dialog.dismiss()
+                            }
+                            .setPositiveButton(R.string.delete) { dialog, _ ->
+                                if (wallpapers.isNullOrEmpty().invert()) {
+                                    if (wallpapers != null) {
+                                        for (wallpaper in wallpapers) {
+                                            val documentFile = DocumentFile.fromSingleUri(requireContext(), wallpaper.uri.toUri())
+                                            documentFile?.delete()
+                                            adapterWallpaper?.removeWallpaper(wallpaper)
+                                            wallpaperViewModel.removeWallpaper(wallpaper)
+                                        }
+                                    }
+                                } else {
+                                    adapterWallpaper?.selectionMode = true
+                                }
+
+                                dialog.dismiss()
+                            }
+                            .setNegativeButton(R.string.close) { dialog, _ ->
+                                dialog.dismiss()
+                            }
+                            .setOnDismissListener {
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                                    binding?.root?.setRenderEffect(null)
+                                }
+                            }
+                            .show()
+                    } else {
+                        MaterialAlertDialogBuilder(requireContext())
+                            .setTitle(R.string.delete)
+                            .setMessage(R.string.no_wallpaper_selected)
+                            .setNegativeButton(R.string.close) { dialog, _ ->
+                                dialog.dismiss()
+                            }
+                            .setPositiveButton(R.string.select) { dialog, _ ->
+                                adapterWallpaper?.selectionMode = true
+                                dialog.dismiss()
+                            }
+                            .setOnDismissListener {
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                                    binding?.root?.setRenderEffect(null)
+                                }
+                            }
+                            .show()
+                    }
+                }
+
+                R.id.send -> {
+                    val wallpapers = adapterWallpaper?.getSelectedWallpapers()
+                    if (wallpapers.isNullOrEmpty().invert()) {
+                        MaterialAlertDialogBuilder(requireContext())
+                            .setTitle(R.string.send)
+                            .setMessage(getString(R.string.send_message, wallpapers?.size.toString()))
+                            .setNeutralButton(R.string.close) { dialog, _ ->
+                                dialog.dismiss()
+                            }
+                            .setPositiveButton(R.string.send) { dialog, _ ->
+                                if (wallpapers.isNullOrEmpty().invert()) {
+                                    if (wallpapers != null) {
+                                        for (wallpaper in wallpapers) {
+                                            ShareCompat.IntentBuilder(requireActivity())
+                                                .setType("image/*")
+                                                .setChooserTitle("Share Wallpaper")
+                                                .setStream(wallpaper.uri.toUri())
+                                                .startChooser()
+                                        }
+                                    }
+                                } else {
+                                    adapterWallpaper?.selectionMode = true
+                                }
+
+                                dialog.dismiss()
+                            }
+                            .setNegativeButton(R.string.close) { dialog, _ ->
+                                dialog.dismiss()
+                            }
+                            .setOnDismissListener {
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                                    binding?.root?.setRenderEffect(null)
+                                }
+                            }
+                            .show()
+                    } else {
+                        MaterialAlertDialogBuilder(requireContext())
+                            .setTitle(R.string.send)
+                            .setMessage(R.string.no_wallpaper_selected)
+                            .setNegativeButton(R.string.close) { dialog, _ ->
+                                dialog.dismiss()
+                            }
+                            .setPositiveButton(R.string.select) { dialog, _ ->
+                                adapterWallpaper?.selectionMode = true
+                                dialog.dismiss()
+                            }
+                            .setOnDismissListener {
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                                    binding?.root?.setRenderEffect(null)
+                                }
+                            }
+                            .show()
+                    }
                 }
 
                 R.id.info -> {
@@ -198,9 +311,9 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                         .commit()
                 }
 
-                override fun onWallpaperLongClicked(wallpaper: Wallpaper, position: Int, view: View) {
+                override fun onWallpaperLongClicked(wallpaper: Wallpaper, position: Int, view: View, checkBox: MaterialCheckBox) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                        binding?.root?.setRenderEffect(RenderEffect.createBlurEffect(100F, 100F, Shader.TileMode.MIRROR))
+                        binding?.root?.setRenderEffect(RenderEffect.createBlurEffect(blurRadius, blurRadius, Shader.TileMode.MIRROR))
                     }
 
                     val popup = PopupMenu(requireContext(), view, Gravity.CENTER)
@@ -215,7 +328,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                             }
 
                             R.id.send -> {
-                                ShareCompat.IntentBuilder.from(requireActivity())
+                                ShareCompat.IntentBuilder(requireActivity())
                                     .setType("image/*")
                                     .setChooserTitle("Share Wallpaper")
                                     .setStream(wallpaper.uri.toUri())
@@ -226,6 +339,11 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                                 val documentFile = DocumentFile.fromSingleUri(requireContext(), wallpaper.uri.toUri())
                                 documentFile?.delete()
                                 adapterWallpaper?.removeWallpaper(wallpaper)
+                                wallpaperViewModel.removeWallpaper(wallpaper)
+                            }
+
+                            R.id.select -> {
+                                adapterWallpaper?.selectWallpaper(wallpaper)
                             }
                         }
 
@@ -284,6 +402,18 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                     .replace(R.id.mainContainer, WallpaperScreen.newInstance(randomWallpaper!!), "WallpaperScreen")
                     .addToBackStack("WallpaperScreen")
                     .commit()
+            }
+        }
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            if (adapterWallpaper?.selectionMode == true) {
+                adapterWallpaper?.cancelSelection()
+            } else {
+                requireActivity().finish()
+            }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                binding?.root?.setRenderEffect(null)
             }
         }
     }

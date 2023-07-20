@@ -3,6 +3,7 @@ package app.simple.peri.viewmodels
 import android.app.Application
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.util.Log
 import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
@@ -60,6 +61,14 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
             val wallpaperDao = wallpaperDatabase?.wallpaperDao()
             val wallpaperList = wallpaperDao?.getWallpapers()
             (wallpaperList as ArrayList<Wallpaper>).getSortedList()
+
+            for (i in wallpaperList.indices) {
+                if (wallpaperList[i].isSelected) {
+                    Log.d(TAG, "loadWallpaperDatabase: ${wallpaperList[i].isSelected}")
+                }
+                wallpaperList[i].isSelected = false
+            }
+
             wallpapersData.postValue(wallpaperList)
 
             loadWallpaperImages()
@@ -152,6 +161,14 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
 
             if (alreadyLoaded?.isEmpty() == true) {
                 wallpapers.getSortedList()
+
+                for (i in 0 until wallpapers.size) {
+                    if (wallpapers[i].isSelected) {
+                        Log.d(TAG, "loadWallpaperImages: ${wallpapers[i].isSelected}")
+                    }
+                    wallpapers[i].isSelected = false
+                }
+
                 wallpapersData.postValue(wallpapers)
             }
 
@@ -194,6 +211,22 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
         wallpapers = wallpapersData.value ?: ArrayList()
         wallpapers.getSortedList()
         wallpapersData.postValue(wallpapers)
+    }
+
+    fun updateWallpaper(wallpaper: Wallpaper) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val wallpaperDatabase = WallpaperDatabase.getInstance(getApplication())
+            val wallpaperDao = wallpaperDatabase?.wallpaperDao()
+            wallpaperDao?.update(wallpaper)
+        }
+    }
+
+    fun removeWallpaper(wallpaper: Wallpaper) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val wallpaperDatabase = WallpaperDatabase.getInstance(getApplication())
+            val wallpaperDao = wallpaperDatabase?.wallpaperDao()
+            wallpaperDao?.delete(wallpaper)
+        }
     }
 
     companion object {

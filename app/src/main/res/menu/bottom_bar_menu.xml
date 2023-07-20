@@ -5,16 +5,32 @@
         android:id="@+id/sort"
         android:contentDescription="@string/sort"
         android:icon="@drawable/ic_sort"
-        app:iconTint="?attr/colorOnSurface"
         android:title="@string/sort"
+        app:iconTint="?attr/colorOnSurface"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/delete"
+        android:contentDescription="@string/delete"
+        android:icon="@drawable/ic_delete"
+        android:title="@string/delete"
+        app:iconTint="?attr/colorOnSurface"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/send"
+        android:contentDescription="@string/send"
+        android:icon="@drawable/ic_share"
+        android:title="@string/send"
+        app:iconTint="?attr/colorOnSurface"
         app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/info"
         android:contentDescription="@string/info"
         android:icon="@drawable/ic_info"
-        app:iconTint="?attr/colorOnSurface"
         android:title="@string/info"
+        app:iconTint="?attr/colorOnSurface"
         app:showAsAction="ifRoom" />
 
 </menu>
