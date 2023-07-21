@@ -18,7 +18,7 @@ from there? then Peri is for you :)
 
 ## Screenshots
 
-![Screenshot 1](./fastlane/metadata/android/en-US/images/phoneScreenshots/01.png) ![Screenshot 2](./fastlane/metadata/android/en-US/images/phoneScreenshots/02.png) ![Screenshot 3](./fastlane/metadata/android/en-US/images/phoneScreenshots/03.png) ![Screenshot 4](./fastlane/metadata/android/en-US/images/phoneScreenshots/04.png)
+![Screenshot 1](./fastlane/metadata/android/en-US/images/phoneScreenshots/01.png)![Screenshot 2](./fastlane/metadata/android/en-US/images/phoneScreenshots/02.png)![Screenshot 3](./fastlane/metadata/android/en-US/images/phoneScreenshots/03.png)![Screenshot 4](./fastlane/metadata/android/en-US/images/phoneScreenshots/04.png)
 
 ## Open Source?
 
