@@ -44,10 +44,11 @@
                 android:id="@+id/blur_slider"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                app:thumbRadius="16dp"
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="16dp"
                 android:layout_weight="1"
-                app:thumbColor="?attr/colorPrimary" />
+                app:thumbColor="@android:color/white" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/set_as_wallpaper"

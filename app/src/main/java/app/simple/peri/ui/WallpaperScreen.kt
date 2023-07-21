@@ -10,12 +10,12 @@ import android.graphics.Shader
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.view.animation.DecelerateInterpolator
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.FileProvider
 import androidx.core.view.doOnLayout
 import androidx.fragment.app.Fragment
@@ -27,6 +27,7 @@ import app.simple.peri.glide.utils.GlideUtils.loadWallpaper
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.tools.StackBlur
 import app.simple.peri.utils.ParcelUtils.parcelable
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.slider.Slider
 import com.google.android.material.slider.Slider.OnSliderTouchListener
 import com.google.android.material.transition.MaterialContainerTransform
@@ -44,6 +45,7 @@ class WallpaperScreen : Fragment() {
     private var wallpaper: Wallpaper? = null
 
     private var bitmap: Bitmap? = null
+    private var uri: Uri? = null
     private val blurRadius = 150F
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -73,10 +75,6 @@ class WallpaperScreen : Fragment() {
         binding?.wallpaper?.loadWallpaper(wallpaper!!) {
             bitmap = it
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                binding?.blurSliderContainer?.setRenderEffect(RenderEffect.createBlurEffect(500F, 500F, Shader.TileMode.CLAMP))
-            }
-
             /**
              * Scroll to center when wallpaper is loaded
              */
@@ -91,15 +89,10 @@ class WallpaperScreen : Fragment() {
                 }
             }
 
-            binding?.blurSliderContainer?.scaleX = 0.5f
-            binding?.blurSliderContainer?.scaleY = 0.5f
-
             startPostponedEnterTransition()
 
             binding?.blurSliderContainer?.animate()
                 ?.alpha(1f)
-                ?.scaleX(1f)
-                ?.scaleY(1f)
                 ?.setInterpolator(DecelerateInterpolator(1.5F))
                 ?.setDuration(resources.getInteger(R.integer.animation_duration).toLong())
                 ?.setStartDelay(resources.getInteger(R.integer.animation_duration).toLong())
@@ -119,19 +112,6 @@ class WallpaperScreen : Fragment() {
 
                 })
                 ?.start()
-
-            val valueAnimator = android.animation.ValueAnimator.ofFloat(500F, 1f)
-            valueAnimator.duration = resources.getInteger(R.integer.animation_duration).toLong()
-            valueAnimator.addUpdateListener { animation ->
-                val progress = animation.animatedValue as Float
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    binding?.blurSliderContainer?.setRenderEffect(RenderEffect.createBlurEffect(progress, progress, Shader.TileMode.CLAMP))
-                    Log.d("TAG", "onViewCreated: $progress")
-                }
-            }
-            valueAnimator.startDelay = resources.getInteger(R.integer.animation_duration).toLong()
-            valueAnimator.interpolator = DecelerateInterpolator(1.5F)
-            valueAnimator.start()
         }
 
         binding?.blurSlider?.addOnSliderTouchListener(object : OnSliderTouchListener {
@@ -160,8 +140,7 @@ class WallpaperScreen : Fragment() {
                 viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
                     try {
                         if (binding?.blurSlider?.value!! > 0) {
-                            val bitmap = this@WallpaperScreen.bitmap?.copy(this@WallpaperScreen.bitmap!!.config, true)
-                            StackBlur().blurRgb(bitmap!!, (binding?.blurSlider?.value!! * blurRadius).roundToInt())
+                            val bitmap = prepareFinalBitmap()
 
                             withContext(Dispatchers.Main) {
                                 binding?.wallpaper?.setImageBitmap(bitmap)
@@ -194,27 +173,38 @@ class WallpaperScreen : Fragment() {
         }
 
         binding?.setAsWallpaper?.setOnClickListener {
+            val dialog = MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.preparing)
+            .setMessage(getString(R.string.copying))
+            .show()
+
             viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
                 val wallpaperManager = WallpaperManager.getInstance(requireContext())
-                val bitmap = this@WallpaperScreen.bitmap?.copy(this@WallpaperScreen.bitmap!!.config, true)
-
-                val blurRadius = withContext(Dispatchers.Main) {
-                    binding?.blurSlider?.value!! * this@WallpaperScreen.blurRadius
-                }
-
-                try {
-                    StackBlur().blurRgb(bitmap!!, blurRadius.roundToInt())
-                } catch (e: Exception) {
-                    // baa baa black sheep
-                }
-
-                val intent = wallpaperManager.getCropAndSetWallpaperIntent(getImageUri(bitmap!!))
+                val bitmap = prepareFinalBitmap()
+                uri = getImageUri(bitmap)
 
                 withContext(Dispatchers.Main) {
-                    startActivity(intent)
+                    wallpaperManager.getCropAndSetWallpaperIntent(uri).let {
+                        dialog.dismiss()
+                        startActivity(it)
+                    }
                 }
             }
         }
+    }
+
+    private fun prepareFinalBitmap(): Bitmap {
+        val bitmap = this.bitmap?.copy(this.bitmap!!.config, true)
+
+        val blurRadius = binding?.blurSlider?.value!! * this.blurRadius
+
+        try {
+            StackBlur().blurRgb(bitmap!!, blurRadius.roundToInt())
+        } catch (e: Exception) {
+            // baa baa black sheep
+        }
+
+        return bitmap!!
     }
 
     private fun getImageUri(inImage: Bitmap): Uri {

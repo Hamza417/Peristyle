@@ -32,4 +32,6 @@
     <string name="grid_span_summary">Span count of the main screen grid.</string>
     <string name="grid_span">Grid Span</string>
     <string name="other_apps">Other Apps</string>
+    <string name="preparing">Preparing</string>
+    <string name="copying">Copying wallpaper to system directory.</string>
 </resources>

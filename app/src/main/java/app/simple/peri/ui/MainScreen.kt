@@ -17,6 +17,7 @@ import androidx.activity.addCallback
 import androidx.appcompat.widget.PopupMenu
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ShareCompat
+import androidx.core.view.children
 import androidx.core.view.doOnPreDraw
 import androidx.documentfile.provider.DocumentFile
 import androidx.fragment.app.Fragment
@@ -287,7 +288,11 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
 
                 override fun onWallpaperLongClicked(wallpaper: Wallpaper, position: Int, view: View, checkBox: MaterialCheckBox) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                        binding?.root?.setRenderEffect(RenderEffect.createBlurEffect(blurRadius, blurRadius, Shader.TileMode.MIRROR))
+                        binding?.recyclerView?.children?.forEach {
+                            if (it is ConstraintLayout && it != view) {
+                                it.setRenderEffect(RenderEffect.createBlurEffect(blurRadius, blurRadius, Shader.TileMode.CLAMP))
+                            }
+                        }
                     }
 
                     val popup = PopupMenu(requireContext(), view, Gravity.CENTER)
@@ -326,7 +331,11 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
 
                     popup.setOnDismissListener {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                            binding?.root?.setRenderEffect(null)
+                            binding?.recyclerView?.children?.forEach {
+                                if (it is ConstraintLayout && it != view) {
+                                    it.setRenderEffect(null)
+                                }
+                            }
                         }
                     }
 
