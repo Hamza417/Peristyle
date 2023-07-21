@@ -21,33 +21,44 @@
 
     </HorizontalScrollView>
 
-    <LinearLayout
-        android:id="@+id/blur_slider_container"
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:background="#66000000"
-        android:orientation="horizontal">
+        android:layout_margin="16dp"
+        app:cardBackgroundColor="#66000000"
+        app:strokeWidth="0dp"
+        app:cardElevation="75dp"
+        app:cardCornerRadius="30dp">
 
-        <com.google.android.material.slider.Slider
-            android:id="@+id/blur_slider"
-            android:layout_width="0dp"
+        <LinearLayout
+            android:id="@+id/blur_slider_container"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="16dp"
-            android:layout_weight="1"
-            app:thumbColor="?attr/colorPrimary" />
+            android:layout_gravity="bottom"
+            android:orientation="horizontal">
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/set_as_wallpaper"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:layout_margin="16dp"
-            android:importantForAccessibility="no"
-            android:src="@drawable/ic_upload" />
+            <com.google.android.material.slider.Slider
+                android:id="@+id/blur_slider"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="16dp"
+                android:layout_weight="1"
+                app:thumbColor="?attr/colorPrimary" />
 
-    </LinearLayout>
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/set_as_wallpaper"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end"
+                android:layout_margin="16dp"
+                android:importantForAccessibility="no"
+                android:src="@drawable/ic_upload" />
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
 
 
 </FrameLayout>
