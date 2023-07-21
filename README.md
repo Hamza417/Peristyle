@@ -1,7 +1,9 @@
 # Peri
+
 Simple wallpaper manager app for Android
 
 ## Why Peri?
+
 Peri is created to be extremely simple and sophisticated wallpaper manager and browser app
 for Android. It solves the problem of having too many features and bloated apps and having
 very minimal support for locally stored wallpapers. What if you just wanted an app that allows
@@ -14,9 +16,15 @@ from there? then Peri is for you :)
 - Can scan .nomedia directories, useful if you want to keep your wallpapers away from gallery.
 - Simple yet pretty animations with proper optimizations ;)
 
+## Screenshots
+
+![Screenshot 1](./fastlane/metadata/android/en-US/images/phoneScreenshots/01.png) ![Screenshot 2](./fastlane/metadata/android/en-US/images/phoneScreenshots/02.png) ![Screenshot 3](./fastlane/metadata/android/en-US/images/phoneScreenshots/03.png) ![Screenshot 4](./fastlane/metadata/android/en-US/images/phoneScreenshots/04.png)
+
 ## Open Source?
+
 Yepp, totally free, see the [LICENSE](./LICENSE) file.
 
 ## Stats
+
 [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FHamza417%2FPeri&count_bg=%23292A28&title_bg=%23555555&icon=skyliner.svg&icon_color=%23E7E7E7&title=Visits&edge_flat=false)](https://hits.seeyoufarm.com)
 
