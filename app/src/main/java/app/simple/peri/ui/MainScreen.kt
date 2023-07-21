@@ -2,12 +2,10 @@ package app.simple.peri.ui
 
 import android.annotation.SuppressLint
 import android.app.WallpaperManager
-import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Rect
 import android.graphics.RenderEffect
 import android.graphics.Shader
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.Gravity
@@ -431,6 +429,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
             MainPreferences.order -> {
                 wallpaperViewModel.sortWallpapers()
             }
+
             MainPreferences.gridSpan -> {
                 val spanCount = MainPreferences.getGridSpan()
                 staggeredGridLayoutManager?.spanCount = spanCount

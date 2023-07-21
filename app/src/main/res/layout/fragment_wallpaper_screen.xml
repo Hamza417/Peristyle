@@ -28,6 +28,7 @@
         android:layout_gravity="bottom"
         android:layout_margin="16dp"
         android:alpha="0"
+        android:visibility="gone"
         app:cardBackgroundColor="#66000000"
         app:cardCornerRadius="30dp"
         app:cardElevation="75dp"

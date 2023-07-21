@@ -1,5 +1,7 @@
 package app.simple.peri.ui
 
+import android.animation.Animator
+import android.animation.Animator.AnimatorListener
 import android.app.WallpaperManager
 import android.graphics.Bitmap
 import android.graphics.Color
@@ -8,10 +10,12 @@ import android.graphics.Shader
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
+import android.view.animation.DecelerateInterpolator
 import androidx.core.content.FileProvider
 import androidx.core.view.doOnLayout
 import androidx.fragment.app.Fragment
@@ -69,6 +73,10 @@ class WallpaperScreen : Fragment() {
         binding?.wallpaper?.loadWallpaper(wallpaper!!) {
             bitmap = it
 
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                binding?.blurSliderContainer?.setRenderEffect(RenderEffect.createBlurEffect(500F, 500F, Shader.TileMode.CLAMP))
+            }
+
             /**
              * Scroll to center when wallpaper is loaded
              */
@@ -83,13 +91,47 @@ class WallpaperScreen : Fragment() {
                 }
             }
 
+            binding?.blurSliderContainer?.scaleX = 0.5f
+            binding?.blurSliderContainer?.scaleY = 0.5f
+
             startPostponedEnterTransition()
 
             binding?.blurSliderContainer?.animate()
                 ?.alpha(1f)
+                ?.scaleX(1f)
+                ?.scaleY(1f)
+                ?.setInterpolator(DecelerateInterpolator(1.5F))
                 ?.setDuration(resources.getInteger(R.integer.animation_duration).toLong())
                 ?.setStartDelay(resources.getInteger(R.integer.animation_duration).toLong())
+                ?.setListener(object : AnimatorListener {
+                    override fun onAnimationStart(p0: Animator) {
+                        binding?.blurSliderContainer?.visibility = View.VISIBLE
+                    }
+
+                    override fun onAnimationEnd(p0: Animator) {
+                    }
+
+                    override fun onAnimationCancel(p0: Animator) {
+                    }
+
+                    override fun onAnimationRepeat(p0: Animator) {
+                    }
+
+                })
                 ?.start()
+
+            val valueAnimator = android.animation.ValueAnimator.ofFloat(500F, 1f)
+            valueAnimator.duration = resources.getInteger(R.integer.animation_duration).toLong()
+            valueAnimator.addUpdateListener { animation ->
+                val progress = animation.animatedValue as Float
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    binding?.blurSliderContainer?.setRenderEffect(RenderEffect.createBlurEffect(progress, progress, Shader.TileMode.CLAMP))
+                    Log.d("TAG", "onViewCreated: $progress")
+                }
+            }
+            valueAnimator.startDelay = resources.getInteger(R.integer.animation_duration).toLong()
+            valueAnimator.interpolator = DecelerateInterpolator(1.5F)
+            valueAnimator.start()
         }
 
         binding?.blurSlider?.addOnSliderTouchListener(object : OnSliderTouchListener {
