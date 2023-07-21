@@ -20,6 +20,12 @@ from there? then Peri is for you :)
 
 ![Screenshot 1](./fastlane/metadata/android/en-US/images/phoneScreenshots/01.png)![Screenshot 2](./fastlane/metadata/android/en-US/images/phoneScreenshots/02.png)![Screenshot 3](./fastlane/metadata/android/en-US/images/phoneScreenshots/03.png)![Screenshot 4](./fastlane/metadata/android/en-US/images/phoneScreenshots/04.png)
 
+<p float="left">
+    <img src="./fastlane/metadata/android/en-US/images/phoneScreenshots/01.png" width="100" />
+    <img src="./fastlane/metadata/android/en-US/images/phoneScreenshots/02.png" width="100" />
+    <img src="./fastlane/metadata/android/en-US/images/phoneScreenshots/03.png" width="100" />
+</p>
+
 ## Open Source?
 
 Yepp, totally free, see the [LICENSE](./LICENSE) file.
