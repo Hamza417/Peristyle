@@ -18,7 +18,7 @@ from there? then Peri is for you :)
 
 ## Screenshots
 
-<p float="left">
+<p float="middle">
     <img src="./fastlane/metadata/android/en-US/images/phoneScreenshots/01.png" width="400" />
     <img src="./fastlane/metadata/android/en-US/images/phoneScreenshots/02.png" width="400" />
     <img src="./fastlane/metadata/android/en-US/images/phoneScreenshots/03.png" width="400" />
