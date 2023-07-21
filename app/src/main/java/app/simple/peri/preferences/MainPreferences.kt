@@ -7,6 +7,8 @@ object MainPreferences {
     private const val storageUri = "storageUri"
     const val sort = "sort"
     const val order = "order"
+    const val name = "is_name"
+    const val gridSpan = "gridSpan"
 
     fun getStorageUri(): String? {
         return SharedPreferences.getSharedPreferences().getString(storageUri, null)
@@ -30,5 +32,23 @@ object MainPreferences {
 
     fun setOrder(order: String) {
         SharedPreferences.getSharedPreferences().edit().putString(this.order, order).apply()
+    }
+
+    fun getName(): Boolean {
+        return SharedPreferences.getSharedPreferences().getBoolean(name, true)
+    }
+
+    fun setName(name: Boolean) {
+        SharedPreferences.getSharedPreferences().edit().putBoolean(this.name, name).apply()
+    }
+
+    fun getGridSpan(): Int {
+        return SharedPreferences.getSharedPreferences().getInt(gridSpan, 2)
+            .coerceAtLeast(1)
+            .coerceAtMost(4)
+    }
+
+    fun setGridSpan(span: Int) {
+        SharedPreferences.getSharedPreferences().edit().putInt(gridSpan, span).apply()
     }
 }

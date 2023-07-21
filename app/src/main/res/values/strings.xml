@@ -16,7 +16,6 @@
     <string name="order">Order</string>
     <string name="ascending">Ascending</string>
     <string name="descending">Descending</string>
-    <string name="info">Information</string>
     <string name="full_info">Peri is a simple yet sophisticated directory wallpaper manager app.\n\nDeveloped by Hamza Rizwan.</string>
     <string name="inure_app_manager" translatable="false">Inure App Manager</string>
     <string name="positional" translatable="false">Positional</string>
@@ -26,4 +25,11 @@
     <string name="send_message">You are sending %1$s wallpapers, are you sure?</string>
     <string name="lock_screen">Lock Screen</string>
     <string name="home_screen">Home Screen</string>
+    <string name="show_wallpaper_names_on_the_main_screen">Show wallpaper names on the main screen</string>
+    <string name="enabled_wallpaper_names">Enabled wallpaper names</string>
+    <string name="home">Home</string>
+    <string name="about">About</string>
+    <string name="grid_span_summary">Span count of the main screen grid.</string>
+    <string name="grid_span">Grid Span</string>
+    <string name="other_apps">Other Apps</string>
 </resources>

@@ -11,6 +11,7 @@ import app.simple.peri.databinding.AdapterWallpaperBinding
 import app.simple.peri.glide.utils.GlideUtils.loadWallpaper
 import app.simple.peri.interfaces.WallpaperCallbacks
 import app.simple.peri.models.Wallpaper
+import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.utils.FileUtils.toSize
 import com.bumptech.glide.Glide
 
@@ -23,9 +24,11 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>,
 
     var selectionMode = false
         set(value) {
-            field = value
-            for (i in 0 until wallpapers.size) {
-                notifyItemChanged(i)
+            if (field != value) {
+                field = value
+                for (i in 0 until wallpapers.size) {
+                    notifyItemChanged(i)
+                }
             }
         }
 
@@ -128,7 +131,12 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>,
             set.applyTo(binding.wallpaperContainer)
             binding.wallpaperContainer.transitionName = wallpaper.uri
             binding.wallpaperImageView.loadWallpaper(wallpaper)
-            binding.name.text = wallpaper.name
+
+            if (MainPreferences.getName()) {
+                binding.name.text = wallpaper.name
+            } else {
+                binding.name.visibility = View.GONE
+            }
 
             if (wallpaper.width!! < displayWidth || wallpaper.height!! < displayHeight) {
                 binding.error.visibility = View.VISIBLE

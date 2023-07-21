@@ -7,7 +7,7 @@
         android:icon="@drawable/ic_sort"
         android:title="@string/sort"
         app:iconTint="?attr/colorOnSurface"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/delete"
@@ -15,7 +15,7 @@
         android:icon="@drawable/ic_delete"
         android:title="@string/delete"
         app:iconTint="?attr/colorOnSurface"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/send"
@@ -23,14 +23,14 @@
         android:icon="@drawable/ic_share"
         android:title="@string/send"
         app:iconTint="?attr/colorOnSurface"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
 
     <item
-        android:id="@+id/info"
-        android:contentDescription="@string/info"
-        android:icon="@drawable/ic_info"
-        android:title="@string/info"
+        android:id="@+id/settings"
+        android:contentDescription="@string/settings"
+        android:icon="@drawable/ic_settings"
+        android:title="@string/settings"
         app:iconTint="?attr/colorOnSurface"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
 
 </menu>

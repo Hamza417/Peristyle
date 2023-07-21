@@ -21,6 +21,7 @@ import app.simple.peri.constants.BundleConstants
 import app.simple.peri.databinding.FragmentWallpaperScreenBinding
 import app.simple.peri.glide.utils.GlideUtils.loadWallpaper
 import app.simple.peri.models.Wallpaper
+import app.simple.peri.tools.StackBlur
 import app.simple.peri.utils.ParcelUtils.parcelable
 import com.google.android.material.slider.Slider
 import com.google.android.material.slider.Slider.OnSliderTouchListener
@@ -158,8 +159,9 @@ class WallpaperScreen : Fragment() {
                 val blurRadius = withContext(Dispatchers.Main) {
                     binding?.blurSlider?.value!! * this@WallpaperScreen.blurRadius
                 }
+
                 try {
-                    StackBlur().blurRgb(bitmap!!, (binding?.blurSlider?.value!! * blurRadius).roundToInt())
+                    StackBlur().blurRgb(bitmap!!, blurRadius.roundToInt())
                 } catch (e: Exception) {
                     // baa baa black sheep
                 }

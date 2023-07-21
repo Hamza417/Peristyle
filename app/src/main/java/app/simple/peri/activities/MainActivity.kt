@@ -58,12 +58,18 @@ class MainActivity : AppCompatActivity() {
             storageResult.launch(intent)
         } else {
             Log.d("MainActivity", "Storage Uri: ${MainPreferences.getStorageUri()}")
-            if (savedInstanceState.isNull()) {
-                binding?.mainContainer?.id?.let {
-                    supportFragmentManager.beginTransaction()
-                        .replace(it, MainScreen.newInstance())
-                        .commit()
+            if (contentResolver.persistedUriPermissions.isNotEmpty()) {
+                if (savedInstanceState.isNull()) {
+                    binding?.mainContainer?.id?.let {
+                        supportFragmentManager.beginTransaction()
+                            .replace(it, MainScreen.newInstance())
+                            .commit()
+                    }
                 }
+            } else {
+                Log.d("MainActivity", "Storage Uri: no permission")
+                val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
+                storageResult.launch(intent)
             }
         }
     }

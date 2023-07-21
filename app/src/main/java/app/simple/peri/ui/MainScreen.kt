@@ -258,35 +258,11 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                     }
                 }
 
-                R.id.info -> {
-                    MaterialAlertDialogBuilder(requireContext())
-                        .setTitle(R.string.info)
-                        .setMessage(R.string.full_info)
-                        .setNeutralButton(R.string.close) { dialog, _ ->
-                            dialog.dismiss()
-                        }
-                        .setPositiveButton(R.string.inure_app_manager) { dialog, _ ->
-                            val url = "https://github.com/Hamza417/Inure"
-                            val intent = Intent(Intent.ACTION_VIEW)
-                            intent.data = Uri.parse(url)
-                            startActivity(intent)
-
-                            dialog.dismiss()
-                        }
-                        .setNegativeButton(R.string.positional) { dialog, _ ->
-                            val url = "https://github.com/Hamza417/Positional"
-                            val intent = Intent(Intent.ACTION_VIEW)
-                            intent.data = Uri.parse(url)
-                            startActivity(intent)
-
-                            dialog.dismiss()
-                        }
-                        .setOnDismissListener {
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                                binding?.root?.setRenderEffect(null)
-                            }
-                        }
-                        .show()
+                R.id.settings -> {
+                    requireActivity().supportFragmentManager.beginTransaction()
+                        .replace(R.id.mainContainer, Preferences.newInstance(), "Preferences")
+                        .addToBackStack("SendScreen")
+                        .commit()
                 }
             }
             true
@@ -361,7 +337,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                 }
             })
 
-            val spanCount = resources.getInteger(R.integer.span_count)
+            val spanCount = MainPreferences.getGridSpan()
             binding?.recyclerView?.setHasFixedSize(true)
             staggeredGridLayoutManager = StaggeredGridLayoutManager(spanCount, StaggeredGridLayoutManager.VERTICAL)
             staggeredGridLayoutManager?.gapStrategy = StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS
@@ -454,6 +430,10 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
             MainPreferences.sort,
             MainPreferences.order -> {
                 wallpaperViewModel.sortWallpapers()
+            }
+            MainPreferences.gridSpan -> {
+                val spanCount = MainPreferences.getGridSpan()
+                staggeredGridLayoutManager?.spanCount = spanCount
             }
         }
     }
