@@ -13,7 +13,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "app.simple.waller"
+        applicationId "app.simple.peri"
         minSdk 24
         targetSdk 33
         versionCode 1

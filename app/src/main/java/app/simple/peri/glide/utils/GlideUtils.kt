@@ -23,13 +23,13 @@ object GlideUtils {
             .into(this)
     }
 
-    fun ImageView.loadWallpaper(wallpaper: Wallpaper, onLoad: () -> Unit) {
+    fun ImageView.loadWallpaper(wallpaper: Wallpaper, onLoad: (Bitmap) -> Unit) {
         GlideApp.with(context)
             .asBitmap()
             .load(app.simple.peri.glide.wallpaper.Wallpaper(wallpaper, context))
             .transition(BitmapTransitionOptions.withCrossFade())
             .diskCacheStrategy(DiskCacheStrategy.ALL)
-            .set(Downsampler.ALLOW_HARDWARE_CONFIG, true)
+            .set(Downsampler.ALLOW_HARDWARE_CONFIG, false)
             .addListener(object : RequestListener<Bitmap> {
                 override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Bitmap>?, isFirstResource: Boolean): Boolean {
                     /* no-op */
@@ -37,7 +37,7 @@ object GlideUtils {
                 }
 
                 override fun onResourceReady(resource: Bitmap?, model: Any?, target: Target<Bitmap>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
-                    onLoad()
+                    onLoad(resource!!)
                     return false
                 }
             })

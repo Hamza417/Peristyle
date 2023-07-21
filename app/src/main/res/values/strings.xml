@@ -24,4 +24,6 @@
     <string name="delete_message">You are deleting %1$s wallpapers, are you sure?</string>
     <string name="no_wallpaper_selected">No wallpaper selected</string>
     <string name="send_message">You are sending %1$s wallpapers, are you sure?</string>
+    <string name="lock_screen">Lock Screen</string>
+    <string name="home_screen">Home Screen</string>
 </resources>

@@ -25,7 +25,7 @@ class WallpaperModule : AppGlideModule() {
         builder.setDefaultRequestOptions(
             RequestOptions()
                 .format(DecodeFormat.PREFER_ARGB_8888)
-                .set(Downsampler.ALLOW_HARDWARE_CONFIG, true)
+                .set(Downsampler.ALLOW_HARDWARE_CONFIG, false)
         )
     }
 

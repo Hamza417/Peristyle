@@ -9,4 +9,6 @@
     <color name="colorPrimaryContainer">#CFCFCF</color>
     <color name="colorSurface">#FFFFFF</color>
     <color name="colorOnSurface">#2E2E2E</color>
+
+    <color name="colorCard">#66FFFFFF</color>
 </resources>
