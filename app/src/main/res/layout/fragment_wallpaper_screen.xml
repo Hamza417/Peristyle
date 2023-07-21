@@ -22,17 +22,18 @@
     </HorizontalScrollView>
 
     <com.google.android.material.card.MaterialCardView
+        android:id="@+id/blur_slider_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:layout_margin="16dp"
+        android:alpha="0"
         app:cardBackgroundColor="#66000000"
-        app:strokeWidth="0dp"
+        app:cardCornerRadius="30dp"
         app:cardElevation="75dp"
-        app:cardCornerRadius="30dp">
+        app:strokeWidth="0dp">
 
         <LinearLayout
-            android:id="@+id/blur_slider_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
