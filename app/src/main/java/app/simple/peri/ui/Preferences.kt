@@ -4,12 +4,16 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
+import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.content.ContextCompat
 import androidx.preference.PreferenceFragmentCompat
 import app.simple.peri.R
 import app.simple.peri.preferences.MainPreferences
 
 class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPreferenceChangeListener {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
+        requireActivity().findViewById<CoordinatorLayout>(R.id.mainContainer)
+            .setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.mainBackground))
         setPreferencesFromResource(R.xml.preferences, rootKey)
         preferenceScreen.sharedPreferences?.registerOnSharedPreferenceChangeListener(this)
 

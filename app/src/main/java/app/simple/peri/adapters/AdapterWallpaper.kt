@@ -13,7 +13,6 @@ import app.simple.peri.interfaces.WallpaperCallbacks
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.utils.FileUtils.toSize
-import app.simple.peri.utils.WallpaperSort
 import com.bumptech.glide.Glide
 import java.util.Collections
 
@@ -45,6 +44,10 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>,
 
     override fun getItemCount(): Int {
         return wallpapers.size
+    }
+
+    override fun getItemId(position: Int): Long {
+        return wallpapers[position].dateModified
     }
 
     override fun onViewRecycled(holder: WallpaperViewHolder) {
@@ -133,6 +136,13 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>,
             wallpaper.isSelected = false
         }
         notifyDataSetChanged()
+    }
+
+    fun shuffleWallpapers() {
+        wallpapers.shuffle()
+        for (i in 0 until wallpapers.size) {
+            notifyItemChanged(i)
+        }
     }
 
     inner class WallpaperViewHolder(private val binding: AdapterWallpaperBinding) : RecyclerView.ViewHolder(binding.root) {

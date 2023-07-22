@@ -16,6 +16,7 @@ import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.view.animation.DecelerateInterpolator
 import androidx.appcompat.app.AlertDialog
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.FileProvider
 import androidx.core.view.doOnLayout
 import androidx.fragment.app.Fragment
@@ -59,6 +60,7 @@ class WallpaperScreen : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        requireActivity().findViewById<CoordinatorLayout>(R.id.mainContainer).setBackgroundColor(Color.BLACK)
         postponeEnterTransition()
         allowEnterTransitionOverlap = true
         allowReturnTransitionOverlap = true
@@ -67,7 +69,7 @@ class WallpaperScreen : Fragment() {
         exitTransition = MaterialSharedAxis(MaterialSharedAxis.Z, /* forward = */ true)
 
         sharedElementEnterTransition = MaterialContainerTransform().apply {
-            duration = resources.getInteger(R.integer.animation_duration).toLong()
+            duration = 1000
             setAllContainerColors(Color.TRANSPARENT)
             scrimColor = Color.TRANSPARENT
         }

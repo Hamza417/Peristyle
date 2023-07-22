@@ -3,6 +3,7 @@ package app.simple.peri.ui
 import android.annotation.SuppressLint
 import android.app.WallpaperManager
 import android.content.SharedPreferences
+import android.graphics.Color
 import android.graphics.Rect
 import android.graphics.RenderEffect
 import android.graphics.Shader
@@ -17,6 +18,7 @@ import android.view.Window
 import androidx.activity.addCallback
 import androidx.appcompat.widget.PopupMenu
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.app.ShareCompat
 import androidx.core.view.children
 import androidx.core.view.doOnPreDraw
@@ -67,6 +69,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
     @SuppressLint("CutPasteId")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        requireActivity().findViewById<CoordinatorLayout>(R.id.mainContainer).setBackgroundColor(Color.BLACK)
         postponeEnterTransition()
         allowEnterTransitionOverlap = true
         allowReturnTransitionOverlap = true
@@ -440,6 +443,10 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
         }
 
         binding?.fab?.setOnClickListener {
+            adapterWallpaper?.shuffleWallpapers()
+        }
+
+        binding?.fab?.setOnLongClickListener {
             // Pick a random wallpaper from the list
             val randomWallpaper = adapterWallpaper?.getRandomWallpaper()
             binding?.fab?.transitionName = randomWallpaper?.uri.toString()
@@ -452,6 +459,8 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                     .addToBackStack("WallpaperScreen")
                     .commit()
             }
+
+            true
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
@@ -463,18 +472,6 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
 
             unBlurRoot()
         }
-    }
-
-    /**
-     * Get status bar height using window object
-     *
-     * @param window instance of the activity
-     * @return int
-     */
-    fun getStatusBarHeight(window: Window): Int {
-        val rectangle = Rect()
-        window.decorView.getWindowVisibleDisplayFrame(rectangle)
-        return rectangle.top - window.findViewById<View>(Window.ID_ANDROID_CONTENT).top
     }
 
     private fun blurRoot() {

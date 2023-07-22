@@ -28,7 +28,7 @@ class WallpaperFetcher(private val wallpaper: Wallpaper) : DataFetcher<Bitmap> {
 
                 callback.onDataReady(bitmap)
 
-                bitmap?.recycle()
+                // bitmap?.recycle()
             }
         } catch (e: FileNotFoundException) {
             callback.onLoadFailed(e)

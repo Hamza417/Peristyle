@@ -6,6 +6,7 @@
         <item name="colorPrimaryContainer">@color/colorPrimaryContainer</item>
         <item name="colorSurface">@color/colorSurface</item>
         <item name="colorOnSurface">@color/colorOnSurface</item>
+        <item name="android:windowBackground">@android:color/black</item>
         <item name="android:colorBackground">@color/mainBackground</item>
 
         <item name="android:statusBarColor">@android:color/transparent</item>
