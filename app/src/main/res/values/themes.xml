@@ -13,6 +13,7 @@
         <item name="textAppearanceLargePopupMenu">@style/TextAppearance.App.BodyLarge</item>
         <item name="textAppearanceSmallPopupMenu">@style/TextAppearance.App.BodyLarge</item>
         <item name="popupMenuBackground">@drawable/bg_popup</item>
+        <item name="android:popupMenuStyle">?attr/actionOverflowMenuStyle</item>
     </style>
 
     <style name="TextAppearance.App.BodyLarge" parent="TextAppearance.Material3.BodyLarge">

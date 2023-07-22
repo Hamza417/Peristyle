@@ -7,9 +7,11 @@ import androidx.annotation.NonNull
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import app.simple.peri.preferences.MainPreferences
+import app.simple.peri.utils.WallpaperSort
 
 @Entity(tableName = "wallpapers")
-class Wallpaper : Parcelable {
+class Wallpaper : Parcelable, Comparable<Wallpaper> {
 
     @ColumnInfo(name = "name")
     var name: String? = null
@@ -58,6 +60,17 @@ class Wallpaper : Parcelable {
 
     override fun toString(): String {
         return "Wallpaper(name=$name, uri=$uri, width=$width, height=$height)"
+    }
+
+    override fun compareTo(other: Wallpaper): Int {
+        return when (MainPreferences.getSort()) {
+            WallpaperSort.NAME -> name!!.compareTo(other.name!!)
+            WallpaperSort.DATE -> dateModified.compareTo(other.dateModified)
+            WallpaperSort.SIZE -> size.compareTo(other.size)
+            WallpaperSort.WIDTH -> width!!.compareTo(other.width!!)
+            WallpaperSort.HEIGHT -> height!!.compareTo(other.height!!)
+            else -> 0
+        }
     }
 
     override fun equals(other: Any?): Boolean {

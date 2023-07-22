@@ -55,9 +55,20 @@
         android:src="@drawable/ic_warning"
         app:layout_constraintBottom_toBottomOf="@+id/resolution"
         app:layout_constraintStart_toEndOf="@+id/resolution"
-        app:layout_constraintTop_toBottomOf="@+id/name"
-        app:layout_constraintVertical_bias="1.0"
+        app:layout_constraintTop_toTopOf="@+id/resolution"
         app:tint="#FF5722" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="15dp"
+        android:layout_height="15dp"
+        android:visibility="gone"
+        android:layout_marginStart="8dp"
+        android:importantForAccessibility="no"
+        android:indeterminateTint="@color/textWhite"
+        app:layout_constraintBottom_toBottomOf="@+id/resolution"
+        app:layout_constraintStart_toEndOf="@+id/error"
+        app:layout_constraintTop_toTopOf="@+id/resolution" />
 
     <com.google.android.material.checkbox.MaterialCheckBox
         android:id="@+id/checkBox"

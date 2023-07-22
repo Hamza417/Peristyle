@@ -22,11 +22,13 @@ import androidx.core.view.doOnPreDraw
 import androidx.documentfile.provider.DocumentFile
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import app.simple.peri.R
 import app.simple.peri.adapters.AdapterWallpaper
 import app.simple.peri.constants.BundleConstants
+import app.simple.peri.databinding.DialogDeleteBinding
 import app.simple.peri.databinding.FragmentMainScreenBinding
 import app.simple.peri.interfaces.WallpaperCallbacks
 import app.simple.peri.models.Wallpaper
@@ -41,6 +43,9 @@ import app.simple.peri.viewmodels.WallpaperViewModel
 import com.google.android.material.checkbox.MaterialCheckBox
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.MaterialSharedAxis
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -150,21 +155,54 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
 
                 R.id.delete -> {
                     val wallpapers = adapterWallpaper?.getSelectedWallpapers()
+                    val totalWallpapers = wallpapers?.size ?: 0
+                    var deleteCount = 0
+
                     if (wallpapers.isNullOrEmpty().invert()) {
                         MaterialAlertDialogBuilder(requireContext())
                             .setTitle(R.string.delete)
                             .setMessage(getString(R.string.delete_message, wallpapers?.size.toString()))
-                            .setNeutralButton(R.string.close) { dialog, _ ->
-                                dialog.dismiss()
-                            }
                             .setPositiveButton(R.string.delete) { dialog, _ ->
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                                    binding?.root?.setRenderEffect(RenderEffect.createBlurEffect(blurRadius, blurRadius, Shader.TileMode.MIRROR))
+                                }
+
                                 if (wallpapers.isNullOrEmpty().invert()) {
                                     if (wallpapers != null) {
-                                        for (wallpaper in wallpapers) {
-                                            val documentFile = DocumentFile.fromSingleUri(requireContext(), wallpaper.uri.toUri())
-                                            documentFile?.delete()
-                                            adapterWallpaper?.removeWallpaper(wallpaper)
-                                            wallpaperViewModel.removeWallpaper(wallpaper)
+                                        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
+                                            // Create progress dialog
+                                            val dialogDeleteBinding = DialogDeleteBinding.inflate(layoutInflater)
+                                            dialogDeleteBinding.progress.text = getString(R.string.preparing)
+
+                                            val progressDialog = MaterialAlertDialogBuilder(requireContext())
+                                                .setTitle(R.string.deleting)
+                                                .setView(dialogDeleteBinding.root)
+                                                .setCancelable(false)
+                                                .show()
+
+                                            for (wallpaper in wallpapers) {
+                                                withContext(Dispatchers.IO) {
+                                                    val documentFile = DocumentFile.fromSingleUri(requireContext(), wallpaper.uri.toUri())
+                                                    if (documentFile?.delete() == true) {
+                                                        deleteCount++
+                                                        withContext(Dispatchers.Main) {
+                                                            dialogDeleteBinding.progress.text =
+                                                                getString(R.string.delete_progress, deleteCount, totalWallpapers, wallpaper.name)
+                                                        }
+                                                    }
+                                                }
+
+                                                adapterWallpaper?.removeWallpaper(wallpaper)
+                                                wallpaperViewModel.removeWallpaper(wallpaper)
+                                            }
+
+                                            progressDialog.setOnDismissListener {
+                                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                                                    binding?.root?.setRenderEffect(null)
+                                                }
+                                            }
+
+                                            progressDialog.dismiss()
                                         }
                                     }
                                 } else {
@@ -208,9 +246,6 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                         MaterialAlertDialogBuilder(requireContext())
                             .setTitle(R.string.send)
                             .setMessage(getString(R.string.send_message, wallpapers?.size.toString()))
-                            .setNeutralButton(R.string.close) { dialog, _ ->
-                                dialog.dismiss()
-                            }
                             .setPositiveButton(R.string.send) { dialog, _ ->
                                 if (wallpapers.isNullOrEmpty().invert()) {
                                     if (wallpapers != null) {
@@ -315,10 +350,15 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                             }
 
                             R.id.delete -> {
-                                val documentFile = DocumentFile.fromSingleUri(requireContext(), wallpaper.uri.toUri())
-                                documentFile?.delete()
-                                adapterWallpaper?.removeWallpaper(wallpaper)
-                                wallpaperViewModel.removeWallpaper(wallpaper)
+                                viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Default) {
+                                    val documentFile = DocumentFile.fromSingleUri(requireContext(), wallpaper.uri.toUri())
+                                    if (documentFile?.delete() == true) {
+                                        withContext(Dispatchers.Main) {
+                                            adapterWallpaper?.removeWallpaper(wallpaper)
+                                            wallpaperViewModel.removeWallpaper(wallpaper)
+                                        }
+                                    }
+                                }
                             }
 
                             R.id.select -> {
@@ -379,6 +419,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
             val randomWallpaper = adapterWallpaper?.getRandomWallpaper()
             binding?.fab?.transitionName = randomWallpaper?.uri.toString()
             requireArguments().putString(BundleConstants.FAB_TRANSITION, randomWallpaper?.uri.toString())
+
             if (randomWallpaper.isNotNull()) {
                 requireActivity().supportFragmentManager.beginTransaction()
                     .addSharedElement(binding!!.fab, binding!!.fab.transitionName)

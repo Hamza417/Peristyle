@@ -13,7 +13,9 @@ import app.simple.peri.interfaces.WallpaperCallbacks
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.utils.FileUtils.toSize
+import app.simple.peri.utils.WallpaperSort
 import com.bumptech.glide.Glide
+import java.util.Collections
 
 class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>,
                        private val displayWidth: Int,
@@ -69,9 +71,19 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>,
 
     fun addWallpaper(wallpaper: Wallpaper) {
         Log.d("Wallpaper", "Adding wallpaper: $wallpaper")
-        wallpapers.add(0, wallpaper)
-        notifyItemInserted(wallpapers.indexOf(wallpaper))
-        notifyItemRangeChanged(wallpapers.indexOf(wallpaper), wallpapers.size)
+        val idx = Collections.binarySearch(wallpapers, wallpaper) { o1, o2 ->
+            o1.name!!.compareTo(o2.name!!)
+        }
+
+        if (idx < 0) {
+            wallpapers.add(0, wallpaper)
+            notifyItemInserted(0)
+            notifyItemRangeChanged(0, wallpapers.size)
+        } else {
+            wallpapers.add(idx, wallpaper)
+            notifyItemInserted(idx)
+            notifyItemRangeChanged(idx, wallpapers.size)
+        }
     }
 
     fun removeWallpapers(wallpapers: java.util.ArrayList<Wallpaper>?) {
@@ -158,6 +170,7 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>,
                     wallpaper.isSelected = binding.checkBox.isChecked
                     selectionMode = wallpapers.any { wallpaper -> wallpaper.isSelected }
                 } else {
+                    binding.progressBar.visibility = View.VISIBLE
                     wallpaperCallbacks?.onWallpaperClicked(wallpaper, bindingAdapterPosition, binding.wallpaperContainer)
                 }
             }

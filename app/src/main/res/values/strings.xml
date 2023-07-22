@@ -34,4 +34,6 @@
     <string name="other_apps">Other Apps</string>
     <string name="preparing">Preparing</string>
     <string name="copying">Copying wallpaper to system directory.</string>
+    <string name="deleting">Deleting</string>
+    <string name="delete_progress">%1$d/%2$d - %3$s</string>
 </resources>
