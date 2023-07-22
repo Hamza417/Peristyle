@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.app.WallpaperManager
 import android.content.SharedPreferences
 import android.graphics.Color
-import android.graphics.Rect
 import android.graphics.RenderEffect
 import android.graphics.Shader
 import android.net.Uri
@@ -14,7 +13,6 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.Window
 import androidx.activity.addCallback
 import androidx.appcompat.widget.PopupMenu
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -443,10 +441,6 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
         }
 
         binding?.fab?.setOnClickListener {
-            adapterWallpaper?.shuffleWallpapers()
-        }
-
-        binding?.fab?.setOnLongClickListener {
             // Pick a random wallpaper from the list
             val randomWallpaper = adapterWallpaper?.getRandomWallpaper()
             binding?.fab?.transitionName = randomWallpaper?.uri.toString()
@@ -459,7 +453,10 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                     .addToBackStack("WallpaperScreen")
                     .commit()
             }
+        }
 
+        binding?.fab?.setOnLongClickListener {
+            adapterWallpaper?.shuffleWallpapers()
             true
         }
 

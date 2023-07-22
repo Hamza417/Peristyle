@@ -19,7 +19,9 @@ object GlideUtils {
             .asBitmap()
             .load(app.simple.peri.glide.wallpaper.Wallpaper(wallpaper, context))
             .transition(BitmapTransitionOptions.withCrossFade())
+            //.transition(GenericTransitionOptions.with(R.anim.zoom_out))
             .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .set(Downsampler.ALLOW_HARDWARE_CONFIG, true)
             .into(this)
     }
 

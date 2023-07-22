@@ -20,6 +20,7 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.FileProvider
 import androidx.core.view.doOnLayout
 import androidx.fragment.app.Fragment
+import androidx.interpolator.view.animation.LinearOutSlowInInterpolator
 import androidx.lifecycle.lifecycleScope
 import app.simple.peri.R
 import app.simple.peri.constants.BundleConstants
@@ -32,6 +33,9 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.slider.Slider
 import com.google.android.material.slider.Slider.OnSliderTouchListener
 import com.google.android.material.transition.MaterialContainerTransform
+import com.google.android.material.transition.MaterialElevationScale
+import com.google.android.material.transition.MaterialFade
+import com.google.android.material.transition.MaterialFadeThrough
 import com.google.android.material.transition.MaterialSharedAxis
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -64,13 +68,12 @@ class WallpaperScreen : Fragment() {
         postponeEnterTransition()
         allowEnterTransitionOverlap = true
         allowReturnTransitionOverlap = true
-        enterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, /* forward = */ true)
-        returnTransition = MaterialSharedAxis(MaterialSharedAxis.Z, /* forward = */ false)
-        exitTransition = MaterialSharedAxis(MaterialSharedAxis.Z, /* forward = */ true)
+        enterTransition = MaterialFadeThrough()
+        returnTransition = MaterialFadeThrough()
+        exitTransition = MaterialFadeThrough()
 
         sharedElementEnterTransition = MaterialContainerTransform().apply {
-            duration = 1000
-            setAllContainerColors(Color.TRANSPARENT)
+            duration = resources.getInteger(R.integer.animation_duration).toLong()
             scrimColor = Color.TRANSPARENT
         }
 

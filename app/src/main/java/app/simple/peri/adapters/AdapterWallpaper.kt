@@ -46,10 +46,6 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>,
         return wallpapers.size
     }
 
-    override fun getItemId(position: Int): Long {
-        return wallpapers[position].dateModified
-    }
-
     override fun onViewRecycled(holder: WallpaperViewHolder) {
         super.onViewRecycled(holder)
         Glide.with(holder.itemView.context).clear(holder.itemView)
