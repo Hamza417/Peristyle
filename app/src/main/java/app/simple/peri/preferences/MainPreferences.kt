@@ -6,6 +6,7 @@ object MainPreferences {
 
     private const val storageUri = "storageUri"
     private const val nomediaDialog = "nomediaDialog"
+    private const val blur = "blur_main_list"
     const val sort = "sort"
     const val order = "order"
     const val name = "is_name"
@@ -59,5 +60,13 @@ object MainPreferences {
 
     fun getShowNomediaDialog(): Boolean {
         return SharedPreferences.getSharedPreferences().getBoolean(nomediaDialog, true)
+    }
+
+    fun setBlur(b: Boolean) {
+        SharedPreferences.getSharedPreferences().edit().putBoolean(blur, b).apply()
+    }
+
+    fun getBlur(): Boolean {
+        return SharedPreferences.getSharedPreferences().getBoolean(blur, true)
     }
 }

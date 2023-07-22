@@ -47,6 +47,10 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
                             .coerceAtLeast(1)
                             .coerceAtMost(4))
             }
+
+            "blur" -> {
+                MainPreferences.setBlur(p0?.getBoolean(p1, true)!!)
+            }
         }
     }
 

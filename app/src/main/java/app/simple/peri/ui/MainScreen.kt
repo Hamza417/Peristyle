@@ -304,9 +304,11 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
 
                 override fun onWallpaperLongClicked(wallpaper: Wallpaper, position: Int, view: View, checkBox: MaterialCheckBox) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                        binding?.recyclerView?.children?.forEach {
-                            if (it is ConstraintLayout && it != view) {
-                                it.setRenderEffect(RenderEffect.createBlurEffect(blurRadius, blurRadius, Shader.TileMode.CLAMP))
+                        if (MainPreferences.getBlur()) {
+                            binding?.recyclerView?.children?.forEach {
+                                if (it is ConstraintLayout && it != view) {
+                                    it.setRenderEffect(RenderEffect.createBlurEffect(blurRadius, blurRadius, Shader.TileMode.CLAMP))
+                                }
                             }
                         }
                     }
@@ -477,8 +479,10 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
 
     private fun blurRoot() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            binding?.root?.setRenderEffect(
-                    RenderEffect.createBlurEffect(blurRadius, blurRadius, Shader.TileMode.MIRROR))
+            if (MainPreferences.getBlur()) {
+                binding?.root?.setRenderEffect(
+                        RenderEffect.createBlurEffect(blurRadius, blurRadius, Shader.TileMode.MIRROR))
+            }
         }
     }
 

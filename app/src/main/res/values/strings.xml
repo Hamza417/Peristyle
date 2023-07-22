@@ -39,6 +39,10 @@
     <string name="nomedia">NOMEDIA</string>
     <string name="nomedia_message">Current directory /%1$s is not nomedia and maybe visible in other gallery apps, would you like to hide the directory?</string>
     <string name="yes">Yes</string>
-    <string name="nomedia_success">.nomedia file created successfully!\n\nWARNING: The files may still be visible to programs that ignored the .nomedia file.</string>
+    <string name="nomedia_success">.nomedia file created successfully!\n\nWARNING: The files may still be visible to programs that ignores the .nomedia file.</string>
     <string name="dont_show_again">Don\'t show again</string>
+    <string name="blur_summary">Enabled blur on the main screen.</string>
+    <string name="blur">Blur</string>
+    <string name="inure_app_manager_summary" translatable="false">An elegant and beautiful premium Android app manager for both rooted and non-rooted devices and a built-in terminal, analytics panel and an independent custom theme engine, developed with purely custom APIs created for this app.</string>
+    <string name="positional_summary">An elegant and colorful location information app for Android with Compass, Clock, Level, Sun, Moon, Trail Marker and many other features.</string>
 </resources>
