@@ -36,4 +36,9 @@
     <string name="copying">Copying wallpaper to system directory.</string>
     <string name="deleting">Deleting</string>
     <string name="delete_progress">%1$d/%2$d - %3$s</string>
+    <string name="nomedia">NOMEDIA</string>
+    <string name="nomedia_message">Current directory /%1$s is not nomedia and maybe visible in other gallery apps, would you like to hide the directory?</string>
+    <string name="yes">Yes</string>
+    <string name="nomedia_success">.nomedia file created successfully!\n\nWARNING: The files may still be visible to programs that ignored the .nomedia file.</string>
+    <string name="dont_show_again">Don\'t show again</string>
 </resources>

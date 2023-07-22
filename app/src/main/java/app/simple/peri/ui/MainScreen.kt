@@ -6,6 +6,7 @@ import android.content.SharedPreferences
 import android.graphics.Rect
 import android.graphics.RenderEffect
 import android.graphics.Shader
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.Gravity
@@ -78,9 +79,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
         displayHeight = requireContext().resources.displayMetrics.heightPixels
 
         binding?.bottomAppBar?.setOnMenuItemClickListener {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                binding?.root?.setRenderEffect(RenderEffect.createBlurEffect(blurRadius, blurRadius, Shader.TileMode.MIRROR))
-            }
+            blurRoot()
 
             when (it.itemId) {
                 R.id.sort -> {
@@ -110,9 +109,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                             }
 
                             R.id.order -> {
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                                    binding?.root?.setRenderEffect(RenderEffect.createBlurEffect(blurRadius, blurRadius, Shader.TileMode.MIRROR))
-                                }
+                                blurRoot()
 
                                 val popupOrder = PopupMenu(requireContext(), binding?.bottomAppBar?.findViewById(R.id.sort)!!, Gravity.START)
                                 popupOrder.menuInflater.inflate(R.menu.wallpaper_order, popupOrder.menu)
@@ -132,9 +129,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                                 }
 
                                 popupOrder.setOnDismissListener {
-                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                                        binding?.root?.setRenderEffect(null)
-                                    }
+                                    unBlurRoot()
                                 }
 
                                 popupOrder.show()
@@ -145,9 +140,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                     }
 
                     popup.setOnDismissListener {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                            binding?.root?.setRenderEffect(null)
-                        }
+                        unBlurRoot()
                     }
 
                     popup.show()
@@ -163,9 +156,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                             .setTitle(R.string.delete)
                             .setMessage(getString(R.string.delete_message, wallpapers?.size.toString()))
                             .setPositiveButton(R.string.delete) { dialog, _ ->
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                                    binding?.root?.setRenderEffect(RenderEffect.createBlurEffect(blurRadius, blurRadius, Shader.TileMode.MIRROR))
-                                }
+                                blurRoot()
 
                                 if (wallpapers.isNullOrEmpty().invert()) {
                                     if (wallpapers != null) {
@@ -197,9 +188,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                                             }
 
                                             progressDialog.setOnDismissListener {
-                                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                                                    binding?.root?.setRenderEffect(null)
-                                                }
+                                                unBlurRoot()
                                             }
 
                                             progressDialog.dismiss()
@@ -215,9 +204,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                                 dialog.dismiss()
                             }
                             .setOnDismissListener {
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                                    binding?.root?.setRenderEffect(null)
-                                }
+                                unBlurRoot()
                             }
                             .show()
                     } else {
@@ -232,9 +219,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                                 dialog.dismiss()
                             }
                             .setOnDismissListener {
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                                    binding?.root?.setRenderEffect(null)
-                                }
+                                unBlurRoot()
                             }
                             .show()
                     }
@@ -267,9 +252,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                                 dialog.dismiss()
                             }
                             .setOnDismissListener {
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                                    binding?.root?.setRenderEffect(null)
-                                }
+                                unBlurRoot()
                             }
                             .show()
                     } else {
@@ -284,9 +267,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                                 dialog.dismiss()
                             }
                             .setOnDismissListener {
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                                    binding?.root?.setRenderEffect(null)
-                                }
+                                unBlurRoot()
                             }
                             .show()
                     }
@@ -414,6 +395,48 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
             binding?.loadingStatus?.text = status
         }
 
+        wallpaperViewModel.getIsNomediaDirectoryLiveData().observe(viewLifecycleOwner) {
+            if (MainPreferences.getShowNomediaDialog()) {
+                if (it) {
+                    blurRoot()
+                    val documentFile = DocumentFile.fromTreeUri(requireContext(), Uri.parse(MainPreferences.getStorageUri()))
+
+                    MaterialAlertDialogBuilder(requireContext())
+                        .setTitle(R.string.nomedia)
+                        .setMessage(getString(R.string.nomedia_message, documentFile?.name))
+                        .setPositiveButton(R.string.yes) { dialog, _ ->
+                            viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Default) {
+                                documentFile?.createFile("*/*", ".nomedia")
+
+                                if (documentFile?.findFile(".nomedia")?.exists() == true) {
+                                    withContext(Dispatchers.Main) {
+                                        blurRoot()
+                                        MaterialAlertDialogBuilder(requireContext())
+                                            .setTitle(R.string.nomedia)
+                                            .setMessage(R.string.nomedia_success)
+                                            .setPositiveButton(R.string.close) { dialog, _ ->
+                                                dialog.dismiss()
+                                                unBlurRoot()
+                                            }
+                                            .show()
+
+                                        dialog.dismiss()
+                                    }
+                                }
+                            }
+                        }.setNeutralButton(R.string.dont_show_again) { dialog, _ ->
+                            MainPreferences.setShowNomediaDialog(false)
+                            dialog.dismiss()
+                        }.setNegativeButton(R.string.close) { dialog, _ ->
+                            dialog.dismiss()
+                        }.setOnDismissListener {
+                            unBlurRoot()
+                        }
+                        .show()
+                }
+            }
+        }
+
         binding?.fab?.setOnClickListener {
             // Pick a random wallpaper from the list
             val randomWallpaper = adapterWallpaper?.getRandomWallpaper()
@@ -436,9 +459,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                 requireActivity().finish()
             }
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                binding?.root?.setRenderEffect(null)
-            }
+            unBlurRoot()
         }
     }
 
@@ -452,6 +473,19 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
         val rectangle = Rect()
         window.decorView.getWindowVisibleDisplayFrame(rectangle)
         return rectangle.top - window.findViewById<View>(Window.ID_ANDROID_CONTENT).top
+    }
+
+    private fun blurRoot() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            binding?.root?.setRenderEffect(
+                    RenderEffect.createBlurEffect(blurRadius, blurRadius, Shader.TileMode.MIRROR))
+        }
+    }
+
+    private fun unBlurRoot() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            binding?.root?.setRenderEffect(null)
+        }
     }
 
     override fun onResume() {

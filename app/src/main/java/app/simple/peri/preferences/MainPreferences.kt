@@ -5,6 +5,7 @@ import app.simple.peri.utils.WallpaperSort
 object MainPreferences {
 
     private const val storageUri = "storageUri"
+    private const val nomediaDialog = "nomediaDialog"
     const val sort = "sort"
     const val order = "order"
     const val name = "is_name"
@@ -50,5 +51,13 @@ object MainPreferences {
 
     fun setGridSpan(span: Int) {
         SharedPreferences.getSharedPreferences().edit().putInt(gridSpan, span).apply()
+    }
+
+    fun setShowNomediaDialog(b: Boolean) {
+        SharedPreferences.getSharedPreferences().edit().putBoolean(nomediaDialog, b).apply()
+    }
+
+    fun getShowNomediaDialog(): Boolean {
+        return SharedPreferences.getSharedPreferences().getBoolean(nomediaDialog, true)
     }
 }

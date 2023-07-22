@@ -39,6 +39,20 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
         MutableLiveData<String>()
     }
 
+    private val isNomediaDirectory: MutableLiveData<Boolean> by lazy {
+        MutableLiveData<Boolean>().also {
+            if (MainPreferences.getShowNomediaDialog()) {
+                viewModelScope.launch(Dispatchers.Default) {
+                    val storageUri = MainPreferences.getStorageUri()
+                    val pickedDirectory = DocumentFile.fromTreeUri(getApplication(), Uri.parse(storageUri))
+                    it.postValue(
+                            pickedDirectory?.findFile(".nomedia")?.exists()?.invert()
+                                    ?: false.invert() || pickedDirectory?.name?.startsWith(".") ?: false.invert())
+                }
+            }
+        }
+    }
+
     fun getWallpapersLiveData(): MutableLiveData<ArrayList<Wallpaper>> {
         return wallpapersData
     }
@@ -53,6 +67,10 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
 
     fun getLoadingStatusLiveData(): MutableLiveData<String> {
         return loadingStatus
+    }
+
+    fun getIsNomediaDirectoryLiveData(): MutableLiveData<Boolean> {
+        return isNomediaDirectory
     }
 
     private fun loadWallpaperDatabase() {
