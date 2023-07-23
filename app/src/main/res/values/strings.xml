@@ -3,7 +3,6 @@
     <string name="sort">Sort</string>
     <string name="settings">Settings</string>
     <string name="set_as_wallpaper">Set as Wallpaper</string>
-    <string name="wallpaper_browser">Wallpaper Browser</string>
     <string name="wallpaper_settings">Wallpaper Settings</string>
     <string name="send">Send</string>
     <string name="delete">Delete</string>
@@ -23,8 +22,6 @@
     <string name="delete_message">You are deleting %1$s wallpapers, are you sure?</string>
     <string name="no_wallpaper_selected">No wallpaper selected</string>
     <string name="send_message">You are sending %1$s wallpapers, are you sure?</string>
-    <string name="lock_screen">Lock Screen</string>
-    <string name="home_screen">Home Screen</string>
     <string name="show_wallpaper_names_on_the_main_screen">Show wallpaper names on the main screen</string>
     <string name="enabled_wallpaper_names">Enabled wallpaper names</string>
     <string name="home">Home</string>
@@ -49,7 +46,7 @@
     <string name="clear_cache">Clear Cache</string>
     <string name="recreate_database">Recreate Database</string>
     <string name="recreate_database_summary">Recreate the image wallpaper database incase wrong data is shown.</string>
-    <string name="recreate_database_message">This may take some time depending on how the number of files. Are your sure?</string>
+    <string name="recreate_database_message">This may take some time depending on the number of files. Are your sure?</string>
     <string name="edit">Edit</string>
     <string name="brightness">Brightness</string>
     <string name="contrast">Contrast</string>

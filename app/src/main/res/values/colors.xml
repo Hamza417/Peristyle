@@ -2,7 +2,6 @@
 <resources>
     <color name="mainBackground">#FFFFFF</color>
     <color name="textPrimary">#272727</color>
-    <color name="textSecondary">#515151</color>
     <color name="textWhite">#FFFFFF</color>
 
     <color name="colorPrimary">#3A3A3A</color>

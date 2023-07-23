@@ -4,14 +4,17 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.preference.PreferenceFragmentCompat
 import app.simple.peri.R
+import app.simple.peri.constants.BundleConstants
 import app.simple.peri.preferences.MainPreferences
-import app.simple.peri.viewmodels.WallpaperViewModel
 import com.bumptech.glide.Glide
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.Dispatchers
@@ -19,14 +22,17 @@ import kotlinx.coroutines.launch
 
 class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPreferenceChangeListener {
 
-    private lateinit var wallpaperViewModel: WallpaperViewModel
-    override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         requireActivity().findViewById<CoordinatorLayout>(R.id.mainContainer)
             .setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.mainBackground))
-        setPreferencesFromResource(R.xml.preferences, rootKey)
-        preferenceScreen.sharedPreferences?.registerOnSharedPreferenceChangeListener(this)
 
-        wallpaperViewModel = ViewModelProvider(requireActivity()).get(WallpaperViewModel::class.java)
+        return super.onCreateView(inflater, container, savedInstanceState)
+    }
+
+    override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
+        setPreferencesFromResource(R.xml.preferences, rootKey)
+
+        preferenceScreen.sharedPreferences?.registerOnSharedPreferenceChangeListener(this)
 
         preferenceScreen.findPreference<androidx.preference.Preference>("positional")?.setOnPreferenceClickListener {
             val url = "https://github.com/Hamza417/Positional"
@@ -48,7 +54,10 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
             MaterialAlertDialogBuilder(requireContext())
                 .setMessage(R.string.recreate_database_message)
                 .setPositiveButton(R.string.yes) { dialog, _ ->
-                    wallpaperViewModel.recreateDatabase()
+                    LocalBroadcastManager.getInstance(requireContext())
+                        .sendBroadcast(Intent().apply {
+                            action = BundleConstants.INTENT_RECREATE_DATABASE
+                        })
                     dialog.dismiss()
                 }
                 .setNegativeButton(R.string.close) { dialog, _ ->

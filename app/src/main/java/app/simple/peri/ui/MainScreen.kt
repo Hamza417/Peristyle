@@ -2,6 +2,7 @@ package app.simple.peri.ui
 
 import android.annotation.SuppressLint
 import android.app.WallpaperManager
+import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Color
 import android.graphics.RenderEffect
@@ -28,6 +29,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import app.simple.peri.R
+import app.simple.peri.activities.SettingsActivity
 import app.simple.peri.adapters.AdapterWallpaper
 import app.simple.peri.constants.BundleConstants
 import app.simple.peri.databinding.DialogDeleteBinding
@@ -81,7 +83,9 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
         displayHeight = requireContext().resources.displayMetrics.heightPixels
 
         binding?.bottomAppBar?.setOnMenuItemClickListener {
-            blurRoot()
+            if (it.itemId != R.id.settings) {
+                blurRoot()
+            }
 
             when (it.itemId) {
                 R.id.sort -> {
@@ -277,12 +281,10 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                 }
 
                 R.id.settings -> {
-                    requireActivity().supportFragmentManager.beginTransaction()
-                        .replace(R.id.mainContainer, Preferences.newInstance(), "Preferences")
-                        .addToBackStack("SendScreen")
-                        .commit()
+                    startActivity(Intent(requireContext(), SettingsActivity::class.java))
                 }
             }
+
             true
         }
 

@@ -1,6 +1,10 @@
 package app.simple.peri.viewmodels
 
 import android.app.Application
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.util.Log
@@ -8,6 +12,8 @@ import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import app.simple.peri.constants.BundleConstants
 import app.simple.peri.database.instances.WallpaperDatabase
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.preferences.MainPreferences
@@ -16,11 +22,28 @@ import app.simple.peri.utils.FileUtils.isImageFile
 import app.simple.peri.utils.WallpaperSort.getSortedList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class WallpaperViewModel(application: Application) : AndroidViewModel(application) {
 
+    private var broadcastReceiver: BroadcastReceiver? = null
+    private val intentFilter = IntentFilter().apply {
+        addAction(BundleConstants.INTENT_RECREATE_DATABASE)
+    }
     private var wallpapers: ArrayList<Wallpaper> = ArrayList()
     private var isDatabaseLoaded = false
+
+    init {
+        broadcastReceiver = object : BroadcastReceiver() {
+            override fun onReceive(context: Context?, intent: Intent?) {
+                if (intent?.action == BundleConstants.INTENT_RECREATE_DATABASE) {
+                    recreateDatabase()
+                }
+            }
+        }
+
+        LocalBroadcastManager.getInstance(application).registerReceiver(broadcastReceiver!!, intentFilter)
+    }
 
     private val wallpapersData: MutableLiveData<ArrayList<Wallpaper>> by lazy {
         MutableLiveData<ArrayList<Wallpaper>>().also {
@@ -259,7 +282,10 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
             val wallpaperDatabase = WallpaperDatabase.getInstance(getApplication())
             val wallpaperDao = wallpaperDatabase?.wallpaperDao()
             wallpaperDao?.nukeTable()
-            loadWallpaperDatabase()
+
+            withContext(Dispatchers.Main) {
+                loadWallpaperImages()
+            }
         }
     }
 
@@ -270,6 +296,11 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
         } else {
             Log.d(TAG, "refreshWallpapers: database not loaded")
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        LocalBroadcastManager.getInstance(getApplication()).unregisterReceiver(broadcastReceiver!!)
     }
 
     companion object {

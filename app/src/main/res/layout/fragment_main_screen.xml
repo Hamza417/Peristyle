@@ -47,7 +47,7 @@
         app:layout_anchor="@id/bottomAppBar" />
 
     <TextView
-        android:id="@+id/loading_status"
+        android:id="@+id/loadingStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
