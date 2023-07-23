@@ -15,28 +15,25 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.view.animation.DecelerateInterpolator
-import androidx.appcompat.app.AlertDialog
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.FileProvider
 import androidx.core.view.doOnLayout
 import androidx.fragment.app.Fragment
-import androidx.interpolator.view.animation.LinearOutSlowInInterpolator
 import androidx.lifecycle.lifecycleScope
 import app.simple.peri.R
 import app.simple.peri.constants.BundleConstants
 import app.simple.peri.databinding.FragmentWallpaperScreenBinding
+import app.simple.peri.databinding.WallpaperEditBinding
 import app.simple.peri.glide.utils.GlideUtils.loadWallpaper
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.tools.StackBlur
+import app.simple.peri.utils.BitmapUtils.changeBitmapContrastBrightness
 import app.simple.peri.utils.ParcelUtils.parcelable
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.slider.Slider
 import com.google.android.material.slider.Slider.OnSliderTouchListener
 import com.google.android.material.transition.MaterialContainerTransform
-import com.google.android.material.transition.MaterialElevationScale
-import com.google.android.material.transition.MaterialFade
 import com.google.android.material.transition.MaterialFadeThrough
-import com.google.android.material.transition.MaterialSharedAxis
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -52,6 +49,11 @@ class WallpaperScreen : Fragment() {
     private var bitmap: Bitmap? = null
     private var uri: Uri? = null
     private val blurRadius = 150F
+
+    private var currentBlurValue = 0F
+    private var currentBrightnessValue = 0.5F
+    private var currentContrastValue = 0.1F
+    private var currentSaturationValue = 0.5F
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = FragmentWallpaperScreenBinding.inflate(inflater, container, false)
@@ -119,69 +121,126 @@ class WallpaperScreen : Fragment() {
                 ?.start()
         }
 
-        binding?.blurSlider?.addOnSliderTouchListener(object : OnSliderTouchListener {
-            override fun onStartTrackingTouch(slider: Slider) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    binding?.wallpaper?.setRenderEffect(null)
-                }
+        binding?.edit?.setOnClickListener {
+            val wallpaperEditBinding = WallpaperEditBinding.inflate(layoutInflater)
 
-                binding?.wallpaper?.setImageBitmap(bitmap)
+            if (currentBlurValue > 0) {
+                wallpaperEditBinding.blurSlider.value = currentBlurValue
+            } else {
+                wallpaperEditBinding.blurSlider.value = 0F
+            }
 
+            if (currentBrightnessValue > 0) {
+                wallpaperEditBinding.brightnessSlider.value = currentBrightnessValue
+            } else {
+                wallpaperEditBinding.brightnessSlider.value = 0.5F
+            }
+
+            if (currentContrastValue > 0) {
+                wallpaperEditBinding.contrastSlider.value = currentContrastValue
+            } else {
+                wallpaperEditBinding.contrastSlider.value = 0.1F
+            }
+
+            if (currentSaturationValue > 0) {
+                wallpaperEditBinding.saturationSlider.value = currentSaturationValue
+            } else {
+                wallpaperEditBinding.saturationSlider.value = 0.5F
+            }
+
+            wallpaperEditBinding.blurSlider.addOnChangeListener { _, value, _ ->
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    val blurRadius = this@WallpaperScreen.blurRadius * 8
+                    currentBlurValue = value
+                    val blurRadius = this.blurRadius * 10
                     try {
                         binding?.wallpaper?.setRenderEffect(
                                 RenderEffect
-                                    .createBlurEffect(
-                                            binding?.blurSlider?.value!! * blurRadius,
-                                            binding?.blurSlider?.value!! * blurRadius, Shader.TileMode.CLAMP))
+                                    .createBlurEffect(value * blurRadius, value * blurRadius, Shader.TileMode.CLAMP))
                     } catch (e: IllegalArgumentException) {
                         binding?.wallpaper?.setRenderEffect(null)
                     }
                 }
             }
 
-            override fun onStopTrackingTouch(slider: Slider) {
-                viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
-                    try {
-                        if (binding?.blurSlider?.value!! > 0) {
-                            val bitmap = prepareFinalBitmap()
+            wallpaperEditBinding.blurSlider.addOnSliderTouchListener(object : OnSliderTouchListener {
+                override fun onStartTrackingTouch(slider: Slider) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                        binding?.wallpaper?.setRenderEffect(null)
+                    }
 
-                            withContext(Dispatchers.Main) {
-                                binding?.wallpaper?.setImageBitmap(bitmap)
+                    binding?.wallpaper?.setImageBitmap(bitmap?.changeBitmapContrastBrightness(
+                            currentContrastValue.toContrast(), currentBrightnessValue.toBrightness(), currentSaturationValue.toSaturation()))
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                        val blurRadius = this@WallpaperScreen.blurRadius * 10
+                        try {
+                            binding?.wallpaper?.setRenderEffect(
+                                    RenderEffect
+                                        .createBlurEffect(
+                                                wallpaperEditBinding.blurSlider.value * blurRadius,
+                                                wallpaperEditBinding.blurSlider.value * blurRadius, Shader.TileMode.CLAMP))
+                        } catch (e: IllegalArgumentException) {
+                            binding?.wallpaper?.setRenderEffect(null)
+                        }
+                    }
+                }
+
+                override fun onStopTrackingTouch(slider: Slider) {
+                    viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+                        try {
+                            if (wallpaperEditBinding.blurSlider.value > 0) {
+                                val bitmap = prepareFinalBitmap()
+
+                                withContext(Dispatchers.Main) {
+                                    binding?.wallpaper?.setImageBitmap(bitmap)
+                                }
+                            } else {
+                                withContext(Dispatchers.Main) {
+                                    binding?.wallpaper?.setImageBitmap(this@WallpaperScreen.bitmap)
+                                }
                             }
-                        } else {
+                        } catch (e: Exception) {
                             withContext(Dispatchers.Main) {
                                 binding?.wallpaper?.setImageBitmap(this@WallpaperScreen.bitmap)
                             }
                         }
-                    } catch (e: Exception) {
-                        withContext(Dispatchers.Main) {
-                            binding?.wallpaper?.setImageBitmap(this@WallpaperScreen.bitmap)
-                        }
                     }
                 }
-            }
-        })
+            })
 
-        binding?.blurSlider?.addOnChangeListener { _, value, _ ->
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                val blurRadius = this.blurRadius * 10
-                try {
-                    binding?.wallpaper?.setRenderEffect(
-                            RenderEffect
-                                .createBlurEffect(value * blurRadius, value * blurRadius, Shader.TileMode.CLAMP))
-                } catch (e: IllegalArgumentException) {
-                    binding?.wallpaper?.setRenderEffect(null)
-                }
+            wallpaperEditBinding.brightnessSlider.addOnChangeListener { _, value, _ ->
+                currentBrightnessValue = value
+                binding?.wallpaper?.setImageBitmap(
+                        bitmap?.changeBitmapContrastBrightness(
+                                currentContrastValue.toContrast(), value.toBrightness(), currentSaturationValue.toSaturation()))
             }
+
+            wallpaperEditBinding.contrastSlider.addOnChangeListener { _, value, _ ->
+                currentContrastValue = value
+                binding?.wallpaper?.setImageBitmap(
+                        bitmap?.changeBitmapContrastBrightness(
+                                value.toContrast(), currentBrightnessValue.toBrightness(), currentSaturationValue.toSaturation()))
+            }
+
+            wallpaperEditBinding.saturationSlider.addOnChangeListener { _, value, _ ->
+                currentSaturationValue = value
+                binding?.wallpaper?.setImageBitmap(
+                        bitmap?.changeBitmapContrastBrightness(
+                                currentContrastValue.toContrast(), currentBrightnessValue.toBrightness(), value.toSaturation()))
+            }
+
+            val dialog = MaterialAlertDialogBuilder(requireContext())
+                .setView(wallpaperEditBinding.root)
+                .show()
+
+            dialog.window?.setBackgroundDrawableResource(R.drawable.bg_dialog)
         }
 
         binding?.setAsWallpaper?.setOnClickListener {
             val dialog = MaterialAlertDialogBuilder(requireContext())
-            .setTitle(R.string.preparing)
-            .setMessage(getString(R.string.copying))
-            .show()
+                .setTitle(R.string.preparing)
+                .setMessage(getString(R.string.copying))
+                .show()
 
             viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
                 val wallpaperManager = WallpaperManager.getInstance(requireContext())
@@ -199,9 +258,12 @@ class WallpaperScreen : Fragment() {
     }
 
     private fun prepareFinalBitmap(): Bitmap {
-        val bitmap = this.bitmap?.copy(this.bitmap!!.config, true)
+        val bitmap = this.bitmap
+            ?.copy(this.bitmap!!.config, true)
+            ?.changeBitmapContrastBrightness(
+                    currentContrastValue.toContrast(), currentBrightnessValue.toBrightness(), currentSaturationValue.toSaturation())
 
-        val blurRadius = binding?.blurSlider?.value!! * this.blurRadius
+        val blurRadius = currentBlurValue * this.blurRadius
 
         try {
             StackBlur().blurRgb(bitmap!!, blurRadius.roundToInt())
@@ -238,6 +300,23 @@ class WallpaperScreen : Fragment() {
                 }
             }
         })
+    }
+
+    /**
+     * Function that takes a Float input from 0.0F to 1.0F
+     * and returns a Float from -255.0F to 255.0F depending
+     * on the input
+     */
+    private fun Float.toBrightness(): Float {
+        return (this - 0.5F) * 510
+    }
+
+    private fun Float.toSaturation(): Float {
+        return this * 2
+    }
+
+    private fun Float.toContrast(): Float {
+        return this * 10
     }
 
     companion object {

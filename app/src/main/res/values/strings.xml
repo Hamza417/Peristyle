@@ -50,4 +50,8 @@
     <string name="recreate_database">Recreate Database</string>
     <string name="recreate_database_summary">Recreate the image wallpaper database incase wrong data is shown.</string>
     <string name="recreate_database_message">This may take some time depending on how the number of files. Are your sure?</string>
+    <string name="edit">Edit</string>
+    <string name="brightness">Brightness</string>
+    <string name="contrast">Contrast</string>
+    <string name="saturation">Saturation</string>
 </resources>
