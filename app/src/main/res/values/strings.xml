@@ -45,4 +45,9 @@
     <string name="blur">Blur</string>
     <string name="inure_app_manager_summary" translatable="false">An elegant and beautiful premium Android app manager for both rooted and non-rooted devices and a built-in terminal, analytics panel and an independent custom theme engine, developed with purely custom APIs created for this app.</string>
     <string name="positional_summary">An elegant and colorful location information app for Android with Compass, Clock, Level, Sun, Moon, Trail Marker and many other features.</string>
+    <string name="clear_cache_summary">Clear image cache</string>
+    <string name="clear_cache">Clear Cache</string>
+    <string name="recreate_database">Recreate Database</string>
+    <string name="recreate_database_summary">Recreate the image wallpaper database incase wrong data is shown.</string>
+    <string name="recreate_database_message">This may take some time depending on how the number of files. Are your sure?</string>
 </resources>

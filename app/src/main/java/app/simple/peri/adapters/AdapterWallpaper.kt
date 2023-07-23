@@ -68,7 +68,7 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>,
         }
     }
 
-    fun addWallpaper(wallpaper: Wallpaper) {
+    fun addWallpaper(wallpaper: Wallpaper, function: (Int) -> Unit) {
         Log.d("Wallpaper", "Adding wallpaper: $wallpaper")
         val idx = Collections.binarySearch(wallpapers, wallpaper) { o1, o2 ->
             o1.name!!.compareTo(o2.name!!)
@@ -77,12 +77,14 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>,
         if (idx < 0) {
             wallpapers.add(0, wallpaper)
             notifyItemInserted(0)
-            notifyItemRangeChanged(0, wallpapers.size)
+            // notifyItemRangeChanged(0, wallpapers.size)
         } else {
             wallpapers.add(idx, wallpaper)
             notifyItemInserted(idx)
-            notifyItemRangeChanged(idx, wallpapers.size)
+            // notifyItemRangeChanged(idx, wallpapers.size)
         }
+
+        function(idx)
     }
 
     fun removeWallpapers(wallpapers: java.util.ArrayList<Wallpaper>?) {

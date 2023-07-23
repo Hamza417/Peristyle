@@ -20,6 +20,7 @@ import kotlinx.coroutines.launch
 class WallpaperViewModel(application: Application) : AndroidViewModel(application) {
 
     private var wallpapers: ArrayList<Wallpaper> = ArrayList()
+    private var isDatabaseLoaded = false
 
     private val wallpapersData: MutableLiveData<ArrayList<Wallpaper>> by lazy {
         MutableLiveData<ArrayList<Wallpaper>>().also {
@@ -95,6 +96,7 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
 
     private fun loadWallpaperImages() {
         viewModelScope.launch(Dispatchers.IO) {
+            isDatabaseLoaded = false
             val alreadyLoaded = WallpaperDatabase.getInstance(getApplication())?.wallpaperDao()?.getWallpapers()?.associateBy { it.uri }
             val storageUri = MainPreferences.getStorageUri()
             val pickedDirectory = DocumentFile.fromTreeUri(getApplication(), Uri.parse(storageUri))
@@ -214,6 +216,8 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
             wallpapers.forEach {
                 wallpaperDao?.insert(it)
             }
+
+            isDatabaseLoaded = true
         }
     }
 
@@ -244,6 +248,27 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
             val wallpaperDatabase = WallpaperDatabase.getInstance(getApplication())
             val wallpaperDao = wallpaperDatabase?.wallpaperDao()
             wallpaperDao?.delete(wallpaper)
+        }
+    }
+
+    fun recreateDatabase() {
+        viewModelScope.launch(Dispatchers.IO) {
+            isDatabaseLoaded = false
+            wallpapers.clear()
+            wallpapersData.postValue(wallpapers)
+            val wallpaperDatabase = WallpaperDatabase.getInstance(getApplication())
+            val wallpaperDao = wallpaperDatabase?.wallpaperDao()
+            wallpaperDao?.nukeTable()
+            loadWallpaperDatabase()
+        }
+    }
+
+    fun refreshWallpapers() {
+        if (isDatabaseLoaded) {
+            loadWallpaperImages()
+            Log.d(TAG, "refreshWallpapers: refreshing wallpapers")
+        } else {
+            Log.d(TAG, "refreshWallpapers: database not loaded")
         }
     }
 

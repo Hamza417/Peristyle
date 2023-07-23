@@ -9,6 +9,7 @@ import android.graphics.Shader
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -382,7 +383,11 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
 
         wallpaperViewModel.getNewWallpapersLiveData().observe(requireActivity()) { wallpaper ->
             if (wallpaper.isNotNull()) {
-                adapterWallpaper?.addWallpaper(wallpaper)
+                adapterWallpaper?.addWallpaper(wallpaper) {
+                    binding?.recyclerView?.scrollToPosition(0)
+                    Log.d("Wallpaper", "Added wallpaper: ${wallpaper.name}")
+                }
+
                 wallpaperViewModel.getNewWallpapersLiveData().value = null
             }
         }
@@ -458,6 +463,11 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
         binding?.fab?.setOnLongClickListener {
             adapterWallpaper?.shuffleWallpapers()
             true
+        }
+
+        binding?.swipeRefreshLayout?.setOnRefreshListener {
+            wallpaperViewModel.refreshWallpapers()
+            binding?.swipeRefreshLayout?.isRefreshing = false
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {

@@ -1,4 +1,5 @@
-<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <PreferenceCategory
         app:allowDividerAbove="false"
@@ -34,6 +35,20 @@
         app:summary="@string/grid_span_summary"
         app:title="@string/grid_span"
         app:useSimpleSummaryProvider="false" />
+
+
+    <PreferenceCategory app:title="@string/home" />
+
+    <Preference
+        android:title="@string/clear_cache"
+        app:key="clear_cache"
+        app:summary="@string/clear_cache_summary" />
+
+
+    <Preference
+        android:title="@string/recreate_database"
+        app:key="recreate_database"
+        app:summary="@string/recreate_database_summary" />
 
     <PreferenceCategory app:title="@string/about" />
 
