@@ -16,6 +16,7 @@ from there? then Peri is for you :)
 - Can scan .nomedia directories, useful if you want to keep your wallpapers away from gallery.
 - Apply blur and color filters dynamically on any wallpaper before applying.
 - Simple yet pretty animations with proper optimizations ;)
+- Fully Material You design
 
 ## Screenshots
 
