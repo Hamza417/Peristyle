@@ -82,7 +82,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
         displayWidth = requireContext().resources.displayMetrics.widthPixels
         displayHeight = requireContext().resources.displayMetrics.heightPixels
 
-        binding?.bottomAppBar?.setOnMenuItemClickListener {
+        binding?.bottomAppBar?.setOnMenuItemClickListener { it ->
             if (it.itemId != R.id.settings) {
                 blurRoot()
             }
@@ -240,15 +240,11 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                             .setMessage(getString(R.string.send_message, wallpapers?.size.toString()))
                             .setPositiveButton(R.string.send) { dialog, _ ->
                                 if (wallpapers.isNullOrEmpty().invert()) {
-                                    if (wallpapers != null) {
-                                        for (wallpaper in wallpapers) {
-                                            ShareCompat.IntentBuilder(requireActivity())
-                                                .setType("image/*")
-                                                .setChooserTitle("Share Wallpaper")
-                                                .setStream(wallpaper.uri.toUri())
-                                                .startChooser()
-                                        }
-                                    }
+                                    val filesUri = wallpapers?.map { it.uri.toUri() }
+                                    val intent = Intent(Intent.ACTION_SEND_MULTIPLE)
+                                    intent.type = "image/*"
+                                    intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, ArrayList(filesUri!!))
+                                    startActivity(Intent.createChooser(intent, "Share Wallpapers"))
                                 } else {
                                     adapterWallpaper?.selectionMode = true
                                 }
