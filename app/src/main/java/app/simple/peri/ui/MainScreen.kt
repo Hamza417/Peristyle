@@ -191,6 +191,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
 
                                             progressDialog.setOnDismissListener {
                                                 unBlurRoot()
+                                                adapterWallpaper?.cancelSelection()
                                             }
 
                                             progressDialog.dismiss()

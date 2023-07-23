@@ -1,18 +1,16 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <PreferenceCategory
-        app:allowDividerAbove="false"
-        app:allowDividerBelow="false"
-        app:title=" " /> <!-- Empty title for status bar space -->
+    <PreferenceCategory app:layout="@layout/preferences_toolbar" />
 
-    <PreferenceCategory app:title="@string/home" />
+    <PreferenceCategory
+        app:iconSpaceReserved="false"
+        app:title="@string/home" />
 
     <CheckBoxPreference
         app:defaultValue="true"
         app:enabled="true"
-        app:icon="@drawable/ic_label"
-        app:iconSpaceReserved="true"
+        app:iconSpaceReserved="false"
         app:key="is_name"
         app:summary="@string/show_wallpaper_names_on_the_main_screen"
         app:title="@string/enabled_wallpaper_names" />
@@ -20,8 +18,7 @@
     <CheckBoxPreference
         app:defaultValue="true"
         app:enabled="true"
-        app:icon="@drawable/ic_blur"
-        app:iconSpaceReserved="true"
+        app:iconSpaceReserved="false"
         app:key="blur"
         app:summary="@string/blur_summary"
         app:title="@string/blur" />
@@ -30,35 +27,43 @@
         app:defaultValue="2"
         app:entries="@array/grid_span"
         app:entryValues="@array/grid_span_values"
-        app:icon="@drawable/ic_grid"
+        app:iconSpaceReserved="false"
         app:key="grid_span"
         app:summary="@string/grid_span_summary"
         app:title="@string/grid_span"
         app:useSimpleSummaryProvider="false" />
 
 
-    <PreferenceCategory app:title="@string/data" />
+    <PreferenceCategory
+        app:iconSpaceReserved="false"
+        app:title="@string/data" />
 
     <Preference
         android:title="@string/clear_cache"
+        app:iconSpaceReserved="false"
         app:key="clear_cache"
         app:summary="@string/clear_cache_summary" />
 
 
     <Preference
         android:title="@string/recreate_database"
+        app:iconSpaceReserved="false"
         app:key="recreate_database"
         app:summary="@string/recreate_database_summary" />
 
-    <PreferenceCategory app:title="@string/about" />
+    <PreferenceCategory
+        app:iconSpaceReserved="false"
+        app:title="@string/about" />
 
     <Preference
-        app:icon="@drawable/ic_info"
+        app:iconSpaceReserved="false"
         app:key="info"
         app:summary="@string/full_info"
         app:title="" />
 
-    <PreferenceCategory app:title="@string/other_apps" />
+    <PreferenceCategory
+        app:iconSpaceReserved="false"
+        app:title="@string/other_apps" />
 
     <Preference
         app:icon="@drawable/positional"
