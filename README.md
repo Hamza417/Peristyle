@@ -21,7 +21,6 @@ from there? then Peri is for you :)
 | ![01](./fastlane/metadata/android/en-US/images/phoneScreenshots/01.png) | ![02](./fastlane/metadata/android/en-US/images/phoneScreenshots/02.png) |
 |:-----------------------------------------------------------------------:|:-----------------------------------------------------------------------:|
 | ![03](./fastlane/metadata/android/en-US/images/phoneScreenshots/03.png) | ![04](./fastlane/metadata/android/en-US/images/phoneScreenshots/04.png) |
-|                                                                         |                                                                         |  
 
 
 ## Open Source?
