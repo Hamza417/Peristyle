@@ -37,7 +37,7 @@
         app:useSimpleSummaryProvider="false" />
 
 
-    <PreferenceCategory app:title="@string/home" />
+    <PreferenceCategory app:title="@string/data" />
 
     <Preference
         android:title="@string/clear_cache"

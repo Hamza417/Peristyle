@@ -54,4 +54,5 @@
     <string name="brightness">Brightness</string>
     <string name="contrast">Contrast</string>
     <string name="saturation">Saturation</string>
+    <string name="data">Data</string>
 </resources>

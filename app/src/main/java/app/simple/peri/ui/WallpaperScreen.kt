@@ -88,6 +88,15 @@ class WallpaperScreen : Fragment() {
 
         // Enable pinch to zoom
         scaleGestureDetector = ScaleGestureDetector(requireContext(), object : ScaleGestureDetector.SimpleOnScaleGestureListener() {
+            override fun onScaleBegin(detector: ScaleGestureDetector): Boolean {
+                binding?.blurSliderContainer?.animate()
+                    ?.alpha(0f)
+                    ?.setInterpolator(DecelerateInterpolator(1.5F))
+                    ?.setDuration(resources.getInteger(R.integer.animation_duration).toLong())
+                    ?.start()
+
+                return super.onScaleBegin(detector)
+            }
             override fun onScale(detector: ScaleGestureDetector): Boolean {
                 val scaleFactor = detector.scaleFactor
                 binding?.wallpaper?.scaleX = (binding?.wallpaper?.scaleX!! * scaleFactor)
@@ -104,6 +113,12 @@ class WallpaperScreen : Fragment() {
                     ?.scaleY(1F)
                     ?.setDuration(resources.getInteger(R.integer.animation_duration).toLong())
                     ?.setInterpolator(DecelerateInterpolator(1.5F))
+                    ?.start()
+
+                binding?.blurSliderContainer?.animate()
+                    ?.alpha(1f)
+                    ?.setInterpolator(DecelerateInterpolator(1.5F))
+                    ?.setDuration(resources.getInteger(R.integer.animation_duration).toLong())
                     ?.start()
             }
         })
