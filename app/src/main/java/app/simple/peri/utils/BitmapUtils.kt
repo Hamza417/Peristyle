@@ -21,7 +21,7 @@ object BitmapUtils {
                 0f, 0f, 0f, 1f, 0f
         ))
 
-        val cm2 = cm.postConcat(ColorMatrix().apply {
+        cm.postConcat(ColorMatrix().apply {
             setSaturation(saturation)
         })
 

@@ -5,6 +5,8 @@ import android.animation.Animator.AnimatorListener
 import android.app.WallpaperManager
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.graphics.ColorMatrix
+import android.graphics.ColorMatrixColorFilter
 import android.graphics.RenderEffect
 import android.graphics.Shader
 import android.net.Uri
@@ -14,6 +16,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
+import android.view.Window
+import android.view.WindowManager
 import android.view.animation.DecelerateInterpolator
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.FileProvider
@@ -168,8 +172,11 @@ class WallpaperScreen : Fragment() {
                         binding?.wallpaper?.setRenderEffect(null)
                     }
 
-                    binding?.wallpaper?.setImageBitmap(bitmap?.changeBitmapContrastBrightness(
-                            currentContrastValue.toContrast(), currentBrightnessValue.toBrightness(), currentSaturationValue.toSaturation()))
+                    binding?.wallpaper?.setImageBitmap(
+                            bitmap?.changeBitmapContrastBrightness(
+                                    currentContrastValue.toContrast(),
+                                    currentBrightnessValue.toBrightness(),
+                                    currentSaturationValue.toSaturation()))
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                         val blurRadius = this@WallpaperScreen.blurRadius * 10
@@ -196,7 +203,28 @@ class WallpaperScreen : Fragment() {
                                 }
                             } else {
                                 withContext(Dispatchers.Main) {
-                                    binding?.wallpaper?.setImageBitmap(this@WallpaperScreen.bitmap)
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                                        binding?.wallpaper?.setImageBitmap(bitmap)
+
+                                        val cm = ColorMatrix(floatArrayOf(
+                                                currentContrastValue.toContrast(), 0f, 0f, 0f, currentBrightnessValue.toBrightness(),
+                                                0f, currentContrastValue.toContrast(), 0f, 0f, currentBrightnessValue.toBrightness(),
+                                                0f, 0f, currentContrastValue.toContrast(), 0f, currentBrightnessValue.toBrightness(),
+                                                0f, 0f, 0f, 1f, 0f
+                                        ))
+
+                                        cm.postConcat(ColorMatrix().apply {
+                                            setSaturation(currentSaturationValue.toSaturation())
+                                        })
+
+                                        binding?.wallpaper?.setRenderEffect(RenderEffect.createColorFilterEffect(ColorMatrixColorFilter(cm)))
+                                    } else {
+                                        binding?.wallpaper?.setImageBitmap(
+                                                bitmap?.changeBitmapContrastBrightness(
+                                                        currentContrastValue.toContrast(),
+                                                        currentBrightnessValue.toBrightness(),
+                                                        currentSaturationValue.toSaturation()))
+                                    }
                                 }
                             }
                         } catch (e: Exception) {
@@ -210,30 +238,82 @@ class WallpaperScreen : Fragment() {
 
             wallpaperEditBinding.brightnessSlider.addOnChangeListener { _, value, _ ->
                 currentBrightnessValue = value
-                binding?.wallpaper?.setImageBitmap(
-                        bitmap?.changeBitmapContrastBrightness(
-                                currentContrastValue.toContrast(), value.toBrightness(), currentSaturationValue.toSaturation()))
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    val cm = ColorMatrix(floatArrayOf(
+                            currentContrastValue.toContrast(), 0f, 0f, 0f, value.toBrightness(),
+                            0f, currentContrastValue.toContrast(), 0f, 0f, value.toBrightness(),
+                            0f, 0f, currentContrastValue.toContrast(), 0f, value.toBrightness(),
+                            0f, 0f, 0f, 1f, 0f
+                    ))
+
+                    cm.postConcat(ColorMatrix().apply {
+                        setSaturation(currentSaturationValue.toSaturation())
+                    })
+
+                    binding?.wallpaper?.setRenderEffect(RenderEffect.createColorFilterEffect(ColorMatrixColorFilter(cm)))
+                } else {
+                    binding?.wallpaper?.setImageBitmap(
+                            bitmap?.changeBitmapContrastBrightness(
+                                    currentContrastValue.toContrast(), value.toBrightness(), currentSaturationValue.toSaturation()))
+                }
             }
 
             wallpaperEditBinding.contrastSlider.addOnChangeListener { _, value, _ ->
                 currentContrastValue = value
-                binding?.wallpaper?.setImageBitmap(
-                        bitmap?.changeBitmapContrastBrightness(
-                                value.toContrast(), currentBrightnessValue.toBrightness(), currentSaturationValue.toSaturation()))
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    val cm = ColorMatrix(floatArrayOf(
+                            value.toContrast(), 0f, 0f, 0f, currentBrightnessValue.toBrightness(),
+                            0f, value.toContrast(), 0f, 0f, currentBrightnessValue.toBrightness(),
+                            0f, 0f, value.toContrast(), 0f, currentBrightnessValue.toBrightness(),
+                            0f, 0f, 0f, 1f, 0f
+                    ))
+
+                    cm.postConcat(ColorMatrix().apply {
+                        setSaturation(currentSaturationValue.toSaturation())
+                    })
+
+                    binding?.wallpaper?.setRenderEffect(RenderEffect.createColorFilterEffect(ColorMatrixColorFilter(cm)))
+                } else {
+                    binding?.wallpaper?.setImageBitmap(
+                            bitmap?.changeBitmapContrastBrightness(
+                                    value.toContrast(), currentBrightnessValue.toBrightness(), currentSaturationValue.toSaturation()))
+                }
             }
 
             wallpaperEditBinding.saturationSlider.addOnChangeListener { _, value, _ ->
                 currentSaturationValue = value
-                binding?.wallpaper?.setImageBitmap(
-                        bitmap?.changeBitmapContrastBrightness(
-                                currentContrastValue.toContrast(), currentBrightnessValue.toBrightness(), value.toSaturation()))
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    val cm = ColorMatrix(floatArrayOf(
+                            currentContrastValue.toContrast(), 0f, 0f, 0f, currentBrightnessValue.toBrightness(),
+                            0f, currentContrastValue.toContrast(), 0f, 0f, currentBrightnessValue.toBrightness(),
+                            0f, 0f, currentContrastValue.toContrast(), 0f, currentBrightnessValue.toBrightness(),
+                            0f, 0f, 0f, 1f, 0f
+                    ))
+
+                    cm.postConcat(ColorMatrix().apply {
+                        setSaturation(value.toSaturation())
+                    })
+
+                    binding?.wallpaper?.setRenderEffect(RenderEffect.createColorFilterEffect(ColorMatrixColorFilter(cm)))
+                } else {
+                    binding?.wallpaper?.setImageBitmap(
+                            bitmap?.changeBitmapContrastBrightness(
+                                    currentContrastValue.toContrast(), currentBrightnessValue.toBrightness(), value.toSaturation()))
+                }
             }
 
             val dialog = MaterialAlertDialogBuilder(requireContext())
                 .setView(wallpaperEditBinding.root)
                 .show()
 
+            dialog.window?.setDimAmount(0F)
             dialog.window?.setBackgroundDrawableResource(R.drawable.bg_dialog)
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                dialog.window?.addFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND)
+                dialog.window?.setBackgroundBlurRadius(25)
+            }
         }
 
         binding?.setAsWallpaper?.setOnClickListener {
