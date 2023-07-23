@@ -2,6 +2,7 @@ package app.simple.peri.ui
 
 import android.animation.Animator
 import android.animation.Animator.AnimatorListener
+import android.annotation.SuppressLint
 import android.app.WallpaperManager
 import android.graphics.Bitmap
 import android.graphics.Color
@@ -13,10 +14,10 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.ScaleGestureDetector
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
-import android.view.Window
 import android.view.WindowManager
 import android.view.animation.DecelerateInterpolator
 import androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -49,6 +50,7 @@ class WallpaperScreen : Fragment() {
 
     private var binding: FragmentWallpaperScreenBinding? = null
     private var wallpaper: Wallpaper? = null
+    private var scaleGestureDetector: ScaleGestureDetector? = null
 
     private var bitmap: Bitmap? = null
     private var uri: Uri? = null
@@ -68,6 +70,7 @@ class WallpaperScreen : Fragment() {
         return binding?.root
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         requireActivity().findViewById<CoordinatorLayout>(R.id.mainContainer).setBackgroundColor(Color.BLACK)
@@ -81,6 +84,33 @@ class WallpaperScreen : Fragment() {
         sharedElementEnterTransition = MaterialContainerTransform().apply {
             duration = resources.getInteger(R.integer.animation_duration).toLong()
             scrimColor = Color.TRANSPARENT
+        }
+
+        // Enable pinch to zoom
+        scaleGestureDetector = ScaleGestureDetector(requireContext(), object : ScaleGestureDetector.SimpleOnScaleGestureListener() {
+            override fun onScale(detector: ScaleGestureDetector): Boolean {
+                val scaleFactor = detector.scaleFactor
+                binding?.wallpaper?.scaleX = (binding?.wallpaper?.scaleX!! * scaleFactor)
+                binding?.wallpaper?.scaleY = (binding?.wallpaper?.scaleY!! * scaleFactor)
+                binding?.wallpaper?.pivotX = detector.focusX - binding?.wallpaperScrollView?.scrollX!!
+                binding?.wallpaper?.pivotY = detector.focusY - binding?.wallpaperScrollView?.scrollY!!
+                return true
+            }
+
+            override fun onScaleEnd(detector: ScaleGestureDetector) {
+                super.onScaleEnd(detector)
+                binding?.wallpaper?.animate()
+                    ?.scaleX(1F)
+                    ?.scaleY(1F)
+                    ?.setDuration(resources.getInteger(R.integer.animation_duration).toLong())
+                    ?.setInterpolator(DecelerateInterpolator(1.5F))
+                    ?.start()
+            }
+        })
+
+        binding?.wallpaperScrollView?.setOnTouchListener { _, motionEvent ->
+            scaleGestureDetector?.onTouchEvent(motionEvent)
+            false
         }
 
         binding?.wallpaper?.loadWallpaper(wallpaper!!) {
