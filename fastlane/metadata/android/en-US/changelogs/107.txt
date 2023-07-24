@@ -1,0 +1,2 @@
+- HD image viewer
+- Option to disable details
