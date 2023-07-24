@@ -19,6 +19,14 @@
         app:defaultValue="true"
         app:enabled="true"
         app:iconSpaceReserved="false"
+        app:key="is_details"
+        app:summary="@string/show_wallpaper_details_on_the_main_screen"
+        app:title="@string/enabled_wallpaper_details" />
+
+    <CheckBoxPreference
+        app:defaultValue="true"
+        app:enabled="true"
+        app:iconSpaceReserved="false"
         app:key="blur"
         app:summary="@string/blur_summary"
         app:title="@string/blur" />

@@ -52,4 +52,6 @@
     <string name="contrast">Contrast</string>
     <string name="saturation">Saturation</string>
     <string name="data">Data</string>
+    <string name="enabled_wallpaper_details">Enable Wallpaper Details</string>
+    <string name="show_wallpaper_details_on_the_main_screen">Show wallpaper details on the main screen.</string>
 </resources>

@@ -20,9 +20,4 @@
     <item
         android:id="@+id/height"
         android:title="@string/height" />
-
-    <item
-        android:id="@+id/order"
-        android:title="@string/order" />
-
 </menu>

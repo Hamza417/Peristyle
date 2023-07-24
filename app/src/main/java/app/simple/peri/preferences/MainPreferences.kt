@@ -11,6 +11,7 @@ object MainPreferences {
     const val order = "order"
     const val name = "is_name"
     const val gridSpan = "gridSpan"
+    const val details = "is_details"
 
     fun getStorageUri(): String? {
         return SharedPreferences.getSharedPreferences().getString(storageUri, null)
@@ -68,5 +69,13 @@ object MainPreferences {
 
     fun getBlur(): Boolean {
         return SharedPreferences.getSharedPreferences().getBoolean(blur, true)
+    }
+
+    fun setDetails(b: Boolean) {
+        SharedPreferences.getSharedPreferences().edit().putBoolean(details, b).apply()
+    }
+
+    fun getDetails(): Boolean {
+        return SharedPreferences.getSharedPreferences().getBoolean(details, true)
     }
 }

@@ -89,16 +89,17 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
             MainPreferences.name -> {
                 MainPreferences.setName(p0?.getBoolean(p1, true)!!)
             }
-
             "grid_span" -> {
                 MainPreferences.setGridSpan(
                         p0?.getString(p1, "2")!!.toInt()
                             .coerceAtLeast(1)
                             .coerceAtMost(4))
             }
-
             "blur" -> {
                 MainPreferences.setBlur(p0?.getBoolean(p1, true)!!)
+            }
+            "is_details" -> {
+                MainPreferences.setDetails(p0?.getBoolean(p1, true)!!)
             }
         }
     }

@@ -91,6 +91,11 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                 R.id.sort -> {
                     val popup = PopupMenu(requireContext(), binding?.bottomAppBar?.findViewById(R.id.sort)!!, Gravity.START)
                     popup.menuInflater.inflate(R.menu.wallpaper_sort, popup.menu)
+                    popup.menu.addSubMenu(R.id.order, R.id.order, 0, R.string.order)
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                        popup.menu.setGroupDividerEnabled(true)
+                    }
 
                     popup.setOnMenuItemClickListener { item ->
                         when (item.itemId) {
@@ -514,6 +519,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
         }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun onSharedPreferenceChanged(p0: SharedPreferences?, p1: String?) {
         when (p1) {
             MainPreferences.sort,
@@ -524,6 +530,11 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
             MainPreferences.gridSpan -> {
                 val spanCount = MainPreferences.getGridSpan()
                 staggeredGridLayoutManager?.spanCount = spanCount
+            }
+
+            MainPreferences.name,
+            MainPreferences.details -> {
+                adapterWallpaper?.notifyDataSetChanged()
             }
         }
     }

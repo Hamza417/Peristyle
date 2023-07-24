@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.recyclerview.widget.RecyclerView
 import app.simple.peri.databinding.AdapterWallpaperBinding
@@ -158,10 +159,51 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>,
                 binding.name.visibility = View.GONE
             }
 
+            if (MainPreferences.getDetails()) {
+                binding.resolution.visibility = View.VISIBLE
+
+                binding.resolution.text = String.format(
+                        "%dx%d • %s",
+                        wallpaper.width, wallpaper.height, wallpaper.size.toSize())
+
+                binding.error.layoutParams = (binding.error.layoutParams as ConstraintLayout.LayoutParams).apply {
+                    startToEnd = binding.resolution.id
+                    bottomToBottom = binding.resolution.id
+                    topToTop = binding.resolution.id
+                    bottomMargin = 0
+                }
+            } else {
+                binding.resolution.visibility = View.GONE
+
+                // Set constraint start to parent start
+                binding.error.layoutParams = (binding.error.layoutParams as ConstraintLayout.LayoutParams).apply {
+                    startToStart = ConstraintSet.PARENT_ID
+                    bottomToBottom = ConstraintSet.PARENT_ID
+                    topToTop = ConstraintSet.PARENT_ID
+                    bottomMargin = binding.root.resources.getDimensionPixelSize(app.simple.peri.R.dimen.margin_8dp)
+                }
+            }
+
             if (wallpaper.width!! < displayWidth || wallpaper.height!! < displayHeight) {
                 binding.error.visibility = View.VISIBLE
             } else {
                 binding.error.visibility = View.GONE
+
+                if (MainPreferences.getDetails()) {
+                    binding.progressBar.layoutParams = (binding.progressBar.layoutParams as ConstraintLayout.LayoutParams).apply {
+                        startToEnd = binding.resolution.id
+                        bottomToBottom = binding.resolution.id
+                        topToTop = binding.resolution.id
+                        bottomMargin = 0
+                    }
+                } else {
+                    binding.progressBar.layoutParams = (binding.progressBar.layoutParams as ConstraintLayout.LayoutParams).apply {
+                        startToStart = ConstraintSet.PARENT_ID
+                        bottomToBottom = ConstraintSet.PARENT_ID
+                        topToTop = ConstraintSet.PARENT_ID
+                        bottomMargin = binding.root.resources.getDimensionPixelSize(app.simple.peri.R.dimen.margin_8dp)
+                    }
+                }
             }
 
             if (selectionMode) {
@@ -187,10 +229,6 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>,
                 wallpaperCallbacks?.onWallpaperLongClicked(wallpaper, bindingAdapterPosition, it, binding.checkBox)
                 true
             }
-
-            binding.resolution.text = String.format(
-                    "%dx%d • %s",
-                    wallpaper.width, wallpaper.height, wallpaper.size.toSize())
         }
     }
 }
