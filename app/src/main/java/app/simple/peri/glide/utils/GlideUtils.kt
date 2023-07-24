@@ -1,5 +1,6 @@
 package app.simple.peri.glide.utils
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.widget.ImageView
 import app.simple.peri.glide.modules.GlideApp
@@ -44,5 +45,26 @@ object GlideUtils {
                 }
             })
             .into(this)
+    }
+
+    fun Context.loadHDWallpaper(wallpaper: Wallpaper, onLoad: (Bitmap) -> Unit) {
+        GlideApp.with(this)
+            .asBitmap()
+            .load(app.simple.peri.glide.wallpaper.Wallpaper(wallpaper, this))
+            .transition(BitmapTransitionOptions.withCrossFade())
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .set(Downsampler.ALLOW_HARDWARE_CONFIG, false)
+            .addListener(object : RequestListener<Bitmap> {
+                override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Bitmap>?, isFirstResource: Boolean): Boolean {
+                    /* no-op */
+                    return false
+                }
+
+                override fun onResourceReady(resource: Bitmap?, model: Any?, target: Target<Bitmap>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
+                    onLoad(resource!!)
+                    return false
+                }
+            })
+            .preload()
     }
 }

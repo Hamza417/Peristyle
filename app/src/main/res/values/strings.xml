@@ -54,4 +54,5 @@
     <string name="data">Data</string>
     <string name="enabled_wallpaper_details">Enable Wallpaper Details</string>
     <string name="show_wallpaper_details_on_the_main_screen">Show wallpaper details on the main screen.</string>
+    <string name="high_definition">High Definition</string>
 </resources>

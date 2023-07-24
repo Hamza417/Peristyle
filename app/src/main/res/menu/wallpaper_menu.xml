@@ -15,4 +15,8 @@
     <item
         android:id="@+id/select"
         android:title="@string/select" />
+
+    <item
+        android:id="@+id/hd"
+        android:title="@string/high_definition" />
 </menu>

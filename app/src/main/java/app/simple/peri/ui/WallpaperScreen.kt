@@ -13,6 +13,7 @@ import android.graphics.Shader
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ScaleGestureDetector
 import android.view.View
@@ -29,11 +30,15 @@ import app.simple.peri.R
 import app.simple.peri.constants.BundleConstants
 import app.simple.peri.databinding.FragmentWallpaperScreenBinding
 import app.simple.peri.databinding.WallpaperEditBinding
+import app.simple.peri.glide.utils.GlideUtils.loadHDWallpaper
 import app.simple.peri.glide.utils.GlideUtils.loadWallpaper
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.tools.StackBlur
 import app.simple.peri.utils.BitmapUtils.changeBitmapContrastBrightness
+import app.simple.peri.utils.FileUtils.toSize
 import app.simple.peri.utils.ParcelUtils.parcelable
+import com.davemorrissey.labs.subscaleview.ImageSource
+import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.slider.Slider
 import com.google.android.material.slider.Slider.OnSliderTouchListener
@@ -97,12 +102,13 @@ class WallpaperScreen : Fragment() {
 
                 return super.onScaleBegin(detector)
             }
+
             override fun onScale(detector: ScaleGestureDetector): Boolean {
                 val scaleFactor = detector.scaleFactor
                 binding?.wallpaper?.scaleX = (binding?.wallpaper?.scaleX!! * scaleFactor)
                 binding?.wallpaper?.scaleY = (binding?.wallpaper?.scaleY!! * scaleFactor)
-                binding?.wallpaper?.pivotX = detector.focusX - binding?.wallpaperScrollView?.scrollX!!
-                binding?.wallpaper?.pivotY = detector.focusY - binding?.wallpaperScrollView?.scrollY!!
+                binding?.wallpaper?.pivotX = detector.focusX // - binding?.wallpaperScrollView?.scrollX!!
+                binding?.wallpaper?.pivotY = detector.focusY // - binding?.wallpaperScrollView?.scrollY!!
                 return true
             }
 

@@ -353,6 +353,13 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                             R.id.select -> {
                                 adapterWallpaper?.selectWallpaper(wallpaper)
                             }
+
+                            R.id.hd -> {
+                                requireActivity().supportFragmentManager.beginTransaction()
+                                    .replace(R.id.mainContainer, HD.newInstance(wallpaper), "HD")
+                                    .addToBackStack("HD")
+                                    .commit()
+                            }
                         }
 
                         true

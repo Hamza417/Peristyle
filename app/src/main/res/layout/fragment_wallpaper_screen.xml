@@ -15,9 +15,9 @@
             android:id="@+id/wallpaper"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:adjustViewBounds="true"
             android:importantForAccessibility="no"
             android:scaleType="fitCenter"
-            android:adjustViewBounds="true"
             tools:ignore="ContentDescription" />
 
     </HorizontalScrollView>
