@@ -15,7 +15,7 @@ from there? then Peri is for you :)
 - Simple architecture, browse wallpapers and use system wallpaper manager to set them as wallpaper.
 - Can scan .nomedia directories, useful if you want to keep your wallpapers away from gallery.
 - Apply blur and color filters dynamically on any wallpaper before applying.
-- Simple yet pretty animations with proper optimizations ;)
+- Simple yet pretty animations with proper optimizations
 - Fully Material You design
 
 ## Screenshots
@@ -25,9 +25,9 @@ from there? then Peri is for you :)
 | ![03](./fastlane/metadata/android/en-US/images/phoneScreenshots/03.png) | ![04](./fastlane/metadata/android/en-US/images/phoneScreenshots/04.png) |
 
 
-## Open Source?
+## License
 
-Yepp, totally free, see the [LICENSE](./LICENSE) file.
+See the [LICENSE](./LICENSE) file.
 
 ## Stats
 
