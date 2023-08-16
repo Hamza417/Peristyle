@@ -6,9 +6,14 @@ import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.widget.FrameLayout
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import app.simple.peri.R
 import app.simple.peri.databinding.ActivityMainBinding
 import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.preferences.SharedPreferences
@@ -77,6 +82,7 @@ class MainActivity : AppCompatActivity() {
     private fun makeAppFullScreen() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         window.statusBarColor = Color.TRANSPARENT
+        window.navigationBarColor = Color.TRANSPARENT
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             window.navigationBarDividerColor = Color.TRANSPARENT
         }

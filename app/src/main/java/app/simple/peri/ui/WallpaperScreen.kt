@@ -21,8 +21,12 @@ import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.view.WindowManager
 import android.view.animation.DecelerateInterpolator
+import android.widget.FrameLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.FileProvider
+import androidx.core.view.MarginLayoutParamsCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.doOnLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -78,7 +82,9 @@ class WallpaperScreen : Fragment() {
     @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         requireActivity().findViewById<CoordinatorLayout>(R.id.mainContainer).setBackgroundColor(Color.BLACK)
+        fixNavigationBarOverlap()
         postponeEnterTransition()
         allowEnterTransitionOverlap = true
         allowReturnTransitionOverlap = true
@@ -448,6 +454,30 @@ class WallpaperScreen : Fragment() {
 
     private fun Float.toContrast(): Float {
         return this * 10
+    }
+
+    /**
+     * Making the Navigation system bar not overlapping with the activity
+     */
+    private fun fixNavigationBarOverlap() {
+        ViewCompat.setOnApplyWindowInsetsListener(binding?.blurSliderContainer!!) { view, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+
+            binding?.blurSliderContainer?.apply {
+                layoutParams = (layoutParams as FrameLayout.LayoutParams).apply {
+                    leftMargin += insets.left
+                    rightMargin += insets.right
+                    topMargin += insets.top
+                    bottomMargin += insets.bottom
+                }
+            }
+
+            /**
+             * Return CONSUMED if you don't want want the window insets to keep being
+             * passed down to descendant views.
+             */
+            WindowInsetsCompat.CONSUMED
+        }
     }
 
     companion object {

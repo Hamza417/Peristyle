@@ -20,6 +20,8 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.app.ShareCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.children
 import androidx.core.view.doOnPreDraw
 import androidx.documentfile.provider.DocumentFile
@@ -81,6 +83,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
 
         displayWidth = requireContext().resources.displayMetrics.widthPixels
         displayHeight = requireContext().resources.displayMetrics.heightPixels
+        fixNavigationBarOverlap()
 
         binding?.bottomAppBar?.setOnMenuItemClickListener { it ->
             if (it.itemId != R.id.settings) {
@@ -299,6 +302,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
 
             adapterWallpaper!!.setWallpaperCallbacks(object : WallpaperCallbacks {
                 override fun onWallpaperClicked(wallpaper: Wallpaper?, position: Int, constraintLayout: ConstraintLayout?) {
+                    binding?.bottomAppBar?.performHide(false)
                     binding?.fab?.transitionName = null // remove transition name to prevent shared element transition
 
                     requireActivity().supportFragmentManager.beginTransaction()
@@ -504,6 +508,50 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
     private fun unBlurRoot() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             binding?.root?.setRenderEffect(null)
+        }
+    }
+
+    /**
+     * Making the Navigation system bar not overlapping with the activity
+     */
+    private fun fixNavigationBarOverlap() {
+        /**
+         * Root ViewGroup of this activity
+         */
+        val root = binding?.bottomAppBar
+
+        ViewCompat.setOnApplyWindowInsetsListener(root as View) { view, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+
+            /**
+             * Apply the insets as a margin to the view. Here the system is setting
+             * only the bottom, left, and right dimensions, but apply whichever insets are
+             * appropriate to your layout. You can also update the view padding
+             * if that's more appropriate.
+             */
+            binding?.bottomAppBar?.apply {
+                setPadding(
+                        paddingLeft + insets.left,
+                        paddingTop,
+                        paddingRight + insets.right,
+                        paddingBottom + insets.bottom
+                )
+            }
+
+            binding?.fab?.apply {
+                setPadding(
+                        paddingLeft + insets.left,
+                        paddingTop,
+                        paddingRight + insets.right,
+                        paddingBottom + insets.bottom
+                )
+            }
+
+            /**
+             * Return CONSUMED if you don't want want the window insets to keep being
+             * passed down to descendant views.
+             */
+            WindowInsetsCompat.CONSUMED
         }
     }
 
