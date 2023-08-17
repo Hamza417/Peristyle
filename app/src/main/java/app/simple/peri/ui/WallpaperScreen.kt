@@ -28,6 +28,7 @@ import androidx.core.view.MarginLayoutParamsCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.doOnLayout
+import androidx.core.view.marginBottom
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import app.simple.peri.R
@@ -463,12 +464,14 @@ class WallpaperScreen : Fragment() {
         ViewCompat.setOnApplyWindowInsetsListener(binding?.blurSliderContainer!!) { view, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
 
-            binding?.blurSliderContainer?.apply {
-                layoutParams = (layoutParams as FrameLayout.LayoutParams).apply {
-                    leftMargin += insets.left
-                    rightMargin += insets.right
-                    topMargin += insets.top
-                    bottomMargin += insets.bottom
+            if (binding?.blurSliderContainer?.marginBottom!! < insets.bottom) {
+                binding?.blurSliderContainer?.apply {
+                    layoutParams = (layoutParams as FrameLayout.LayoutParams).apply {
+                        leftMargin += insets.left
+                        rightMargin += insets.right
+                        topMargin += insets.top
+                        bottomMargin += insets.bottom
+                    }
                 }
             }
 

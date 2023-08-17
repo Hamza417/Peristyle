@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Base.Theme.Peri" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryContainer">@color/colorPrimaryContainer</item>
+        <item name="colorSurface">@color/colorSurface</item>
+        <item name="colorOnSurface">@color/colorOnSurface</item>
+        <item name="android:colorBackground">@color/mainBackground</item>
+
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="textAppearanceLargePopupMenu">@style/TextAppearance.App.BodyLarge</item>
+        <item name="textAppearanceSmallPopupMenu">@style/TextAppearance.App.BodyLarge</item>
+        <item name="popupMenuBackground">@drawable/bg_popup</item>
+        <item name="android:popupMenuStyle">?attr/actionOverflowMenuStyle</item>
+        <item name="android:windowLightNavigationBar">true</item>
+    </style>
+</resources>

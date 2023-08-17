@@ -83,6 +83,13 @@ class MainActivity : AppCompatActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         window.statusBarColor = Color.TRANSPARENT
         window.navigationBarColor = Color.TRANSPARENT
+
+        // Disable navigation bar contrast
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            window.isNavigationBarContrastEnforced = false
+            window.isStatusBarContrastEnforced = false
+        }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             window.navigationBarDividerColor = Color.TRANSPARENT
         }

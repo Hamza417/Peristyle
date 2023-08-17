@@ -302,7 +302,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
 
             adapterWallpaper!!.setWallpaperCallbacks(object : WallpaperCallbacks {
                 override fun onWallpaperClicked(wallpaper: Wallpaper?, position: Int, constraintLayout: ConstraintLayout?) {
-                    binding?.bottomAppBar?.performHide(false)
+                    // binding?.bottomAppBar?.performHide(false)
                     binding?.fab?.transitionName = null // remove transition name to prevent shared element transition
 
                     requireActivity().supportFragmentManager.beginTransaction()
@@ -515,13 +515,10 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
      * Making the Navigation system bar not overlapping with the activity
      */
     private fun fixNavigationBarOverlap() {
-        /**
-         * Root ViewGroup of this activity
-         */
-        val root = binding?.bottomAppBar
-
-        ViewCompat.setOnApplyWindowInsetsListener(root as View) { view, windowInsets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding?.bottomAppBar!!) { _, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+
+            Log.d("Insets", "Bottom: ${insets.bottom}")
 
             /**
              * Apply the insets as a margin to the view. Here the system is setting
@@ -529,22 +526,24 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
              * appropriate to your layout. You can also update the view padding
              * if that's more appropriate.
              */
-            binding?.bottomAppBar?.apply {
-                setPadding(
-                        paddingLeft + insets.left,
-                        paddingTop,
-                        paddingRight + insets.right,
-                        paddingBottom + insets.bottom
-                )
+            if (binding?.bottomAppBar?.paddingBottom!! < insets.bottom) {
+                binding?.bottomAppBar?.apply {
+                    setPadding(
+                            paddingLeft + insets.left,
+                            paddingTop,
+                            paddingRight + insets.right,
+                            paddingBottom + insets.bottom
+                    )
+                }
             }
 
             binding?.fab?.apply {
-                setPadding(
-                        paddingLeft + insets.left,
-                        paddingTop,
-                        paddingRight + insets.right,
-                        paddingBottom + insets.bottom
-                )
+                // Set margin
+                val layoutParams = layoutParams as CoordinatorLayout.LayoutParams
+                layoutParams.bottomMargin = insets.bottom
+                layoutParams.leftMargin = insets.left
+                layoutParams.rightMargin = insets.right
+                this.layoutParams = layoutParams
             }
 
             /**
