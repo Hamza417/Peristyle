@@ -207,7 +207,7 @@ class WallpaperScreen : Fragment() {
             wallpaperEditBinding.blurSlider.addOnChangeListener { _, value, _ ->
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                     currentBlurValue = value
-                    val blurRadius = this.blurRadius * 10
+                    val blurRadius = this.blurRadius
                     try {
                         binding?.wallpaper?.setRenderEffect(
                                 RenderEffect
@@ -231,7 +231,7 @@ class WallpaperScreen : Fragment() {
                                     currentSaturationValue.toSaturation()))
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                        val blurRadius = this@WallpaperScreen.blurRadius * 10
+                        val blurRadius = this@WallpaperScreen.blurRadius
                         try {
                             binding?.wallpaper?.setRenderEffect(
                                     RenderEffect
@@ -307,7 +307,9 @@ class WallpaperScreen : Fragment() {
                 } else {
                     binding?.wallpaper?.setImageBitmap(
                             bitmap?.changeBitmapContrastBrightness(
-                                    currentContrastValue.toContrast(), value.toBrightness(), currentSaturationValue.toSaturation()))
+                                    currentContrastValue.toContrast(),
+                                    value.toBrightness(),
+                                    currentSaturationValue.toSaturation()))
                 }
             }
 
@@ -329,7 +331,9 @@ class WallpaperScreen : Fragment() {
                 } else {
                     binding?.wallpaper?.setImageBitmap(
                             bitmap?.changeBitmapContrastBrightness(
-                                    value.toContrast(), currentBrightnessValue.toBrightness(), currentSaturationValue.toSaturation()))
+                                    value.toContrast(),
+                                    currentBrightnessValue.toBrightness(),
+                                    currentSaturationValue.toSaturation()))
                 }
             }
 
@@ -351,7 +355,9 @@ class WallpaperScreen : Fragment() {
                 } else {
                     binding?.wallpaper?.setImageBitmap(
                             bitmap?.changeBitmapContrastBrightness(
-                                    currentContrastValue.toContrast(), currentBrightnessValue.toBrightness(), value.toSaturation()))
+                                    currentContrastValue.toContrast(),
+                                    currentBrightnessValue.toBrightness(),
+                                    value.toSaturation()))
                 }
             }
 
@@ -417,7 +423,9 @@ class WallpaperScreen : Fragment() {
         val bitmap = this.bitmap
             ?.copy(this.bitmap!!.config, true)
             ?.changeBitmapContrastBrightness(
-                    currentContrastValue.toContrast(), currentBrightnessValue.toBrightness(), currentSaturationValue.toSaturation())
+                    currentContrastValue.toContrast(),
+                    currentBrightnessValue.toBrightness(),
+                    currentSaturationValue.toSaturation())
 
         val blurRadius = currentBlurValue * this.blurRadius
 
