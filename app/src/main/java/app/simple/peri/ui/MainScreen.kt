@@ -223,20 +223,31 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                             }
                             .show()
                     } else {
-                        MaterialAlertDialogBuilder(requireContext())
-                            .setTitle(R.string.delete)
-                            .setMessage(R.string.no_wallpaper_selected)
-                            .setNegativeButton(R.string.close) { dialog, _ ->
-                                dialog.dismiss()
-                            }
-                            .setPositiveButton(R.string.select) { dialog, _ ->
-                                adapterWallpaper?.selectionMode = true
-                                dialog.dismiss()
-                            }
-                            .setOnDismissListener {
-                                unBlurRoot()
-                            }
-                            .show()
+                        if (wallpapers?.isNotEmpty() == true) {
+                            MaterialAlertDialogBuilder(requireContext())
+                                .setTitle(R.string.delete)
+                                .setMessage(R.string.no_wallpaper_selected)
+                                .setNegativeButton(R.string.close) { dialog, _ ->
+                                    dialog.dismiss()
+                                }
+                                .setPositiveButton(R.string.select) { dialog, _ ->
+                                    adapterWallpaper?.selectionMode = true
+                                    dialog.dismiss()
+                                }
+                                .setOnDismissListener {
+                                    unBlurRoot()
+                                }
+                                .show()
+                        } else {
+                            MaterialAlertDialogBuilder(requireContext())
+                                .setTitle(R.string.delete)
+                                .setMessage(R.string.no_wallpaper_found)
+                                .setNegativeButton(R.string.close) { dialog, _ ->
+                                    dialog.dismiss()
+                                    unBlurRoot()
+                                }
+                                .show()
+                        }
                     }
                 }
 
@@ -473,6 +484,8 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                         .replace(R.id.mainContainer, WallpaperScreen.newInstance(randomWallpaper!!), "WallpaperScreen")
                         .addToBackStack("WallpaperScreen")
                         .commit()
+                } else {
+                    throw Exception(getString(R.string.no_wallpaper_found))
                 }
             }.onFailure {
                 MaterialAlertDialogBuilder(requireContext())

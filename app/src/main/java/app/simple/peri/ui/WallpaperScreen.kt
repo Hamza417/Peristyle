@@ -13,7 +13,6 @@ import android.graphics.Shader
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ScaleGestureDetector
 import android.view.View
@@ -24,7 +23,6 @@ import android.view.animation.DecelerateInterpolator
 import android.widget.FrameLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.FileProvider
-import androidx.core.view.MarginLayoutParamsCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.doOnLayout
@@ -35,15 +33,11 @@ import app.simple.peri.R
 import app.simple.peri.constants.BundleConstants
 import app.simple.peri.databinding.FragmentWallpaperScreenBinding
 import app.simple.peri.databinding.WallpaperEditBinding
-import app.simple.peri.glide.utils.GlideUtils.loadHDWallpaper
 import app.simple.peri.glide.utils.GlideUtils.loadWallpaper
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.tools.StackBlur
 import app.simple.peri.utils.BitmapUtils.changeBitmapContrastBrightness
-import app.simple.peri.utils.FileUtils.toSize
 import app.simple.peri.utils.ParcelUtils.parcelable
-import com.davemorrissey.labs.subscaleview.ImageSource
-import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.slider.Slider
 import com.google.android.material.slider.Slider.OnSliderTouchListener

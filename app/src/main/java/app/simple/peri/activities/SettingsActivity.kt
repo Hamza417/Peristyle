@@ -1,10 +1,13 @@
 package app.simple.peri.activities
 
+import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.os.ConfigurationCompat
 import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import app.simple.peri.R
 import app.simple.peri.databinding.ActivityMainBinding
 import app.simple.peri.ui.Preferences
@@ -33,8 +36,25 @@ class SettingsActivity: AppCompatActivity() {
     private fun makeAppFullScreen() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         window.statusBarColor = Color.TRANSPARENT
+        window.navigationBarColor = Color.TRANSPARENT
+
+        // Disable navigation bar contrast
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            window.isNavigationBarContrastEnforced = false
+            window.isStatusBarContrastEnforced = false
+        }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             window.navigationBarDividerColor = Color.TRANSPARENT
+        }
+
+        // Check if light theme is enabled
+        if (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_NO) {
+            WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = true
+            WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightNavigationBars = true
+        } else {
+            WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = false
+            WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightNavigationBars = false
         }
     }
 }

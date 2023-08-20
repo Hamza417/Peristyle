@@ -59,6 +59,12 @@
         app:key="recreate_database"
         app:summary="@string/recreate_database_summary" />
 
+    <Preference
+        android:title="@string/change_directory"
+        app:iconSpaceReserved="false"
+        app:key="change_directory"
+        app:summary="@string/change_directory_desc" />
+
     <PreferenceCategory
         app:iconSpaceReserved="false"
         app:title="@string/about" />

@@ -4,13 +4,21 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewGroup.MarginLayoutParams
+import android.widget.FrameLayout
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.marginBottom
 import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import app.simple.peri.R
 import app.simple.peri.constants.BundleConstants
@@ -21,6 +29,27 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPreferenceChangeListener {
+
+    private val storageResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result != null) {
+            val uri = result.data?.data
+            if (uri != null) {
+                requireActivity().contentResolver.persistedUriPermissions.forEach {
+                    requireActivity().contentResolver.releasePersistableUriPermission(it.uri,
+                                                                                      Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+                }
+                MainPreferences.setStorageUri(null)
+                requireActivity().contentResolver.takePersistableUriPermission(uri,
+                                                                               Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+                MainPreferences.setStorageUri(uri.toString())
+                Log.d("Preferences", "Storage Uri: $uri")
+                LocalBroadcastManager.getInstance(requireContext())
+                    .sendBroadcast(Intent().apply {
+                        action = BundleConstants.INTENT_RECREATE_DATABASE
+                    })
+            }
+        }
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         requireActivity().findViewById<CoordinatorLayout>(R.id.mainContainer)
@@ -34,7 +63,7 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
 
         preferenceScreen.sharedPreferences?.registerOnSharedPreferenceChangeListener(this)
 
-        preferenceScreen.findPreference<androidx.preference.Preference>("positional")?.setOnPreferenceClickListener {
+        preferenceScreen.findPreference<Preference>("positional")?.setOnPreferenceClickListener {
             val url = "https://github.com/Hamza417/Positional"
             val intent = Intent(Intent.ACTION_VIEW)
             intent.data = Uri.parse(url)
@@ -42,7 +71,7 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
             true
         }
 
-        preferenceScreen.findPreference<androidx.preference.Preference>("inure")?.setOnPreferenceClickListener {
+        preferenceScreen.findPreference<Preference>("inure")?.setOnPreferenceClickListener {
             val url = "https://github.com/Hamza417/Inure"
             val intent = Intent(Intent.ACTION_VIEW)
             intent.data = Uri.parse(url)
@@ -50,7 +79,7 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
             true
         }
 
-        preferenceScreen.findPreference<androidx.preference.Preference>("recreate_database")?.setOnPreferenceClickListener {
+        preferenceScreen.findPreference<Preference>("recreate_database")?.setOnPreferenceClickListener {
             MaterialAlertDialogBuilder(requireContext())
                 .setMessage(R.string.recreate_database_message)
                 .setPositiveButton(R.string.yes) { dialog, _ ->
@@ -67,7 +96,7 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
             true
         }
 
-        preferenceScreen.findPreference<androidx.preference.Preference>("clear_cache")?.setOnPreferenceClickListener {
+        preferenceScreen.findPreference<Preference>("clear_cache")?.setOnPreferenceClickListener {
             // Create a background thread
             lifecycleScope.launch(Dispatchers.IO) {
                 Glide.get(requireContext()).clearDiskCache()
@@ -77,6 +106,24 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
 
             true
         }
+
+        preferenceScreen.findPreference<Preference>("change_directory")?.setOnPreferenceClickListener {
+            MaterialAlertDialogBuilder(requireContext())
+                .setMessage(R.string.change_directory_desc)
+                .setPositiveButton(R.string.change_directory) { dialog, _ ->
+                    val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
+                    storageResult.launch(intent)
+                    dialog.dismiss()
+                }
+                .setNegativeButton(R.string.close) { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .show()
+            true
+        }
+
+        preferenceScreen.findPreference<Preference>("change_directory")?.summary =
+            getString(R.string.change_directory_desc, MainPreferences.getStorageUri())
     }
 
     override fun onDestroy() {
@@ -89,18 +136,46 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
             MainPreferences.name -> {
                 MainPreferences.setName(p0?.getBoolean(p1, true)!!)
             }
+
             "grid_span" -> {
                 MainPreferences.setGridSpan(
                         p0?.getString(p1, "2")!!.toInt()
                             .coerceAtLeast(1)
                             .coerceAtMost(4))
             }
+
             "blur" -> {
                 MainPreferences.setBlur(p0?.getBoolean(p1, true)!!)
             }
+
             "is_details" -> {
                 MainPreferences.setDetails(p0?.getBoolean(p1, true)!!)
             }
+        }
+    }
+
+    /**
+     * Making the Navigation system bar not overlapping with the activity
+     */
+    private fun fixNavigationBarOverlap() {
+        ViewCompat.setOnApplyWindowInsetsListener(requireView()) { view, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+
+            /**
+             * Setting the bottom margin to the view to make it not overlap with the
+             * navigation system bar
+             */
+            view.layoutParams = (view.layoutParams as MarginLayoutParams).apply {
+                if (bottomMargin < insets.bottom.times(4)) {
+                    bottomMargin = insets.bottom.times(4)
+                }
+            }
+
+            /**
+             * Return CONSUMED if you don't want want the window insets to keep being
+             * passed down to descendant views.
+             */
+            WindowInsetsCompat.CONSUMED
         }
     }
 

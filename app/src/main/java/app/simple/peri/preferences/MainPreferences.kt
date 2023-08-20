@@ -17,8 +17,8 @@ object MainPreferences {
         return SharedPreferences.getSharedPreferences().getString(storageUri, null)
     }
 
-    fun setStorageUri(uri: String) {
-        SharedPreferences.getSharedPreferences().edit().putString(storageUri, uri).apply()
+    fun setStorageUri(uri: String?): Boolean {
+        return SharedPreferences.getSharedPreferences().edit().putString(storageUri, uri).commit()
     }
 
     fun getSort(): String? {
