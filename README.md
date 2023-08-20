@@ -35,5 +35,5 @@ See the [LICENSE](./LICENSE) file.
 ![GitHub all releases](https://img.shields.io/github/downloads/Hamza417/Peri/total?label=Total%20Downloads&color=white)
 
 ## TODO
--[ ] Add native framework for color filters
+ - [ ] Add native framework for color filters
 
