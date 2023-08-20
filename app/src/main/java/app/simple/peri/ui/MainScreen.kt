@@ -461,17 +461,27 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
         }
 
         binding?.fab?.setOnClickListener {
-            // Pick a random wallpaper from the list
-            val randomWallpaper = adapterWallpaper?.getRandomWallpaper()
-            binding?.fab?.transitionName = randomWallpaper?.uri.toString()
-            requireArguments().putString(BundleConstants.FAB_TRANSITION, randomWallpaper?.uri.toString())
+            kotlin.runCatching {
+                // Pick a random wallpaper from the list
+                val randomWallpaper = adapterWallpaper?.getRandomWallpaper()
+                binding?.fab?.transitionName = randomWallpaper?.uri.toString()
+                requireArguments().putString(BundleConstants.FAB_TRANSITION, randomWallpaper?.uri.toString())
 
-            if (randomWallpaper.isNotNull()) {
-                requireActivity().supportFragmentManager.beginTransaction()
-                    .addSharedElement(binding!!.fab, binding!!.fab.transitionName)
-                    .replace(R.id.mainContainer, WallpaperScreen.newInstance(randomWallpaper!!), "WallpaperScreen")
-                    .addToBackStack("WallpaperScreen")
-                    .commit()
+                if (randomWallpaper.isNotNull()) {
+                    requireActivity().supportFragmentManager.beginTransaction()
+                        .addSharedElement(binding!!.fab, binding!!.fab.transitionName)
+                        .replace(R.id.mainContainer, WallpaperScreen.newInstance(randomWallpaper!!), "WallpaperScreen")
+                        .addToBackStack("WallpaperScreen")
+                        .commit()
+                }
+            }.onFailure {
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle(R.string.error)
+                    .setMessage(it.message ?: it.stackTraceToString())
+                    .setPositiveButton(R.string.close) { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    .show()
             }
         }
 
@@ -578,7 +588,17 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
         when (p1) {
             MainPreferences.sort,
             MainPreferences.order -> {
-                wallpaperViewModel.sortWallpapers()
+                if (wallpaperViewModel.isDatabaseLoaded()) {
+                    wallpaperViewModel.sortWallpapers()
+                } else {
+                    MaterialAlertDialogBuilder(requireContext())
+                        .setTitle(R.string.error)
+                        .setMessage(R.string.still_loading)
+                        .setPositiveButton(R.string.close) { dialog, _ ->
+                            dialog.dismiss()
+                        }
+                        .show()
+                }
             }
 
             MainPreferences.gridSpan -> {

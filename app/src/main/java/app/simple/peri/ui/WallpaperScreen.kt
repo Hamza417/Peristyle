@@ -381,14 +381,38 @@ class WallpaperScreen : Fragment() {
                 .show()
 
             viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
-                val wallpaperManager = WallpaperManager.getInstance(requireContext())
-                val bitmap = prepareFinalBitmap()
-                uri = getImageUri(bitmap)
+                kotlin.runCatching {
+                    val wallpaperManager = WallpaperManager.getInstance(requireContext())
+                    val bitmap = prepareFinalBitmap()
+                    uri = getImageUri(bitmap)
 
-                withContext(Dispatchers.Main) {
-                    wallpaperManager.getCropAndSetWallpaperIntent(uri).let {
+                    withContext(Dispatchers.Main) {
+                        kotlin.runCatching {
+                            wallpaperManager.getCropAndSetWallpaperIntent(uri).let {
+                                dialog.dismiss()
+                                startActivity(it)
+                            }
+                        }.onFailure {
+                            dialog.dismiss()
+                            MaterialAlertDialogBuilder(requireContext())
+                                .setTitle(R.string.error)
+                                .setMessage(it.message)
+                                .setPositiveButton(R.string.close) { dialog, _ ->
+                                    dialog.dismiss()
+                                }
+                                .show()
+                        }
+                    }
+                }.onFailure {
+                    withContext(Dispatchers.Main) {
                         dialog.dismiss()
-                        startActivity(it)
+                        MaterialAlertDialogBuilder(requireContext())
+                            .setTitle(R.string.error)
+                            .setMessage(it.message)
+                            .setPositiveButton(R.string.close) { dialog, _ ->
+                                dialog.dismiss()
+                            }
+                            .show()
                     }
                 }
             }

@@ -55,4 +55,6 @@
     <string name="enabled_wallpaper_details">Enable Wallpaper Details</string>
     <string name="show_wallpaper_details_on_the_main_screen">Show wallpaper details on the main screen.</string>
     <string name="high_definition">High Definition</string>
+    <string name="error">Error</string>
+    <string name="still_loading">Wallpapers are being refreshed, try again in a moment.</string>
 </resources>

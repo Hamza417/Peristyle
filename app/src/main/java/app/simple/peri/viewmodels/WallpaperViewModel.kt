@@ -253,9 +253,15 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     fun sortWallpapers() {
-        wallpapers = wallpapersData.value ?: ArrayList()
-        wallpapers.getSortedList()
-        wallpapersData.postValue(wallpapers)
+        if (isDatabaseLoaded) {
+            wallpapers = wallpapersData.value ?: ArrayList()
+            wallpapers.getSortedList()
+            wallpapersData.postValue(wallpapers)
+        }
+    }
+
+    fun isDatabaseLoaded(): Boolean {
+        return isDatabaseLoaded
     }
 
     fun updateWallpaper(wallpaper: Wallpaper) {

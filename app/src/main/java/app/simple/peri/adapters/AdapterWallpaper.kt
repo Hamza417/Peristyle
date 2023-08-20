@@ -106,8 +106,12 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>,
         notifyItemRangeChanged(idx, this.wallpapers.size)
     }
 
-    fun getRandomWallpaper(): Wallpaper {
-        return wallpapers[(0 until wallpapers.size).random()]
+    fun getRandomWallpaper(): Wallpaper? {
+        return if (wallpapers.isNotEmpty()) {
+            wallpapers[(0 until wallpapers.size).random()]
+        } else {
+            null
+        }
     }
 
     fun selectWallpaper(wallpaper: Wallpaper) {
