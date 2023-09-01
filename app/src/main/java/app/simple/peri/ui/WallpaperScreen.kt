@@ -61,7 +61,8 @@ class WallpaperScreen : Fragment() {
 
     private var bitmap: Bitmap? = null
     private var uri: Uri? = null
-    private val blurRadius = 150F
+    private val blurRadius = 600F
+    private val blurFactor = 12
 
     private var currentBlurValue = 0F
     private var currentBrightnessValue = 0.5F
@@ -240,7 +241,8 @@ class WallpaperScreen : Fragment() {
                                     RenderEffect
                                         .createBlurEffect(
                                                 wallpaperEditBinding.blurSlider.value * blurRadius,
-                                                wallpaperEditBinding.blurSlider.value * blurRadius, Shader.TileMode.CLAMP))
+                                                wallpaperEditBinding.blurSlider.value * blurRadius,
+                                                Shader.TileMode.CLAMP))
                         } catch (e: IllegalArgumentException) {
                             binding?.wallpaper?.setRenderEffect(null)
                         }
@@ -485,7 +487,7 @@ class WallpaperScreen : Fragment() {
         val blurRadius = currentBlurValue * this.blurRadius
 
         try {
-            StackBlur().blurRgb(bitmap!!, blurRadius.roundToInt())
+            StackBlur().blurRgb(bitmap!!, blurRadius.roundToInt() / blurFactor)
         } catch (e: Exception) {
             // baa baa black sheep
         }
