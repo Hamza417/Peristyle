@@ -409,11 +409,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
 
         wallpaperViewModel.getNewWallpapersLiveData().observe(requireActivity()) { wallpaper ->
             if (wallpaper.isNotNull()) {
-                adapterWallpaper?.addWallpaper(wallpaper) {
-                    binding?.recyclerView?.scrollToPosition(0)
-                    Log.d("Wallpaper", "Added wallpaper: ${wallpaper.name}")
-                }
-
+                adapterWallpaper?.addWallpaper(wallpaper)
                 wallpaperViewModel.getNewWallpapersLiveData().value = null
             }
         }
@@ -601,17 +597,18 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
         when (p1) {
             MainPreferences.sort,
             MainPreferences.order -> {
-                if (wallpaperViewModel.isDatabaseLoaded()) {
-                    wallpaperViewModel.sortWallpapers()
-                } else {
-                    MaterialAlertDialogBuilder(requireContext())
-                        .setTitle(R.string.error)
-                        .setMessage(R.string.still_loading)
-                        .setPositiveButton(R.string.close) { dialog, _ ->
-                            dialog.dismiss()
-                        }
-                        .show()
-                }
+//                if (wallpaperViewModel.isDatabaseLoaded()) {
+//                    wallpaperViewModel.sortWallpapers()
+//                } else {
+//                    MaterialAlertDialogBuilder(requireContext())
+//                        .setTitle(R.string.error)
+//                        .setMessage(R.string.still_loading)
+//                        .setPositiveButton(R.string.close) { dialog, _ ->
+//                            dialog.dismiss()
+//                        }
+//                        .show()
+//                }
+                adapterWallpaper?.sortWallpapers()
             }
 
             MainPreferences.gridSpan -> {

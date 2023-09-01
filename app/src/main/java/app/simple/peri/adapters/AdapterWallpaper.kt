@@ -14,8 +14,8 @@ import app.simple.peri.interfaces.WallpaperCallbacks
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.utils.FileUtils.toSize
+import app.simple.peri.utils.WallpaperSort.getSortedList
 import com.bumptech.glide.Glide
-import java.util.Collections
 
 class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>,
                        private val displayWidth: Int,
@@ -69,23 +69,10 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>,
         }
     }
 
-    fun addWallpaper(wallpaper: Wallpaper, function: (Int) -> Unit) {
+    fun addWallpaper(wallpaper: Wallpaper) {
         Log.d("Wallpaper", "Adding wallpaper: $wallpaper")
-        val idx = Collections.binarySearch(wallpapers, wallpaper) { o1, o2 ->
-            o1.name!!.compareTo(o2.name!!)
-        }
-
-        if (idx < 0) {
-            wallpapers.add(0, wallpaper)
-            notifyItemInserted(0)
-            // notifyItemRangeChanged(0, wallpapers.size)
-        } else {
-            wallpapers.add(idx, wallpaper)
-            notifyItemInserted(idx)
-            // notifyItemRangeChanged(idx, wallpapers.size)
-        }
-
-        function(idx)
+        wallpapers.add(0, wallpaper)
+        notifyItemInserted(0)
     }
 
     fun removeWallpapers(wallpapers: java.util.ArrayList<Wallpaper>?) {
@@ -143,6 +130,13 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>,
 
     fun shuffleWallpapers() {
         wallpapers.shuffle()
+        for (i in 0 until wallpapers.size) {
+            notifyItemChanged(i)
+        }
+    }
+
+    fun sortWallpapers() {
+        wallpapers.getSortedList()
         for (i in 0 until wallpapers.size) {
             notifyItemChanged(i)
         }
