@@ -23,39 +23,45 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/saturation"
-        android:textColor="@color/textWhite" />
+        android:textColor="@color/textWhite"
+        android:visibility="gone" />
 
     <com.google.android.material.slider.Slider
         android:id="@+id/saturation_slider"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
+        android:visibility="gone"
         app:thumbColor="?attr/colorPrimary" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/brightness"
-        android:textColor="@color/textWhite" />
+        android:textColor="@color/textWhite"
+        android:visibility="gone" />
 
     <com.google.android.material.slider.Slider
         android:id="@+id/brightness_slider"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
+        android:visibility="gone"
         app:thumbColor="?attr/colorPrimary" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/contrast"
-        android:textColor="@color/textWhite" />
+        android:textColor="@color/textWhite"
+        android:visibility="gone" />
 
     <com.google.android.material.slider.Slider
         android:id="@+id/contrast_slider"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
+        android:visibility="gone"
         app:thumbColor="?attr/colorPrimary" />
 
 </LinearLayout>

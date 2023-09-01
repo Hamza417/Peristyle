@@ -13,6 +13,7 @@ import android.graphics.Shader
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ScaleGestureDetector
 import android.view.View
@@ -40,6 +41,7 @@ import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.tools.StackBlur
 import app.simple.peri.utils.BitmapUtils.changeBitmapContrastBrightness
 import app.simple.peri.utils.ConditionUtils.invert
+import app.simple.peri.utils.ConditionUtils.isNull
 import app.simple.peri.utils.ParcelUtils.parcelable
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.slider.Slider
@@ -147,8 +149,12 @@ class WallpaperScreen : Fragment() {
              */
             binding?.wallpaper?.doOnLayout {
                 binding?.wallpaperScrollView?.afterMeasured {
-                    val scrollTo = binding?.wallpaper?.width?.div(2)
-                        ?.minus(binding?.wallpaperScrollView?.width?.div(2)!!)
+                    val scrollTo = if (savedInstanceState.isNull()) {
+                        binding?.wallpaper?.width?.div(2)
+                            ?.minus(binding?.wallpaperScrollView?.width?.div(2)!!)
+                    } else {
+                        savedInstanceState?.getInt(BundleConstants.SCROLL_X)
+                    }
 
                     if (scrollTo != null) {
                         scrollTo(scrollTo, 0)
@@ -156,6 +162,7 @@ class WallpaperScreen : Fragment() {
                 }
             }
 
+            Log.d("WallpaperScreen", "Wallpaper loaded")
             startPostponedEnterTransition()
 
             binding?.bottomMenu?.animate()
@@ -582,6 +589,7 @@ class WallpaperScreen : Fragment() {
         outState.putFloat(BundleConstants.BRIGHTNESS_VALUE, currentBrightnessValue)
         outState.putFloat(BundleConstants.CONTRAST_VALUE, currentContrastValue)
         outState.putFloat(BundleConstants.SATURATION_VALUE, currentSaturationValue)
+        outState.putInt(BundleConstants.SCROLL_X, binding?.wallpaperScrollView?.scrollX!!)
         super.onSaveInstanceState(outState)
     }
 
@@ -592,6 +600,7 @@ class WallpaperScreen : Fragment() {
             currentBrightnessValue = it.getFloat(BundleConstants.BRIGHTNESS_VALUE)
             currentContrastValue = it.getFloat(BundleConstants.CONTRAST_VALUE)
             currentSaturationValue = it.getFloat(BundleConstants.SATURATION_VALUE)
+            binding?.wallpaperScrollView?.scrollX = it.getInt(BundleConstants.SCROLL_X)
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 val blurRadius = this.blurRadius
