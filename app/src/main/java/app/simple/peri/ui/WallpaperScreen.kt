@@ -26,6 +26,7 @@ import androidx.core.content.FileProvider
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.doOnLayout
+import androidx.core.view.drawToBitmap
 import androidx.core.view.marginBottom
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -35,9 +36,10 @@ import app.simple.peri.databinding.FragmentWallpaperScreenBinding
 import app.simple.peri.databinding.WallpaperEditBinding
 import app.simple.peri.glide.utils.GlideUtils.loadWallpaper
 import app.simple.peri.models.Wallpaper
+import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.tools.StackBlur
 import app.simple.peri.utils.BitmapUtils.changeBitmapContrastBrightness
-import app.simple.peri.utils.BitmapUtils.createLayoutBitmap
+import app.simple.peri.utils.ConditionUtils.invert
 import app.simple.peri.utils.ParcelUtils.parcelable
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.slider.Slider
@@ -376,39 +378,43 @@ class WallpaperScreen : Fragment() {
         }
 
         binding?.setAsWallpaper?.setOnClickListener {
-            /**
-             * Show list of options to set wallpaper
-             * on lock, home or both screens
-             */
-            val list = arrayOf(
-                    getString(R.string.home_screen),
-                    getString(R.string.lock_screen),
-                    getString(R.string.both))
+            if (MainPreferences.getAppEngine()) {
+                /**
+                 * Show list of options to set wallpaper
+                 * on lock, home or both screens
+                 */
+                val list = arrayOf(
+                        getString(R.string.home_screen),
+                        getString(R.string.lock_screen),
+                        getString(R.string.both))
 
-            MaterialAlertDialogBuilder(requireContext())
-                .setTitle(R.string.set_as_wallpaper)
-                .setItems(list) { d, which ->
-                    when (which) {
-                        0 -> {
-                            setWallpaper(WallpaperManager.FLAG_SYSTEM)
-                            d.dismiss()
-                        }
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle(R.string.set_as_wallpaper)
+                    .setItems(list) { d, which ->
+                        when (which) {
+                            0 -> {
+                                setWallpaper(WallpaperManager.FLAG_SYSTEM)
+                                d.dismiss()
+                            }
 
-                        1 -> {
-                            setWallpaper(WallpaperManager.FLAG_LOCK)
-                            d.dismiss()
-                        }
+                            1 -> {
+                                setWallpaper(WallpaperManager.FLAG_LOCK)
+                                d.dismiss()
+                            }
 
-                        2 -> {
-                            setWallpaper(WallpaperManager.FLAG_SYSTEM or WallpaperManager.FLAG_LOCK)
-                            d.dismiss()
+                            2 -> {
+                                setWallpaper(WallpaperManager.FLAG_SYSTEM or WallpaperManager.FLAG_LOCK)
+                                d.dismiss()
+                            }
                         }
                     }
-                }
-                .setNegativeButton(R.string.close) { d, _ ->
-                    d.dismiss()
-                }
-                .show()
+                    .setNegativeButton(R.string.close) { d, _ ->
+                        d.dismiss()
+                    }
+                    .show()
+            } else {
+                setWallpaper(-1)
+            }
         }
     }
 
@@ -421,12 +427,26 @@ class WallpaperScreen : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             kotlin.runCatching {
                 val wallpaperManager = WallpaperManager.getInstance(requireContext())
-                val bitmap = binding?.wallpaperScrollView?.createLayoutBitmap()!! // prepareFinalBitmap()
-                // uri = getImageUri(bitmap)
+
+                val bitmap = if (MainPreferences.getAppEngine()) {
+                    binding?.wallpaperScrollView?.drawToBitmap()!!
+                } else {
+                    prepareFinalBitmap()
+                }
+
+                if (MainPreferences.getAppEngine().invert()) {
+                    uri = getImageUri(bitmap)
+                }
 
                 withContext(Dispatchers.Main) {
                     kotlin.runCatching {
-                        wallpaperManager.setBitmap(bitmap, null, true, mode)
+                        if (MainPreferences.getAppEngine()) {
+                            wallpaperManager.setBitmap(bitmap, null, true, mode)
+                        } else {
+                            wallpaperManager.getCropAndSetWallpaperIntent(uri).run {
+                                startActivity(this)
+                            }
+                        }
                         loader.dismiss()
                     }.onFailure {
                         loader.dismiss()

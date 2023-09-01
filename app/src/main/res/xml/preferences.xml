@@ -41,6 +41,17 @@
         app:title="@string/grid_span"
         app:useSimpleSummaryProvider="false" />
 
+    <PreferenceCategory
+        app:iconSpaceReserved="false"
+        app:title="@string/engine" />
+
+    <CheckBoxPreference
+        app:defaultValue="true"
+        app:enabled="true"
+        app:iconSpaceReserved="false"
+        app:key="is_app_engine"
+        app:summary="@string/app_engine_summary"
+        app:title="@string/enable_app_engine" />
 
     <PreferenceCategory
         app:iconSpaceReserved="false"

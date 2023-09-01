@@ -151,6 +151,10 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
             "is_details" -> {
                 MainPreferences.setDetails(p0?.getBoolean(p1, true)!!)
             }
+
+            "is_app_engine" -> {
+                MainPreferences.setAppEngine(p0?.getBoolean(p1, true)!!)
+            }
         }
     }
 

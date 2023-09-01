@@ -7,6 +7,7 @@ object MainPreferences {
     private const val storageUri = "storageUri"
     private const val nomediaDialog = "nomediaDialog"
     private const val blur = "blur_main_list"
+    private const val isAppEngine = "is_app_engine"
     const val sort = "sort"
     const val order = "order"
     const val name = "is_name"
@@ -77,5 +78,13 @@ object MainPreferences {
 
     fun getDetails(): Boolean {
         return SharedPreferences.getSharedPreferences().getBoolean(details, true)
+    }
+
+    fun setAppEngine(boolean: Boolean) {
+        SharedPreferences.getSharedPreferences().edit().putBoolean(isAppEngine, boolean).apply()
+    }
+
+    fun getAppEngine(): Boolean {
+        return SharedPreferences.getSharedPreferences().getBoolean(isAppEngine, true)
     }
 }

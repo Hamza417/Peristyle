@@ -42,7 +42,7 @@ object BitmapUtils {
         /**
          * Retain current matrix and scale factor, but replace translation vector with specified values.
          */
-        layout(scrollX, scrollY, scrollX + measuredWidth, scrollY + measuredHeight)
+        layout(scrollX, scrollY, measuredWidth, measuredHeight)
 
         val bitmap = Bitmap.createBitmap(measuredWidth, measuredHeight, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
