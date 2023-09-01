@@ -37,6 +37,7 @@ import app.simple.peri.glide.utils.GlideUtils.loadWallpaper
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.tools.StackBlur
 import app.simple.peri.utils.BitmapUtils.changeBitmapContrastBrightness
+import app.simple.peri.utils.BitmapUtils.createLayoutBitmap
 import app.simple.peri.utils.ParcelUtils.parcelable
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.slider.Slider
@@ -375,37 +376,60 @@ class WallpaperScreen : Fragment() {
         }
 
         binding?.setAsWallpaper?.setOnClickListener {
-            val dialog = MaterialAlertDialogBuilder(requireContext())
-                .setTitle(R.string.preparing)
-                .setMessage(getString(R.string.copying))
-                .show()
+            /**
+             * Show list of options to set wallpaper
+             * on lock, home or both screens
+             */
+            val list = arrayOf(
+                    getString(R.string.home_screen),
+                    getString(R.string.lock_screen),
+                    getString(R.string.both))
 
-            viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
-                kotlin.runCatching {
-                    val wallpaperManager = WallpaperManager.getInstance(requireContext())
-                    val bitmap = prepareFinalBitmap()
-                    uri = getImageUri(bitmap)
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.set_as_wallpaper)
+                .setItems(list) { d, which ->
+                    when (which) {
+                        0 -> {
+                            setWallpaper(WallpaperManager.FLAG_SYSTEM)
+                            d.dismiss()
+                        }
 
-                    withContext(Dispatchers.Main) {
-                        kotlin.runCatching {
-                            wallpaperManager.getCropAndSetWallpaperIntent(uri).let {
-                                dialog.dismiss()
-                                startActivity(it)
-                            }
-                        }.onFailure {
-                            dialog.dismiss()
-                            MaterialAlertDialogBuilder(requireContext())
-                                .setTitle(R.string.error)
-                                .setMessage(it.message)
-                                .setPositiveButton(R.string.close) { dialog, _ ->
-                                    dialog.dismiss()
-                                }
-                                .show()
+                        1 -> {
+                            setWallpaper(WallpaperManager.FLAG_LOCK)
+                            d.dismiss()
+                        }
+
+                        2 -> {
+                            setWallpaper(WallpaperManager.FLAG_SYSTEM or WallpaperManager.FLAG_LOCK)
+                            d.dismiss()
                         }
                     }
-                }.onFailure {
-                    withContext(Dispatchers.Main) {
-                        dialog.dismiss()
+                }
+                .setNegativeButton(R.string.close) { d, _ ->
+                    d.dismiss()
+                }
+                .show()
+        }
+    }
+
+    private fun setWallpaper(mode: Int) {
+        val loader = MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.preparing)
+            .setMessage(getString(R.string.copying))
+            .show()
+
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+            kotlin.runCatching {
+                val wallpaperManager = WallpaperManager.getInstance(requireContext())
+                val bitmap = binding?.wallpaperScrollView?.createLayoutBitmap()!! // prepareFinalBitmap()
+                // uri = getImageUri(bitmap)
+
+                withContext(Dispatchers.Main) {
+                    kotlin.runCatching {
+                        wallpaperManager.setBitmap(bitmap, null, true, mode)
+                        loader.dismiss()
+                    }.onFailure {
+                        loader.dismiss()
                         MaterialAlertDialogBuilder(requireContext())
                             .setTitle(R.string.error)
                             .setMessage(it.message)
@@ -414,6 +438,17 @@ class WallpaperScreen : Fragment() {
                             }
                             .show()
                     }
+                }
+            }.onFailure {
+                withContext(Dispatchers.Main) {
+                    loader.dismiss()
+                    MaterialAlertDialogBuilder(requireContext())
+                        .setTitle(R.string.error)
+                        .setMessage(it.message)
+                        .setPositiveButton(R.string.close) { dialog, _ ->
+                            dialog.dismiss()
+                        }
+                        .show()
                 }
             }
         }
