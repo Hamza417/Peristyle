@@ -98,7 +98,7 @@ class WallpaperScreen : Fragment() {
         // Enable pinch to zoom
         scaleGestureDetector = ScaleGestureDetector(requireContext(), object : ScaleGestureDetector.SimpleOnScaleGestureListener() {
             override fun onScaleBegin(detector: ScaleGestureDetector): Boolean {
-                binding?.blurSliderContainer?.animate()
+                binding?.bottomMenu?.animate()
                     ?.alpha(0f)
                     ?.setInterpolator(DecelerateInterpolator(1.5F))
                     ?.setDuration(resources.getInteger(R.integer.animation_duration).toLong())
@@ -125,7 +125,7 @@ class WallpaperScreen : Fragment() {
                     ?.setInterpolator(DecelerateInterpolator(1.5F))
                     ?.start()
 
-                binding?.blurSliderContainer?.animate()
+                binding?.bottomMenu?.animate()
                     ?.alpha(1f)
                     ?.setInterpolator(DecelerateInterpolator(1.5F))
                     ?.setDuration(resources.getInteger(R.integer.animation_duration).toLong())
@@ -157,14 +157,14 @@ class WallpaperScreen : Fragment() {
 
             startPostponedEnterTransition()
 
-            binding?.blurSliderContainer?.animate()
+            binding?.bottomMenu?.animate()
                 ?.alpha(1f)
                 ?.setInterpolator(DecelerateInterpolator(1.5F))
                 ?.setDuration(resources.getInteger(R.integer.animation_duration).toLong())
                 ?.setStartDelay(resources.getInteger(R.integer.animation_duration).toLong())
                 ?.setListener(object : AnimatorListener {
                     override fun onAnimationStart(p0: Animator) {
-                        binding?.blurSliderContainer?.visibility = View.VISIBLE
+                        binding?.bottomMenu?.visibility = View.VISIBLE
                     }
 
                     override fun onAnimationEnd(p0: Animator) {
@@ -501,9 +501,9 @@ class WallpaperScreen : Fragment() {
         // Copy the bitmap to the path
         val file = File(path)
         file.createNewFile()
-        val fo = file.outputStream()
-        fo.write(bytes.toByteArray())
-        fo.close()
+        val fileOutputStream = file.outputStream()
+        fileOutputStream.write(bytes.toByteArray())
+        fileOutputStream.close()
 
         return FileProvider.getUriForFile(
                 requireContext(),
@@ -542,11 +542,11 @@ class WallpaperScreen : Fragment() {
      * Making the Navigation system bar not overlapping with the activity
      */
     private fun fixNavigationBarOverlap() {
-        ViewCompat.setOnApplyWindowInsetsListener(binding?.blurSliderContainer!!) { view, windowInsets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding?.bottomMenu!!) { view, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
 
-            if (binding?.blurSliderContainer?.marginBottom!! < insets.bottom) {
-                binding?.blurSliderContainer?.apply {
+            if (binding?.bottomMenu?.marginBottom!! < insets.bottom) {
+                binding?.bottomMenu?.apply {
                     layoutParams = (layoutParams as FrameLayout.LayoutParams).apply {
                         leftMargin += insets.left
                         rightMargin += insets.right

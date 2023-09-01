@@ -23,7 +23,7 @@
     </HorizontalScrollView>
 
     <com.google.android.material.card.MaterialCardView
-        android:id="@+id/blur_slider_container"
+        android:id="@+id/bottom_menu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center"

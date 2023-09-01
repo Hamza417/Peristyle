@@ -298,6 +298,10 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                 R.id.settings -> {
                     startActivity(Intent(requireContext(), SettingsActivity::class.java))
                 }
+
+                R.id.scroll_up -> {
+                    binding?.recyclerView?.scrollToPosition(0)
+                }
             }
 
             true

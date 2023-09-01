@@ -66,4 +66,5 @@
     <string name="engine">Engine</string>
     <string name="app_engine_summary">Use app\'s wallpaper engine to set wallpapers instead of system (recommended).</string>
     <string name="enable_app_engine">Peri Wallpaper Engine</string>
+    <string name="scroll_to_top">Scroll to Top</string>
 </resources>

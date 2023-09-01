@@ -1,5 +1,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <item
         android:id="@+id/sort"
@@ -7,7 +8,8 @@
         android:icon="@drawable/ic_sort"
         android:title="@string/sort"
         app:iconTint="?attr/colorOnSurface"
-        app:showAsAction="always" />
+        app:showAsAction="always"
+        tools:ignore="AlwaysShowAction" />
 
     <item
         android:id="@+id/delete"
@@ -30,6 +32,14 @@
         android:contentDescription="@string/settings"
         android:icon="@drawable/ic_settings"
         android:title="@string/settings"
+        app:iconTint="?attr/colorOnSurface"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/scroll_up"
+        android:contentDescription="@string/settings"
+        android:icon="@drawable/ic_arrow_up"
+        android:title="@string/scroll_to_top"
         app:iconTint="?attr/colorOnSurface"
         app:showAsAction="always" />
 
