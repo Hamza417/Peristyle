@@ -62,7 +62,7 @@ class WallpaperScreen : Fragment() {
     private var bitmap: Bitmap? = null
     private var uri: Uri? = null
     private val blurRadius = 600F
-    private val blurFactor = 12
+    private val blurFactor = 4
 
     private var currentBlurValue = 0F
     private var currentBrightnessValue = 0.5F
@@ -225,6 +225,9 @@ class WallpaperScreen : Fragment() {
             wallpaperEditBinding.blurSlider.addOnSliderTouchListener(object : OnSliderTouchListener {
                 override fun onStartTrackingTouch(slider: Slider) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                        /**
+                         * Remove blur effect when user starts to change the value
+                         */
                         binding?.wallpaper?.setRenderEffect(null)
                     }
 
@@ -257,6 +260,11 @@ class WallpaperScreen : Fragment() {
 
                                 withContext(Dispatchers.Main) {
                                     binding?.wallpaper?.setImageBitmap(bitmap)
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                                        binding?.wallpaper?.setRenderEffect(null)
+                                    } else {
+                                        // Do nothing
+                                    }
                                 }
                             } else {
                                 withContext(Dispatchers.Main) {
@@ -320,6 +328,7 @@ class WallpaperScreen : Fragment() {
 
             wallpaperEditBinding.contrastSlider.addOnChangeListener { _, value, _ ->
                 currentContrastValue = value
+
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                     val cm = ColorMatrix(floatArrayOf(
                             value.toContrast(), 0f, 0f, 0f, currentBrightnessValue.toBrightness(),
@@ -344,6 +353,7 @@ class WallpaperScreen : Fragment() {
 
             wallpaperEditBinding.saturationSlider.addOnChangeListener { _, value, _ ->
                 currentSaturationValue = value
+
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                     val cm = ColorMatrix(floatArrayOf(
                             currentContrastValue.toContrast(), 0f, 0f, 0f, currentBrightnessValue.toBrightness(),
@@ -356,7 +366,8 @@ class WallpaperScreen : Fragment() {
                         setSaturation(value.toSaturation())
                     })
 
-                    binding?.wallpaper?.setRenderEffect(RenderEffect.createColorFilterEffect(ColorMatrixColorFilter(cm)))
+                    binding?.wallpaper?.setRenderEffect(
+                            RenderEffect.createColorFilterEffect(ColorMatrixColorFilter(cm)))
                 } else {
                     binding?.wallpaper?.setImageBitmap(
                             bitmap?.changeBitmapContrastBrightness(
@@ -563,6 +574,49 @@ class WallpaperScreen : Fragment() {
              * passed down to descendant views.
              */
             WindowInsetsCompat.CONSUMED
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putInt(BundleConstants.BLUR_VALUE, currentBlurValue.roundToInt())
+        outState.putFloat(BundleConstants.BRIGHTNESS_VALUE, currentBrightnessValue)
+        outState.putFloat(BundleConstants.CONTRAST_VALUE, currentContrastValue)
+        outState.putFloat(BundleConstants.SATURATION_VALUE, currentSaturationValue)
+        super.onSaveInstanceState(outState)
+    }
+
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        savedInstanceState?.let {
+            currentBlurValue = it.getInt(BundleConstants.BLUR_VALUE).toFloat()
+            currentBrightnessValue = it.getFloat(BundleConstants.BRIGHTNESS_VALUE)
+            currentContrastValue = it.getFloat(BundleConstants.CONTRAST_VALUE)
+            currentSaturationValue = it.getFloat(BundleConstants.SATURATION_VALUE)
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                val blurRadius = this.blurRadius
+                try {
+                    binding?.wallpaper?.setImageBitmap(
+                            bitmap?.changeBitmapContrastBrightness(
+                                    currentContrastValue.toContrast(),
+                                    currentBrightnessValue.toBrightness(),
+                                    currentSaturationValue.toSaturation()))
+
+                    binding?.wallpaper?.setRenderEffect(
+                            RenderEffect
+                                .createBlurEffect(currentBlurValue * blurRadius,
+                                                  currentBlurValue * blurRadius,
+                                                  Shader.TileMode.CLAMP))
+                } catch (e: IllegalArgumentException) {
+                    binding?.wallpaper?.setRenderEffect(null)
+                }
+            } else {
+                binding?.wallpaper?.setImageBitmap(
+                        bitmap?.changeBitmapContrastBrightness(
+                                currentContrastValue.toContrast(),
+                                currentBrightnessValue.toBrightness(),
+                                currentSaturationValue.toSaturation()))
+            }
         }
     }
 
