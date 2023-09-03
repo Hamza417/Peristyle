@@ -411,21 +411,21 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
             }
         }
 
-        wallpaperViewModel.getNewWallpapersLiveData().observe(requireActivity()) { wallpaper ->
+        wallpaperViewModel.getNewWallpapersLiveData().observe(viewLifecycleOwner) { wallpaper ->
             if (wallpaper.isNotNull()) {
                 adapterWallpaper?.addWallpaper(wallpaper)
                 wallpaperViewModel.getNewWallpapersLiveData().value = null
             }
         }
 
-        wallpaperViewModel.getRemovedWallpapersLiveData().observe(requireActivity()) { wallpaper ->
+        wallpaperViewModel.getRemovedWallpapersLiveData().observe(viewLifecycleOwner) { wallpaper ->
             if (wallpaper.isNotNull()) {
                 adapterWallpaper?.removeWallpaper(wallpaper)
                 wallpaperViewModel.getRemovedWallpapersLiveData().value = null
             }
         }
 
-        wallpaperViewModel.getLoadingStatusLiveData().observe(requireActivity()) { status ->
+        wallpaperViewModel.getLoadingStatusLiveData().observe(viewLifecycleOwner) { status ->
             binding?.loadingStatus?.text = status
         }
 
@@ -540,8 +540,6 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
     private fun fixNavigationBarOverlap() {
         ViewCompat.setOnApplyWindowInsetsListener(binding?.bottomAppBar!!) { _, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
-
-            Log.d("Insets", "Bottom: ${insets.bottom}")
 
             /**
              * Apply the insets as a margin to the view. Here the system is setting

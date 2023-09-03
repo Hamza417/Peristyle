@@ -16,9 +16,9 @@ import com.bumptech.glide.request.target.Target
 object GlideUtils {
 
     fun ImageView.loadWallpaper(wallpaper: Wallpaper) {
-        GlideApp.with(context)
+        GlideApp.with(context.applicationContext)
             .asBitmap()
-            .load(app.simple.peri.glide.wallpaper.Wallpaper(wallpaper, context))
+            .load(app.simple.peri.glide.wallpaper.Wallpaper(wallpaper, context.applicationContext))
             .transition(BitmapTransitionOptions.withCrossFade())
             //.transition(GenericTransitionOptions.with(R.anim.zoom_out))
             .diskCacheStrategy(DiskCacheStrategy.ALL)

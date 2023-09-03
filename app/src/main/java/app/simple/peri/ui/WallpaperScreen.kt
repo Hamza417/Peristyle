@@ -142,50 +142,62 @@ class WallpaperScreen : Fragment() {
         }
 
         binding?.wallpaper?.loadWallpaper(wallpaper!!) {
-            bitmap = it
+            try {
+                /**
+                 * Check if context is attached to the fragment
+                 */
+                if (isAdded.invert()) {
+                    Log.d("WallpaperScreen", "Context is detached")
+                    return@loadWallpaper
+                }
 
-            /**
-             * Scroll to center when wallpaper is loaded
-             */
-            binding?.wallpaper?.doOnLayout {
-                binding?.wallpaperScrollView?.afterMeasured {
-                    val scrollTo = if (savedInstanceState.isNull()) {
-                        binding?.wallpaper?.width?.div(2)
-                            ?.minus(binding?.wallpaperScrollView?.width?.div(2)!!)
-                    } else {
-                        savedInstanceState?.getInt(BundleConstants.SCROLL_X)
-                    }
+                bitmap = it
 
-                    if (scrollTo != null) {
-                        scrollTo(scrollTo, 0)
+                /**
+                 * Scroll to center when wallpaper is loaded
+                 */
+                binding?.wallpaper?.doOnLayout {
+                    binding?.wallpaperScrollView?.afterMeasured {
+                        val scrollTo = if (savedInstanceState.isNull()) {
+                            binding?.wallpaper?.width?.div(2)
+                                ?.minus(binding?.wallpaperScrollView?.width?.div(2)!!)
+                        } else {
+                            savedInstanceState?.getInt(BundleConstants.SCROLL_X)
+                        }
+
+                        if (scrollTo != null) {
+                            scrollTo(scrollTo, 0)
+                        }
                     }
                 }
+
+                Log.d("WallpaperScreen", "Wallpaper loaded")
+                startPostponedEnterTransition()
+
+                binding?.bottomMenu?.animate()
+                    ?.alpha(1f)
+                    ?.setInterpolator(DecelerateInterpolator(1.5F))
+                    ?.setDuration(resources.getInteger(R.integer.animation_duration).toLong())
+                    ?.setStartDelay(resources.getInteger(R.integer.animation_duration).toLong())
+                    ?.setListener(object : AnimatorListener {
+                        override fun onAnimationStart(p0: Animator) {
+                            binding?.bottomMenu?.visibility = View.VISIBLE
+                        }
+
+                        override fun onAnimationEnd(p0: Animator) {
+                        }
+
+                        override fun onAnimationCancel(p0: Animator) {
+                        }
+
+                        override fun onAnimationRepeat(p0: Animator) {
+                        }
+
+                    })
+                    ?.start()
+            } catch (e: IllegalStateException) {
+                Log.e("WallpaperScreen", e.message.toString())
             }
-
-            Log.d("WallpaperScreen", "Wallpaper loaded")
-            startPostponedEnterTransition()
-
-            binding?.bottomMenu?.animate()
-                ?.alpha(1f)
-                ?.setInterpolator(DecelerateInterpolator(1.5F))
-                ?.setDuration(resources.getInteger(R.integer.animation_duration).toLong())
-                ?.setStartDelay(resources.getInteger(R.integer.animation_duration).toLong())
-                ?.setListener(object : AnimatorListener {
-                    override fun onAnimationStart(p0: Animator) {
-                        binding?.bottomMenu?.visibility = View.VISIBLE
-                    }
-
-                    override fun onAnimationEnd(p0: Animator) {
-                    }
-
-                    override fun onAnimationCancel(p0: Animator) {
-                    }
-
-                    override fun onAnimationRepeat(p0: Animator) {
-                    }
-
-                })
-                ?.start()
         }
 
         binding?.edit?.setOnClickListener {
