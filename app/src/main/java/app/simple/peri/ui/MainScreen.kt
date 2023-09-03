@@ -24,6 +24,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.children
 import androidx.core.view.doOnPreDraw
+import androidx.core.view.isVisible
 import androidx.documentfile.provider.DocumentFile
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -320,6 +321,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                 override fun onWallpaperClicked(wallpaper: Wallpaper?, position: Int, constraintLayout: ConstraintLayout?) {
                     // binding?.bottomAppBar?.performHide(false)
                     binding?.fab?.transitionName = null // remove transition name to prevent shared element transition
+                    saveBottomBarState()
 
                     requireActivity().supportFragmentManager.beginTransaction()
                         .addSharedElement(constraintLayout!!, constraintLayout.transitionName)
@@ -345,6 +347,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                     popup.setOnMenuItemClickListener { item ->
                         when (item.itemId) {
                             R.id.set_as_wallpaper -> {
+                                // Not worth it here still reserved for future use
                                 val intent = WallpaperManager.getInstance(requireContext())
                                     .getCropAndSetWallpaperIntent(wallpaper.uri.toUri())
                                 startActivity(intent)
@@ -375,6 +378,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                             }
 
                             R.id.hd -> {
+                                saveBottomBarState()
                                 requireActivity().supportFragmentManager.beginTransaction()
                                     .replace(R.id.mainContainer, HD.newInstance(wallpaper), "HD")
                                     .addToBackStack("HD")
@@ -487,6 +491,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                 requireArguments().putString(BundleConstants.FAB_TRANSITION, randomWallpaper?.uri.toString())
 
                 if (randomWallpaper.isNotNull()) {
+                    saveBottomBarState()
                     requireActivity().supportFragmentManager.beginTransaction()
                         .addSharedElement(binding!!.fab, binding!!.fab.transitionName)
                         .replace(R.id.mainContainer, WallpaperScreen.newInstance(randomWallpaper!!), "WallpaperScreen")
@@ -556,6 +561,11 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
         }
     }
 
+    private fun saveBottomBarState() {
+        requireArguments().putBoolean(BundleConstants.BOTTOM_APP_BAR, binding?.bottomAppBar?.isScrolledUp!!)
+        Log.d("MainScreen", "BottomAppBar state saved: ${binding?.bottomAppBar?.isScrolledUp}")
+    }
+
     /**
      * Making the Navigation system bar not overlapping with the activity
      */
@@ -587,6 +597,14 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                 layoutParams.leftMargin = insets.left
                 layoutParams.rightMargin = insets.right
                 this.layoutParams = layoutParams
+            }
+
+            binding?.bottomAppBar?.post {
+                if (requireArguments().getBoolean(BundleConstants.BOTTOM_APP_BAR, true)) {
+                    binding?.bottomAppBar?.performShow(false)
+                } else {
+                    binding?.bottomAppBar?.performHide(false)
+                }
             }
 
             /**

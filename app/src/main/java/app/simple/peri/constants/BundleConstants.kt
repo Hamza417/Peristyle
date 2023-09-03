@@ -1,6 +1,7 @@
 package app.simple.peri.constants
 
 object BundleConstants {
+    const val BOTTOM_APP_BAR = "bottom_app_bar"
     const val SCROLL_X: String = "scroll_x"
     const val BLUR_VALUE: String = "blur_value"
     const val SATURATION_VALUE: String = "saturation_value"
