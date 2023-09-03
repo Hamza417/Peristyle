@@ -299,12 +299,13 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
         }
     }
 
-    fun refreshWallpapers() {
+    fun refreshWallpapers(func: () -> Unit) {
         if (isDatabaseLoaded) {
             loadWallpaperImages()
             Log.d(TAG, "refreshWallpapers: refreshing wallpapers")
         } else {
             Log.d(TAG, "refreshWallpapers: database not loaded")
+            func()
         }
     }
 

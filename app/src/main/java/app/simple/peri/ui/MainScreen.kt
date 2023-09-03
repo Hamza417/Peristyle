@@ -50,6 +50,7 @@ import com.google.android.material.checkbox.MaterialCheckBox
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.MaterialSharedAxis
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -511,8 +512,22 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
         }
 
         binding?.swipeRefreshLayout?.setOnRefreshListener {
-            wallpaperViewModel.refreshWallpapers()
-            binding?.swipeRefreshLayout?.isRefreshing = false
+            wallpaperViewModel.refreshWallpapers() {
+                //                MaterialAlertDialogBuilder(requireContext())
+                //                    .setTitle(R.string.error)
+                //                    .setMessage(getString(R.string.parallel_loading_error))
+                //                    .setPositiveButton(R.string.close) { dialog, _ ->
+                //                        dialog.dismiss()
+                //                    }
+                //                    .show()
+                Log.e("MainScreen", "Loader is already running...")
+                binding?.swipeRefreshLayout?.isRefreshing = false
+            }
+
+            viewLifecycleOwner.lifecycleScope.launch {
+                delay(1000)
+                binding?.swipeRefreshLayout?.isRefreshing = false
+            }
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
