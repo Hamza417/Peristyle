@@ -9,13 +9,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
-import android.widget.FrameLayout
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.marginBottom
 import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.preference.Preference
@@ -27,20 +25,22 @@ import com.bumptech.glide.Glide
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.io.File
 
 class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPreferenceChangeListener {
 
-    private val storageResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+    private val flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+
+    private val storageResult = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()) { result ->
         if (result != null) {
             val uri = result.data?.data
             if (uri != null) {
                 requireActivity().contentResolver.persistedUriPermissions.forEach {
-                    requireActivity().contentResolver.releasePersistableUriPermission(it.uri,
-                                                                                      Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+                    requireActivity().contentResolver.releasePersistableUriPermission(it.uri, flags)
                 }
                 MainPreferences.setStorageUri(null)
-                requireActivity().contentResolver.takePersistableUriPermission(uri,
-                                                                               Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+                requireActivity().contentResolver.takePersistableUriPermission(uri, flags)
                 MainPreferences.setStorageUri(uri.toString())
                 Log.d("Preferences", "Storage Uri: $uri")
                 LocalBroadcastManager.getInstance(requireContext())
@@ -88,6 +88,12 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
                             action = BundleConstants.INTENT_RECREATE_DATABASE
                         })
                     dialog.dismiss()
+                    MaterialAlertDialogBuilder(requireContext())
+                        .setMessage(R.string.initiate_recreate_database_message)
+                        .setPositiveButton(R.string.close) { dialog, _ ->
+                            dialog.dismiss()
+                        }
+                        .show()
                 }
                 .setNegativeButton(R.string.close) { dialog, _ ->
                     dialog.dismiss()
@@ -99,7 +105,19 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
         preferenceScreen.findPreference<Preference>("clear_cache")?.setOnPreferenceClickListener {
             // Create a background thread
             lifecycleScope.launch(Dispatchers.IO) {
+                val imagesCachePath = File("${requireContext().cacheDir}/image_manager_disk_cache/")
+                val size = imagesCachePath.walkTopDown().sumOf { it.length() }
+
                 Glide.get(requireContext()).clearDiskCache()
+
+                requireActivity().runOnUiThread {
+                    MaterialAlertDialogBuilder(requireContext())
+                        .setMessage(getString(R.string.clear_cache_message, size / 1024 / 1024))
+                        .setPositiveButton(R.string.close) { dialog, _ ->
+                            dialog.dismiss()
+                        }
+                        .show()
+                }
             }
 
             Glide.get(requireContext()).clearMemory()
