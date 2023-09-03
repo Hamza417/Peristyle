@@ -54,10 +54,10 @@
     <string name="data">Data</string>
     <string name="enabled_wallpaper_details">Enable Wallpaper Details</string>
     <string name="show_wallpaper_details_on_the_main_screen">Show wallpaper details on the main screen.</string>
-    <string name="high_definition">High Definition</string>
+    <string name="high_definition">HD Preview</string>
     <string name="error">Error</string>
     <string name="still_loading">Wallpapers are being refreshed, try again in a moment.</string>
-    <string name="no_wallpaper_found">No wallpapers found, if the list hasn\'t loaded yet then let the list load first or try changing the directory to where the wallpapers are stored.</string>
+    <string name="no_wallpaper_found">No wallpapers found, if the list hasn\'t been loaded yet then let the list load first or try changing the directory to where the wallpapers are stored.</string>
     <string name="change_directory">Change Directory</string>
     <string name="change_directory_desc">Change the current wallpaper\'s directory.\nChanging directory also recreates the wallpaper database.\n\n%1$s</string>
     <string name="home_screen">Home Screen</string>
@@ -68,5 +68,5 @@
     <string name="enable_app_engine">Peri Wallpaper Engine</string>
     <string name="scroll_to_top">Scroll to Top</string>
     <string name="clear_cache_message">Cleared %1$d MB</string>
-    <string name="initiate_recreate_database_message">Initiated database recreation process...</string>
+    <string name="initiate_recreate_database_message">Initiated database recreation process…</string>
 </resources>

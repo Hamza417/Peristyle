@@ -223,7 +223,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                             }
                             .show()
                     } else {
-                        if (wallpapers?.isNotEmpty() == true) {
+                        if (this.wallpaperViewModel.getWallpapersLiveData().value?.isNotEmpty() == true) {
                             MaterialAlertDialogBuilder(requireContext())
                                 .setTitle(R.string.delete)
                                 .setMessage(R.string.no_wallpaper_selected)
