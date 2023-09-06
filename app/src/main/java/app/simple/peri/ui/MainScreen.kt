@@ -24,11 +24,11 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.children
 import androidx.core.view.doOnPreDraw
-import androidx.core.view.isVisible
 import androidx.documentfile.provider.DocumentFile
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import app.simple.peri.R
@@ -410,6 +410,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
             staggeredGridLayoutManager?.gapStrategy = StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS
             binding?.recyclerView?.layoutManager = staggeredGridLayoutManager
             binding?.recyclerView?.adapter = adapterWallpaper
+            ItemTouchHelper(simpleItemTouchCallback).attachToRecyclerView(binding?.recyclerView)
 
             (view.parent as? ViewGroup)?.doOnPreDraw {
                 startPostponedEnterTransition()
@@ -543,6 +544,27 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
             }
 
             unBlurRoot()
+        }
+    }
+
+    private val simpleItemTouchCallback: ItemTouchHelper.SimpleCallback = object
+        : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
+
+        override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
+            return false
+        }
+
+        override fun onSwiped(viewHolder: RecyclerView.ViewHolder, swipeDir: Int) {
+            // Remove swiped item from list and notify the RecyclerView
+            val position = viewHolder.bindingAdapterPosition
+            val wallpaper = adapterWallpaper?.getWallpaper(position)!!
+            if (wallpaper.isNotNull()) {
+                if (DocumentFile.fromSingleUri(requireContext(), wallpaper.uri.toUri())?.delete() == true) {
+                    adapterWallpaper?.removeWallpaper(wallpaper)
+                    wallpaperViewModel.removeWallpaper(wallpaper)
+                    Log.d("MainScreen", "Wallpaper deleted: ${wallpaper.name}")
+                }
+            }
         }
     }
 

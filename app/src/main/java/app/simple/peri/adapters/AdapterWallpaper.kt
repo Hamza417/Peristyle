@@ -142,6 +142,10 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>,
         }
     }
 
+    fun getWallpaper(position: Int): Wallpaper {
+        return wallpapers[position]
+    }
+
     inner class WallpaperViewHolder(private val binding: AdapterWallpaperBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(wallpaper: Wallpaper) {
             val ratio = String.format("%d:%d", wallpaper.width, wallpaper.height)
