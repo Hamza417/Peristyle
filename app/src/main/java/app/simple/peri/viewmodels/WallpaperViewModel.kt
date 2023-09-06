@@ -105,13 +105,11 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
             (wallpaperList as ArrayList<Wallpaper>).getSortedList()
 
             for (i in wallpaperList.indices) {
-                if (wallpaperList[i].isSelected) {
-                    Log.d(TAG, "loadWallpaperDatabase: ${wallpaperList[i].isSelected}")
-                }
                 wallpaperList[i].isSelected = false
             }
 
-            wallpapersData.postValue(wallpaperList)
+            @Suppress("UNCHECKED_CAST")
+            wallpapersData.postValue(wallpaperList.clone() as ArrayList<Wallpaper>)
 
             loadWallpaperImages()
         }
