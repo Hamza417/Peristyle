@@ -153,7 +153,10 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>,
             set.setDimensionRatio(binding.wallpaperImageView.id, ratio)
             set.applyTo(binding.wallpaperContainer)
             binding.wallpaperContainer.transitionName = wallpaper.uri
-            binding.wallpaperImageView.loadWallpaper(wallpaper)
+
+            binding.wallpaperImageView.post {
+                binding.wallpaperImageView.loadWallpaper(wallpaper)
+            }
 
             if (MainPreferences.getName()) {
                 binding.name.text = wallpaper.name
