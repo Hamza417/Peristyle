@@ -384,6 +384,11 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                                     .addToBackStack("HD")
                                     .commit()
                             }
+                            R.id.reload_metadata -> {
+                                wallpaperViewModel.reloadMetadata(wallpaper) {
+                                    adapterWallpaper?.updateWallpaper(wallpaper, position)
+                                }
+                            }
                         }
 
                         true

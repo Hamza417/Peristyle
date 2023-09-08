@@ -312,6 +312,32 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
         LocalBroadcastManager.getInstance(getApplication()).unregisterReceiver(broadcastReceiver!!)
     }
 
+    fun reloadMetadata(wallpaper: Wallpaper, func: (Wallpaper) -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val wallpaperDatabase = WallpaperDatabase.getInstance(getApplication())
+            val documentFile = DocumentFile.fromSingleUri(getApplication(), Uri.parse(wallpaper.uri))
+
+            getApplication<Application>().contentResolver.openInputStream(Uri.parse(wallpaper.uri))?.use { inputStream ->
+                val options = BitmapFactory.Options()
+                options.inJustDecodeBounds = true
+                BitmapFactory.decodeStream(inputStream, null, options)
+                wallpaper.width = options.outWidth
+                wallpaper.height = options.outHeight
+            }
+
+            if (documentFile?.exists() == true) {
+                wallpaper.size = documentFile.length()
+                wallpaper.dateModified = documentFile.lastModified()
+            }
+
+            wallpaperDatabase?.wallpaperDao()?.update(wallpaper)
+
+            withContext(Dispatchers.Main) {
+                func(wallpaper)
+            }
+        }
+    }
+
     companion object {
         private const val TAG = "WallpaperViewModel"
     }

@@ -69,4 +69,5 @@
     <string name="scroll_to_top">Scroll to Top</string>
     <string name="clear_cache_message">Cleared %1$d MB</string>
     <string name="initiate_recreate_database_message">Initiated database recreation process…</string>
+    <string name="reload_metadata">Reload Metadata</string>
 </resources>
