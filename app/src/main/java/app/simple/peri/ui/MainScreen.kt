@@ -489,16 +489,19 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
             }
         }
 
-        wallpaperViewModel.getFailedURIs().observe(viewLifecycleOwner) { uri ->
-            if (uri.isNotNull()) {
+        wallpaperViewModel.getFailedURIs().observe(viewLifecycleOwner) { uris ->
+            if (uris.isNotNull()) {
                 MaterialAlertDialogBuilder(requireContext())
                     .setTitle(R.string.failed_files)
-                    .setMessage(uri.joinToString("\n"))
+                    .setMessage(uris.joinToString("\n"))
                     .setPositiveButton(R.string.delete) { dialog, _ ->
                         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Default) {
-                            val documentFile = DocumentFile.fromTreeUri(requireContext(), Uri.parse(MainPreferences.getStorageUri()))
-                            uri.forEach {
-                                documentFile?.findFile(it)?.delete()
+                            uris.forEach {
+                                with(DocumentFile.fromSingleUri(requireContext(), it.toUri())) {
+                                    if (this?.delete() == true) {
+                                        Log.d("MainScreen", "Failed file deleted: $it")
+                                    }
+                                }
                             }
                         }
                         dialog.dismiss()
