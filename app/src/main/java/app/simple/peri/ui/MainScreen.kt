@@ -489,6 +489,27 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
             }
         }
 
+        wallpaperViewModel.getFailedURIs().observe(viewLifecycleOwner) { uri ->
+            if (uri.isNotNull()) {
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle(R.string.failed_files)
+                    .setMessage(uri.joinToString("\n"))
+                    .setPositiveButton(R.string.delete) { dialog, _ ->
+                        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Default) {
+                            val documentFile = DocumentFile.fromTreeUri(requireContext(), Uri.parse(MainPreferences.getStorageUri()))
+                            uri.forEach {
+                                documentFile?.findFile(it)?.delete()
+                            }
+                        }
+                        dialog.dismiss()
+                    }
+                    .setNegativeButton(R.string.close) { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    .show()
+            }
+        }
+
         binding?.fab?.setOnClickListener {
             kotlin.runCatching {
                 // Pick a random wallpaper from the list

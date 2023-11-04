@@ -11,7 +11,7 @@ object FileUtils {
     private val imageExtensions = arrayOf(".jpg", ".jpeg", ".png", ".webp")
 
     fun DocumentFile.isImageFile(): Boolean {
-        return this.name!!.endsWithAny(*imageExtensions)
+        return this.name!!.lowercase().endsWithAny(*imageExtensions)
     }
 
     fun String.toUri(): Uri {
