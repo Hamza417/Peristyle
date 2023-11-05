@@ -574,7 +574,7 @@ class WallpaperScreen : Fragment() {
      * Making the Navigation system bar not overlapping with the activity
      */
     private fun fixNavigationBarOverlap() {
-        ViewCompat.setOnApplyWindowInsetsListener(binding?.bottomMenu!!) { view, windowInsets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding?.bottomMenu!!) { _, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
 
             if (binding?.bottomMenu?.marginBottom!! < insets.bottom) {

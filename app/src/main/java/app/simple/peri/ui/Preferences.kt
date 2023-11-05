@@ -93,8 +93,8 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
                     dialog.dismiss()
                     MaterialAlertDialogBuilder(requireContext())
                         .setMessage(R.string.initiate_recreate_database_message)
-                        .setPositiveButton(R.string.close) { dialog, _ ->
-                            dialog.dismiss()
+                        .setPositiveButton(R.string.close) { dialog1, _ ->
+                            dialog1.dismiss()
                         }
                         .show()
                 }
