@@ -7,6 +7,7 @@ import android.content.SharedPreferences
 import android.graphics.Color
 import android.graphics.RenderEffect
 import android.graphics.Shader
+import android.hardware.biometrics.BiometricPrompt
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle

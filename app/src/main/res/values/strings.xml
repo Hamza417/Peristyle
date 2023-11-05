@@ -23,7 +23,7 @@
     <string name="no_wallpaper_selected">No wallpaper selected</string>
     <string name="send_message">You are sending %1$s wallpapers, are you sure?</string>
     <string name="show_wallpaper_names_on_the_main_screen">Show wallpaper names on the main screen</string>
-    <string name="enabled_wallpaper_names">Enabled wallpaper names</string>
+    <string name="enabled_wallpaper_names">Enable Wallpaper Names</string>
     <string name="home">Home</string>
     <string name="about">About</string>
     <string name="grid_span_summary">Span count of the main screen grid.</string>
@@ -71,4 +71,11 @@
     <string name="initiate_recreate_database_message">Initiated database recreation process…</string>
     <string name="reload_metadata">Reload Metadata</string>
     <string name="failed_files">Thes files couldn\'t be loaded. Would you like to delete them?\n</string>
+    <string name="security">Security</string>
+    <string name="biometric_summary">Use biometric lock for private access to the app only.</string>
+    <string name="enable_biometric">Biometric Lock</string>
+    <string name="biometric_subtitle">Lock Peri to prevent unauthorized access.</string>
+    <string name="biometric_success">Biometric authenticated successfully!</string>
+    <string name="biometric_failed">Biometric authetication failed!</string>
+    <string name="biometric_desc">Authorized access only</string>
 </resources>

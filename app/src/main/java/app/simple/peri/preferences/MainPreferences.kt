@@ -8,6 +8,7 @@ object MainPreferences {
     private const val nomediaDialog = "nomediaDialog"
     private const val blur = "blur_main_list"
     private const val isAppEngine = "is_app_engine"
+    private const val isBiometric = "is_biometric"
     const val sort = "sort"
     const val order = "order"
     const val name = "is_name"
@@ -86,5 +87,13 @@ object MainPreferences {
 
     fun getAppEngine(): Boolean {
         return SharedPreferences.getSharedPreferences().getBoolean(isAppEngine, true)
+    }
+
+    fun setBiometric(boolean: Boolean) {
+        SharedPreferences.getSharedPreferences().edit().putBoolean(isBiometric, boolean).apply()
+    }
+
+    fun isBiometric(): Boolean {
+        return SharedPreferences.getSharedPreferences().getBoolean(isBiometric, false)
     }
 }

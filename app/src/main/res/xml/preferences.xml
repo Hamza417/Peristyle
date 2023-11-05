@@ -55,6 +55,18 @@
 
     <PreferenceCategory
         app:iconSpaceReserved="false"
+        app:title="@string/security" />
+
+    <CheckBoxPreference
+        app:defaultValue="false"
+        app:enabled="true"
+        app:iconSpaceReserved="false"
+        app:key="is_biometric"
+        app:summary="@string/biometric_summary"
+        app:title="@string/enable_biometric" />
+
+    <PreferenceCategory
+        app:iconSpaceReserved="false"
         app:title="@string/data" />
 
     <Preference

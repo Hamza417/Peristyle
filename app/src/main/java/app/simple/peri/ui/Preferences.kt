@@ -10,12 +10,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.biometric.BiometricPrompt
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.preference.CheckBoxPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import app.simple.peri.R
@@ -26,6 +28,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
+import java.util.concurrent.Executor
 
 class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -172,6 +175,66 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
 
             "is_app_engine" -> {
                 MainPreferences.setAppEngine(p0?.getBoolean(p1, true)!!)
+            }
+
+            "is_biometric" -> {
+                if (p0?.getBoolean(p1, false) == true) {
+                    val promptInfo = BiometricPrompt.PromptInfo.Builder()
+                        .setTitle(getString(R.string.app_name))
+                        .setSubtitle(getString(R.string.biometric_subtitle))
+                        .setNegativeButtonText(getString(R.string.close))
+                        .build()
+
+                    val biometricPrompt = BiometricPrompt(
+                            this, ContextCompat.getMainExecutor(requireContext()),
+                            object : BiometricPrompt.AuthenticationCallback() {
+                                override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+                                    super.onAuthenticationError(errorCode, errString)
+                                    p0.edit().putBoolean(p1, false).apply()
+                                    MainPreferences.setBiometric(false)
+
+                                    MaterialAlertDialogBuilder(requireContext())
+                                        .setMessage(getString(R.string.biometric_failed))
+                                        .setPositiveButton(R.string.close) { dialog, _ ->
+                                            preferenceScreen.findPreference<CheckBoxPreference>("is_biometric")?.isChecked = false
+                                            dialog.dismiss()
+                                        }
+                                        .show()
+                                }
+
+                                override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                                    super.onAuthenticationSucceeded(result)
+                                    MainPreferences.setBiometric(boolean = true)
+
+                                    MaterialAlertDialogBuilder(requireContext())
+                                        .setMessage(R.string.biometric_success)
+                                        .setPositiveButton(R.string.close) { dialog, _ ->
+                                            dialog.dismiss()
+                                        }
+                                        .show()
+                                }
+
+                                override fun onAuthenticationFailed() {
+                                    super.onAuthenticationFailed()
+                                    MainPreferences.setBiometric(false)
+                                    p0.edit().putBoolean(p1, false).apply()
+
+                                    MaterialAlertDialogBuilder(requireContext())
+                                        .setMessage(R.string.biometric_failed)
+                                        .setPositiveButton(R.string.close) { dialog, _ ->
+                                            preferenceScreen.findPreference<CheckBoxPreference>("is_biometric")?.isChecked = false
+                                            dialog.dismiss()
+                                        }
+                                        .show()
+                                }
+                            })
+
+                    biometricPrompt.authenticate(promptInfo)
+                } else {
+                    preferenceScreen.findPreference<CheckBoxPreference>("is_biometric")?.isChecked = false
+                    MainPreferences.setBiometric(false)
+                    p0!!.edit().putBoolean(p1, false).apply()
+                }
             }
         }
     }
