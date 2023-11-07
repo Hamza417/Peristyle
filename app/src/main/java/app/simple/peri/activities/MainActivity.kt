@@ -9,6 +9,7 @@ import android.util.Log
 import android.widget.FrameLayout
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
@@ -66,6 +67,9 @@ class MainActivity : AppCompatActivity() {
             .setTitle(getString(R.string.app_name))
             .setDescription(getString(R.string.biometric_desc))
             .setNegativeButtonText(getString(R.string.close))
+            .setAllowedAuthenticators(
+                    BiometricManager.Authenticators.BIOMETRIC_STRONG or
+                                              BiometricManager.Authenticators.DEVICE_CREDENTIAL)
             .build()
 
         if (MainPreferences.getStorageUri() == null) {
@@ -80,14 +84,28 @@ class MainActivity : AppCompatActivity() {
                         biometricPrompt = BiometricPrompt(this, ContextCompat.getMainExecutor(this), object : BiometricPrompt.AuthenticationCallback() {
                             override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
                                 super.onAuthenticationError(errorCode, errString)
-                                Log.d("MainActivity", "Biometric: $errString")
-                                MaterialAlertDialogBuilder(this@MainActivity)
-                                    .setTitle(getString(R.string.app_name))
-                                    .setMessage(errString)
-                                    .setPositiveButton(getString(R.string.close)) { _, _ ->
+                                when (errorCode) {
+                                    BiometricPrompt.ERROR_NEGATIVE_BUTTON -> {
                                         finish()
                                     }
-                                    .show()
+                                    BiometricPrompt.ERROR_NO_BIOMETRICS,
+                                    BiometricPrompt.ERROR_NO_DEVICE_CREDENTIAL -> {
+                                        binding?.mainContainer?.id?.let {
+                                            supportFragmentManager.beginTransaction()
+                                                .replace(it, MainScreen.newInstance())
+                                                .commit()
+                                        }
+                                    }
+                                    else -> {
+                                        MaterialAlertDialogBuilder(this@MainActivity)
+                                            .setTitle(getString(R.string.app_name))
+                                            .setMessage(getString(R.string.biometric_failed))
+                                            .setPositiveButton(getString(R.string.close)) { _, _ ->
+                                                finish()
+                                            }
+                                            .show()
+                                    }
+                                }
                             }
 
                             override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
