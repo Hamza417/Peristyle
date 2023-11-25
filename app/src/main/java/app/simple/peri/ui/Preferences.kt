@@ -194,7 +194,7 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
                                     MainPreferences.setBiometric(false)
 
                                     MaterialAlertDialogBuilder(requireContext())
-                                        .setMessage(getString(R.string.biometric_failed))
+                                        .setMessage(errString.toString())
                                         .setPositiveButton(R.string.close) { dialog, _ ->
                                             preferenceScreen.findPreference<CheckBoxPreference>("is_biometric")?.isChecked = false
                                             dialog.dismiss()

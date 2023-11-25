@@ -70,12 +70,12 @@
     <string name="clear_cache_message">Cleared %1$d MB</string>
     <string name="initiate_recreate_database_message">Initiated database recreation process…</string>
     <string name="reload_metadata">Reload Metadata</string>
-    <string name="failed_files">Thes files couldn\'t be loaded. Would you like to delete them?\n</string>
+    <string name="failed_files">These files couldn\'t be loaded. Would you like to delete them?\n</string>
     <string name="security">Security</string>
     <string name="biometric_summary">Use biometric lock for private access to the app only.</string>
     <string name="enable_biometric">Biometric Lock</string>
     <string name="biometric_subtitle">Lock Peri to prevent unauthorized access.</string>
     <string name="biometric_success">Biometric authenticated successfully!</string>
-    <string name="biometric_failed">Biometric authetication failed!</string>
+    <string name="biometric_failed">Biometric authentication failed!</string>
     <string name="biometric_desc">Authorized access only</string>
 </resources>
