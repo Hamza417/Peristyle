@@ -66,7 +66,6 @@ class MainActivity : AppCompatActivity() {
         biometricPromptInfo = BiometricPrompt.PromptInfo.Builder()
             .setTitle(getString(R.string.app_name))
             .setDescription(getString(R.string.biometric_desc))
-            .setNegativeButtonText(getString(R.string.close))
             .setAllowedAuthenticators(
                     BiometricManager.Authenticators.BIOMETRIC_STRONG or
                                               BiometricManager.Authenticators.DEVICE_CREDENTIAL)
@@ -99,7 +98,7 @@ class MainActivity : AppCompatActivity() {
                                     else -> {
                                         MaterialAlertDialogBuilder(this@MainActivity)
                                             .setTitle(getString(R.string.app_name))
-                                            .setMessage(getString(R.string.biometric_failed))
+                                            .setMessage(errString)
                                             .setPositiveButton(getString(R.string.close)) { _, _ ->
                                                 finish()
                                             }
@@ -120,13 +119,7 @@ class MainActivity : AppCompatActivity() {
 
                             override fun onAuthenticationFailed() {
                                 super.onAuthenticationFailed()
-                                MaterialAlertDialogBuilder(this@MainActivity)
-                                    .setTitle(getString(R.string.app_name))
-                                    .setMessage(getString(R.string.biometric_failed))
-                                    .setPositiveButton(getString(R.string.close)) { _, _ ->
-                                        finish()
-                                    }
-                                    .show()
+                                Log.d("MainActivity", "Biometric: failed")
                             }
                         })
 

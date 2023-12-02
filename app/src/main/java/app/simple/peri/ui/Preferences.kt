@@ -216,16 +216,7 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
 
                                 override fun onAuthenticationFailed() {
                                     super.onAuthenticationFailed()
-                                    MainPreferences.setBiometric(false)
-                                    p0.edit().putBoolean(p1, false).apply()
-
-                                    MaterialAlertDialogBuilder(requireContext())
-                                        .setMessage(R.string.biometric_failed)
-                                        .setPositiveButton(R.string.close) { dialog, _ ->
-                                            preferenceScreen.findPreference<CheckBoxPreference>("is_biometric")?.isChecked = false
-                                            dialog.dismiss()
-                                        }
-                                        .show()
+                                    Log.d("Preferences", "Biometric: failed")
                                 }
                             })
 

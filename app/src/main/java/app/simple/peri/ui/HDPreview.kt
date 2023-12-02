@@ -11,7 +11,7 @@ import app.simple.peri.models.Wallpaper
 import app.simple.peri.utils.ParcelUtils.parcelable
 import com.davemorrissey.labs.subscaleview.ImageSource
 
-class HD : Fragment() {
+class HDPreview : Fragment() {
 
     private var binding: FragmentHdImageBinding? = null
 
@@ -33,9 +33,9 @@ class HD : Fragment() {
     }
 
     companion object {
-        fun newInstance(wallpaper: Wallpaper): HD {
+        fun newInstance(wallpaper: Wallpaper): HDPreview {
             val args = Bundle()
-            val fragment = HD()
+            val fragment = HDPreview()
             args.putParcelable(BundleConstants.WALLPAPER, wallpaper)
             fragment.arguments = args
             return fragment

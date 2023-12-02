@@ -7,7 +7,6 @@ import android.content.SharedPreferences
 import android.graphics.Color
 import android.graphics.RenderEffect
 import android.graphics.Shader
-import android.hardware.biometrics.BiometricPrompt
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -381,7 +380,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                             R.id.hd -> {
                                 saveBottomBarState()
                                 requireActivity().supportFragmentManager.beginTransaction()
-                                    .replace(R.id.mainContainer, HD.newInstance(wallpaper), "HD")
+                                    .replace(R.id.mainContainer, HDPreview.newInstance(wallpaper), "HD")
                                     .addToBackStack("HD")
                                     .commit()
                             }
