@@ -1,5 +1,6 @@
 package app.simple.peri.ui
 
+import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.app.WallpaperManager
 import android.content.Intent
@@ -15,10 +16,12 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.activity.addCallback
 import androidx.appcompat.widget.PopupMenu
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.animation.addListener
 import androidx.core.app.ShareCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -61,10 +64,12 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
     private var adapterWallpaper: AdapterWallpaper? = null
     private var staggeredGridLayoutManager: StaggeredGridLayoutManager? = null
     private var binding: FragmentMainScreenBinding? = null
+    private var blurAnimator: ValueAnimator? = null
 
     private var displayWidth: Int = 0
     private var displayHeight: Int = 0
     private val blurRadius: Float = 75F
+    private val blurDuration: Long = 300
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = FragmentMainScreenBinding.inflate(inflater, container, false)
@@ -302,6 +307,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                 }
 
                 R.id.scroll_up -> {
+                    unBlurRoot()
                     binding?.recyclerView?.scrollToPosition(0)
                 }
             }
@@ -333,9 +339,24 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                 override fun onWallpaperLongClicked(wallpaper: Wallpaper, position: Int, view: View, checkBox: MaterialCheckBox) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                         if (MainPreferences.getBlur()) {
-                            binding?.recyclerView?.children?.forEach {
-                                if (it is ConstraintLayout && it != view) {
-                                    it.setRenderEffect(RenderEffect.createBlurEffect(blurRadius, blurRadius, Shader.TileMode.CLAMP))
+                            binding?.recyclerView?.children?.forEach { view1 ->
+                                if (view1 is ConstraintLayout && view1 != view) {
+                                    val valueAnimator = ValueAnimator.ofFloat(0.1F, blurRadius)
+                                    valueAnimator.addUpdateListener {
+                                        view1.setRenderEffect(
+                                                RenderEffect.createBlurEffect(it.animatedValue as Float, it.animatedValue as Float, Shader.TileMode.MIRROR))
+                                    }
+                                    valueAnimator.addListener(onEnd = {
+                                        if ((it as ValueAnimator).animatedValue == 0.1F) {
+                                            view1.setRenderEffect(null)
+                                        } else {
+                                            view1.setRenderEffect(
+                                                    RenderEffect.createBlurEffect(blurRadius, blurRadius, Shader.TileMode.MIRROR))
+                                        }
+                                    })
+                                    valueAnimator.interpolator = AccelerateDecelerateInterpolator()
+                                    valueAnimator.duration = blurDuration
+                                    valueAnimator.start()
                                 }
                             }
                         }
@@ -384,6 +405,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                                     .addToBackStack("HD")
                                     .commit()
                             }
+
                             R.id.reload_metadata -> {
                                 wallpaperViewModel.reloadMetadata(wallpaper) {
                                     adapterWallpaper?.updateWallpaper(wallpaper, position)
@@ -396,9 +418,24 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
 
                     popup.setOnDismissListener {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                            binding?.recyclerView?.children?.forEach {
-                                if (it is ConstraintLayout && it != view) {
-                                    it.setRenderEffect(null)
+                            binding?.recyclerView?.children?.forEach { view1 ->
+                                if (view1 is ConstraintLayout && view1 != view) {
+                                    val valueAnimator = ValueAnimator.ofFloat(blurRadius, 0.1F)
+                                    valueAnimator.addUpdateListener {
+                                        view1.setRenderEffect(
+                                                RenderEffect.createBlurEffect(it.animatedValue as Float, it.animatedValue as Float, Shader.TileMode.MIRROR))
+                                    }
+                                    valueAnimator.addListener(onEnd = {
+                                        if ((it as ValueAnimator).animatedValue == 0.1F) {
+                                            view1.setRenderEffect(null)
+                                        } else {
+                                            view1.setRenderEffect(
+                                                    RenderEffect.createBlurEffect(0.1F, 0.1F, Shader.TileMode.MIRROR))
+                                        }
+                                    })
+                                    valueAnimator.interpolator = AccelerateDecelerateInterpolator()
+                                    valueAnimator.duration = blurDuration
+                                    valueAnimator.start()
                                 }
                             }
                         }
@@ -600,14 +637,31 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
     private fun blurRoot() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             if (MainPreferences.getBlur()) {
-                binding?.root?.setRenderEffect(
-                        RenderEffect.createBlurEffect(blurRadius, blurRadius, Shader.TileMode.MIRROR))
+                blurAnimator = ValueAnimator.ofFloat(0.1F, blurRadius)
+                blurAnimator?.addUpdateListener {
+                    binding?.root?.setRenderEffect(
+                            RenderEffect.createBlurEffect(it.animatedValue as Float, it.animatedValue as Float, Shader.TileMode.MIRROR))
+                }
+                blurAnimator?.addListener(onEnd = {
+                    if ((it as ValueAnimator).animatedValue == 0.1F) {
+                        binding?.root?.setRenderEffect(null)
+                    } else {
+                        binding?.root?.setRenderEffect(
+                                RenderEffect.createBlurEffect(blurRadius, blurRadius, Shader.TileMode.MIRROR))
+                    }
+                })
+                blurAnimator?.interpolator = AccelerateDecelerateInterpolator()
+                blurAnimator?.duration = blurDuration
+                blurAnimator?.start()
             }
         }
     }
 
     private fun unBlurRoot() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            if (MainPreferences.getBlur()) {
+                blurAnimator?.reverse()
+            }
             binding?.root?.setRenderEffect(null)
         }
     }
