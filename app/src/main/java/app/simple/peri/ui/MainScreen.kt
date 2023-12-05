@@ -337,31 +337,6 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                 }
 
                 override fun onWallpaperLongClicked(wallpaper: Wallpaper, position: Int, view: View, checkBox: MaterialCheckBox) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                        if (MainPreferences.getBlur()) {
-                            binding?.recyclerView?.children?.forEach { view1 ->
-                                if (view1 is ConstraintLayout && view1 != view) {
-                                    val valueAnimator = ValueAnimator.ofFloat(0.1F, blurRadius)
-                                    valueAnimator.addUpdateListener {
-                                        view1.setRenderEffect(
-                                                RenderEffect.createBlurEffect(it.animatedValue as Float, it.animatedValue as Float, Shader.TileMode.MIRROR))
-                                    }
-                                    valueAnimator.addListener(onEnd = {
-                                        if ((it as ValueAnimator).animatedValue == 0.1F) {
-                                            view1.setRenderEffect(null)
-                                        } else {
-                                            view1.setRenderEffect(
-                                                    RenderEffect.createBlurEffect(blurRadius, blurRadius, Shader.TileMode.MIRROR))
-                                        }
-                                    })
-                                    valueAnimator.interpolator = AccelerateDecelerateInterpolator()
-                                    valueAnimator.duration = blurDuration
-                                    valueAnimator.start()
-                                }
-                            }
-                        }
-                    }
-
                     val popup = PopupMenu(requireContext(), view, Gravity.CENTER)
                     popup.menuInflater.inflate(R.menu.wallpaper_menu, popup.menu)
 
@@ -399,31 +374,6 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                         }
 
                         true
-                    }
-
-                    popup.setOnDismissListener {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                            binding?.recyclerView?.children?.forEach { view1 ->
-                                if (view1 is ConstraintLayout && view1 != view) {
-                                    val valueAnimator = ValueAnimator.ofFloat(blurRadius, 0.1F)
-                                    valueAnimator.addUpdateListener {
-                                        view1.setRenderEffect(
-                                                RenderEffect.createBlurEffect(it.animatedValue as Float, it.animatedValue as Float, Shader.TileMode.MIRROR))
-                                    }
-                                    valueAnimator.addListener(onEnd = {
-                                        if ((it as ValueAnimator).animatedValue == 0.1F) {
-                                            view1.setRenderEffect(null)
-                                        } else {
-                                            view1.setRenderEffect(
-                                                    RenderEffect.createBlurEffect(0.1F, 0.1F, Shader.TileMode.MIRROR))
-                                        }
-                                    })
-                                    valueAnimator.interpolator = AccelerateDecelerateInterpolator()
-                                    valueAnimator.duration = blurDuration
-                                    valueAnimator.start()
-                                }
-                            }
-                        }
                     }
 
                     // Show the popup menu.
