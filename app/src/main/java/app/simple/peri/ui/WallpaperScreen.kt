@@ -44,7 +44,6 @@ import app.simple.peri.utils.BitmapUtils.changeBitmapContrastBrightness
 import app.simple.peri.utils.ConditionUtils.invert
 import app.simple.peri.utils.ConditionUtils.isNull
 import app.simple.peri.utils.ParcelUtils.parcelable
-import app.simple.peri.utils.WallpaperUtils.canFitVerticallyProperly
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.slider.Slider
 import com.google.android.material.slider.Slider.OnSliderTouchListener
@@ -142,14 +141,6 @@ class WallpaperScreen : Fragment() {
             scaleGestureDetector?.onTouchEvent(motionEvent)
             false
         }
-
-//        if (wallpaper!!.canFitVerticallyProperly(requireContext().resources.displayMetrics)) {
-//            binding?.wallpaper?.scaleType = ImageView.ScaleType.FIT_CENTER
-//            Log.d("WallpaperScreen", "Wallpaper can fit vertically")
-//        } else {
-//            binding?.wallpaper?.scaleType = ImageView.ScaleType.CENTER_CROP
-//            Log.d("WallpaperScreen", "Wallpaper can't fit vertically")
-//        }
 
         binding?.wallpaper?.loadWallpaper(wallpaper!!) {
             try {

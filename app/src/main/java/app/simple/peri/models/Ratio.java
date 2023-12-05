@@ -1,20 +1,31 @@
 package app.simple.peri.models;
 
+import androidx.annotation.NonNull;
+
 public class Ratio {
     
-    private final float width;
-    private final float height;
+    private final float horizontal;
+    private final float vertical;
     
-    public Ratio(float width, float height) {
-        this.width = width;
-        this.height = height;
+    public Ratio(float horizontal, float vertical) {
+        this.horizontal = horizontal;
+        this.vertical = vertical;
     }
     
-    public float getWidth() {
-        return width;
+    public float getHorizontal() {
+        return horizontal;
     }
     
-    public float getHeight() {
-        return height;
+    public float getVertical() {
+        return vertical;
+    }
+    
+    @NonNull
+    @Override
+    public String toString() {
+        return "Ratio{" +
+                "horizontal=" + horizontal +
+                ", vertical=" + vertical +
+                '}';
     }
 }
