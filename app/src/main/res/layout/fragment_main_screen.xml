@@ -52,6 +52,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:textColor="@color/textPrimary" />
+        android:textColor="@color/textWhite" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

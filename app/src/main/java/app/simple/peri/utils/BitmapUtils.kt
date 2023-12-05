@@ -7,6 +7,8 @@ import android.graphics.ColorMatrixColorFilter
 import android.graphics.Paint
 import android.view.View
 import android.view.ViewGroup
+import app.simple.peri.models.Wallpaper
+import com.bumptech.glide.load.model.FileLoader
 
 object BitmapUtils {
 

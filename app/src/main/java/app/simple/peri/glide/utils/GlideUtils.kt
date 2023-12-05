@@ -51,7 +51,6 @@ object GlideUtils {
         GlideApp.with(this)
             .asBitmap()
             .load(app.simple.peri.glide.wallpaper.Wallpaper(wallpaper, this))
-            .transition(BitmapTransitionOptions.withCrossFade())
             .diskCacheStrategy(DiskCacheStrategy.ALL)
             .set(Downsampler.ALLOW_HARDWARE_CONFIG, false)
             .addListener(object : RequestListener<Bitmap> {

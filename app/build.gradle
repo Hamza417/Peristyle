@@ -86,6 +86,7 @@ dependencies {
     androidTestImplementation "androidx.room:room-testing:2.6.1"
 
     implementation 'com.davemorrissey.labs:subsampling-scale-image-view-androidx:3.10.0'
+    implementation 'me.saket.telephoto:zoomable-image-coil:0.7.1'
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
