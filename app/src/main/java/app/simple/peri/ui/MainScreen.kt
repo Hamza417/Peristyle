@@ -367,13 +367,6 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
 
                     popup.setOnMenuItemClickListener { item ->
                         when (item.itemId) {
-                            R.id.set_as_wallpaper -> {
-                                // Not worth it here still reserved for future use
-                                val intent = WallpaperManager.getInstance(requireContext())
-                                    .getCropAndSetWallpaperIntent(wallpaper.uri.toUri())
-                                startActivity(intent)
-                            }
-
                             R.id.send -> {
                                 ShareCompat.IntentBuilder(requireActivity())
                                     .setType("image/*")
@@ -396,14 +389,6 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
 
                             R.id.select -> {
                                 adapterWallpaper?.selectWallpaper(wallpaper)
-                            }
-
-                            R.id.hd -> {
-                                saveBottomBarState()
-                                requireActivity().supportFragmentManager.beginTransaction()
-                                    .replace(R.id.mainContainer, HDPreview.newInstance(wallpaper), "HD")
-                                    .addToBackStack("HD")
-                                    .commit()
                             }
 
                             R.id.reload_metadata -> {

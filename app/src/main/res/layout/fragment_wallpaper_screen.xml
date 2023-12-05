@@ -1,65 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <HorizontalScrollView
-        android:id="@+id/wallpaper_scroll_view"
+    <androidx.compose.ui.platform.ComposeView
+        android:id="@+id/compose_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent" />
 
-        <ImageView
-            android:id="@+id/wallpaper"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:adjustViewBounds="true"
-            android:importantForAccessibility="no"
-            android:scaleType="fitCenter"
-            tools:ignore="ContentDescription" />
-
-    </HorizontalScrollView>
-
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/bottom_menu"
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center"
-        android:layout_margin="16dp"
-        app:cardBackgroundColor="#66000000"
-        app:cardCornerRadius="30dp"
-        app:cardElevation="75dp"
-        app:strokeWidth="0dp">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:orientation="horizontal"
-            android:padding="8dp">
-
-            <ImageButton
-                android:id="@+id/edit"
-                android:layout_width="@dimen/button_size"
-                android:layout_height="@dimen/button_size"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="@string/edit"
-                android:src="@drawable/ic_edit"
-                app:tint="@android:color/white" />
-
-            <ImageButton
-                android:id="@+id/set_as_wallpaper"
-                android:layout_width="@dimen/button_size"
-                android:layout_height="@dimen/button_size"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="@string/set_as_wallpaper"
-                android:src="@drawable/ic_upload"
-                app:tint="@android:color/white" />
-
-        </LinearLayout>
-
-    </com.google.android.material.card.MaterialCardView>
+        android:layout_gravity="bottom|end"
+        android:layout_margin="24dp"
+        android:contentDescription="@string/set_as_wallpaper"
+        android:src="@drawable/ic_upload" />
 
 </FrameLayout>

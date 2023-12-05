@@ -1,33 +1,28 @@
 package app.simple.peri.ui
 
-import android.animation.Animator
-import android.animation.Animator.AnimatorListener
 import android.annotation.SuppressLint
 import android.app.WallpaperManager
 import android.graphics.Bitmap
 import android.graphics.Color
-import android.graphics.ColorMatrix
-import android.graphics.ColorMatrixColorFilter
-import android.graphics.RenderEffect
-import android.graphics.Shader
+import android.graphics.drawable.Drawable
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
-import android.view.ScaleGestureDetector
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
-import android.view.WindowManager
-import android.view.animation.DecelerateInterpolator
 import android.widget.FrameLayout
-import android.widget.ImageView
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.FileProvider
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.doOnLayout
 import androidx.core.view.drawToBitmap
 import androidx.core.view.marginBottom
 import androidx.fragment.app.Fragment
@@ -35,23 +30,25 @@ import androidx.lifecycle.lifecycleScope
 import app.simple.peri.R
 import app.simple.peri.constants.BundleConstants
 import app.simple.peri.databinding.FragmentWallpaperScreenBinding
-import app.simple.peri.databinding.WallpaperEditBinding
-import app.simple.peri.glide.utils.GlideUtils.loadWallpaper
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.tools.StackBlur
 import app.simple.peri.utils.BitmapUtils.changeBitmapContrastBrightness
 import app.simple.peri.utils.ConditionUtils.invert
-import app.simple.peri.utils.ConditionUtils.isNull
+import app.simple.peri.utils.FileUtils.toUri
 import app.simple.peri.utils.ParcelUtils.parcelable
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.slider.Slider
-import com.google.android.material.slider.Slider.OnSliderTouchListener
 import com.google.android.material.transition.MaterialContainerTransform
 import com.google.android.material.transition.MaterialFadeThrough
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import me.saket.telephoto.zoomable.glide.ZoomableGlideImage
 import java.io.ByteArrayOutputStream
 import java.io.File
 import kotlin.math.roundToInt
@@ -60,7 +57,6 @@ class WallpaperScreen : Fragment() {
 
     private var binding: FragmentWallpaperScreenBinding? = null
     private var wallpaper: Wallpaper? = null
-    private var scaleGestureDetector: ScaleGestureDetector? = null
 
     private var bitmap: Bitmap? = null
     private var uri: Uri? = null
@@ -72,11 +68,52 @@ class WallpaperScreen : Fragment() {
     private var currentContrastValue = 0.1F
     private var currentSaturationValue = 0.5F
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = FragmentWallpaperScreenBinding.inflate(inflater, container, false)
 
         wallpaper = requireArguments().parcelable(BundleConstants.WALLPAPER)
-        binding?.wallpaper?.transitionName = wallpaper?.uri
+        binding?.composeView?.transitionName = wallpaper?.uri
+
+        binding?.composeView?.apply {
+            // Dispose of the Composition when the view's LifecycleOwner
+            // is destroyed
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            // Set the content of the ComposeView to a @Composable
+            // function
+            setContent {
+                ZoomableGlideImage(
+                        model = wallpaper?.uri?.toUri(),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .pointerInput(Unit) {
+                                detectTapGestures(
+                                        onLongPress = {
+                                            binding?.fab?.performClick()
+                                        }
+                                )
+                            },
+                        alignment = Alignment.Center,
+                        contentScale = ContentScale.FillHeight
+                )
+                {
+                    it.addListener(object : RequestListener<Drawable> {
+                        override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
+                            return false
+                        }
+
+                        override fun onResourceReady(resource: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
+                            startPostponedEnterTransition()
+                            return false
+                        }
+                    })
+                        .transition(withCrossFade())
+                        .disallowHardwareConfig()
+                        .fitCenter()
+                }
+            }
+        }
 
         return binding?.root
     }
@@ -99,318 +136,7 @@ class WallpaperScreen : Fragment() {
             scrimColor = Color.TRANSPARENT
         }
 
-        // Enable pinch to zoom
-        scaleGestureDetector = ScaleGestureDetector(requireContext(), object : ScaleGestureDetector.SimpleOnScaleGestureListener() {
-            override fun onScaleBegin(detector: ScaleGestureDetector): Boolean {
-                binding?.bottomMenu?.animate()
-                    ?.alpha(0f)
-                    ?.setInterpolator(DecelerateInterpolator(1.5F))
-                    ?.setDuration(resources.getInteger(R.integer.animation_duration).toLong())
-                    ?.start()
-
-                return super.onScaleBegin(detector)
-            }
-
-            override fun onScale(detector: ScaleGestureDetector): Boolean {
-                val scaleFactor = detector.scaleFactor
-                binding?.wallpaper?.scaleX = (binding?.wallpaper?.scaleX!! * scaleFactor)
-                binding?.wallpaper?.scaleY = (binding?.wallpaper?.scaleY!! * scaleFactor)
-                binding?.wallpaper?.pivotX = detector.focusX // - binding?.wallpaperScrollView?.scrollX!!
-                binding?.wallpaper?.pivotY = detector.focusY // - binding?.wallpaperScrollView?.scrollY!!
-                return true
-            }
-
-            override fun onScaleEnd(detector: ScaleGestureDetector) {
-                super.onScaleEnd(detector)
-                binding?.wallpaper?.animate()
-                    ?.scaleX(1F)
-                    ?.scaleY(1F)
-                    ?.setDuration(resources.getInteger(R.integer.animation_duration).toLong())
-                    ?.setInterpolator(DecelerateInterpolator(1.5F))
-                    ?.start()
-
-                binding?.bottomMenu?.animate()
-                    ?.alpha(1f)
-                    ?.setInterpolator(DecelerateInterpolator(1.5F))
-                    ?.setDuration(resources.getInteger(R.integer.animation_duration).toLong())
-                    ?.start()
-            }
-        })
-
-        binding?.wallpaperScrollView?.setOnTouchListener { _, motionEvent ->
-            scaleGestureDetector?.onTouchEvent(motionEvent)
-            false
-        }
-
-        binding?.wallpaper?.loadWallpaper(wallpaper!!) {
-            try {
-                /**
-                 * Check if context is attached to the fragment
-                 */
-                if (isAdded.invert()) {
-                    Log.d("WallpaperScreen", "Context is detached")
-                    return@loadWallpaper
-                }
-
-                bitmap = it
-
-                /**
-                 * Scroll to center when wallpaper is loaded
-                 */
-                binding?.wallpaper?.doOnLayout {
-                    binding?.wallpaperScrollView?.afterMeasured {
-                        val scrollTo = if (savedInstanceState.isNull()) {
-                            binding?.wallpaper?.width?.div(2)
-                                ?.minus(binding?.wallpaperScrollView?.width?.div(2)!!)
-                        } else {
-                            savedInstanceState?.getInt(BundleConstants.SCROLL_X)
-                        }
-
-                        if (scrollTo != null) {
-                            scrollTo(scrollTo, 0)
-                        }
-                    }
-                }
-
-                Log.d("WallpaperScreen", "Wallpaper loaded")
-                startPostponedEnterTransition()
-
-                binding?.bottomMenu?.animate()
-                    ?.alpha(1f)
-                    ?.setInterpolator(DecelerateInterpolator(1.5F))
-                    ?.setDuration(resources.getInteger(R.integer.animation_duration).toLong())
-                    ?.setStartDelay(resources.getInteger(R.integer.animation_duration).toLong())
-                    ?.setListener(object : AnimatorListener {
-                        override fun onAnimationStart(p0: Animator) {
-                            binding?.bottomMenu?.visibility = View.VISIBLE
-                        }
-
-                        override fun onAnimationEnd(p0: Animator) {
-                        }
-
-                        override fun onAnimationCancel(p0: Animator) {
-                        }
-
-                        override fun onAnimationRepeat(p0: Animator) {
-                        }
-
-                    })
-                    ?.start()
-            } catch (e: IllegalStateException) {
-                Log.e("WallpaperScreen", e.message.toString())
-            }
-        }
-
-        binding?.edit?.setOnClickListener {
-            val wallpaperEditBinding = WallpaperEditBinding.inflate(layoutInflater)
-
-            if (currentBlurValue > 0) {
-                wallpaperEditBinding.blurSlider.value = currentBlurValue
-            } else {
-                wallpaperEditBinding.blurSlider.value = 0F
-            }
-
-            if (currentBrightnessValue > 0) {
-                wallpaperEditBinding.brightnessSlider.value = currentBrightnessValue
-            } else {
-                wallpaperEditBinding.brightnessSlider.value = 0.5F
-            }
-
-            if (currentContrastValue > 0) {
-                wallpaperEditBinding.contrastSlider.value = currentContrastValue
-            } else {
-                wallpaperEditBinding.contrastSlider.value = 0.1F
-            }
-
-            if (currentSaturationValue > 0) {
-                wallpaperEditBinding.saturationSlider.value = currentSaturationValue
-            } else {
-                wallpaperEditBinding.saturationSlider.value = 0.5F
-            }
-
-            wallpaperEditBinding.blurSlider.addOnChangeListener { _, value, _ ->
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    currentBlurValue = value
-                    val blurRadius = this.blurRadius
-                    try {
-                        binding?.wallpaper?.setRenderEffect(
-                                RenderEffect
-                                    .createBlurEffect(value * blurRadius, value * blurRadius, Shader.TileMode.CLAMP))
-                    } catch (e: IllegalArgumentException) {
-                        binding?.wallpaper?.setRenderEffect(null)
-                    }
-                }
-            }
-
-            wallpaperEditBinding.blurSlider.addOnSliderTouchListener(object : OnSliderTouchListener {
-                override fun onStartTrackingTouch(slider: Slider) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                        /**
-                         * Remove blur effect when user starts to change the value
-                         */
-                        binding?.wallpaper?.setRenderEffect(null)
-                    }
-
-                    binding?.wallpaper?.setImageBitmap(
-                            bitmap?.changeBitmapContrastBrightness(
-                                    currentContrastValue.toContrast(),
-                                    currentBrightnessValue.toBrightness(),
-                                    currentSaturationValue.toSaturation()))
-
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                        val blurRadius = this@WallpaperScreen.blurRadius
-                        try {
-                            binding?.wallpaper?.setRenderEffect(
-                                    RenderEffect
-                                        .createBlurEffect(
-                                                wallpaperEditBinding.blurSlider.value * blurRadius,
-                                                wallpaperEditBinding.blurSlider.value * blurRadius,
-                                                Shader.TileMode.CLAMP))
-                        } catch (e: IllegalArgumentException) {
-                            binding?.wallpaper?.setRenderEffect(null)
-                        }
-                    }
-                }
-
-                override fun onStopTrackingTouch(slider: Slider) {
-                    viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
-                        try {
-                            if (wallpaperEditBinding.blurSlider.value > 0) {
-                                val bitmap = prepareFinalBitmap()
-
-                                withContext(Dispatchers.Main) {
-                                    binding?.wallpaper?.setImageBitmap(bitmap)
-                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                                        binding?.wallpaper?.setRenderEffect(null)
-                                    } else {
-                                        // Do nothing
-                                    }
-                                }
-                            } else {
-                                withContext(Dispatchers.Main) {
-                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                                        binding?.wallpaper?.setImageBitmap(bitmap)
-
-                                        val cm = ColorMatrix(floatArrayOf(
-                                                currentContrastValue.toContrast(), 0f, 0f, 0f, currentBrightnessValue.toBrightness(),
-                                                0f, currentContrastValue.toContrast(), 0f, 0f, currentBrightnessValue.toBrightness(),
-                                                0f, 0f, currentContrastValue.toContrast(), 0f, currentBrightnessValue.toBrightness(),
-                                                0f, 0f, 0f, 1f, 0f
-                                        ))
-
-                                        cm.postConcat(ColorMatrix().apply {
-                                            setSaturation(currentSaturationValue.toSaturation())
-                                        })
-
-                                        binding?.wallpaper?.setRenderEffect(RenderEffect.createColorFilterEffect(ColorMatrixColorFilter(cm)))
-                                    } else {
-                                        binding?.wallpaper?.setImageBitmap(
-                                                bitmap?.changeBitmapContrastBrightness(
-                                                        currentContrastValue.toContrast(),
-                                                        currentBrightnessValue.toBrightness(),
-                                                        currentSaturationValue.toSaturation()))
-                                    }
-                                }
-                            }
-                        } catch (e: Exception) {
-                            withContext(Dispatchers.Main) {
-                                binding?.wallpaper?.setImageBitmap(this@WallpaperScreen.bitmap)
-                            }
-                        }
-                    }
-                }
-            })
-
-            wallpaperEditBinding.brightnessSlider.addOnChangeListener { _, value, _ ->
-                currentBrightnessValue = value
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    val cm = ColorMatrix(floatArrayOf(
-                            currentContrastValue.toContrast(), 0f, 0f, 0f, value.toBrightness(),
-                            0f, currentContrastValue.toContrast(), 0f, 0f, value.toBrightness(),
-                            0f, 0f, currentContrastValue.toContrast(), 0f, value.toBrightness(),
-                            0f, 0f, 0f, 1f, 0f
-                    ))
-
-                    cm.postConcat(ColorMatrix().apply {
-                        setSaturation(currentSaturationValue.toSaturation())
-                    })
-
-                    binding?.wallpaper?.setRenderEffect(RenderEffect.createColorFilterEffect(ColorMatrixColorFilter(cm)))
-                } else {
-                    binding?.wallpaper?.setImageBitmap(
-                            bitmap?.changeBitmapContrastBrightness(
-                                    currentContrastValue.toContrast(),
-                                    value.toBrightness(),
-                                    currentSaturationValue.toSaturation()))
-                }
-            }
-
-            wallpaperEditBinding.contrastSlider.addOnChangeListener { _, value, _ ->
-                currentContrastValue = value
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    val cm = ColorMatrix(floatArrayOf(
-                            value.toContrast(), 0f, 0f, 0f, currentBrightnessValue.toBrightness(),
-                            0f, value.toContrast(), 0f, 0f, currentBrightnessValue.toBrightness(),
-                            0f, 0f, value.toContrast(), 0f, currentBrightnessValue.toBrightness(),
-                            0f, 0f, 0f, 1f, 0f
-                    ))
-
-                    cm.postConcat(ColorMatrix().apply {
-                        setSaturation(currentSaturationValue.toSaturation())
-                    })
-
-                    binding?.wallpaper?.setRenderEffect(RenderEffect.createColorFilterEffect(ColorMatrixColorFilter(cm)))
-                } else {
-                    binding?.wallpaper?.setImageBitmap(
-                            bitmap?.changeBitmapContrastBrightness(
-                                    value.toContrast(),
-                                    currentBrightnessValue.toBrightness(),
-                                    currentSaturationValue.toSaturation()))
-                }
-            }
-
-            wallpaperEditBinding.saturationSlider.addOnChangeListener { _, value, _ ->
-                currentSaturationValue = value
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    val cm = ColorMatrix(floatArrayOf(
-                            currentContrastValue.toContrast(), 0f, 0f, 0f, currentBrightnessValue.toBrightness(),
-                            0f, currentContrastValue.toContrast(), 0f, 0f, currentBrightnessValue.toBrightness(),
-                            0f, 0f, currentContrastValue.toContrast(), 0f, currentBrightnessValue.toBrightness(),
-                            0f, 0f, 0f, 1f, 0f
-                    ))
-
-                    cm.postConcat(ColorMatrix().apply {
-                        setSaturation(value.toSaturation())
-                    })
-
-                    binding?.wallpaper?.setRenderEffect(
-                            RenderEffect.createColorFilterEffect(ColorMatrixColorFilter(cm)))
-                } else {
-                    binding?.wallpaper?.setImageBitmap(
-                            bitmap?.changeBitmapContrastBrightness(
-                                    currentContrastValue.toContrast(),
-                                    currentBrightnessValue.toBrightness(),
-                                    value.toSaturation()))
-                }
-            }
-
-            val dialog = MaterialAlertDialogBuilder(requireContext())
-                .setView(wallpaperEditBinding.root)
-                .show()
-
-            dialog.window?.setDimAmount(0F)
-            dialog.window?.setBackgroundDrawableResource(R.drawable.bg_dialog)
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                dialog.window?.addFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND)
-                dialog.window?.setBackgroundBlurRadius(25)
-            }
-        }
-
-        binding?.setAsWallpaper?.setOnClickListener {
+        binding?.fab?.setOnClickListener {
             if (MainPreferences.getAppEngine()) {
                 /**
                  * Show list of options to set wallpaper
@@ -462,7 +188,7 @@ class WallpaperScreen : Fragment() {
                 val wallpaperManager = WallpaperManager.getInstance(requireContext())
 
                 val bitmap = if (MainPreferences.getAppEngine()) {
-                    binding?.wallpaperScrollView?.drawToBitmap()!!
+                    binding?.composeView?.drawToBitmap()!!
                 } else {
                     prepareFinalBitmap()
                 }
@@ -575,11 +301,11 @@ class WallpaperScreen : Fragment() {
      * Making the Navigation system bar not overlapping with the activity
      */
     private fun fixNavigationBarOverlap() {
-        ViewCompat.setOnApplyWindowInsetsListener(binding?.bottomMenu!!) { _, windowInsets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding?.fab!!) { _, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
 
-            if (binding?.bottomMenu?.marginBottom!! < insets.bottom) {
-                binding?.bottomMenu?.apply {
+            if (binding?.fab?.marginBottom!! < insets.bottom) {
+                binding?.fab?.apply {
                     layoutParams = (layoutParams as FrameLayout.LayoutParams).apply {
                         leftMargin += insets.left
                         rightMargin += insets.right
@@ -602,44 +328,12 @@ class WallpaperScreen : Fragment() {
         outState.putFloat(BundleConstants.BRIGHTNESS_VALUE, currentBrightnessValue)
         outState.putFloat(BundleConstants.CONTRAST_VALUE, currentContrastValue)
         outState.putFloat(BundleConstants.SATURATION_VALUE, currentSaturationValue)
-        outState.putInt(BundleConstants.SCROLL_X, binding?.wallpaperScrollView?.scrollX!!)
         super.onSaveInstanceState(outState)
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
-        savedInstanceState?.let {
-            currentBlurValue = it.getInt(BundleConstants.BLUR_VALUE).toFloat()
-            currentBrightnessValue = it.getFloat(BundleConstants.BRIGHTNESS_VALUE)
-            currentContrastValue = it.getFloat(BundleConstants.CONTRAST_VALUE)
-            currentSaturationValue = it.getFloat(BundleConstants.SATURATION_VALUE)
-            binding?.wallpaperScrollView?.scrollX = it.getInt(BundleConstants.SCROLL_X)
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                val blurRadius = this.blurRadius
-                try {
-                    binding?.wallpaper?.setImageBitmap(
-                            bitmap?.changeBitmapContrastBrightness(
-                                    currentContrastValue.toContrast(),
-                                    currentBrightnessValue.toBrightness(),
-                                    currentSaturationValue.toSaturation()))
-
-                    binding?.wallpaper?.setRenderEffect(
-                            RenderEffect
-                                .createBlurEffect(currentBlurValue * blurRadius,
-                                                  currentBlurValue * blurRadius,
-                                                  Shader.TileMode.CLAMP))
-                } catch (e: IllegalArgumentException) {
-                    binding?.wallpaper?.setRenderEffect(null)
-                }
-            } else {
-                binding?.wallpaper?.setImageBitmap(
-                        bitmap?.changeBitmapContrastBrightness(
-                                currentContrastValue.toContrast(),
-                                currentBrightnessValue.toBrightness(),
-                                currentSaturationValue.toSaturation()))
-            }
-        }
     }
 
     companion object {

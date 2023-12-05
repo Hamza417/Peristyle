@@ -13,10 +13,6 @@
         android:title="@string/select" />
 
     <item
-        android:id="@+id/hd"
-        android:title="@string/high_definition" />
-
-    <item
         android:id="@+id/reload_metadata"
         android:title="@string/reload_metadata" />
 </menu>

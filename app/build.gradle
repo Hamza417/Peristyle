@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
+    id 'org.jetbrains.compose'
 }
 
 android {
@@ -16,8 +17,8 @@ android {
         applicationId "app.simple.peri"
         minSdk 24
         targetSdk 34
-        versionCode 114
-        versionName "1.14_beta"
+        versionCode 115
+        versionName "1.15_beta"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -85,8 +86,7 @@ dependencies {
     kapt "androidx.room:room-compiler:2.6.1"
     androidTestImplementation "androidx.room:room-testing:2.6.1"
 
-    implementation 'com.davemorrissey.labs:subsampling-scale-image-view-androidx:3.10.0'
-    implementation 'me.saket.telephoto:zoomable-image-coil:0.7.1'
+    implementation("me.saket.telephoto:zoomable-image-glide:0.7.1")
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
