@@ -37,4 +37,5 @@ See the [LICENSE](./LICENSE) file.
 
 ## TODO
  - [ ] Add native framework for color filters
+ - [ ] Migrate the whole app to JP Compose
 
