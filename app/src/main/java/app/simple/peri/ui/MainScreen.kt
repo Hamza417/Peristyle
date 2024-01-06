@@ -381,7 +381,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                 }
             })
 
-            val spanCount = MainPreferences.getGridSpan()
+            val spanCount = if (MainPreferences.getGridSpan() == MainPreferences.SPAN_RANDOM) 2 else MainPreferences.getGridSpan()
             binding?.recyclerView?.setHasFixedSize(true)
             staggeredGridLayoutManager = StaggeredGridLayoutManager(spanCount, StaggeredGridLayoutManager.VERTICAL)
             staggeredGridLayoutManager?.gapStrategy = StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS

@@ -15,6 +15,8 @@ object MainPreferences {
     const val gridSpan = "gridSpan"
     const val details = "is_details"
 
+    const val SPAN_RANDOM = 3
+
     fun getStorageUri(): String? {
         return SharedPreferences.getSharedPreferences().getString(storageUri, null)
     }
@@ -48,9 +50,7 @@ object MainPreferences {
     }
 
     fun getGridSpan(): Int {
-        return SharedPreferences.getSharedPreferences().getInt(gridSpan, 2)
-            .coerceAtLeast(1)
-            .coerceAtMost(4)
+        return SharedPreferences.getSharedPreferences().getInt(gridSpan, SPAN_RANDOM)
     }
 
     fun setGridSpan(span: Int) {

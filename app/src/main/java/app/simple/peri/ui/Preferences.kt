@@ -28,7 +28,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
-import java.util.concurrent.Executor
 
 class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -159,10 +158,9 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
             }
 
             "grid_span" -> {
-                MainPreferences.setGridSpan(
-                        p0?.getString(p1, "2")!!.toInt()
-                            .coerceAtLeast(1)
-                            .coerceAtMost(4))
+                Log.d("Preferences", "Grid Span: ${p0?.getString(p1, "5")!!.toInt()}")
+
+                MainPreferences.setGridSpan(p0.getString(p1, "3")!!.toInt())
             }
 
             "blur" -> {

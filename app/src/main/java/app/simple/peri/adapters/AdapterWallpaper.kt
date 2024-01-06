@@ -5,9 +5,11 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import app.simple.peri.databinding.AdapterWallpaperBinding
 import app.simple.peri.glide.utils.GlideUtils.loadWallpaper
 import app.simple.peri.interfaces.WallpaperCallbacks
@@ -40,6 +42,20 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>,
     }
 
     override fun onBindViewHolder(holder: WallpaperViewHolder, position: Int) {
+        if (MainPreferences.getGridSpan() == MainPreferences.SPAN_RANDOM) {
+            if (holder.bindingAdapterPosition % 5 == 0) {
+                val layoutParams = holder.itemView.layoutParams as StaggeredGridLayoutManager.LayoutParams
+                layoutParams.isFullSpan = true
+                holder.itemView.layoutParams = layoutParams
+                Log.d("Wallpaper", "Full span at position: ${holder.bindingAdapterPosition}")
+            } else {
+                val layoutParams = holder.itemView.layoutParams as StaggeredGridLayoutManager.LayoutParams
+                layoutParams.isFullSpan = false
+                holder.itemView.layoutParams = layoutParams
+                Log.d("Wallpaper", "Not full span at position: ${holder.bindingAdapterPosition}")
+            }
+        }
+
         holder.bind(wallpapers[position])
     }
 
@@ -153,11 +169,42 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>,
 
     inner class WallpaperViewHolder(private val binding: AdapterWallpaperBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(wallpaper: Wallpaper) {
-            val ratio = String.format("%d:%d", wallpaper.width, wallpaper.height)
+            val width = if (MainPreferences.getGridSpan() == MainPreferences.SPAN_RANDOM) {
+                if (bindingAdapterPosition % 5 == 0) {
+                    wallpaper.width!!
+                } else {
+                    9
+                }
+            } else {
+                wallpaper.width
+            }
+
+            val height = if (MainPreferences.getGridSpan() == MainPreferences.SPAN_RANDOM) {
+                if (bindingAdapterPosition % 5 == 0) {
+                    wallpaper.height!!
+                } else {
+                    16
+                }
+            } else {
+                wallpaper.height
+            }
+
+            val ratio = String.format("%d:%d", width, height)
             set.clone(binding.wallpaperContainer)
             set.setDimensionRatio(binding.wallpaperImageView.id, ratio)
             set.applyTo(binding.wallpaperContainer)
+
             binding.wallpaperContainer.transitionName = wallpaper.uri
+
+            if (MainPreferences.getGridSpan() == MainPreferences.SPAN_RANDOM) {
+                binding.wallpaperImageView.scaleType = if (bindingAdapterPosition % 5 == 0) {
+                    ImageView.ScaleType.FIT_XY
+                } else {
+                    ImageView.ScaleType.CENTER_CROP
+                }
+            } else {
+                binding.wallpaperImageView.scaleType = ImageView.ScaleType.FIT_XY
+            }
 
             binding.wallpaperImageView.post {
                 binding.wallpaperImageView.loadWallpaper(wallpaper)

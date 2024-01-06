@@ -3,15 +3,13 @@
     <string-array name="grid_span">
         <item>One</item>
         <item>Two</item>
-        <item>Three</item>
-        <item>Four</item>
+        <item>Dynamic</item>
     </string-array>
 
     <string-array name="grid_span_values">
         <item>1</item>
         <item>2</item>
         <item>3</item>
-        <item>4</item>
     </string-array>
 
 </resources>
