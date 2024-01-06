@@ -518,7 +518,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
         }
 
         binding?.swipeRefreshLayout?.setOnRefreshListener {
-            wallpaperViewModel.refreshWallpapers() {
+            wallpaperViewModel.refreshWallpapers {
                 //                MaterialAlertDialogBuilder(requireContext())
                 //                    .setTitle(R.string.error)
                 //                    .setMessage(getString(R.string.parallel_loading_error))
