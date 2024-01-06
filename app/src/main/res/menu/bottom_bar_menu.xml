@@ -12,6 +12,14 @@
         tools:ignore="AlwaysShowAction" />
 
     <item
+        android:id="@+id/order"
+        android:contentDescription="@string/order"
+        android:icon="@drawable/swap_vert"
+        android:title="@string/order"
+        app:iconTint="?attr/colorOnSurface"
+        app:showAsAction="always" />
+
+    <item
         android:id="@+id/delete"
         android:contentDescription="@string/delete"
         android:icon="@drawable/ic_delete"

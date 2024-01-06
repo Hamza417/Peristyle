@@ -2,7 +2,6 @@ package app.simple.peri.ui
 
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
-import android.app.WallpaperManager
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Color
@@ -12,20 +11,17 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.activity.addCallback
-import androidx.appcompat.widget.PopupMenu
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.animation.addListener
 import androidx.core.app.ShareCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.children
 import androidx.core.view.doOnPreDraw
 import androidx.documentfile.provider.DocumentFile
 import androidx.fragment.app.Fragment
@@ -99,72 +95,68 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
 
             when (it.itemId) {
                 R.id.sort -> {
-                    val popup = PopupMenu(requireContext(), binding?.bottomAppBar?.findViewById(R.id.sort)!!, Gravity.START)
-                    popup.menuInflater.inflate(R.menu.wallpaper_sort, popup.menu)
-                    popup.menu.addSubMenu(R.id.order, R.id.order, 0, R.string.order)
+                    val items = arrayOf(getString(R.string.name),
+                                        getString(R.string.date),
+                                        getString(R.string.size),
+                                        getString(R.string.width),
+                                        getString(R.string.height))
 
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                        popup.menu.setGroupDividerEnabled(true)
+                    val checkedItem = when (MainPreferences.getSort()) {
+                        WallpaperSort.NAME -> 0
+                        WallpaperSort.DATE -> 1
+                        WallpaperSort.SIZE -> 2
+                        WallpaperSort.WIDTH -> 3
+                        WallpaperSort.HEIGHT -> 4
+                        else -> -1
                     }
 
-                    popup.setOnMenuItemClickListener { item ->
-                        when (item.itemId) {
-                            R.id.name -> {
-                                MainPreferences.setSort(WallpaperSort.NAME)
+                    MaterialAlertDialogBuilder(requireContext())
+                        .setTitle(getString(R.string.sort))
+                        .setSingleChoiceItems(items, checkedItem) { dialog, which ->
+                            when (which) {
+                                0 -> MainPreferences.setSort(WallpaperSort.NAME)
+                                1 -> MainPreferences.setSort(WallpaperSort.DATE)
+                                2 -> MainPreferences.setSort(WallpaperSort.SIZE)
+                                3 -> MainPreferences.setSort(WallpaperSort.WIDTH)
+                                4 -> MainPreferences.setSort(WallpaperSort.HEIGHT)
                             }
 
-                            R.id.date -> {
-                                MainPreferences.setSort(WallpaperSort.DATE)
-                            }
-
-                            R.id.size -> {
-                                MainPreferences.setSort(WallpaperSort.SIZE)
-                            }
-
-                            R.id.width -> {
-                                MainPreferences.setSort(WallpaperSort.WIDTH)
-                            }
-
-                            R.id.height -> {
-                                MainPreferences.setSort(WallpaperSort.HEIGHT)
-                            }
-
-                            R.id.order -> {
-                                blurRoot()
-
-                                val popupOrder = PopupMenu(requireContext(), binding?.bottomAppBar?.findViewById(R.id.sort)!!, Gravity.START)
-                                popupOrder.menuInflater.inflate(R.menu.wallpaper_order, popupOrder.menu)
-
-                                popupOrder.setOnMenuItemClickListener { itemOrder ->
-                                    when (itemOrder.itemId) {
-                                        R.id.ascending -> {
-                                            MainPreferences.setOrder(WallpaperSort.ASC)
-                                        }
-
-                                        R.id.descending -> {
-                                            MainPreferences.setOrder(WallpaperSort.DESC)
-                                        }
-                                    }
-
-                                    true
-                                }
-
-                                popupOrder.setOnDismissListener {
-                                    unBlurRoot()
-                                }
-
-                                popupOrder.show()
-                            }
+                            dialog.dismiss()
                         }
+                        .setNegativeButton(getString(R.string.close)) { dialog, _ ->
+                            dialog.dismiss()
+                        }
+                        .setOnDismissListener {
+                            unBlurRoot()
+                        }
+                        .show()
+                }
 
-                        true
+                R.id.order -> {
+                    val items = arrayOf(getString(R.string.ascending), getString(R.string.descending))
+                    val checkedItem = when (MainPreferences.getOrder()) {
+                        WallpaperSort.ASC -> 0
+                        WallpaperSort.DESC -> 1
+                        else -> -1
                     }
 
-                    popup.setOnDismissListener {
-                        unBlurRoot()
-                    }
+                    MaterialAlertDialogBuilder(requireContext())
+                        .setTitle(getString(R.string.order))
+                        .setSingleChoiceItems(items, checkedItem) { dialog, which ->
+                            when (which) {
+                                0 -> MainPreferences.setOrder(WallpaperSort.ASC)
+                                1 -> MainPreferences.setOrder(WallpaperSort.DESC)
+                            }
 
-                    popup.show()
+                            dialog.dismiss()
+                        }
+                        .setNegativeButton(getString(R.string.close)) { dialog, _ ->
+                            dialog.dismiss()
+                        }
+                        .setOnDismissListener {
+                            unBlurRoot()
+                        }
+                        .show()
                 }
 
                 R.id.delete -> {
@@ -337,47 +329,54 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                 }
 
                 override fun onWallpaperLongClicked(wallpaper: Wallpaper, position: Int, view: View, checkBox: MaterialCheckBox) {
-                    val popup = PopupMenu(requireContext(), view, Gravity.CENTER)
-                    popup.menuInflater.inflate(R.menu.wallpaper_menu, popup.menu)
+                    blurRoot()
+                    val items = arrayOf(getString(R.string.send), getString(R.string.delete), getString(R.string.select), getString(R.string.reload_metadata))
+                    val itemIds = intArrayOf(R.id.send, R.id.delete, R.id.select, R.id.reload_metadata)
 
-                    popup.setOnMenuItemClickListener { item ->
-                        when (item.itemId) {
-                            R.id.send -> {
-                                ShareCompat.IntentBuilder(requireActivity())
-                                    .setType("image/*")
-                                    .setChooserTitle("Share Wallpaper")
-                                    .setStream(wallpaper.uri.toUri())
-                                    .startChooser()
-                            }
+                    MaterialAlertDialogBuilder(requireContext())
+                        .setTitle("Wallpaper Menu")
+                        .setItems(items) { dialog, which ->
+                            when (itemIds[which]) {
+                                R.id.send -> {
+                                    // Send
+                                    ShareCompat.IntentBuilder(requireActivity())
+                                        .setType("image/*")
+                                        .setChooserTitle("Share Wallpaper")
+                                        .setStream(wallpaper.uri.toUri())
+                                        .startChooser()
+                                }
 
-                            R.id.delete -> {
-                                viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Default) {
-                                    val documentFile = DocumentFile.fromSingleUri(requireContext(), wallpaper.uri.toUri())
-                                    if (documentFile?.delete() == true) {
-                                        withContext(Dispatchers.Main) {
-                                            adapterWallpaper?.removeWallpaper(wallpaper)
-                                            wallpaperViewModel.removeWallpaper(wallpaper)
+                                R.id.delete -> {
+                                    // Delete
+                                    viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Default) {
+                                        val documentFile = DocumentFile.fromSingleUri(requireContext(), wallpaper.uri.toUri())
+                                        if (documentFile?.delete() == true) {
+                                            withContext(Dispatchers.Main) {
+                                                adapterWallpaper?.removeWallpaper(wallpaper)
+                                                wallpaperViewModel.removeWallpaper(wallpaper)
+                                            }
                                         }
                                     }
                                 }
-                            }
 
-                            R.id.select -> {
-                                adapterWallpaper?.selectWallpaper(wallpaper)
-                            }
+                                R.id.select -> {
+                                    // Select
+                                    adapterWallpaper?.selectWallpaper(wallpaper)
+                                }
 
-                            R.id.reload_metadata -> {
-                                wallpaperViewModel.reloadMetadata(wallpaper) {
-                                    adapterWallpaper?.updateWallpaper(wallpaper, position)
+                                R.id.reload_metadata -> {
+                                    // Reload Metadata
+                                    wallpaperViewModel.reloadMetadata(wallpaper) {
+                                        adapterWallpaper?.updateWallpaper(wallpaper, position)
+                                    }
                                 }
                             }
+                            dialog.dismiss()
                         }
-
-                        true
-                    }
-
-                    // Show the popup menu.
-                    popup.show()
+                        .setOnDismissListener {
+                            unBlurRoot()
+                        }
+                        .show()
                 }
             })
 
