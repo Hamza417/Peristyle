@@ -18,8 +18,8 @@ android {
         applicationId "app.simple.peri"
         minSdk 24
         targetSdk 34
-        versionCode 115
-        versionName "1.15_beta"
+        versionCode 116
+        versionName "1.16_beta"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
