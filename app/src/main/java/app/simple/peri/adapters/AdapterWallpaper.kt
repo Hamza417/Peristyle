@@ -47,16 +47,18 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>,
                 val layoutParams = holder.itemView.layoutParams as StaggeredGridLayoutManager.LayoutParams
                 layoutParams.isFullSpan = true
                 holder.itemView.layoutParams = layoutParams
-                Log.d("Wallpaper", "Full span at position: ${holder.bindingAdapterPosition}")
             } else {
                 val layoutParams = holder.itemView.layoutParams as StaggeredGridLayoutManager.LayoutParams
                 layoutParams.isFullSpan = false
                 holder.itemView.layoutParams = layoutParams
-                Log.d("Wallpaper", "Not full span at position: ${holder.bindingAdapterPosition}")
             }
+        } else {
+            val layoutParams = holder.itemView.layoutParams as StaggeredGridLayoutManager.LayoutParams
+            layoutParams.isFullSpan = false
+            holder.itemView.layoutParams = layoutParams
         }
 
-        holder.bind(wallpapers[position])
+        holder.bind(wallpapers[holder.bindingAdapterPosition])
     }
 
     override fun getItemCount(): Int {

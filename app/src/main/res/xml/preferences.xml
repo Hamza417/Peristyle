@@ -32,7 +32,7 @@
         app:title="@string/blur" />
 
     <ListPreference
-        app:defaultValue="2"
+        app:defaultValue="3"
         app:entries="@array/grid_span"
         app:entryValues="@array/grid_span_values"
         app:iconSpaceReserved="false"

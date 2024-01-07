@@ -693,8 +693,9 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
             }
 
             MainPreferences.gridSpan -> {
-                val spanCount = MainPreferences.getGridSpan()
+                val spanCount = if (MainPreferences.getGridSpan() == MainPreferences.SPAN_RANDOM) 2 else MainPreferences.getGridSpan()
                 staggeredGridLayoutManager?.spanCount = spanCount
+                adapterWallpaper?.notifyDataSetChanged()
             }
 
             MainPreferences.name,
