@@ -271,12 +271,16 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
                     p0!!.edit().putBoolean(p1, false).apply()
                 }
             }
+            "remember_scroll_position" -> {
+                MainPreferences.setRememberScrollPosition(p0?.getBoolean(p1, false)!!)
+            }
         }
     }
 
     /**
      * Making the Navigation system bar not overlapping with the activity
      */
+    @Suppress("unused")
     private fun fixNavigationBarOverlap() {
         ViewCompat.setOnApplyWindowInsetsListener(requireView()) { view, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())

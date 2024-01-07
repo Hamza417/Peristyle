@@ -9,6 +9,9 @@ object MainPreferences {
     private const val blur = "blur_main_list"
     private const val isAppEngine = "is_app_engine"
     private const val isBiometric = "is_biometric"
+    private const val rememberScrollPosition = "rememberScrollPosition"
+    private const val scrollPosition = "scrollPosition"
+
     const val sort = "sort"
     const val order = "order"
     const val name = "is_name"
@@ -95,5 +98,21 @@ object MainPreferences {
 
     fun isBiometric(): Boolean {
         return SharedPreferences.getSharedPreferences().getBoolean(isBiometric, false)
+    }
+
+    fun setRememberScrollPosition(boolean: Boolean) {
+        SharedPreferences.getSharedPreferences().edit().putBoolean(rememberScrollPosition, boolean).apply()
+    }
+
+    fun isRememberScrollPosition(): Boolean {
+        return SharedPreferences.getSharedPreferences().getBoolean(rememberScrollPosition, false)
+    }
+
+    fun setScrollPosition(position: Int) {
+        SharedPreferences.getSharedPreferences().edit().putInt(scrollPosition, position).apply()
+    }
+
+    fun getScrollPosition(): Int {
+        return SharedPreferences.getSharedPreferences().getInt(scrollPosition, 0)
     }
 }

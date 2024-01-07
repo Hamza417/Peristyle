@@ -45,6 +45,14 @@
         app:title="@string/grid_span"
         app:useSimpleSummaryProvider="false" />
 
+    <CheckBoxPreference
+        app:defaultValue="false"
+        app:enabled="true"
+        app:iconSpaceReserved="true"
+        app:key="remember_scroll_position"
+        app:summary="@string/remember_scroll_position_summary"
+        app:title="@string/remember_scroll_position" />
+
     <PreferenceCategory
         app:iconSpaceReserved="false"
         app:title="@string/engine" />

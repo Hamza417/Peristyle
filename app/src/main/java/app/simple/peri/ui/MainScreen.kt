@@ -385,8 +385,23 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
             staggeredGridLayoutManager = StaggeredGridLayoutManager(spanCount, StaggeredGridLayoutManager.VERTICAL)
             staggeredGridLayoutManager?.gapStrategy = StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS
             binding?.recyclerView?.layoutManager = staggeredGridLayoutManager
+
             binding?.recyclerView?.adapter = adapterWallpaper
             ItemTouchHelper(simpleItemTouchCallback).attachToRecyclerView(binding?.recyclerView)
+
+            binding?.recyclerView?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                        MainPreferences.setScrollPosition(
+                                (staggeredGridLayoutManager?.findFirstCompletelyVisibleItemPositions(null)?.get(0) ?: 0)
+                                    .coerceAtLeast(0))
+                    }
+                }
+            })
+
+            if (MainPreferences.isRememberScrollPosition()) {
+                binding?.recyclerView?.scrollToPosition(MainPreferences.getScrollPosition())
+            }
 
             (view.parent as? ViewGroup)?.doOnPreDraw {
                 startPostponedEnterTransition()
