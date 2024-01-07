@@ -64,8 +64,8 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
 
     private var displayWidth: Int = 0
     private var displayHeight: Int = 0
-    private val blurRadius: Float = 75F
-    private val blurDuration: Long = 300
+    private val blurRadius: Float = 25F
+    private val blurDuration: Long = 250
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = FragmentMainScreenBinding.inflate(inflater, container, false)
@@ -400,7 +400,13 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
             })
 
             if (MainPreferences.isRememberScrollPosition()) {
-                binding?.recyclerView?.scrollToPosition(MainPreferences.getScrollPosition())
+                // Make sure this is the first time the fragment is created
+                if (requireArguments().getBoolean(BundleConstants.FIRST_RV_STATE, true)) {
+                    binding?.recyclerView?.scrollToPosition(MainPreferences.getScrollPosition())
+                    requireArguments().putBoolean(BundleConstants.FIRST_RV_STATE, false)
+                }
+            } else {
+                requireArguments().putBoolean(BundleConstants.FIRST_RV_STATE, false)
             }
 
             (view.parent as? ViewGroup)?.doOnPreDraw {
