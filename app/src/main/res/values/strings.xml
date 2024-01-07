@@ -67,7 +67,7 @@
     <string name="app_engine_summary">Use app\'s wallpaper engine to set wallpapers instead of system (recommended).</string>
     <string name="enable_app_engine">Peri Wallpaper Engine</string>
     <string name="scroll_to_top">Scroll to Top</string>
-    <string name="clear_cache_message">Cleared %1$d MB</string>
+    <string name="clear_cache_message">Cleared %1$s</string>
     <string name="initiate_recreate_database_message">Initiated database recreation process…</string>
     <string name="reload_metadata">Reload Metadata</string>
     <string name="failed_files">These files couldn\'t be loaded. Would you like to delete them?\n</string>
@@ -85,4 +85,11 @@
     <string name="unknown">Unknown</string>
     <string name="landscape">Landscape</string>
     <string name="portrait">Portrait</string>
+    <string name="library_stats">Library Stats</string>
+    <string name="library_stats_desc">Details about your wallpaper library.</string>
+    <string name="library_stats_message">Total Wallpapers: %1$d\nSize: %2$s\nCache: %3$s</string>
+    <string name="fetching">Fetching</string>
+    <string name="cache_info">Fetching cache info</string>
+    <string name="total_info">Counting total wallpapers</string>
+    <string name="size_info">Calculating size</string>
 </resources>

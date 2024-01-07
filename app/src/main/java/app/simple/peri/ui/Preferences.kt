@@ -15,6 +15,7 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.preference.CheckBoxPreference
@@ -22,11 +23,14 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import app.simple.peri.R
 import app.simple.peri.constants.BundleConstants
+import app.simple.peri.databinding.DialogDeleteBinding
 import app.simple.peri.preferences.MainPreferences
+import app.simple.peri.utils.FileUtils.toSize
 import com.bumptech.glide.Glide
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 
 class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPreferenceChangeListener {
@@ -114,7 +118,7 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
 
                 requireActivity().runOnUiThread {
                     MaterialAlertDialogBuilder(requireContext())
-                        .setMessage(getString(R.string.clear_cache_message, size / 1024 / 1024))
+                        .setMessage(getString(R.string.clear_cache_message, size.toSize()))
                         .setPositiveButton(R.string.close) { dialog, _ ->
                             dialog.dismiss()
                         }
@@ -129,7 +133,7 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
 
         preferenceScreen.findPreference<Preference>("change_directory")?.setOnPreferenceClickListener {
             MaterialAlertDialogBuilder(requireContext())
-                .setMessage(R.string.change_directory_desc)
+                .setMessage(getString(R.string.change_directory_desc, MainPreferences.getStorageUri()))
                 .setPositiveButton(R.string.change_directory) { dialog, _ ->
                     val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
                     storageResult.launch(intent)
@@ -139,6 +143,48 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
                     dialog.dismiss()
                 }
                 .show()
+            true
+        }
+
+        preferenceScreen.findPreference<Preference>("library_stats")?.setOnPreferenceClickListener {
+            val dialogDeleteBinding = DialogDeleteBinding.inflate(layoutInflater)
+            dialogDeleteBinding.progress.text = getString(R.string.fetching)
+
+            val progressDialog = MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.library_stats)
+                .setView(dialogDeleteBinding.root)
+                .show()
+
+            viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+                withContext(Dispatchers.Main) {
+                    dialogDeleteBinding.progress.text = getString(R.string.total_info)
+                }
+
+                val totalWallpapers = DocumentFile.fromTreeUri(requireContext(), Uri.parse(MainPreferences.getStorageUri()))?.listFiles()?.size
+
+                withContext(Dispatchers.Main) {
+                    dialogDeleteBinding.progress.text = getString(R.string.size_info)
+                }
+
+                val size = DocumentFile.fromTreeUri(requireContext(), Uri.parse(MainPreferences.getStorageUri()))?.listFiles()?.sumOf { it.length() }!!
+
+                withContext(Dispatchers.Main) {
+                    dialogDeleteBinding.progress.text = getString(R.string.cache_info)
+                }
+
+                val cacheSize = File("${requireContext().cacheDir}/image_manager_disk_cache/").walkTopDown().sumOf { it.length() }
+
+                withContext(Dispatchers.Main) {
+                    progressDialog.dismiss()
+
+                    MaterialAlertDialogBuilder(requireContext())
+                        .setMessage(getString(R.string.library_stats_message, totalWallpapers, size.toSize(), cacheSize.toSize()))
+                        .setPositiveButton(R.string.close) { dialog, _ ->
+                            dialog.dismiss()
+                        }
+                        .show()
+                }
+            }
             true
         }
 

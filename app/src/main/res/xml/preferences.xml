@@ -94,6 +94,12 @@
         app:key="change_directory"
         app:summary="@string/change_directory_desc" />
 
+    <Preference
+        android:title="@string/library_stats"
+        app:iconSpaceReserved="false"
+        app:key="library_stats"
+        app:summary="@string/library_stats_desc" />
+
     <PreferenceCategory
         app:iconSpaceReserved="false"
         app:title="@string/about" />
