@@ -52,4 +52,15 @@ object BitmapUtils {
         draw(canvas)
         return bitmap
     }
+
+    fun Bitmap.applySaturation(saturation: Float): Bitmap {
+        val cm = ColorMatrix()
+        cm.setSaturation(saturation)
+        val paint = Paint()
+        paint.colorFilter = ColorMatrixColorFilter(cm)
+        val ret = Bitmap.createBitmap(width, height, config)
+        val canvas = Canvas(ret)
+        canvas.drawBitmap(this, 0f, 0f, paint)
+        return ret
+    }
 }

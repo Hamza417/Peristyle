@@ -4,8 +4,12 @@ import android.annotation.SuppressLint
 import android.app.WallpaperManager
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.graphics.ColorMatrix
+import android.graphics.ColorMatrixColorFilter
+import android.graphics.RenderEffect
 import android.graphics.drawable.Drawable
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -30,10 +34,10 @@ import androidx.lifecycle.lifecycleScope
 import app.simple.peri.R
 import app.simple.peri.constants.BundleConstants
 import app.simple.peri.databinding.FragmentWallpaperScreenBinding
+import app.simple.peri.databinding.WallpaperEditBinding
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.preferences.MainPreferences
-import app.simple.peri.tools.StackBlur
-import app.simple.peri.utils.BitmapUtils.changeBitmapContrastBrightness
+import app.simple.peri.utils.BitmapUtils.applySaturation
 import app.simple.peri.utils.ConditionUtils.invert
 import app.simple.peri.utils.FileUtils.toUri
 import app.simple.peri.utils.ParcelUtils.parcelable
@@ -51,7 +55,6 @@ import kotlinx.coroutines.withContext
 import me.saket.telephoto.zoomable.glide.ZoomableGlideImage
 import java.io.ByteArrayOutputStream
 import java.io.File
-import kotlin.math.roundToInt
 
 class WallpaperScreen : Fragment() {
 
@@ -60,13 +63,7 @@ class WallpaperScreen : Fragment() {
 
     private var bitmap: Bitmap? = null
     private var uri: Uri? = null
-    private val blurRadius = 600F
-    private val blurFactor = 4
-
-    private var currentBlurValue = 0F
-    private var currentBrightnessValue = 0.5F
-    private var currentContrastValue = 0.1F
-    private var currentSaturationValue = 0.5F
+    private val blurRadius = 25F
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -105,6 +102,13 @@ class WallpaperScreen : Fragment() {
 
                         override fun onResourceReady(resource: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
                             startPostponedEnterTransition()
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                                binding?.composeView?.setRenderEffect(RenderEffect.createColorFilterEffect(ColorMatrixColorFilter(ColorMatrix().apply {
+                                    setSaturation(requireArguments().getFloat(BundleConstants.SATURATION_VALUE, 0.5F).toSaturation())
+                                })))
+                            }
+
+                            bitmap = binding?.composeView?.drawToBitmap()
                             return false
                         }
                     })
@@ -175,6 +179,43 @@ class WallpaperScreen : Fragment() {
                 setWallpaper(-1)
             }
         }
+
+        binding?.fab0?.setOnClickListener {
+            val wallpaperEditBinding = WallpaperEditBinding.inflate(layoutInflater)
+            wallpaperEditBinding.root.setBackgroundColor(Color.TRANSPARENT)
+
+            wallpaperEditBinding.saturationSlider.value = requireArguments().getFloat(BundleConstants.SATURATION_VALUE, 0.5F)
+
+            wallpaperEditBinding.saturationSlider.addOnChangeListener { _, value, fromUser ->
+                if (fromUser) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                        requireArguments().putFloat(BundleConstants.SATURATION_VALUE, value)
+                        binding?.composeView?.setRenderEffect(RenderEffect.createColorFilterEffect(ColorMatrixColorFilter(ColorMatrix().apply {
+                            setSaturation(value.toSaturation())
+                        })))
+                    }
+                }
+            }
+
+            val dialog = MaterialAlertDialogBuilder(requireContext())
+                .setView(wallpaperEditBinding.root)
+                .show()
+
+            dialog.window?.setDimAmount(0F)
+            dialog.window?.setBackgroundDrawableResource(R.drawable.bg_dialog)
+
+            dialog.show()
+        }
+
+        /**
+         * Remove the edit button if the device is not running
+         * on Android 12 or above
+         */
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            binding?.fab0?.visibility = View.VISIBLE
+        } else {
+            binding?.fab0?.visibility = View.GONE
+        }
     }
 
     private fun setWallpaper(mode: Int) {
@@ -188,13 +229,17 @@ class WallpaperScreen : Fragment() {
                 val wallpaperManager = WallpaperManager.getInstance(requireContext())
 
                 val bitmap = if (MainPreferences.getAppEngine()) {
-                    binding?.composeView?.drawToBitmap()!!
+                    binding?.composeView?.drawToBitmap()
+                        ?.applySaturation(requireArguments().getFloat(BundleConstants.SATURATION_VALUE, 0.5F)
+                                              .toSaturation())
                 } else {
                     prepareFinalBitmap()
+                        .applySaturation(requireArguments().getFloat(BundleConstants.SATURATION_VALUE, 0.5F)
+                                             .toSaturation())
                 }
 
                 if (MainPreferences.getAppEngine().invert()) {
-                    uri = getImageUri(bitmap)
+                    uri = bitmap?.let { getImageUri(it) }
                 }
 
                 withContext(Dispatchers.Main) {
@@ -219,11 +264,12 @@ class WallpaperScreen : Fragment() {
                     }
                 }
             }.onFailure {
+                it.printStackTrace()
                 withContext(Dispatchers.Main) {
                     loader.dismiss()
                     MaterialAlertDialogBuilder(requireContext())
                         .setTitle(R.string.error)
-                        .setMessage(it.message)
+                        .setMessage(it.message ?: it.stackTraceToString())
                         .setPositiveButton(R.string.close) { dialog, _ ->
                             dialog.dismiss()
                         }
@@ -234,21 +280,7 @@ class WallpaperScreen : Fragment() {
     }
 
     private fun prepareFinalBitmap(): Bitmap {
-        val bitmap = this.bitmap
-            ?.copy(this.bitmap!!.config, true)
-            ?.changeBitmapContrastBrightness(
-                    currentContrastValue.toContrast(),
-                    currentBrightnessValue.toBrightness(),
-                    currentSaturationValue.toSaturation())
-
-        val blurRadius = currentBlurValue * this.blurRadius
-
-        try {
-            StackBlur().blurRgb(bitmap!!, blurRadius.roundToInt() / blurFactor)
-        } catch (e: Exception) {
-            // baa baa black sheep
-        }
-
+        val bitmap = this.bitmap?.copy(this.bitmap!!.config, true)
         return bitmap!!
     }
 
@@ -321,19 +353,6 @@ class WallpaperScreen : Fragment() {
              */
             WindowInsetsCompat.CONSUMED
         }
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        outState.putInt(BundleConstants.BLUR_VALUE, currentBlurValue.roundToInt())
-        outState.putFloat(BundleConstants.BRIGHTNESS_VALUE, currentBrightnessValue)
-        outState.putFloat(BundleConstants.CONTRAST_VALUE, currentContrastValue)
-        outState.putFloat(BundleConstants.SATURATION_VALUE, currentSaturationValue)
-        super.onSaveInstanceState(outState)
-    }
-
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        super.onViewStateRestored(savedInstanceState)
-
     }
 
     companion object {
