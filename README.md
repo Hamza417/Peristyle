@@ -1,14 +1,14 @@
-# Peri
+# Peristyle
 
 Simple wallpaper manager app for Android built using Material libraries and design guidelines.
 
-## Why Peri?
+## Why Peristyle?
 
-Peri is created to be extremely simple and sophisticated wallpaper manager and browser app
+Peristyle is created to be extremely simple and sophisticated wallpaper manager and browser app
 for Android. It solves the problem of having too many features and bloated apps and having
 very minimal support for locally stored wallpapers. What if you just wanted an app that allows
 you to browse and select your own locally stored wallpapers and lets you manage and set wallpapers
-from there? then Peri is for you :)
+from there? then Peristyle is for you :)
 
 ## Features
 
