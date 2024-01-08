@@ -20,7 +20,7 @@ from there? then Peristyle is for you :)
 - Fully Material You design.
 
 ## Download
-[![](https://img.shields.io/badge/GitHub%20Releases-181717?logo=github)](https://github.com/Hamza417/Peristyle/releases/latest)
+[![](https://img.shields.io/github/v/release/Hamza417/Peristyle?color=181717&label=GitHub%20Release)](https://github.com/Hamza417/Peristyle/releases/latest)
 [![](https://img.shields.io/badge/IzzyOnDroid-1976D2)](https://apt.izzysoft.de/fdroid/index/apk/app.simple.peri/)
 
 ## Screenshots
