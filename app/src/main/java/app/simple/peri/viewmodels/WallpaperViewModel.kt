@@ -23,7 +23,6 @@ import app.simple.peri.utils.WallpaperSort.getSortedList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.lang.IllegalStateException
 
 class WallpaperViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -135,27 +134,27 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
             var count = 0
             val total = pickedDirectory?.listFiles()?.size ?: 0
 
-            pickedDirectory?.listFiles()?.forEach {
+            pickedDirectory?.listFiles()?.toList()?.parallelStream()?.forEach { file ->
                 try {
                     val wallpaper = Wallpaper()
                     var alreadyLoadedWallpaper = false
 
-                    if (it.isDirectory) {
-                        it.listFiles().forEach { file ->
-                            if (file.isFile && file.isImageFile()) {
+                    if (file.isDirectory) {
+                        file?.listFiles()?.toList()?.parallelStream()?.forEach { subFile ->
+                            if (subFile.isFile && subFile.isImageFile()) {
                                 val exists = kotlin.runCatching {
-                                    alreadyLoaded?.containsKey(file.uri.toString()) ?: false
+                                    alreadyLoaded?.containsKey(subFile.uri.toString()) ?: false
                                 }.getOrElse {
                                     false
                                 }
 
                                 if (exists.invert()) {
-                                    wallpaper.name = file.name
-                                    wallpaper.uri = file.uri.toString()
-                                    wallpaper.dateModified = file.lastModified()
-                                    wallpaper.size = file.length()
+                                    wallpaper.name = subFile.name
+                                    wallpaper.uri = subFile.uri.toString()
+                                    wallpaper.dateModified = subFile.lastModified()
+                                    wallpaper.size = subFile.length()
 
-                                    getApplication<Application>().contentResolver.openInputStream(file.uri)?.use { inputStream ->
+                                    getApplication<Application>().contentResolver.openInputStream(subFile.uri)?.use { inputStream ->
                                         val options = BitmapFactory.Options()
                                         options.inJustDecodeBounds = true
                                         BitmapFactory.decodeStream(inputStream, null, options)
@@ -165,25 +164,25 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
 
                                     // Log.d(TAG, "loadWallpaperImages: ${wallpaper.name}, ${wallpaper.width}, ${wallpaper.height}")
                                 } else {
-                                    // Log.d(TAG, "loadWallpaperImages: ${file.name} already loaded")
+                                    // Log.d(TAG, "loadWallpaperImages: ${subFile.name} already loaded")
                                     alreadyLoadedWallpaper = true
                                 }
                             }
                         }
-                    } else if (it.isFile && it.isImageFile()) {
+                    } else if (file.isFile && file.isImageFile()) {
                         val exists = kotlin.runCatching {
-                            alreadyLoaded?.containsKey(it.uri.toString()) ?: false
+                            alreadyLoaded?.containsKey(file.uri.toString()) ?: false
                         }.getOrElse {
                             false
                         }
 
                         if (exists.invert()) {
-                            wallpaper.name = it.name
-                            wallpaper.uri = it.uri.toString()
-                            wallpaper.dateModified = it.lastModified()
-                            wallpaper.size = it.length()
+                            wallpaper.name = file.name
+                            wallpaper.uri = file.uri.toString()
+                            wallpaper.dateModified = file.lastModified()
+                            wallpaper.size = file.length()
 
-                            getApplication<Application>().contentResolver.openInputStream(it.uri)?.use { inputStream ->
+                            getApplication<Application>().contentResolver.openInputStream(file.uri)?.use { inputStream ->
                                 val options = BitmapFactory.Options()
                                 options.inJustDecodeBounds = true
                                 BitmapFactory.decodeStream(inputStream, null, options)
@@ -193,7 +192,7 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
 
                             // Log.d(TAG, "loadWallpaperImages: ${wallpaper.name}, ${wallpaper.width}, ${wallpaper.height}")
                         } else {
-                            // Log.d(TAG, "loadWallpaperImages: ${it.name} already loaded")
+                            // Log.d(TAG, "loadWallpaperImages: ${file.name} already loaded")
                             alreadyLoadedWallpaper = true
                         }
                     }
@@ -210,7 +209,7 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
                     }
                 } catch (e: IllegalStateException) {
                     e.printStackTrace()
-                    failedURIs.add(it.uri.toString())
+                    failedURIs.add(file.uri.toString())
                 }
             }
 

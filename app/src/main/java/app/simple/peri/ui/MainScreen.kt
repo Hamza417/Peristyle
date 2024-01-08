@@ -75,7 +75,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
     @SuppressLint("CutPasteId")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        requireActivity().findViewById<CoordinatorLayout>(R.id.mainContainer).setBackgroundColor(Color.BLACK)
+        setMainBackground()
         postponeEnterTransition()
         allowEnterTransitionOverlap = true
         allowReturnTransitionOverlap = true
@@ -675,6 +675,14 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
         }
     }
 
+    private fun setMainBackground() {
+        if (MainPreferences.getMainScreenBackground() == 0) {
+            requireActivity().findViewById<CoordinatorLayout>(R.id.mainContainer).setBackgroundColor(Color.WHITE)
+        } else {
+            requireActivity().findViewById<CoordinatorLayout>(R.id.mainContainer).setBackgroundColor(Color.BLACK)
+        }
+    }
+
     override fun onResume() {
         super.onResume()
         registerSharedPreferenceChangeListener()
@@ -719,9 +727,17 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                 adapterWallpaper?.notifyDataSetChanged()
             }
 
+            MainPreferences.marginBetween -> {
+                adapterWallpaper?.setMarginLayout(MainPreferences.getMarginBetween())
+            }
+
             MainPreferences.name,
             MainPreferences.details -> {
                 adapterWallpaper?.notifyDataSetChanged()
+            }
+
+            MainPreferences.mainScreenBackground -> {
+                setMainBackground()
             }
         }
     }

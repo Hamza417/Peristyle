@@ -17,6 +17,8 @@ object MainPreferences {
     const val name = "is_name"
     const val gridSpan = "gridSpan"
     const val details = "is_details"
+    const val marginBetween = "marginBetween"
+    const val mainScreenBackground = "mainScreenBackground"
 
     const val SPAN_RANDOM = 3
 
@@ -114,5 +116,21 @@ object MainPreferences {
 
     fun getScrollPosition(): Int {
         return SharedPreferences.getSharedPreferences().getInt(scrollPosition, 0)
+    }
+
+    fun getMarginBetween(): Boolean {
+        return SharedPreferences.getSharedPreferences().getBoolean(marginBetween, false)
+    }
+
+    fun setMarginBetween(boolean: Boolean) {
+        SharedPreferences.getSharedPreferences().edit().putBoolean(marginBetween, boolean).apply()
+    }
+
+    fun getMainScreenBackground(): Int {
+        return SharedPreferences.getSharedPreferences().getInt(mainScreenBackground, 0)
+    }
+
+    fun setMainScreenBackground(int: Int) {
+        SharedPreferences.getSharedPreferences().edit().putInt(mainScreenBackground, int).apply()
     }
 }

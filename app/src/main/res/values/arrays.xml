@@ -12,4 +12,14 @@
         <item>3</item>
     </string-array>
 
+    <string-array name="main_screen_background">
+        <item>Light</item>
+        <item>Dark</item>
+    </string-array>
+
+    <string-array name="main_screen_background_values">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+
 </resources>

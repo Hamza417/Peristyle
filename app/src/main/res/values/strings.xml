@@ -96,4 +96,6 @@
     <string name="remember_scroll_position">Remember Scroll Position</string>
     <string name="margin_between_wallpapers_summary">Add a small space between wallpapers on the main screen.</string>
     <string name="margin_between_wallpapers">Margin Between Wallpapers</string>
+    <string name="main_screen_background_summary">Color mode of the background of the main screen.</string>
+    <string name="main_screen_background">Main Screen Background</string>
 </resources>

@@ -273,8 +273,18 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
                     p0!!.edit().putBoolean(p1, false).apply()
                 }
             }
+
             "remember_scroll_position" -> {
                 MainPreferences.setRememberScrollPosition(p0?.getBoolean(p1, false)!!)
+            }
+
+            "margin_between_wallpapers" -> {
+                MainPreferences.setMarginBetween(p0?.getBoolean(p1, true)!!)
+            }
+
+            "main_screen_background" -> {
+                MainPreferences.setMainScreenBackground(p0?.getString(p1, "0")!!.toInt())
+
             }
         }
     }

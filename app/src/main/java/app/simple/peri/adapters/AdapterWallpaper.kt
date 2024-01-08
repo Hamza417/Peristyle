@@ -10,6 +10,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import app.simple.peri.R
 import app.simple.peri.databinding.AdapterWallpaperBinding
 import app.simple.peri.glide.utils.GlideUtils.loadWallpaper
 import app.simple.peri.interfaces.WallpaperCallbacks
@@ -25,6 +26,7 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>,
 
     private val set = ConstraintSet()
     private var wallpaperCallbacks: WallpaperCallbacks? = null
+    private var isMarginLayout = MainPreferences.getMarginBetween()
 
     var selectionMode = false
         set(value) {
@@ -169,6 +171,12 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>,
         notifyItemChanged(position)
     }
 
+    @SuppressLint("NotifyDataSetChanged")
+    fun setMarginLayout(marginLayout: Boolean) {
+        isMarginLayout = marginLayout
+        notifyDataSetChanged()
+    }
+
     inner class WallpaperViewHolder(private val binding: AdapterWallpaperBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(wallpaper: Wallpaper) {
             val width = if (MainPreferences.getGridSpan() == MainPreferences.SPAN_RANDOM) {
@@ -195,6 +203,17 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>,
             set.clone(binding.wallpaperContainer)
             set.setDimensionRatio(binding.wallpaperImageView.id, ratio)
             set.applyTo(binding.wallpaperContainer)
+
+            if (isMarginLayout) {
+                val margin = binding.root.resources.getDimensionPixelSize(R.dimen.margin_8dp).div(2)
+                val marginLayoutParams = binding.wallpaperContainer.layoutParams as ViewGroup.MarginLayoutParams
+                marginLayoutParams.setMargins(margin, margin, margin, margin)
+                binding.wallpaperContainer.layoutParams = marginLayoutParams
+            } else {
+                val marginLayoutParams = binding.wallpaperContainer.layoutParams as ViewGroup.MarginLayoutParams
+                marginLayoutParams.setMargins(0, 0, 0, 0)
+                binding.wallpaperContainer.layoutParams = marginLayoutParams
+            }
 
             binding.wallpaperContainer.transitionName = wallpaper.uri
 
@@ -239,7 +258,7 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>,
                     startToStart = ConstraintSet.PARENT_ID
                     bottomToBottom = ConstraintSet.PARENT_ID
                     topToTop = ConstraintSet.PARENT_ID
-                    bottomMargin = binding.root.resources.getDimensionPixelSize(app.simple.peri.R.dimen.margin_8dp)
+                    bottomMargin = binding.root.resources.getDimensionPixelSize(R.dimen.margin_8dp)
                 }
             }
 
@@ -260,7 +279,7 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>,
                         startToStart = ConstraintSet.PARENT_ID
                         bottomToBottom = ConstraintSet.PARENT_ID
                         topToTop = ConstraintSet.PARENT_ID
-                        bottomMargin = binding.root.resources.getDimensionPixelSize(app.simple.peri.R.dimen.margin_8dp)
+                        bottomMargin = binding.root.resources.getDimensionPixelSize(R.dimen.margin_8dp)
                     }
                 }
             }

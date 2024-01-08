@@ -45,6 +45,17 @@
         app:title="@string/grid_span"
         app:useSimpleSummaryProvider="false" />
 
+    <ListPreference
+        android:icon="@drawable/ic_contrast"
+        app:defaultValue="0"
+        app:entries="@array/main_screen_background"
+        app:entryValues="@array/main_screen_background_values"
+        app:iconSpaceReserved="true"
+        app:key="main_screen_background"
+        app:summary="@string/main_screen_background_summary"
+        app:title="@string/main_screen_background"
+        app:useSimpleSummaryProvider="false" />
+
     <CheckBoxPreference
         android:icon="@drawable/ic_pin_drop"
         app:defaultValue="false"
