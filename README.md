@@ -19,6 +19,10 @@ from there? then Peristyle is for you :)
 - Biometric lock support.
 - Fully Material You design.
 
+## Download
+[![](https://img.shields.io/badge/GitHub%20Releases-181717?logo=github)](https://github.com/Hamza417/Peristyle/releases/latest)
+[![](https://img.shields.io/badge/IzzyOnDroid-1976D2)](https://apt.izzysoft.de/fdroid/index/apk/app.simple.peri/)
+
 ## Screenshots
 
 | ![01](./fastlane/metadata/android/en-US/images/phoneScreenshots/01.png) | ![02](./fastlane/metadata/android/en-US/images/phoneScreenshots/02.png) |
