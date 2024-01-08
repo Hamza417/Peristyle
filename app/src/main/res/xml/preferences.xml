@@ -8,44 +8,45 @@
         app:title="@string/home" />
 
     <CheckBoxPreference
+        android:icon="@drawable/ic_label"
         app:defaultValue="true"
         app:enabled="true"
         app:iconSpaceReserved="true"
-        android:icon="@drawable/ic_label"
         app:key="is_name"
         app:summary="@string/show_wallpaper_names_on_the_main_screen"
         app:title="@string/enabled_wallpaper_names" />
 
     <CheckBoxPreference
+        android:icon="@drawable/ic_description"
         app:defaultValue="true"
         app:enabled="true"
         app:iconSpaceReserved="true"
         app:key="is_details"
-        android:icon="@drawable/ic_description"
         app:summary="@string/show_wallpaper_details_on_the_main_screen"
         app:title="@string/enabled_wallpaper_details" />
 
     <CheckBoxPreference
+        android:icon="@drawable/ic_blur"
         app:defaultValue="true"
         app:enabled="true"
         app:iconSpaceReserved="true"
-        android:icon="@drawable/ic_blur"
         app:key="blur"
         app:summary="@string/blur_summary"
         app:title="@string/blur" />
 
     <ListPreference
+        android:icon="@drawable/ic_grid"
         app:defaultValue="3"
         app:entries="@array/grid_span"
         app:entryValues="@array/grid_span_values"
         app:iconSpaceReserved="true"
-        android:icon="@drawable/ic_grid"
         app:key="grid_span"
         app:summary="@string/grid_span_summary"
         app:title="@string/grid_span"
         app:useSimpleSummaryProvider="false" />
 
     <CheckBoxPreference
+        android:icon="@drawable/ic_pin_drop"
         app:defaultValue="false"
         app:enabled="true"
         app:iconSpaceReserved="true"
@@ -53,15 +54,24 @@
         app:summary="@string/remember_scroll_position_summary"
         app:title="@string/remember_scroll_position" />
 
+    <CheckBoxPreference
+        android:icon="@drawable/ic_margin"
+        app:defaultValue="false"
+        app:enabled="true"
+        app:iconSpaceReserved="true"
+        app:key="margin_between_wallpapers"
+        app:summary="@string/margin_between_wallpapers_summary"
+        app:title="@string/margin_between_wallpapers" />
+
     <PreferenceCategory
         app:iconSpaceReserved="false"
         app:title="@string/engine" />
 
     <CheckBoxPreference
+        android:icon="@drawable/ic_hardware"
         app:defaultValue="true"
         app:enabled="true"
         app:iconSpaceReserved="true"
-        android:icon="@drawable/ic_hardware"
         app:key="is_app_engine"
         app:summary="@string/app_engine_summary"
         app:title="@string/enable_app_engine" />
@@ -71,10 +81,10 @@
         app:title="@string/security" />
 
     <CheckBoxPreference
+        android:icon="@drawable/ic_fingerprint"
         app:defaultValue="false"
         app:enabled="true"
         app:iconSpaceReserved="true"
-        android:icon="@drawable/ic_fingerprint"
         app:key="is_biometric"
         app:summary="@string/biometric_summary"
         app:title="@string/enable_biometric" />

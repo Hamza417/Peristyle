@@ -61,6 +61,7 @@ class MainActivity : AppCompatActivity() {
         biometricPromptInfo = BiometricPrompt.PromptInfo.Builder()
             .setTitle(getString(R.string.app_name))
             .setDescription(getString(R.string.biometric_desc))
+            .setNegativeButtonText(getString(R.string.close))
             .build()
 
         if (MainPreferences.getStorageUri() == null) {
@@ -79,7 +80,6 @@ class MainActivity : AppCompatActivity() {
                                     BiometricPrompt.ERROR_NEGATIVE_BUTTON -> {
                                         finish()
                                     }
-
                                     BiometricPrompt.ERROR_NO_BIOMETRICS,
                                     BiometricPrompt.ERROR_NO_DEVICE_CREDENTIAL -> {
                                         binding?.mainContainer?.id?.let {
@@ -88,7 +88,6 @@ class MainActivity : AppCompatActivity() {
                                                 .commit()
                                         }
                                     }
-
                                     else -> {
                                         MaterialAlertDialogBuilder(this@MainActivity)
                                             .setTitle(getString(R.string.app_name))

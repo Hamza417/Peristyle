@@ -21,6 +21,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.preference.CheckBoxPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
+import app.simple.peri.BuildConfig
 import app.simple.peri.R
 import app.simple.peri.constants.BundleConstants
 import app.simple.peri.databinding.DialogDeleteBinding
@@ -190,6 +191,9 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
 
         preferenceScreen.findPreference<Preference>("change_directory")?.summary =
             getString(R.string.change_directory_desc, MainPreferences.getStorageUri())
+
+        preferenceScreen.findPreference<Preference>("info")?.summary =
+            getString(R.string.full_info, BuildConfig.VERSION_NAME)
     }
 
     override fun onDestroy() {
