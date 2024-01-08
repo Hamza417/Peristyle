@@ -204,9 +204,7 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
             }
 
             "grid_span" -> {
-                Log.d("Preferences", "Grid Span: ${p0?.getString(p1, "3")!!.toInt()}")
-
-                MainPreferences.setGridSpan(p0.getString(p1, MainPreferences.SPAN_RANDOM.toString())!!.toInt())
+                MainPreferences.setGridSpan(p0?.getString(p1, MainPreferences.SPAN_RANDOM.toString())!!.toInt())
             }
 
             "blur" -> {

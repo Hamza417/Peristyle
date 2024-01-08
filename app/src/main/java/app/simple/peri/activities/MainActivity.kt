@@ -6,16 +6,11 @@ import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.widget.FrameLayout
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
-import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
 import app.simple.peri.R
 import app.simple.peri.databinding.ActivityMainBinding
 import app.simple.peri.preferences.MainPreferences
@@ -66,9 +61,6 @@ class MainActivity : AppCompatActivity() {
         biometricPromptInfo = BiometricPrompt.PromptInfo.Builder()
             .setTitle(getString(R.string.app_name))
             .setDescription(getString(R.string.biometric_desc))
-            .setAllowedAuthenticators(
-                    BiometricManager.Authenticators.BIOMETRIC_STRONG or
-                                              BiometricManager.Authenticators.DEVICE_CREDENTIAL)
             .build()
 
         if (MainPreferences.getStorageUri() == null) {
@@ -87,6 +79,7 @@ class MainActivity : AppCompatActivity() {
                                     BiometricPrompt.ERROR_NEGATIVE_BUTTON -> {
                                         finish()
                                     }
+
                                     BiometricPrompt.ERROR_NO_BIOMETRICS,
                                     BiometricPrompt.ERROR_NO_DEVICE_CREDENTIAL -> {
                                         binding?.mainContainer?.id?.let {
@@ -95,6 +88,7 @@ class MainActivity : AppCompatActivity() {
                                                 .commit()
                                         }
                                     }
+
                                     else -> {
                                         MaterialAlertDialogBuilder(this@MainActivity)
                                             .setTitle(getString(R.string.app_name))
