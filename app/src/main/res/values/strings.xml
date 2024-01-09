@@ -63,9 +63,6 @@
     <string name="home_screen">Home Screen</string>
     <string name="lock_screen">Lock Screen</string>
     <string name="both">Both</string>
-    <string name="engine">Engine</string>
-    <string name="app_engine_summary">Use app\'s wallpaper engine to set wallpapers instead of system (recommended).</string>
-    <string name="enable_app_engine">Peri Wallpaper Engine</string>
     <string name="scroll_to_top">Scroll to Top</string>
     <string name="clear_cache_message">Cleared %1$s</string>
     <string name="initiate_recreate_database_message">Initiated database recreation process…</string>

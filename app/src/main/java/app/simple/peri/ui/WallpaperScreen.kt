@@ -24,7 +24,6 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.coordinatorlayout.widget.CoordinatorLayout
-import androidx.core.content.FileProvider
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.drawToBitmap
@@ -36,9 +35,7 @@ import app.simple.peri.constants.BundleConstants
 import app.simple.peri.databinding.FragmentWallpaperScreenBinding
 import app.simple.peri.databinding.WallpaperEditBinding
 import app.simple.peri.models.Wallpaper
-import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.utils.BitmapUtils.applySaturation
-import app.simple.peri.utils.ConditionUtils.invert
 import app.simple.peri.utils.FileUtils.toUri
 import app.simple.peri.utils.ParcelUtils.parcelable
 import com.bumptech.glide.load.DataSource
@@ -53,8 +50,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.saket.telephoto.zoomable.glide.ZoomableGlideImage
-import java.io.ByteArrayOutputStream
-import java.io.File
 
 class WallpaperScreen : Fragment() {
 
@@ -141,43 +136,35 @@ class WallpaperScreen : Fragment() {
         }
 
         binding?.fab?.setOnClickListener {
-            if (MainPreferences.getAppEngine()) {
-                /**
-                 * Show list of options to set wallpaper
-                 * on lock, home or both screens
-                 */
-                val list = arrayOf(
-                        getString(R.string.home_screen),
-                        getString(R.string.lock_screen),
-                        getString(R.string.both))
+            val list = arrayOf(
+                    getString(R.string.home_screen),
+                    getString(R.string.lock_screen),
+                    getString(R.string.both))
 
-                MaterialAlertDialogBuilder(requireContext())
-                    .setTitle(R.string.set_as_wallpaper)
-                    .setItems(list) { d, which ->
-                        when (which) {
-                            0 -> {
-                                setWallpaper(WallpaperManager.FLAG_SYSTEM)
-                                d.dismiss()
-                            }
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.set_as_wallpaper)
+                .setItems(list) { d, which ->
+                    when (which) {
+                        0 -> {
+                            setWallpaper(WallpaperManager.FLAG_SYSTEM)
+                            d.dismiss()
+                        }
 
-                            1 -> {
-                                setWallpaper(WallpaperManager.FLAG_LOCK)
-                                d.dismiss()
-                            }
+                        1 -> {
+                            setWallpaper(WallpaperManager.FLAG_LOCK)
+                            d.dismiss()
+                        }
 
-                            2 -> {
-                                setWallpaper(WallpaperManager.FLAG_SYSTEM or WallpaperManager.FLAG_LOCK)
-                                d.dismiss()
-                            }
+                        2 -> {
+                            setWallpaper(WallpaperManager.FLAG_SYSTEM or WallpaperManager.FLAG_LOCK)
+                            d.dismiss()
                         }
                     }
-                    .setNegativeButton(R.string.close) { d, _ ->
-                        d.dismiss()
-                    }
-                    .show()
-            } else {
-                setWallpaper(-1)
-            }
+                }
+                .setNegativeButton(R.string.close) { d, _ ->
+                    d.dismiss()
+                }
+                .show()
         }
 
         binding?.fab0?.setOnClickListener {
@@ -228,29 +215,13 @@ class WallpaperScreen : Fragment() {
             kotlin.runCatching {
                 val wallpaperManager = WallpaperManager.getInstance(requireContext())
 
-                val bitmap = if (MainPreferences.getAppEngine()) {
-                    binding?.composeView?.drawToBitmap()
-                        ?.applySaturation(requireArguments().getFloat(BundleConstants.SATURATION_VALUE, 0.5F)
-                                              .toSaturation())
-                } else {
-                    prepareFinalBitmap()
-                        .applySaturation(requireArguments().getFloat(BundleConstants.SATURATION_VALUE, 0.5F)
-                                             .toSaturation())
-                }
-
-                if (MainPreferences.getAppEngine().invert()) {
-                    uri = bitmap?.let { getImageUri(it) }
-                }
+                val bitmap = binding?.composeView?.drawToBitmap()
+                    ?.applySaturation(requireArguments().getFloat(BundleConstants.SATURATION_VALUE, 0.5F)
+                                          .toSaturation())
 
                 withContext(Dispatchers.Main) {
                     kotlin.runCatching {
-                        if (MainPreferences.getAppEngine()) {
-                            wallpaperManager.setBitmap(bitmap, null, true, mode)
-                        } else {
-                            wallpaperManager.getCropAndSetWallpaperIntent(uri).run {
-                                startActivity(this)
-                            }
-                        }
+                        wallpaperManager.setBitmap(bitmap, null, true, mode)
                         loader.dismiss()
                     }.onFailure {
                         loader.dismiss()
@@ -277,28 +248,6 @@ class WallpaperScreen : Fragment() {
                 }
             }
         }
-    }
-
-    private fun prepareFinalBitmap(): Bitmap {
-        val bitmap = this.bitmap?.copy(this.bitmap!!.config, true)
-        return bitmap!!
-    }
-
-    private fun getImageUri(inImage: Bitmap): Uri {
-        val bytes = ByteArrayOutputStream()
-        inImage.compress(Bitmap.CompressFormat.PNG, 100, bytes)
-        val path = requireContext().filesDir?.absolutePath + "/" + "temp.png"
-
-        // Copy the bitmap to the path
-        val file = File(path)
-        file.createNewFile()
-        val fileOutputStream = file.outputStream()
-        fileOutputStream.write(bytes.toByteArray())
-        fileOutputStream.close()
-
-        return FileProvider.getUriForFile(
-                requireContext(),
-                requireContext().applicationContext.packageName + ".provider", File(path))
     }
 
     private inline fun <T : View> T.afterMeasured(crossinline function: T.() -> Unit) {

@@ -7,7 +7,6 @@ object MainPreferences {
     private const val storageUri = "storageUri"
     private const val nomediaDialog = "nomediaDialog"
     private const val blur = "blur_main_list"
-    private const val isAppEngine = "is_app_engine"
     private const val isBiometric = "is_biometric"
     private const val rememberScrollPosition = "rememberScrollPosition"
     private const val scrollPosition = "scrollPosition"
@@ -85,14 +84,6 @@ object MainPreferences {
 
     fun getDetails(): Boolean {
         return SharedPreferences.getSharedPreferences().getBoolean(details, true)
-    }
-
-    fun setAppEngine(boolean: Boolean) {
-        SharedPreferences.getSharedPreferences().edit().putBoolean(isAppEngine, boolean).apply()
-    }
-
-    fun getAppEngine(): Boolean {
-        return SharedPreferences.getSharedPreferences().getBoolean(isAppEngine, true)
     }
 
     fun setBiometric(boolean: Boolean) {
