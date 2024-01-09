@@ -3,10 +3,8 @@ package app.simple.peri.glide.utils
 import android.content.Context
 import android.graphics.Bitmap
 import android.widget.ImageView
-import app.simple.peri.R
 import app.simple.peri.glide.modules.GlideApp
 import app.simple.peri.models.Wallpaper
-import com.bumptech.glide.GenericTransitionOptions
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.engine.GlideException
@@ -21,8 +19,8 @@ object GlideUtils {
         GlideApp.with(context.applicationContext)
             .asBitmap()
             .load(app.simple.peri.glide.wallpaper.Wallpaper(wallpaper, context.applicationContext))
-            // .transition(BitmapTransitionOptions.withCrossFade())
-            .transition(GenericTransitionOptions.with(R.anim.zoom_in))
+            .transition(BitmapTransitionOptions.withCrossFade())
+            // .transition(GenericTransitionOptions.with(R.anim.zoom_in))
             .diskCacheStrategy(DiskCacheStrategy.ALL)
             .set(Downsampler.ALLOW_HARDWARE_CONFIG, true)
             .into(this)
