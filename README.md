@@ -19,9 +19,19 @@ from there? then Peristyle is for you :)
 - Biometric lock support.
 - Fully Material You design.
 
+## Stats
+
+[![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FHamza417%2FPeri&count_bg=%23292A28&title_bg=%23555555&icon=skyliner.svg&icon_color=%23E7E7E7&title=Visits&edge_flat=false)](https://hits.seeyoufarm.com)
+![GitHub all releases](https://img.shields.io/github/downloads/Hamza417/Peri/total?label=Total%20Downloads&color=white)
+
+## TODOs
+ - [ ] Add native framework for color filters
+ - [ ] Migrate the whole app to JP Compose
+
 ## Download
 [![](https://img.shields.io/github/v/release/Hamza417/Peristyle?color=181717&label=GitHub%20Release)](https://github.com/Hamza417/Peristyle/releases/latest)
-[![](https://img.shields.io/badge/IzzyOnDroid-1976D2)](https://apt.izzysoft.de/fdroid/index/apk/app.simple.peri/)
+[![](https://img.shields.io/endpoint?url=https://apt.izzysoft.de/fdroid/api/v1/shield/app.simple.peri)](https://apt.izzysoft.de/fdroid/index/apk/app.simple.peri/)
+
 
 ## Screenshots
 
@@ -32,14 +42,7 @@ from there? then Peristyle is for you :)
 
 ## License
 
-See the [LICENSE](./LICENSE) file.
-
-## Stats
-
-[![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FHamza417%2FPeri&count_bg=%23292A28&title_bg=%23555555&icon=skyliner.svg&icon_color=%23E7E7E7&title=Visits&edge_flat=false)](https://hits.seeyoufarm.com)
-![GitHub all releases](https://img.shields.io/github/downloads/Hamza417/Peri/total?label=Total%20Downloads&color=white)
-
-## TODO
- - [ ] Add native framework for color filters
- - [ ] Migrate the whole app to JP Compose
+Apache License Version 2.0, January 2004.
+<br>
+See the [LICENSE](./LICENSE) file for full text.
 
