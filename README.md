@@ -26,7 +26,7 @@ from there? then Peristyle is for you :)
 
 ## TODOs
  - [ ] Add native framework for color filters
- - [ ] Migrate the whole app to JP Compose
+ - [ ] Migrate the whole app to JP Compose (~10%)
 
 ## Download
 [![](https://img.shields.io/github/v/release/Hamza417/Peristyle?color=181717&label=GitHub%20Release)](https://github.com/Hamza417/Peristyle/releases/latest)
