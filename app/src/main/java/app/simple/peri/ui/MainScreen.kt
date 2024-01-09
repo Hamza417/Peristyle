@@ -350,15 +350,30 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
 
                                 R.id.delete -> {
                                     // Delete
-                                    viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Default) {
-                                        val documentFile = DocumentFile.fromSingleUri(requireContext(), wallpaper.uri.toUri())
-                                        if (documentFile?.delete() == true) {
-                                            withContext(Dispatchers.Main) {
-                                                adapterWallpaper?.removeWallpaper(wallpaper)
-                                                wallpaperViewModel.removeWallpaper(wallpaper)
+                                    blurRoot()
+
+                                    MaterialAlertDialogBuilder(requireContext())
+                                        .setTitle(R.string.delete)
+                                        .setMessage(getString(R.string.delete_message, wallpaper.name))
+                                        .setPositiveButton(R.string.delete) { dialog1, _ ->
+                                            dialog1.dismiss()
+
+                                            viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+                                                if (DocumentFile.fromSingleUri(requireContext(), wallpaper.uri.toUri())?.delete() == true) {
+                                                    withContext(Dispatchers.Main) {
+                                                        adapterWallpaper?.removeWallpaper(wallpaper)
+                                                        wallpaperViewModel.removeWallpaper(wallpaper)
+                                                        Log.d("MainScreen", "Wallpaper deleted: ${wallpaper.name}")
+                                                    }
+                                                }
                                             }
+                                        }.setNegativeButton(R.string.close) { dialog1, _ ->
+                                            dialog1.dismiss()
                                         }
-                                    }
+                                        .setOnDismissListener {
+                                            unBlurRoot()
+                                        }
+                                        .show()
                                 }
 
                                 R.id.select -> {
