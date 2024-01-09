@@ -27,6 +27,7 @@ object ScreenMetrics {
             } else {
                 Resources.getSystem().displayMetrics
             }
+
             Size(metrics.widthPixels, metrics.heightPixels)
         }
     }
