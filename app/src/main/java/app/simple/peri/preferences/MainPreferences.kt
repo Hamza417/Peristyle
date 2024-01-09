@@ -128,7 +128,7 @@ object MainPreferences {
     }
 
     fun getMainScreenBackground(): Int {
-        return SharedPreferences.getSharedPreferences().getInt(mainScreenBackground, 0)
+        return SharedPreferences.getSharedPreferences().getInt(mainScreenBackground, 1)
     }
 
     fun setMainScreenBackground(int: Int) {

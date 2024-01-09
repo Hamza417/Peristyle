@@ -47,7 +47,7 @@
 
     <ListPreference
         android:icon="@drawable/ic_contrast"
-        app:defaultValue="0"
+        app:defaultValue="1"
         app:entries="@array/main_screen_background"
         app:entryValues="@array/main_screen_background_values"
         app:iconSpaceReserved="true"
