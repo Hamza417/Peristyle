@@ -194,12 +194,11 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                                                         withContext(Dispatchers.Main) {
                                                             dialogDeleteBinding.progress.text =
                                                                 getString(R.string.delete_progress, deleteCount, totalWallpapers, wallpaper.name)
+                                                            adapterWallpaper?.removeWallpaper(wallpaper)
+                                                            wallpaperViewModel.removeWallpaper(wallpaper)
                                                         }
                                                     }
                                                 }
-
-                                                adapterWallpaper?.removeWallpaper(wallpaper)
-                                                wallpaperViewModel.removeWallpaper(wallpaper)
                                             }
 
                                             progressDialog.setOnDismissListener {
@@ -363,7 +362,6 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                                                     withContext(Dispatchers.Main) {
                                                         adapterWallpaper?.removeWallpaper(wallpaper)
                                                         wallpaperViewModel.removeWallpaper(wallpaper)
-                                                        Log.d("MainScreen", "Wallpaper deleted: ${wallpaper.name}")
                                                     }
                                                 }
                                             }
@@ -603,9 +601,10 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
 
                         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
                             if (DocumentFile.fromSingleUri(requireContext(), wallpaper.uri.toUri())?.delete() == true) {
-                                adapterWallpaper?.removeWallpaper(wallpaper)
-                                wallpaperViewModel.removeWallpaper(wallpaper)
-                                Log.d("MainScreen", "Wallpaper deleted: ${wallpaper.name}")
+                                withContext(Dispatchers.Main) {
+                                    adapterWallpaper?.removeWallpaper(wallpaper)
+                                    wallpaperViewModel.removeWallpaper(wallpaper)
+                                }
                             }
                         }
                     }.setNegativeButton(R.string.close) { dialog, _ ->
