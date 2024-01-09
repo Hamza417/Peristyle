@@ -98,4 +98,6 @@
     <string name="margin_between_wallpapers">Margin Between Wallpapers</string>
     <string name="main_screen_background_summary">Color mode of the background of the main screen.</string>
     <string name="main_screen_background">Main Screen Background</string>
+    <string name="swipe_to_delete_summary">Allows to swipe delete a wallpaper from the list.</string>
+    <string name="swipe_to_delete">Swipe to Delete</string>
 </resources>

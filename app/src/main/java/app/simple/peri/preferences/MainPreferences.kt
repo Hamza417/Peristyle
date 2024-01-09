@@ -19,6 +19,7 @@ object MainPreferences {
     const val details = "is_details"
     const val marginBetween = "marginBetween"
     const val mainScreenBackground = "mainScreenBackground"
+    const val swipeToDelete = "swipeToDelete"
 
     const val SPAN_RANDOM = 3
 
@@ -132,5 +133,13 @@ object MainPreferences {
 
     fun setMainScreenBackground(int: Int) {
         SharedPreferences.getSharedPreferences().edit().putInt(mainScreenBackground, int).apply()
+    }
+
+    fun getSwipeToDelete(): Boolean {
+        return SharedPreferences.getSharedPreferences().getBoolean(swipeToDelete, true)
+    }
+
+    fun setSwipeToDelete(boolean: Boolean) {
+        SharedPreferences.getSharedPreferences().edit().putBoolean(swipeToDelete, boolean).apply()
     }
 }

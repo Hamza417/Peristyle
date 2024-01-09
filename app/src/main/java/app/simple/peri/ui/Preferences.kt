@@ -284,7 +284,10 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
 
             "main_screen_background" -> {
                 MainPreferences.setMainScreenBackground(p0?.getString(p1, "0")!!.toInt())
+            }
 
+            "swipe_to_delete" -> {
+                MainPreferences.setSwipeToDelete(p0?.getBoolean(p1, true)!!)
             }
         }
     }

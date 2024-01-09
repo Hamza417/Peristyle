@@ -61,6 +61,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
     private var staggeredGridLayoutManager: StaggeredGridLayoutManager? = null
     private var binding: FragmentMainScreenBinding? = null
     private var blurAnimator: ValueAnimator? = null
+    private var itemTouchHelper: ItemTouchHelper? = null
 
     private var displayWidth: Int = 0
     private var displayHeight: Int = 0
@@ -87,6 +88,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
         displayWidth = requireContext().resources.displayMetrics.widthPixels
         displayHeight = requireContext().resources.displayMetrics.heightPixels
         fixNavigationBarOverlap()
+        itemTouchHelper = ItemTouchHelper(simpleItemTouchCallback)
 
         binding?.bottomAppBar?.setOnMenuItemClickListener { it ->
             if (it.itemId != R.id.settings) {
@@ -387,7 +389,12 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
             binding?.recyclerView?.layoutManager = staggeredGridLayoutManager
 
             binding?.recyclerView?.adapter = adapterWallpaper
-            ItemTouchHelper(simpleItemTouchCallback).attachToRecyclerView(binding?.recyclerView)
+
+            if (MainPreferences.getSwipeToDelete()) {
+                itemTouchHelper?.attachToRecyclerView(binding?.recyclerView)
+            } else {
+                itemTouchHelper?.attachToRecyclerView(null)
+            }
 
             binding?.recyclerView?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
@@ -580,11 +587,24 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
             val position = viewHolder.bindingAdapterPosition
             val wallpaper = adapterWallpaper?.getWallpaper(position)!!
             if (wallpaper.isNotNull()) {
-                if (DocumentFile.fromSingleUri(requireContext(), wallpaper.uri.toUri())?.delete() == true) {
-                    adapterWallpaper?.removeWallpaper(wallpaper)
-                    wallpaperViewModel.removeWallpaper(wallpaper)
-                    Log.d("MainScreen", "Wallpaper deleted: ${wallpaper.name}")
-                }
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle(R.string.delete)
+                    .setMessage(getString(R.string.delete_message, wallpaper.name))
+                    .setPositiveButton(R.string.delete) { dialog, _ ->
+                        dialog.dismiss()
+
+                        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+                            if (DocumentFile.fromSingleUri(requireContext(), wallpaper.uri.toUri())?.delete() == true) {
+                                adapterWallpaper?.removeWallpaper(wallpaper)
+                                wallpaperViewModel.removeWallpaper(wallpaper)
+                                Log.d("MainScreen", "Wallpaper deleted: ${wallpaper.name}")
+                            }
+                        }
+                    }.setNegativeButton(R.string.close) { dialog, _ ->
+                        dialog.dismiss()
+                        adapterWallpaper?.notifyItemChanged(position)
+                    }
+                    .show()
             }
         }
     }
@@ -738,6 +758,14 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
 
             MainPreferences.mainScreenBackground -> {
                 setMainBackground()
+            }
+
+            MainPreferences.swipeToDelete -> {
+                if (MainPreferences.getSwipeToDelete()) {
+                    itemTouchHelper?.attachToRecyclerView(binding?.recyclerView)
+                } else {
+                    itemTouchHelper?.attachToRecyclerView(null)
+                }
             }
         }
     }

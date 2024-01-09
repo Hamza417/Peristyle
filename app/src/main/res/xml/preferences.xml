@@ -57,6 +57,15 @@
         app:useSimpleSummaryProvider="false" />
 
     <CheckBoxPreference
+        android:icon="@drawable/ic_delete_sweep"
+        app:defaultValue="true"
+        app:enabled="true"
+        app:iconSpaceReserved="true"
+        app:key="swipe_to_delete"
+        app:summary="@string/swipe_to_delete_summary"
+        app:title="@string/swipe_to_delete" />
+
+    <CheckBoxPreference
         android:icon="@drawable/ic_pin_drop"
         app:defaultValue="false"
         app:enabled="true"
