@@ -89,10 +89,16 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>,
         }
     }
 
+    /**
+     * Find best index for wallpaper
+     * based on the sort parameters
+     */
     fun addWallpaper(wallpaper: Wallpaper) {
-        Log.d("Wallpaper", "Adding wallpaper: $wallpaper")
-        wallpapers.add(0, wallpaper)
-        notifyItemInserted(0)
+        wallpapers.add(wallpaper)
+        wallpapers.getSortedList()
+        notifyItemInserted(wallpapers.indexOf(wallpaper))
+        notifyItemRangeChanged(wallpapers.indexOf(wallpaper), wallpapers.size)
+        Log.d("Wallpaper", "Added wallpaper: $wallpaper at index: ${wallpapers.indexOf(wallpaper)}")
     }
 
     fun removeWallpapers(wallpapers: java.util.ArrayList<Wallpaper>?) {

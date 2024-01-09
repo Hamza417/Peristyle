@@ -203,7 +203,9 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
                             wallpapers.add(wallpaper)
                             if (alreadyLoaded?.isNotEmpty() == true) {
                                 newWallpapersData.postValue(wallpaper)
+                                WallpaperDatabase.getInstance(getApplication())?.wallpaperDao()?.insert(wallpaper)
                             }
+
                             loadingStatus.postValue("$count : ${(count / total.toFloat() * 100).toInt()}%")
                         }
                     }

@@ -83,9 +83,7 @@ class Wallpaper : Parcelable, Comparable<Wallpaper> {
         if (height != other.height) return false
         if (dateModified != other.dateModified) return false
         if (size != other.size) return false
-        if (isSelected != other.isSelected) return false
-
-        return true
+        return isSelected == other.isSelected
     }
 
     override fun hashCode(): Int {

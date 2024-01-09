@@ -398,7 +398,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
             })
 
             val spanCount = if (MainPreferences.getGridSpan() == MainPreferences.SPAN_RANDOM) 2 else MainPreferences.getGridSpan()
-            binding?.recyclerView?.setHasFixedSize(true)
+            binding?.recyclerView?.setHasFixedSize(false)
             staggeredGridLayoutManager = StaggeredGridLayoutManager(spanCount, StaggeredGridLayoutManager.VERTICAL)
             staggeredGridLayoutManager?.gapStrategy = StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS
             binding?.recyclerView?.layoutManager = staggeredGridLayoutManager
@@ -439,13 +439,6 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
         wallpaperViewModel.getNewWallpapersLiveData().observe(viewLifecycleOwner) { wallpaper ->
             if (wallpaper.isNotNull()) {
                 adapterWallpaper?.addWallpaper(wallpaper)
-                kotlin.runCatching {
-                    if (staggeredGridLayoutManager?.findFirstCompletelyVisibleItemPositions(null)?.get(0) == 0) {
-                        binding?.recyclerView?.scrollToPosition(0)
-                    }
-                }.onFailure {
-                    Log.e("MainScreen", it.message ?: "Couldn't scroll to top")
-                }
                 wallpaperViewModel.getNewWallpapersLiveData().value = null
             }
         }
