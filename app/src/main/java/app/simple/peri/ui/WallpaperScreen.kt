@@ -35,7 +35,7 @@ import app.simple.peri.constants.BundleConstants
 import app.simple.peri.databinding.FragmentWallpaperScreenBinding
 import app.simple.peri.databinding.WallpaperEditBinding
 import app.simple.peri.models.Wallpaper
-import app.simple.peri.utils.BitmapUtils.applySaturation
+import app.simple.peri.utils.BitmapUtils.changeBitmapContrastBrightness
 import app.simple.peri.utils.FileUtils.toUri
 import app.simple.peri.utils.ParcelUtils.parcelable
 import com.bumptech.glide.load.DataSource
@@ -59,6 +59,10 @@ class WallpaperScreen : Fragment() {
     private var bitmap: Bitmap? = null
     private var uri: Uri? = null
     private val blurRadius = 25F
+
+    private val DEFAULT_SATURATION = 0.5F
+    private val DEFAULT_CONTRAST = 0.1F
+    private val DEFAULT_BRIGHTNESS = 0.5F
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -98,8 +102,21 @@ class WallpaperScreen : Fragment() {
                         override fun onResourceReady(resource: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
                             startPostponedEnterTransition()
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                                val brightness = requireArguments().getFloat(BundleConstants.BRIGHTNESS_VALUE, DEFAULT_BRIGHTNESS)
+                                val contrast = requireArguments().getFloat(BundleConstants.CONTRAST_VALUE, DEFAULT_CONTRAST)
+                                val saturation = requireArguments().getFloat(BundleConstants.SATURATION_VALUE, DEFAULT_SATURATION)
+
                                 binding?.composeView?.setRenderEffect(RenderEffect.createColorFilterEffect(ColorMatrixColorFilter(ColorMatrix().apply {
-                                    setSaturation(requireArguments().getFloat(BundleConstants.SATURATION_VALUE, 0.5F).toSaturation())
+                                    set(floatArrayOf(
+                                            contrast.toContrast(), 0f, 0f, 0f, brightness.toBrightness(),
+                                            0f, contrast.toContrast(), 0f, 0f, brightness.toBrightness(),
+                                            0f, 0f, contrast.toContrast(), 0f, brightness.toBrightness(),
+                                            0f, 0f, 0f, 1f, 0f
+                                    ))
+
+                                    postConcat(ColorMatrix().apply {
+                                        setSaturation(saturation.toSaturation())
+                                    })
                                 })))
                             }
 
@@ -171,20 +188,18 @@ class WallpaperScreen : Fragment() {
             val wallpaperEditBinding = WallpaperEditBinding.inflate(layoutInflater)
             wallpaperEditBinding.root.setBackgroundColor(Color.TRANSPARENT)
 
-            wallpaperEditBinding.saturationSlider.value = requireArguments().getFloat(BundleConstants.SATURATION_VALUE, 0.5F)
-            wallpaperEditBinding.contrastSlider.value = requireArguments().getFloat(BundleConstants.CONTRAST_VALUE, 0.5F)
-            wallpaperEditBinding.brightnessSlider.value = requireArguments().getFloat(BundleConstants.BRIGHTNESS_VALUE, 0.5F)
+            wallpaperEditBinding.saturationSlider.value = requireArguments().getFloat(BundleConstants.SATURATION_VALUE, DEFAULT_SATURATION)
+            wallpaperEditBinding.contrastSlider.value = requireArguments().getFloat(BundleConstants.CONTRAST_VALUE, DEFAULT_CONTRAST)
+            wallpaperEditBinding.brightnessSlider.value = requireArguments().getFloat(BundleConstants.BRIGHTNESS_VALUE, DEFAULT_BRIGHTNESS)
 
             wallpaperEditBinding.saturationSlider.addOnChangeListener { _, value, fromUser ->
                 if (fromUser) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                         requireArguments().putFloat(BundleConstants.SATURATION_VALUE, value)
-                        val contrast = requireArguments().getFloat(BundleConstants.CONTRAST_VALUE, 0.5F)
-                        val brightness = requireArguments().getFloat(BundleConstants.BRIGHTNESS_VALUE, 0.5F)
+                        val contrast = requireArguments().getFloat(BundleConstants.CONTRAST_VALUE, DEFAULT_CONTRAST)
+                        val brightness = requireArguments().getFloat(BundleConstants.BRIGHTNESS_VALUE, DEFAULT_BRIGHTNESS)
 
                         binding?.composeView?.setRenderEffect(RenderEffect.createColorFilterEffect(ColorMatrixColorFilter(ColorMatrix().apply {
-                            setSaturation(value.toSaturation())
-
                             postConcat(ColorMatrix().apply {
                                 set(floatArrayOf(
                                         contrast.toContrast(), 0f, 0f, 0f, brightness.toBrightness(),
@@ -192,6 +207,10 @@ class WallpaperScreen : Fragment() {
                                         0f, 0f, contrast.toContrast(), 0f, brightness.toBrightness(),
                                         0f, 0f, 0f, 1f, 0f
                                 ))
+                            })
+
+                            postConcat(ColorMatrix().apply {
+                                setSaturation(value.toSaturation())
                             })
                         })))
                     }
@@ -202,8 +221,8 @@ class WallpaperScreen : Fragment() {
                 if (fromUser) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                         requireArguments().putFloat(BundleConstants.CONTRAST_VALUE, value)
-                        val brightness = requireArguments().getFloat(BundleConstants.BRIGHTNESS_VALUE, 0.5F)
-                        val saturation = requireArguments().getFloat(BundleConstants.SATURATION_VALUE, 0.5F)
+                        val brightness = requireArguments().getFloat(BundleConstants.BRIGHTNESS_VALUE, DEFAULT_BRIGHTNESS)
+                        val saturation = requireArguments().getFloat(BundleConstants.SATURATION_VALUE, DEFAULT_SATURATION)
                         binding?.composeView?.setRenderEffect(RenderEffect.createColorFilterEffect(ColorMatrixColorFilter(ColorMatrix().apply {
                             set(floatArrayOf(
                                     value.toContrast(), 0f, 0f, 0f, brightness.toBrightness(),
@@ -224,8 +243,8 @@ class WallpaperScreen : Fragment() {
                 if (fromUser) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                         requireArguments().putFloat(BundleConstants.BRIGHTNESS_VALUE, value)
-                        val contrast = requireArguments().getFloat(BundleConstants.CONTRAST_VALUE, 0.5F)
-                        val saturation = requireArguments().getFloat(BundleConstants.SATURATION_VALUE, 0.5F)
+                        val contrast = requireArguments().getFloat(BundleConstants.CONTRAST_VALUE, DEFAULT_CONTRAST)
+                        val saturation = requireArguments().getFloat(BundleConstants.SATURATION_VALUE, DEFAULT_SATURATION)
                         binding?.composeView?.setRenderEffect(RenderEffect.createColorFilterEffect(ColorMatrixColorFilter(ColorMatrix().apply {
                             set(floatArrayOf(
                                     contrast.toContrast(), 0f, 0f, 0f, value.toBrightness(),
@@ -274,8 +293,9 @@ class WallpaperScreen : Fragment() {
                 val wallpaperManager = WallpaperManager.getInstance(requireContext())
 
                 val bitmap = binding?.composeView?.drawToBitmap()
-                    ?.applySaturation(requireArguments().getFloat(BundleConstants.SATURATION_VALUE, 0.5F)
-                                          .toSaturation())
+                    ?.changeBitmapContrastBrightness(requireArguments().getFloat(BundleConstants.CONTRAST_VALUE, DEFAULT_CONTRAST),
+                                                     requireArguments().getFloat(BundleConstants.BRIGHTNESS_VALUE, DEFAULT_BRIGHTNESS),
+                                                     requireArguments().getFloat(BundleConstants.SATURATION_VALUE, DEFAULT_SATURATION))
 
                 withContext(Dispatchers.Main) {
                     kotlin.runCatching {
