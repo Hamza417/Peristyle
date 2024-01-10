@@ -19,4 +19,30 @@
         android:layout_gravity="center_vertical"
         app:thumbColor="?attr/colorPrimary" />
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/brightness"
+        android:textColor="@color/textWhite" />
+
+    <com.google.android.material.slider.Slider
+        android:id="@+id/brightness_slider"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        app:thumbColor="?attr/colorPrimary" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/contrast"
+        android:textColor="@color/textWhite" />
+
+    <com.google.android.material.slider.Slider
+        android:id="@+id/contrast_slider"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        app:thumbColor="?attr/colorPrimary" />
+
 </LinearLayout>

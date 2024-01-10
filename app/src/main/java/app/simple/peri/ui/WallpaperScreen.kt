@@ -172,13 +172,71 @@ class WallpaperScreen : Fragment() {
             wallpaperEditBinding.root.setBackgroundColor(Color.TRANSPARENT)
 
             wallpaperEditBinding.saturationSlider.value = requireArguments().getFloat(BundleConstants.SATURATION_VALUE, 0.5F)
+            wallpaperEditBinding.contrastSlider.value = requireArguments().getFloat(BundleConstants.CONTRAST_VALUE, 0.5F)
+            wallpaperEditBinding.brightnessSlider.value = requireArguments().getFloat(BundleConstants.BRIGHTNESS_VALUE, 0.5F)
 
             wallpaperEditBinding.saturationSlider.addOnChangeListener { _, value, fromUser ->
                 if (fromUser) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                         requireArguments().putFloat(BundleConstants.SATURATION_VALUE, value)
+                        val contrast = requireArguments().getFloat(BundleConstants.CONTRAST_VALUE, 0.5F)
+                        val brightness = requireArguments().getFloat(BundleConstants.BRIGHTNESS_VALUE, 0.5F)
+
                         binding?.composeView?.setRenderEffect(RenderEffect.createColorFilterEffect(ColorMatrixColorFilter(ColorMatrix().apply {
                             setSaturation(value.toSaturation())
+
+                            postConcat(ColorMatrix().apply {
+                                set(floatArrayOf(
+                                        contrast.toContrast(), 0f, 0f, 0f, brightness.toBrightness(),
+                                        0f, contrast.toContrast(), 0f, 0f, brightness.toBrightness(),
+                                        0f, 0f, contrast.toContrast(), 0f, brightness.toBrightness(),
+                                        0f, 0f, 0f, 1f, 0f
+                                ))
+                            })
+                        })))
+                    }
+                }
+            }
+
+            wallpaperEditBinding.contrastSlider.addOnChangeListener { _, value, fromUser ->
+                if (fromUser) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                        requireArguments().putFloat(BundleConstants.CONTRAST_VALUE, value)
+                        val brightness = requireArguments().getFloat(BundleConstants.BRIGHTNESS_VALUE, 0.5F)
+                        val saturation = requireArguments().getFloat(BundleConstants.SATURATION_VALUE, 0.5F)
+                        binding?.composeView?.setRenderEffect(RenderEffect.createColorFilterEffect(ColorMatrixColorFilter(ColorMatrix().apply {
+                            set(floatArrayOf(
+                                    value.toContrast(), 0f, 0f, 0f, brightness.toBrightness(),
+                                    0f, value.toContrast(), 0f, 0f, brightness.toBrightness(),
+                                    0f, 0f, value.toContrast(), 0f, brightness.toBrightness(),
+                                    0f, 0f, 0f, 1f, 0f
+                            ))
+
+                            postConcat(ColorMatrix().apply {
+                                setSaturation(saturation.toSaturation())
+                            })
+                        })))
+                    }
+                }
+            }
+
+            wallpaperEditBinding.brightnessSlider.addOnChangeListener { _, value, fromUser ->
+                if (fromUser) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                        requireArguments().putFloat(BundleConstants.BRIGHTNESS_VALUE, value)
+                        val contrast = requireArguments().getFloat(BundleConstants.CONTRAST_VALUE, 0.5F)
+                        val saturation = requireArguments().getFloat(BundleConstants.SATURATION_VALUE, 0.5F)
+                        binding?.composeView?.setRenderEffect(RenderEffect.createColorFilterEffect(ColorMatrixColorFilter(ColorMatrix().apply {
+                            set(floatArrayOf(
+                                    contrast.toContrast(), 0f, 0f, 0f, value.toBrightness(),
+                                    0f, contrast.toContrast(), 0f, 0f, value.toBrightness(),
+                                    0f, 0f, contrast.toContrast(), 0f, value.toBrightness(),
+                                    0f, 0f, 0f, 1f, 0f
+                            ))
+
+                            postConcat(ColorMatrix().apply {
+                                setSaturation(saturation.toSaturation())
+                            })
                         })))
                     }
                 }
