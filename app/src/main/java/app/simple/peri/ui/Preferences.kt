@@ -161,25 +161,29 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
                     dialogDeleteBinding.progress.text = getString(R.string.total_info)
                 }
 
-                val totalWallpapers = DocumentFile.fromTreeUri(requireContext(), Uri.parse(MainPreferences.getStorageUri()))?.listFiles()?.size
+                val totalWallpapers = DocumentFile.fromTreeUri(
+                        requireContext(), Uri.parse(MainPreferences.getStorageUri()))?.listFiles()?.size
 
                 withContext(Dispatchers.Main) {
                     dialogDeleteBinding.progress.text = getString(R.string.size_info)
                 }
 
-                val size = DocumentFile.fromTreeUri(requireContext(), Uri.parse(MainPreferences.getStorageUri()))?.listFiles()?.sumOf { it.length() }!!
+                val size = DocumentFile.fromTreeUri(requireContext(), Uri.parse(MainPreferences.getStorageUri()))
+                    ?.listFiles()?.toList()?.parallelStream()?.mapToLong { it.length() }?.sum()
 
                 withContext(Dispatchers.Main) {
                     dialogDeleteBinding.progress.text = getString(R.string.cache_info)
                 }
 
-                val cacheSize = File("${requireContext().cacheDir}/image_manager_disk_cache/").walkTopDown().sumOf { it.length() }
+                val cacheSize = File("${requireContext().cacheDir}/image_manager_disk_cache/").walkTopDown().sumOf {
+                    it.length()
+                }
 
                 withContext(Dispatchers.Main) {
                     progressDialog.dismiss()
 
                     MaterialAlertDialogBuilder(requireContext())
-                        .setMessage(getString(R.string.library_stats_message, totalWallpapers, size.toSize(), cacheSize.toSize()))
+                        .setMessage(getString(R.string.library_stats_message, totalWallpapers, size?.toSize(), cacheSize.toSize()))
                         .setPositiveButton(R.string.close) { dialog, _ ->
                             dialog.dismiss()
                         }
