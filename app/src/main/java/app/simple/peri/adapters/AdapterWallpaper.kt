@@ -76,19 +76,6 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>,
         this.wallpaperCallbacks = wallpaperCallbacks
     }
 
-    fun addWallpapers(wallpapers: java.util.ArrayList<Wallpaper>?) {
-        wallpapers?.forEach {
-            for (wallpaper in this.wallpapers) {
-                if (it.dateModified < wallpaper.dateModified) {
-                    this.wallpapers.add(this.wallpapers.indexOf(wallpaper), it)
-                    notifyItemInserted(this.wallpapers.indexOf(wallpaper))
-                    notifyItemRangeChanged(this.wallpapers.indexOf(wallpaper), this.wallpapers.size)
-                    break
-                }
-            }
-        }
-    }
-
     /**
      * Find best index for wallpaper
      * based on the sort parameters
@@ -99,17 +86,6 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>,
         notifyItemInserted(wallpapers.indexOf(wallpaper))
         notifyItemRangeChanged(wallpapers.indexOf(wallpaper), wallpapers.size)
         Log.d("Wallpaper", "Added wallpaper: $wallpaper at index: ${wallpapers.indexOf(wallpaper)}")
-    }
-
-    fun removeWallpapers(wallpapers: java.util.ArrayList<Wallpaper>?) {
-        wallpapers?.forEach {
-            Log.d("Wallpaper", "Removing wallpaper: $it")
-            val idx = this.wallpapers.indexOf(it)
-            Log.d("Wallpaper", "Removing wallpaper at index: $idx")
-            this.wallpapers.remove(it)
-            notifyItemRemoved(idx)
-            notifyItemRangeChanged(idx, this.wallpapers.size)
-        }
     }
 
     fun removeWallpaper(wallpaper: Wallpaper) {
@@ -189,7 +165,7 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>,
                 if (bindingAdapterPosition % 5 == 0) {
                     wallpaper.width!!
                 } else {
-                    9
+                    displayWidth
                 }
             } else {
                 wallpaper.width
@@ -199,7 +175,7 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>,
                 if (bindingAdapterPosition % 5 == 0) {
                     wallpaper.height!!
                 } else {
-                    16
+                    displayHeight
                 }
             } else {
                 wallpaper.height
