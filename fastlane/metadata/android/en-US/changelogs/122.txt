@@ -1,0 +1,3 @@
+- Fixed various color filter issues
+- Fixed filter dialog blur not working
+- Added blur filter
