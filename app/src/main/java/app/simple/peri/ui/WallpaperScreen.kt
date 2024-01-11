@@ -2,19 +2,16 @@ package app.simple.peri.ui
 
 import android.annotation.SuppressLint
 import android.app.WallpaperManager
-import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.ColorMatrix
 import android.graphics.ColorMatrixColorFilter
 import android.graphics.RenderEffect
 import android.graphics.drawable.Drawable
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewTreeObserver
 import android.widget.FrameLayout
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.fillMaxSize
@@ -55,14 +52,6 @@ class WallpaperScreen : Fragment() {
 
     private var binding: FragmentWallpaperScreenBinding? = null
     private var wallpaper: Wallpaper? = null
-
-    private var bitmap: Bitmap? = null
-    private var uri: Uri? = null
-    private val blurRadius = 25F
-
-    private val DEFAULT_SATURATION = 0.5F
-    private val DEFAULT_CONTRAST = 0.1F
-    private val DEFAULT_BRIGHTNESS = 0.5F
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -120,7 +109,6 @@ class WallpaperScreen : Fragment() {
                                 })))
                             }
 
-                            bitmap = binding?.composeView?.drawToBitmap()
                             return false
                         }
                     })
@@ -328,17 +316,6 @@ class WallpaperScreen : Fragment() {
         }
     }
 
-    private inline fun <T : View> T.afterMeasured(crossinline function: T.() -> Unit) {
-        viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
-            override fun onGlobalLayout() {
-                if (measuredWidth > 0 && measuredHeight > 0) {
-                    viewTreeObserver.removeOnGlobalLayoutListener(this)
-                    function()
-                }
-            }
-        })
-    }
-
     /**
      * Function that takes a Float input from 0.0F to 1.0F
      * and returns a Float from -255.0F to 255.0F depending
@@ -390,5 +367,9 @@ class WallpaperScreen : Fragment() {
             fragment.arguments = args
             return fragment
         }
+
+        private const val DEFAULT_SATURATION = 0.5F
+        private const val DEFAULT_CONTRAST = 0.1F
+        private const val DEFAULT_BRIGHTNESS = 0.5F
     }
 }

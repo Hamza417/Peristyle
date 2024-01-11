@@ -10,6 +10,8 @@ import android.graphics.Shader
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -30,6 +32,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import androidx.transition.TransitionManager
 import app.simple.peri.R
 import app.simple.peri.activities.SettingsActivity
 import app.simple.peri.adapters.AdapterWallpaper
@@ -400,7 +403,6 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
             staggeredGridLayoutManager = StaggeredGridLayoutManager(spanCount, StaggeredGridLayoutManager.VERTICAL)
             staggeredGridLayoutManager?.gapStrategy = StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS
             binding?.recyclerView?.layoutManager = staggeredGridLayoutManager
-
             binding?.recyclerView?.adapter = adapterWallpaper
 
             if (MainPreferences.getSwipeToDelete()) {
@@ -604,6 +606,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                                 withContext(Dispatchers.Main) {
                                     adapterWallpaper?.removeWallpaper(wallpaper)
                                     wallpaperViewModel.removeWallpaper(wallpaper)
+                                    invalidateLayoutManager()
                                 }
                             }
                         }
@@ -651,6 +654,13 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
     private fun saveBottomBarState() {
         requireArguments().putBoolean(BundleConstants.BOTTOM_APP_BAR, binding?.bottomAppBar?.isScrolledUp!!)
         Log.d("MainScreen", "BottomAppBar state saved: ${binding?.bottomAppBar?.isScrolledUp}")
+    }
+
+    private fun invalidateLayoutManager() {
+        Handler(Looper.getMainLooper()).post {
+            TransitionManager.beginDelayedTransition(binding?.recyclerView!!)
+            staggeredGridLayoutManager?.invalidateSpanAssignments()
+        }
     }
 
     /**
