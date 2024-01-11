@@ -20,4 +20,11 @@
         <item name="android:textColor">@color/textPrimary</item>
     </style>
 
+    <!-- Window theme -->
+    <style name="Theme.BlurryDialog" parent="Theme.MaterialComponents.Dialog">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowIsFloating">true</item>
+    </style>
+
+
 </resources>

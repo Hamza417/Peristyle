@@ -9,6 +9,7 @@ import android.graphics.RenderEffect
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
+import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -211,6 +212,7 @@ class WallpaperScreen : Fragment() {
                         requireArguments().putFloat(BundleConstants.CONTRAST_VALUE, value)
                         val brightness = requireArguments().getFloat(BundleConstants.BRIGHTNESS_VALUE, DEFAULT_BRIGHTNESS)
                         val saturation = requireArguments().getFloat(BundleConstants.SATURATION_VALUE, DEFAULT_SATURATION)
+
                         binding?.composeView?.setRenderEffect(RenderEffect.createColorFilterEffect(ColorMatrixColorFilter(ColorMatrix().apply {
                             set(floatArrayOf(
                                     value.toContrast(), 0f, 0f, 0f, brightness.toBrightness(),
@@ -233,6 +235,7 @@ class WallpaperScreen : Fragment() {
                         requireArguments().putFloat(BundleConstants.BRIGHTNESS_VALUE, value)
                         val contrast = requireArguments().getFloat(BundleConstants.CONTRAST_VALUE, DEFAULT_CONTRAST)
                         val saturation = requireArguments().getFloat(BundleConstants.SATURATION_VALUE, DEFAULT_SATURATION)
+
                         binding?.composeView?.setRenderEffect(RenderEffect.createColorFilterEffect(ColorMatrixColorFilter(ColorMatrix().apply {
                             set(floatArrayOf(
                                     contrast.toContrast(), 0f, 0f, 0f, value.toBrightness(),
@@ -249,12 +252,17 @@ class WallpaperScreen : Fragment() {
                 }
             }
 
-            val dialog = MaterialAlertDialogBuilder(requireContext())
+            val dialog = MaterialAlertDialogBuilder(ContextThemeWrapper(requireContext(), R.style.Theme_BlurryDialog))
                 .setView(wallpaperEditBinding.root)
                 .show()
 
-            dialog.window?.setDimAmount(0F)
+            dialog.window?.attributes?.width = requireContext().resources.displayMetrics.widthPixels.times(0.75F).toInt()
             dialog.window?.setBackgroundDrawableResource(R.drawable.bg_dialog)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                dialog.window?.setBackgroundBlurRadius(30)
+            }
+            dialog.window?.setDimAmount(0F)
+            dialog.window?.attributes = dialog.window?.attributes
 
             dialog.show()
         }
@@ -279,11 +287,12 @@ class WallpaperScreen : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             kotlin.runCatching {
                 val wallpaperManager = WallpaperManager.getInstance(requireContext())
+                val contrast = requireArguments().getFloat(BundleConstants.CONTRAST_VALUE, DEFAULT_CONTRAST).toContrast()
+                val brightness = requireArguments().getFloat(BundleConstants.BRIGHTNESS_VALUE, DEFAULT_BRIGHTNESS).toBrightness()
+                val saturation = requireArguments().getFloat(BundleConstants.SATURATION_VALUE, DEFAULT_SATURATION).toSaturation()
 
                 val bitmap = binding?.composeView?.drawToBitmap()
-                    ?.changeBitmapContrastBrightness(requireArguments().getFloat(BundleConstants.CONTRAST_VALUE, DEFAULT_CONTRAST),
-                                                     requireArguments().getFloat(BundleConstants.BRIGHTNESS_VALUE, DEFAULT_BRIGHTNESS),
-                                                     requireArguments().getFloat(BundleConstants.SATURATION_VALUE, DEFAULT_SATURATION))
+                    ?.changeBitmapContrastBrightness(contrast, brightness, saturation)
 
                 withContext(Dispatchers.Main) {
                     kotlin.runCatching {
