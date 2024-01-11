@@ -404,6 +404,8 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
             staggeredGridLayoutManager?.gapStrategy = StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS
             binding?.recyclerView?.layoutManager = staggeredGridLayoutManager
             binding?.recyclerView?.adapter = adapterWallpaper
+            binding?.recyclerView?.setActivity(requireActivity())
+            binding?.recyclerView?.setOriId(R.id.wallpaperImageView)
 
             if (MainPreferences.getSwipeToDelete()) {
                 itemTouchHelper?.attachToRecyclerView(binding?.recyclerView)

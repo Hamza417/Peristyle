@@ -14,7 +14,7 @@
         android:layout_height="match_parent"
         app:swipeRefreshLayoutProgressSpinnerBackgroundColor="?attr/colorPrimary">
 
-        <androidx.recyclerview.widget.RecyclerView
+        <app.simple.peri.decorations.views.ItemZoomRecycleView
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

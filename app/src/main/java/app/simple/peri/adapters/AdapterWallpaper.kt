@@ -286,7 +286,13 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>,
             }
 
             binding.wallpaperContainer.setOnLongClickListener {
-                wallpaperCallbacks?.onWallpaperLongClicked(wallpaper, bindingAdapterPosition, it, binding.checkBox)
+                /**
+                 * Pretty hacky but it works, if we are zooming the wallpaper
+                 * we don't want to trigger the long click.
+                 */
+                if (binding.wallpaperImageView.scaleX == 1.0f) {
+                    wallpaperCallbacks?.onWallpaperLongClicked(wallpaper, bindingAdapterPosition, it, binding.checkBox)
+                }
                 true
             }
         }
