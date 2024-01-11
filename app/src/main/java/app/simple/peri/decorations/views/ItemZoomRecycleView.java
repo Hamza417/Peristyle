@@ -11,6 +11,7 @@ import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
@@ -71,7 +72,8 @@ public class ItemZoomRecycleView extends RecyclerView {
         final float scaleY = oriView.getScaleY();
         
         ValueAnimator animator = ValueAnimator.ofFloat(1.0f, 0f);
-        animator.setDuration(200);
+        animator.setDuration(300);
+        animator.setInterpolator(new DecelerateInterpolator(1.5F));
         animator.addUpdateListener(animation -> {
             float f = (float) animation.getAnimatedValue();
             //从初始位置到0的过程
