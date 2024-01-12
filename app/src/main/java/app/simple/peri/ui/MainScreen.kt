@@ -10,8 +10,6 @@ import android.graphics.Shader
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -32,7 +30,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import androidx.transition.TransitionManager
 import app.simple.peri.R
 import app.simple.peri.activities.SettingsActivity
 import app.simple.peri.adapters.AdapterWallpaper
@@ -365,6 +362,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                                                     withContext(Dispatchers.Main) {
                                                         adapterWallpaper?.removeWallpaper(wallpaper)
                                                         wallpaperViewModel.removeWallpaper(wallpaper)
+                                                        invalidateLayoutManager()
                                                     }
                                                 }
                                             }
@@ -659,10 +657,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
     }
 
     private fun invalidateLayoutManager() {
-        Handler(Looper.getMainLooper()).post {
-            TransitionManager.beginDelayedTransition(binding?.recyclerView!!)
-            staggeredGridLayoutManager?.invalidateSpanAssignments()
-        }
+        adapterWallpaper?.updateLayout()
     }
 
     /**

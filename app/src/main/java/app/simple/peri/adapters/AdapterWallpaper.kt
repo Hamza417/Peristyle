@@ -92,7 +92,14 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>,
         val idx = this.wallpapers.indexOf(wallpaper)
         this.wallpapers.remove(wallpaper)
         notifyItemRemoved(idx)
-        // notifyItemRangeChanged(idx, this.wallpapers.size)
+        notifyItemRangeChanged(idx, this.wallpapers.size)
+    }
+
+    fun updateLayout() {
+        for (i in 0 until wallpapers.size) {
+            Log.d("Wallpaper", "Wallpaper: ${wallpapers[i]} at index: $i")
+            notifyItemChanged(i)
+        }
     }
 
     fun getRandomWallpaper(): Wallpaper? {
