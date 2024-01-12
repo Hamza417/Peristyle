@@ -20,6 +20,8 @@ object MainPreferences {
     const val mainScreenBackground = "mainScreenBackground"
     const val swipeToDelete = "swipeToDelete"
 
+    const val SPAN_ONE = 1
+    const val SPAN_TWO = 2
     const val SPAN_RANDOM = 3
 
     fun getStorageUri(): String? {
