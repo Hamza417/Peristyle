@@ -1,0 +1,3 @@
+- Fixed staggered grid not updating it's layout after a wallpaper is removed in dynamic spans
+- Fixed top elements names overlapping with status bar
+- Updated dynamic colors for preferences icons
