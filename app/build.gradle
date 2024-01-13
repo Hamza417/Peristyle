@@ -69,6 +69,10 @@ android {
         prod {
             dimension "default"
         }
+        play {
+            dimension "default"
+            versionNameSuffix "-play"
+        }
     }
 
     ndkVersion '25.2.9519653'

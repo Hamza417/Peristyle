@@ -71,7 +71,7 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
         preferenceScreen.sharedPreferences?.registerOnSharedPreferenceChangeListener(this)
 
         preferenceScreen.findPreference<Preference>("positional")?.setOnPreferenceClickListener {
-            val url = "https://github.com/Hamza417/Positional"
+            val url = getString(R.string.positional_url)
             val intent = Intent(Intent.ACTION_VIEW)
             intent.data = Uri.parse(url)
             startActivity(intent)
@@ -79,7 +79,7 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
         }
 
         preferenceScreen.findPreference<Preference>("inure")?.setOnPreferenceClickListener {
-            val url = "https://github.com/Hamza417/Inure"
+            val url = getString(R.string.inure_url)
             val intent = Intent(Intent.ACTION_VIEW)
             intent.data = Uri.parse(url)
             startActivity(intent)

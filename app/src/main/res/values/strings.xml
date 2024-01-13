@@ -97,4 +97,6 @@
     <string name="main_screen_background">Main Screen Background</string>
     <string name="swipe_to_delete_summary">Allows to swipe delete a wallpaper from the list.</string>
     <string name="swipe_to_delete">Swipe to Delete</string>
+    <string name="inure_url">https://github.com/Hamza417/Inure</string>
+    <string name="positional_url">https://github.com/Hamza417/Positional</string>
 </resources>
