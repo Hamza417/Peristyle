@@ -17,7 +17,6 @@ import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.preferences.SharedPreferences
 import app.simple.peri.ui.MainScreen
 import app.simple.peri.utils.ConditionUtils.isNull
-import com.google.android.material.color.DynamicColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class MainActivity : AppCompatActivity() {
@@ -52,8 +51,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // This is all you need.
-        DynamicColors.applyToActivitiesIfAvailable(application)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding?.root)
         makeAppFullScreen()
