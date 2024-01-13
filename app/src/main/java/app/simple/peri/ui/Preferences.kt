@@ -207,22 +207,6 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
 
     override fun onSharedPreferenceChanged(p0: SharedPreferences?, p1: String?) {
         when (p1) {
-            MainPreferences.name -> {
-                MainPreferences.setName(p0?.getBoolean(p1, true)!!)
-            }
-
-            "grid_span" -> {
-                MainPreferences.setGridSpan(p0?.getString(p1, MainPreferences.SPAN_RANDOM.toString())!!.toInt())
-            }
-
-            "blur" -> {
-                MainPreferences.setBlur(p0?.getBoolean(p1, true)!!)
-            }
-
-            "is_details" -> {
-                MainPreferences.setDetails(p0?.getBoolean(p1, true)!!)
-            }
-
             "is_biometric" -> {
                 if (p0?.getBoolean(p1, false) == true) {
                     val promptInfo = BiometricPrompt.PromptInfo.Builder()
@@ -237,7 +221,6 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
                                 override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
                                     super.onAuthenticationError(errorCode, errString)
                                     p0.edit().putBoolean(p1, false).apply()
-                                    MainPreferences.setBiometric(false)
 
                                     MaterialAlertDialogBuilder(requireContext())
                                         .setMessage(errString.toString())
@@ -250,7 +233,6 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
 
                                 override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                                     super.onAuthenticationSucceeded(result)
-                                    MainPreferences.setBiometric(boolean = true)
 
                                     MaterialAlertDialogBuilder(requireContext())
                                         .setMessage(R.string.biometric_success)
@@ -269,25 +251,8 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
                     biometricPrompt.authenticate(promptInfo)
                 } else {
                     preferenceScreen.findPreference<CheckBoxPreference>("is_biometric")?.isChecked = false
-                    MainPreferences.setBiometric(false)
                     p0!!.edit().putBoolean(p1, false).apply()
                 }
-            }
-
-            "remember_scroll_position" -> {
-                MainPreferences.setRememberScrollPosition(p0?.getBoolean(p1, false)!!)
-            }
-
-            "margin_between_wallpapers" -> {
-                MainPreferences.setMarginBetween(p0?.getBoolean(p1, true)!!)
-            }
-
-            "main_screen_background" -> {
-                MainPreferences.setMainScreenBackground(p0?.getString(p1, "0")!!.toInt())
-            }
-
-            "swipe_to_delete" -> {
-                MainPreferences.setSwipeToDelete(p0?.getBoolean(p1, true)!!)
             }
         }
     }

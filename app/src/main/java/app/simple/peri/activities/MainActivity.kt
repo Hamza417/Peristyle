@@ -1,6 +1,5 @@
 package app.simple.peri.activities
 
-import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Build
@@ -44,13 +43,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun attachBaseContext(newBase: Context?) {
-        SharedPreferences.init(newBase!!)
-        super.attachBaseContext(newBase)
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        SharedPreferences.init(this)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding?.root)
         makeAppFullScreen()

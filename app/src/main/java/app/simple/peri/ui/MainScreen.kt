@@ -396,7 +396,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                 }
             })
 
-            val spanCount = if (MainPreferences.getGridSpan() == MainPreferences.SPAN_RANDOM) 2 else MainPreferences.getGridSpan()
+            val spanCount = if (MainPreferences.getGridSpan() == MainPreferences.SPAN_RANDOM) 2 else MainPreferences.getGridSpan().toInt()
             binding?.recyclerView?.setHasFixedSize(false)
             staggeredGridLayoutManager = StaggeredGridLayoutManager(spanCount, StaggeredGridLayoutManager.VERTICAL)
             staggeredGridLayoutManager?.gapStrategy = StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS
@@ -710,7 +710,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
     }
 
     private fun setMainBackground() {
-        if (MainPreferences.getMainScreenBackground() == 0) {
+        if (MainPreferences.getMainScreenBackground() == "0") {
             requireActivity().findViewById<CoordinatorLayout>(R.id.mainContainer).setBackgroundColor(Color.WHITE)
         } else {
             requireActivity().findViewById<CoordinatorLayout>(R.id.mainContainer).setBackgroundColor(Color.BLACK)
@@ -756,7 +756,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
             }
 
             MainPreferences.gridSpan -> {
-                val spanCount = if (MainPreferences.getGridSpan() == MainPreferences.SPAN_RANDOM) 2 else MainPreferences.getGridSpan()
+                val spanCount = if (MainPreferences.getGridSpan() == MainPreferences.SPAN_RANDOM) 2 else MainPreferences.getGridSpan().toInt()
                 staggeredGridLayoutManager?.spanCount = spanCount
                 adapterWallpaper?.notifyDataSetChanged()
             }

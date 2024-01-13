@@ -1,0 +1,2 @@
+- Fixed dynamic colors not applying
+- Fixed preference framework issues
