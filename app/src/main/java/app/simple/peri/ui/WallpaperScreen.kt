@@ -335,11 +335,40 @@ class WallpaperScreen : Fragment() {
 
             if (binding?.fab?.marginBottom!! < insets.bottom) {
                 binding?.fab?.apply {
-                    layoutParams = (layoutParams as FrameLayout.LayoutParams).apply {
-                        leftMargin += insets.left
-                        rightMargin += insets.right
-                        topMargin += insets.top
-                        bottomMargin += insets.bottom
+                    try {
+                        layoutParams = (layoutParams as FrameLayout.LayoutParams).apply {
+                            leftMargin += insets.left
+                            rightMargin += insets.right
+                            topMargin += insets.top
+                            bottomMargin += insets.bottom
+                        }
+                    } catch (e: ClassCastException) {
+                        layoutParams = (layoutParams as CoordinatorLayout.LayoutParams).apply {
+                            leftMargin += insets.left
+                            rightMargin += insets.right
+                            topMargin += insets.top
+                            bottomMargin += insets.bottom
+                        }
+                    }
+                }
+            }
+
+            if (binding?.fab0?.marginBottom!! < insets.bottom) {
+                binding?.fab0?.apply {
+                    try {
+                        layoutParams = (layoutParams as FrameLayout.LayoutParams).apply {
+                            leftMargin += insets.left
+                            rightMargin += insets.right
+                            topMargin += insets.top
+                            bottomMargin += insets.bottom
+                        }
+                    } catch (e: ClassCastException) {
+                        layoutParams = (layoutParams as CoordinatorLayout.LayoutParams).apply {
+                            leftMargin += insets.left
+                            rightMargin += insets.right
+                            topMargin += insets.top
+                            bottomMargin += insets.bottom
+                        }
                     }
                 }
             }
