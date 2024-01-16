@@ -21,6 +21,7 @@
 #-renamesourcefileattribute SourceFile
 
 -ignorewarnings
+-dontobfuscate
 
 # This is generated automatically by the Android Gradle plugin.
 -dontwarn javax.annotation.Nonnull

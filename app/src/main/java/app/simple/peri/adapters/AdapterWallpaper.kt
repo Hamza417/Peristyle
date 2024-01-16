@@ -169,6 +169,7 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>,
 
     inner class WallpaperViewHolder(private val binding: AdapterWallpaperBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(wallpaper: Wallpaper) {
+            binding.wallpaperContainer.transitionName = wallpaper.uri
             val width = if (MainPreferences.getGridSpan() == MainPreferences.SPAN_RANDOM) {
                 if (bindingAdapterPosition % 5 == 0) {
                     wallpaper.width!!
@@ -204,8 +205,6 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>,
                 marginLayoutParams.setMargins(0, 0, 0, 0)
                 binding.wallpaperContainer.layoutParams = marginLayoutParams
             }
-
-            binding.wallpaperContainer.transitionName = wallpaper.uri
 
             if (MainPreferences.getGridSpan() == MainPreferences.SPAN_RANDOM) {
                 binding.wallpaperImageView.scaleType = if (bindingAdapterPosition % 5 == 0) {
@@ -254,15 +253,15 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>,
 
             when (MainPreferences.getGridSpan()) {
                 MainPreferences.SPAN_RANDOM -> {
+                    val textMargin = binding.root.resources.getDimensionPixelSize(R.dimen.margin_8dp)
                     if (absoluteAdapterPosition == 0) {
                         val marginLayoutParams = binding.name.layoutParams as ViewGroup.MarginLayoutParams
-                        marginLayoutParams.setMargins(0, getStatusBarHeight(binding.name.resources), 0, 0)
+                        marginLayoutParams.setMargins(textMargin, getStatusBarHeight(binding.name.resources), textMargin, textMargin)
                         binding.name.layoutParams = marginLayoutParams
                     } else {
                         val marginLayoutParams = binding.name.layoutParams as ViewGroup.MarginLayoutParams
-                        marginLayoutParams.setMargins(0, 0, 0, 0)
+                        marginLayoutParams.setMargins(textMargin, textMargin, textMargin, textMargin)
                         binding.name.layoutParams = marginLayoutParams
-
                     }
                 }
 

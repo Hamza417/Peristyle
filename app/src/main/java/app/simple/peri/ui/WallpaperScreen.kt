@@ -112,7 +112,9 @@ class WallpaperScreen : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         requireActivity().findViewById<CoordinatorLayout>(R.id.mainContainer).setBackgroundColor(Color.BLACK)
-        fixNavigationBarOverlap()
+        runCatching {
+            fixNavigationBarOverlap()
+        }
         postponeEnterTransition()
         allowEnterTransitionOverlap = true
         allowReturnTransitionOverlap = true
@@ -335,39 +337,53 @@ class WallpaperScreen : Fragment() {
 
             if (binding?.fab?.marginBottom!! < insets.bottom) {
                 binding?.fab?.apply {
-                    try {
-                        layoutParams = (layoutParams as FrameLayout.LayoutParams).apply {
-                            leftMargin += insets.left
-                            rightMargin += insets.right
-                            topMargin += insets.top
-                            bottomMargin += insets.bottom
-                        }
-                    } catch (e: ClassCastException) {
-                        layoutParams = (layoutParams as CoordinatorLayout.LayoutParams).apply {
-                            leftMargin += insets.left
-                            rightMargin += insets.right
-                            topMargin += insets.top
-                            bottomMargin += insets.bottom
+                    runCatching {
+                        try {
+                            layoutParams = (layoutParams as FrameLayout.LayoutParams).apply {
+                                leftMargin += insets.left
+                                rightMargin += insets.right
+                                topMargin += insets.top
+                                bottomMargin += insets.bottom
+                            }
+                        } catch (e: ClassCastException) {
+                            layoutParams = (layoutParams as CoordinatorLayout.LayoutParams).apply {
+                                leftMargin += insets.left
+                                rightMargin += insets.right
+                                topMargin += insets.top
+                                bottomMargin += insets.bottom
+                            }
                         }
                     }
                 }
             }
 
+            /**
+             * Return CONSUMED if you don't want want the window insets to keep being
+             * passed down to descendant views.
+             */
+            WindowInsetsCompat.CONSUMED
+        }
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding?.fab0!!) { _, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+
             if (binding?.fab0?.marginBottom!! < insets.bottom) {
                 binding?.fab0?.apply {
-                    try {
-                        layoutParams = (layoutParams as FrameLayout.LayoutParams).apply {
-                            leftMargin += insets.left
-                            rightMargin += insets.right
-                            topMargin += insets.top
-                            bottomMargin += insets.bottom
-                        }
-                    } catch (e: ClassCastException) {
-                        layoutParams = (layoutParams as CoordinatorLayout.LayoutParams).apply {
-                            leftMargin += insets.left
-                            rightMargin += insets.right
-                            topMargin += insets.top
-                            bottomMargin += insets.bottom
+                    runCatching {
+                        try {
+                            layoutParams = (layoutParams as FrameLayout.LayoutParams).apply {
+                                leftMargin += insets.left
+                                rightMargin += insets.right
+                                topMargin += insets.top
+                                bottomMargin += insets.bottom
+                            }
+                        } catch (e: ClassCastException) {
+                            layoutParams = (layoutParams as CoordinatorLayout.LayoutParams).apply {
+                                leftMargin += insets.left
+                                rightMargin += insets.right
+                                topMargin += insets.top
+                                bottomMargin += insets.bottom
+                            }
                         }
                     }
                 }
