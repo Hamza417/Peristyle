@@ -14,6 +14,4 @@
 .cxx
 local.properties
 /app/release/
-/app/prod/release/app-prod-release.apk
-/app/prod/release/output-metadata.json
-/app/prod/release/app-prod-release_02.zip
+/app/prod/release/*
