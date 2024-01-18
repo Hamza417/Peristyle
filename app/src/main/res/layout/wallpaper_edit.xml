@@ -48,6 +48,19 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:text="@string/hue"
+        android:textColor="@color/textWhite" />
+
+    <com.google.android.material.slider.Slider
+        android:id="@+id/hue_slider"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        app:thumbColor="?attr/colorPrimary" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:text="@string/blur"
         android:textColor="@color/textWhite" />
 

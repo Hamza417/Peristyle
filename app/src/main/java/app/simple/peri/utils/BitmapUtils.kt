@@ -15,7 +15,7 @@ object BitmapUtils {
      * @param brightness -255..255 0 is default
      * @return new bitmap
      */
-    fun Bitmap.changeBitmapContrastBrightness(contrast: Float, brightness: Float, saturation: Float): Bitmap {
+    fun Bitmap.changeBitmapContrastBrightness(contrast: Float, brightness: Float, saturation: Float, hue: Float): Bitmap {
         val colorMatrix = ColorMatrix().apply {
             set(floatArrayOf(
                     contrast, 0f, 0f, 0f, brightness,
@@ -24,6 +24,12 @@ object BitmapUtils {
                     0f, 0f, 0f, 1f, 0f
             ))
         }
+
+        colorMatrix.postConcat(ColorMatrix().apply {
+            setRotate(0, hue)
+            setRotate(1, hue)
+            setRotate(2, hue)
+        })
 
         colorMatrix.postConcat(ColorMatrix().apply {
             setSaturation(saturation)
