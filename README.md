@@ -33,6 +33,7 @@ from there? then Peristyle is for you :)
 
 [![](https://img.shields.io/github/v/release/Hamza417/Peristyle?color=181717&label=GitHub%20Release)](https://github.com/Hamza417/Peristyle/releases/latest)
 [![](https://img.shields.io/endpoint?url=https://apt.izzysoft.de/fdroid/api/v1/shield/app.simple.peri)](https://apt.izzysoft.de/fdroid/index/apk/app.simple.peri/)
+[![](https://img.shields.io/badge/Play%20Store-ea4335?logo=googleplay)](https://play.google.com/store/apps/details?id=app.simple.peri)
 
 ## Screenshots
 
