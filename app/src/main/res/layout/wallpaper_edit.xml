@@ -17,6 +17,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
+        android:value="@dimen/default_saturation"
+        android:valueFrom="@dimen/saturation_slider_min"
+        android:valueTo="@dimen/saturation_slider_max"
         app:thumbColor="?attr/colorPrimary" />
 
     <TextView
@@ -30,6 +33,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
+        android:value="@dimen/default_brightness"
+        android:valueFrom="@dimen/brightness_slider_min"
+        android:valueTo="@dimen/brightness_slider_max"
         app:thumbColor="?attr/colorPrimary" />
 
     <TextView
@@ -43,6 +49,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
+        android:value="@dimen/default_contrast"
+        android:valueFrom="@dimen/contrast_slider_min"
+        android:valueTo="@dimen/contrast_slider_max"
         app:thumbColor="?attr/colorPrimary" />
 
     <TextView
@@ -56,6 +65,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
+        android:value="@dimen/default_hue"
+        android:valueFrom="@dimen/hue_slider_min"
+        android:valueTo="@dimen/hue_slider_max"
         app:thumbColor="?attr/colorPrimary" />
 
     <TextView
@@ -69,6 +81,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
+        android:value="@dimen/default_blur"
+        android:valueFrom="@dimen/blur_slider_min"
+        android:valueTo="@dimen/blur_slider_max"
         app:thumbColor="?attr/colorPrimary" />
 
 </LinearLayout>

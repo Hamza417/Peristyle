@@ -38,6 +38,7 @@ import app.simple.peri.tools.StackBlur
 import app.simple.peri.utils.BitmapUtils.changeBitmapContrastBrightness
 import app.simple.peri.utils.FileUtils.toUri
 import app.simple.peri.utils.ParcelUtils.parcelable
+import app.simple.peri.utils.ResourceUtils.getFloatCompat
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
@@ -163,11 +164,11 @@ class WallpaperScreen : Fragment() {
             val wallpaperEditBinding = WallpaperEditBinding.inflate(layoutInflater)
             wallpaperEditBinding.root.setBackgroundColor(Color.TRANSPARENT)
 
-            wallpaperEditBinding.saturationSlider.value = requireArguments().getFloat(BundleConstants.SATURATION_VALUE, DEFAULT_SATURATION)
-            wallpaperEditBinding.contrastSlider.value = requireArguments().getFloat(BundleConstants.CONTRAST_VALUE, DEFAULT_CONTRAST)
-            wallpaperEditBinding.brightnessSlider.value = requireArguments().getFloat(BundleConstants.BRIGHTNESS_VALUE, DEFAULT_BRIGHTNESS)
-            wallpaperEditBinding.hueSlider.value = requireArguments().getFloat(BundleConstants.HUE_VALUE, DEFAULT_HUE)
-            wallpaperEditBinding.blurSlider.value = requireArguments().getFloat(BundleConstants.BLUR_VALUE, DEFAULT_BLUR)
+            wallpaperEditBinding.saturationSlider.value = requireArguments().getFloat(BundleConstants.SATURATION_VALUE, resources.getFloatCompat(R.dimen.default_saturation))
+            wallpaperEditBinding.contrastSlider.value = requireArguments().getFloat(BundleConstants.CONTRAST_VALUE, resources.getFloatCompat(R.dimen.default_contrast))
+            wallpaperEditBinding.brightnessSlider.value = requireArguments().getFloat(BundleConstants.BRIGHTNESS_VALUE, resources.getFloatCompat(R.dimen.default_brightness))
+            wallpaperEditBinding.hueSlider.value = requireArguments().getFloat(BundleConstants.HUE_VALUE, resources.getFloatCompat(R.dimen.default_hue))
+            wallpaperEditBinding.blurSlider.value = requireArguments().getFloat(BundleConstants.BLUR_VALUE, resources.getFloatCompat(R.dimen.default_blur))
 
             wallpaperEditBinding.saturationSlider.addOnChangeListener { _, value, fromUser ->
                 if (fromUser) {
@@ -242,27 +243,26 @@ class WallpaperScreen : Fragment() {
 
     private fun setRenderEffectOnWallpaper() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            val contrast = requireArguments().getFloat(BundleConstants.CONTRAST_VALUE, DEFAULT_CONTRAST)
-            val brightness = requireArguments().getFloat(BundleConstants.BRIGHTNESS_VALUE, DEFAULT_BRIGHTNESS)
-            val saturation = requireArguments().getFloat(BundleConstants.SATURATION_VALUE, DEFAULT_SATURATION)
-            val hue = requireArguments().getFloat(BundleConstants.HUE_VALUE, DEFAULT_HUE)
-            val blur = requireArguments().getFloat(BundleConstants.BLUR_VALUE, DEFAULT_BLUR)
+            val contrast = requireArguments().getFloat(BundleConstants.CONTRAST_VALUE, resources.getFloatCompat(R.dimen.default_contrast))
+            val brightness = requireArguments().getFloat(BundleConstants.BRIGHTNESS_VALUE, resources.getFloatCompat(R.dimen.default_brightness))
+            val saturation = requireArguments().getFloat(BundleConstants.SATURATION_VALUE, resources.getFloatCompat(R.dimen.default_saturation))
+            val hue = requireArguments().getFloat(BundleConstants.HUE_VALUE, resources.getFloatCompat(R.dimen.default_hue))
+            val blur = requireArguments().getFloat(BundleConstants.BLUR_VALUE, resources.getFloatCompat(R.dimen.default_blur))
 
-            val blurEffect = RenderEffect.createBlurEffect(blur.toBlur(), blur.toBlur(), Shader.TileMode.MIRROR)
+            val blurEffect = RenderEffect.createBlurEffect(blur, blur, Shader.TileMode.MIRROR)
             val colorFilterEffect = RenderEffect.createColorFilterEffect(ColorMatrixColorFilter(ColorMatrix().apply {
                 set(floatArrayOf(
-                        contrast.toContrast(), 0f, 0f, 0f, brightness.toBrightness(),
-                        0f, contrast.toContrast(), 0f, 0f, brightness.toBrightness(),
-                        0f, 0f, contrast.toContrast(), 0f, brightness.toBrightness(),
+                        contrast, 0f, 0f, 0f, brightness,
+                        0f, contrast, 0f, 0f, brightness,
+                        0f, 0f, contrast, 0f, brightness,
                         0f, 0f, 0f, 1f, 0f
                 ))
 
                 // Set the hue
-                val hueValue = hue.toHue()
                 postConcat(ColorMatrix().apply {
-                    setRotate(0, hueValue)
-                    setRotate(1, hueValue)
-                    setRotate(2, hueValue)
+                    setRotate(0, hue)
+                    setRotate(1, hue)
+                    setRotate(2, hue)
                 })
 
                 //                val cos = cos(hueValue.toDouble())
@@ -280,7 +280,7 @@ class WallpaperScreen : Fragment() {
                 //                postConcat(ColorMatrix(mat))
 
                 postConcat(ColorMatrix().apply {
-                    setSaturation(saturation.toSaturation())
+                    setSaturation(saturation)
                 })
             }))
 
@@ -297,11 +297,11 @@ class WallpaperScreen : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             kotlin.runCatching {
                 val wallpaperManager = WallpaperManager.getInstance(requireContext())
-                val contrast = requireArguments().getFloat(BundleConstants.CONTRAST_VALUE, DEFAULT_CONTRAST).toContrast()
-                val brightness = requireArguments().getFloat(BundleConstants.BRIGHTNESS_VALUE, DEFAULT_BRIGHTNESS).toBrightness()
-                val saturation = requireArguments().getFloat(BundleConstants.SATURATION_VALUE, DEFAULT_SATURATION).toSaturation()
-                val hue = requireArguments().getFloat(BundleConstants.HUE_VALUE, DEFAULT_HUE).toHue()
-                val blur = requireArguments().getFloat(BundleConstants.BLUR_VALUE, DEFAULT_BLUR).toBlur()
+                val contrast = requireArguments().getFloat(BundleConstants.CONTRAST_VALUE, resources.getFloatCompat(R.dimen.default_contrast))
+                val brightness = requireArguments().getFloat(BundleConstants.BRIGHTNESS_VALUE, resources.getFloatCompat(R.dimen.default_brightness))
+                val saturation = requireArguments().getFloat(BundleConstants.SATURATION_VALUE, resources.getFloatCompat(R.dimen.default_saturation))
+                val hue = requireArguments().getFloat(BundleConstants.HUE_VALUE, resources.getFloatCompat(R.dimen.default_hue))
+                val blur = requireArguments().getFloat(BundleConstants.BLUR_VALUE, resources.getFloatCompat(R.dimen.default_blur))
 
                 val bitmap = binding?.composeView?.drawToBitmap()
                     ?.changeBitmapContrastBrightness(contrast, brightness, saturation, hue)
@@ -339,31 +339,6 @@ class WallpaperScreen : Fragment() {
                 }
             }
         }
-    }
-
-    /**
-     * Function that takes a Float input from 0.0F to 1.0F
-     * and returns a Float from -255.0F to 255.0F depending
-     * on the input
-     */
-    private fun Float.toBrightness(): Float {
-        return (this - 0.5F) * 510
-    }
-
-    private fun Float.toSaturation(): Float {
-        return this * 2
-    }
-
-    private fun Float.toContrast(): Float {
-        return this * 10
-    }
-
-    private fun Float.toHue(): Float {
-        return this * 360
-    }
-
-    private fun Float.toBlur(): Float {
-        return (this * 100).coerceAtLeast(1F)
     }
 
     /**
@@ -443,12 +418,6 @@ class WallpaperScreen : Fragment() {
             fragment.arguments = args
             return fragment
         }
-
-        private const val DEFAULT_SATURATION = 0.5F
-        private const val DEFAULT_BRIGHTNESS = 0.5F
-        private const val DEFAULT_CONTRAST = 0.1F
-        private const val DEFAULT_HUE = 0F
-        private const val DEFAULT_BLUR = 0F
 
     }
 }
