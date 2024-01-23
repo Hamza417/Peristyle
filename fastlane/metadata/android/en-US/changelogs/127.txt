@@ -1,0 +1,2 @@
+- Sliders should now show exact values
+- Removed native codes from the project
