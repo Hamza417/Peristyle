@@ -16,6 +16,6 @@
     <item name="saturation_slider_max" format="float" type="dimen">2</item>
     <item name="hue_slider_min" format="float" type="dimen">0</item>
     <item name="hue_slider_max" format="float" type="dimen">360</item>
-    <item name="blur_slider_min" format="float" type="dimen">0</item>
+    <item name="blur_slider_min" format="float" type="dimen">1</item>
     <item name="blur_slider_max" format="float" type="dimen">100</item>
 </resources>
