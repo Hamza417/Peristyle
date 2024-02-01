@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.SET_WALLPAPER" />
     <uses-permission android:name="android.permission.USE_BIOMETRIC" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
         android:name=".application.PeriApplication"
@@ -35,6 +36,13 @@
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
 
+        <service
+            android:name=".services.AutoWallpaperService"
+            android:exported="true"
+            android:foregroundServiceType="shortService"
+            android:permission="android.permission.FOREGROUND_SERVICE"
+            android:process=":auto_wallpaper_service" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"
@@ -44,6 +52,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
         </provider>
-    </application>
 
+    </application>
 </manifest>
