@@ -17,7 +17,7 @@ from there? then Peristyle is for you :)
 - Apply blur and color filters dynamically on any wallpaper.
 - Simple yet pretty animations with proper optimizations.
 - Biometric lock support.
-- Fully Material You design.
+- Fully Material You design with Edge to Edge interface.
 
 ## Stats
 
