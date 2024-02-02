@@ -27,13 +27,13 @@ class MainActivity : AppCompatActivity() {
     private var biometricPrompt: BiometricPrompt? = null
     private var biometricPromptInfo: BiometricPrompt.PromptInfo? = null
 
+    private val modeFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+
     private val storageResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result != null) {
             val uri = result.data?.data
             if (uri != null) {
-                contentResolver.takePersistableUriPermission(
-                        uri,
-                        Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+                contentResolver.takePersistableUriPermission(uri, modeFlags)
                 MainPreferences.setStorageUri(uri.toString())
                 Log.d("MainActivity", "Storage Uri: $uri")
 
@@ -134,7 +134,7 @@ class MainActivity : AppCompatActivity() {
         val intent = Intent(this, AutoWallpaperService::class.java)
         val pendingIntent = PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
         val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
-        val interval = 5000 // 10 seconds
+        val interval = 1000 * 60 * 30 // 30 minutes
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), interval.toLong(), pendingIntent)
     }
 
