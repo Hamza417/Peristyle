@@ -1,1 +1,1 @@
-Simple wallpaper manager app for Android.
+Simple wallpaper manager app with auto wallpaper support.
