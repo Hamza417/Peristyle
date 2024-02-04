@@ -103,4 +103,5 @@
     <string name="scheduling">Scheduling</string>
     <string name="auto_wallpaper">Change Wallpaper Automatically</string>
     <string name="auto_wallpaper_summary">Automatically change system and lock screen wallpapers over a specified period.</string>
+    <string name="off">Off</string>
 </resources>

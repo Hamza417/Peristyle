@@ -22,4 +22,22 @@
         <item>1</item>
     </string-array>
 
+    <string-array name="auto_wallpaper_interval">
+        <item>Off</item>
+        <item>1 Hour</item>
+        <item>3 Hours</item>
+        <item>6 Hours</item>
+        <item>12 Hours</item>
+        <item>24 Hours</item>
+    </string-array>
+
+    <string-array name="auto_wallpaper_interval_values">
+        <item>0</item>
+        <item>1</item>
+        <item>3</item>
+        <item>6</item>
+        <item>12</item>
+        <item>24</item>
+    </string-array>
+
 </resources>

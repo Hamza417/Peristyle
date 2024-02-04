@@ -1,5 +1,7 @@
 package app.simple.peri.activities
 
+import android.app.AlarmManager
+import android.app.PendingIntent
 import android.content.Intent
 import android.graphics.Color
 import android.os.Build
@@ -14,11 +16,12 @@ import app.simple.peri.R
 import app.simple.peri.databinding.ActivityMainBinding
 import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.preferences.SharedPreferences
+import app.simple.peri.services.AutoWallpaperService
 import app.simple.peri.ui.MainScreen
 import app.simple.peri.utils.ConditionUtils.isNull
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), android.content.SharedPreferences.OnSharedPreferenceChangeListener {
 
     private var binding: ActivityMainBinding? = null
     private var biometricPrompt: BiometricPrompt? = null
@@ -50,6 +53,10 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding?.root)
         makeAppFullScreen()
 
+        if (contentResolver.persistedUriPermissions.isNotEmpty()) {
+            setAutoWallpaperAlarm()
+        }
+
         biometricPromptInfo = BiometricPrompt.PromptInfo.Builder()
             .setTitle(getString(R.string.app_name))
             .setDescription(getString(R.string.biometric_desc))
@@ -72,6 +79,7 @@ class MainActivity : AppCompatActivity() {
                                     BiometricPrompt.ERROR_NEGATIVE_BUTTON -> {
                                         finish()
                                     }
+
                                     BiometricPrompt.ERROR_NO_BIOMETRICS,
                                     BiometricPrompt.ERROR_NO_DEVICE_CREDENTIAL -> {
                                         binding?.mainContainer?.id?.let {
@@ -80,6 +88,7 @@ class MainActivity : AppCompatActivity() {
                                                 .commit()
                                         }
                                     }
+
                                     else -> {
                                         MaterialAlertDialogBuilder(this@MainActivity)
                                             .setTitle(getString(R.string.app_name))
@@ -138,6 +147,31 @@ class MainActivity : AppCompatActivity() {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             window.navigationBarDividerColor = Color.TRANSPARENT
+        }
+    }
+
+    private fun setAutoWallpaperAlarm() {
+        if (MainPreferences.getAutoWallpaperInterval().toInt() > 0) {
+            val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
+            val intent = Intent(this, AutoWallpaperService::class.java)
+            val pendingIntent = PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+            val interval = MainPreferences.getAutoWallpaperInterval().toInt() * 60 * 60 * 1000
+            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), interval.toLong(), pendingIntent)
+            Log.d("MainActivity", "Auto wallpaper alarm set for every ${MainPreferences.getAutoWallpaperInterval()} minutes")
+        } else {
+            val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
+            val intent = Intent(this, AutoWallpaperService::class.java)
+            val pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+            alarmManager.cancel(pendingIntent)
+            Log.d("MainActivity", "Auto wallpaper alarm cancelled")
+        }
+    }
+
+    override fun onSharedPreferenceChanged(sharedPreferences: android.content.SharedPreferences?, key: String?) {
+        when (key) {
+            MainPreferences.autoWallpaperInterval -> {
+                setAutoWallpaperAlarm()
+            }
         }
     }
 }

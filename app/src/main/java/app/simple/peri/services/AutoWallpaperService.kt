@@ -1,10 +1,7 @@
 package app.simple.peri.services
 
-import android.app.AlarmManager
-import android.app.PendingIntent
 import android.app.Service
 import android.app.WallpaperManager
-import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -14,7 +11,6 @@ import android.util.Log
 import androidx.documentfile.provider.DocumentFile
 import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.preferences.SharedPreferences
-import java.util.Calendar
 
 class AutoWallpaperService : Service() {
 
@@ -68,13 +64,6 @@ class AutoWallpaperService : Service() {
     }
 
     private fun setNextAlarm() {
-        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val intent = Intent(this, AutoWallpaperService::class.java)
-        val pendingIntent = PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
-        val calendar = Calendar.getInstance()
-        calendar.timeInMillis = System.currentTimeMillis()
-        // Set to 30 minutes from now
-        calendar.add(Calendar.MINUTE, 30)
-        alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
+
     }
 }

@@ -26,7 +26,6 @@ import app.simple.peri.R
 import app.simple.peri.constants.BundleConstants
 import app.simple.peri.databinding.DialogDeleteBinding
 import app.simple.peri.preferences.MainPreferences
-import app.simple.peri.services.AutoWallpaperService
 import app.simple.peri.utils.FileUtils.toSize
 import com.bumptech.glide.Glide
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -253,14 +252,6 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
                 } else {
                     preferenceScreen.findPreference<CheckBoxPreference>("is_biometric")?.isChecked = false
                     p0!!.edit().putBoolean(p1, false).apply()
-                }
-            }
-
-            MainPreferences.isAutoWallpaper -> {
-                if (MainPreferences.isAutoWallpaper()) {
-                    requireActivity().startService(Intent(requireContext(), AutoWallpaperService::class.java))
-                } else {
-                    requireActivity().stopService(Intent(requireContext(), AutoWallpaperService::class.java))
                 }
             }
         }

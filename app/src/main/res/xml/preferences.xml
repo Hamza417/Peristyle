@@ -87,12 +87,16 @@
         app:iconSpaceReserved="false"
         app:title="@string/scheduling" />
 
-    <CheckBoxPreference
+    <ListPreference
+        android:entries="@array/auto_wallpaper_interval"
+        android:entryValues="@array/auto_wallpaper_interval_values"
         android:icon="@drawable/ic_schedule"
-        app:defaultValue="false"
+        app:defaultValue="0"
         app:enabled="true"
+        app:entries="@array/auto_wallpaper_interval"
+        app:entryValues="@array/auto_wallpaper_interval_values"
         app:iconSpaceReserved="true"
-        app:key="is_auto_wallpaper"
+        app:key="auto_wallpaper_interval_"
         app:summary="@string/auto_wallpaper_summary"
         app:title="@string/auto_wallpaper" />
 
