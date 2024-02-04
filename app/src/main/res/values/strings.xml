@@ -102,6 +102,5 @@
     <string name="hue">Hue</string>
     <string name="scheduling">Scheduling</string>
     <string name="auto_wallpaper">Change Wallpaper Automatically</string>
-    <string name="auto_wallpaper_summary">Automatically change system and lock screen wallpapers over a specified period.</string>
-    <string name="off">Off</string>
+    <string name="auto_wallpaper_summary">Automatically change system and lock screen wallpapers over a specified period.\n\nThe app will use your current wallpaper directory.</string>
 </resources>
