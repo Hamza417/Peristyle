@@ -15,7 +15,7 @@ from there? then Peristyle is for you :)
 - Simple architecture, browse wallpapers and use system wallpaper manager to set them as wallpaper.
 - Can scan .nomedia directories, useful if you want to keep your wallpapers away from gallery.
 - Apply blur and color filters dynamically on any wallpaper.
-- Auto wallpaper (WIP).
+- Auto wallpaper changer.
 - Simple yet pretty animations with proper optimizations.
 - Biometric lock support.
 - Fully Material You design with Edge to Edge interface.
