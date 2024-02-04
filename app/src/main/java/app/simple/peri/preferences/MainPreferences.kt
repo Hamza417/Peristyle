@@ -19,6 +19,7 @@ object MainPreferences {
     const val marginBetween = "margin_between_wallpapers"
     const val mainScreenBackground = "main_screen_background"
     const val swipeToDelete = "swipe_to_delete"
+    const val isAutoWallpaper = "is_auto_wallpaper"
 
     const val SPAN_ONE = "1"
     const val SPAN_TWO = "2"
@@ -98,5 +99,13 @@ object MainPreferences {
 
     fun getSwipeToDelete(): Boolean {
         return SharedPreferences.getSharedPreferences().getBoolean(swipeToDelete, true)
+    }
+
+    fun isAutoWallpaper(): Boolean {
+        return SharedPreferences.getSharedPreferences().getBoolean(isAutoWallpaper, false)
+    }
+
+    fun setAutoWallpaper(isAutoWallpaper: Boolean) {
+        SharedPreferences.getSharedPreferences().edit().putBoolean(MainPreferences.isAutoWallpaper, isAutoWallpaper).apply()
     }
 }

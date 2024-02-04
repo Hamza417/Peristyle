@@ -1,7 +1,10 @@
 package app.simple.peri.services
 
+import android.app.AlarmManager
+import android.app.PendingIntent
 import android.app.Service
 import android.app.WallpaperManager
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -11,6 +14,7 @@ import android.util.Log
 import androidx.documentfile.provider.DocumentFile
 import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.preferences.SharedPreferences
+import java.util.Calendar
 
 class AutoWallpaperService : Service() {
 
@@ -26,15 +30,9 @@ class AutoWallpaperService : Service() {
         return null
     }
 
-    override fun onCreate() {
-        super.onCreate()
-        init()
-        Log.d("AutoWallpaperService", "Service created")
-    }
-
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.d("AutoWallpaperService", "Service started")
-        setWallpaper()
+        init()
         return super.onStartCommand(intent, flags, startId)
     }
 
@@ -62,9 +60,21 @@ class AutoWallpaperService : Service() {
                     val bitmapCropped = Bitmap.createBitmap(bitmap, (bitmap.width - displayWidth) / 2, (bitmap.height - displayHeight) / 2, displayWidth, displayHeight)
                     wallpaperManager.setBitmap(bitmapCropped, null, true, WallpaperManager.FLAG_LOCK or WallpaperManager.FLAG_SYSTEM)
                     bitmapCropped.recycle()
+                    setNextAlarm()
                     stopSelf()
                 }
             }
         }
+    }
+
+    private fun setNextAlarm() {
+        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val intent = Intent(this, AutoWallpaperService::class.java)
+        val pendingIntent = PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+        val calendar = Calendar.getInstance()
+        calendar.timeInMillis = System.currentTimeMillis()
+        // Set to 30 minutes from now
+        calendar.add(Calendar.MINUTE, 30)
+        alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
     }
 }

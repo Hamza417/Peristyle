@@ -85,6 +85,19 @@
 
     <PreferenceCategory
         app:iconSpaceReserved="false"
+        app:title="@string/scheduling" />
+
+    <CheckBoxPreference
+        android:icon="@drawable/ic_schedule"
+        app:defaultValue="false"
+        app:enabled="true"
+        app:iconSpaceReserved="true"
+        app:key="is_auto_wallpaper"
+        app:summary="@string/auto_wallpaper_summary"
+        app:title="@string/auto_wallpaper" />
+
+    <PreferenceCategory
+        app:iconSpaceReserved="false"
         app:title="@string/security" />
 
     <CheckBoxPreference

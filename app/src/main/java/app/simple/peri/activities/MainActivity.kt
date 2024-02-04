@@ -1,12 +1,9 @@
 package app.simple.peri.activities
 
-import android.app.AlarmManager
-import android.app.PendingIntent
 import android.content.Intent
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
-import android.os.SystemClock
 import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -17,7 +14,6 @@ import app.simple.peri.R
 import app.simple.peri.databinding.ActivityMainBinding
 import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.preferences.SharedPreferences
-import app.simple.peri.services.AutoWallpaperService
 import app.simple.peri.ui.MainScreen
 import app.simple.peri.utils.ConditionUtils.isNull
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -127,20 +123,6 @@ class MainActivity : AppCompatActivity() {
                 storageResult.launch(intent)
             }
         }
-
-        runAlarmManager() // Testing only
-    }
-
-    private fun runAlarmManager() {
-        val intent = Intent(this, AutoWallpaperService::class.java)
-        val pendingIntent = PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
-        val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
-        val interval = 5000
-        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), interval.toLong(), pendingIntent)
-        Log.d("MainActivity", "AlarmManager: started")
-        // Check if alarm manager is running
-        // adb shell dumpsys alarm | grep app.simple.peri
-
     }
 
     private fun makeAppFullScreen() {
