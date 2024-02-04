@@ -3,8 +3,8 @@ package app.simple.peri.services
 import android.app.Service
 import android.app.WallpaperManager
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.Rect
 import android.net.Uri
 import android.os.IBinder
 import android.util.Log
@@ -28,6 +28,22 @@ class AutoWallpaperService : Service() {
 
     override fun onCreate() {
         super.onCreate()
+        init()
+        Log.d("AutoWallpaperService", "Service created")
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        Log.d("AutoWallpaperService", "Service started")
+        setWallpaper()
+        return super.onStartCommand(intent, flags, startId)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d("AutoWallpaperService", "Service destroyed")
+    }
+
+    private fun init() {
         SharedPreferences.init(this)
         setWallpaper()
         Log.d("AutoWallpaperService", "Wallpaper set")
@@ -41,16 +57,11 @@ class AutoWallpaperService : Service() {
             it.uri.let { uri ->
                 contentResolver.openInputStream(uri)?.use { stream ->
                     val bitmap = BitmapFactory.decodeStream(stream)
-                    val bitmapCenterX = bitmap.width / 2
-                    val halfDisplayWidth = displayWidth / 2
-
-                    val visibleCropHint = Rect(bitmapCenterX - halfDisplayWidth,
-                                               0,
-                                               bitmapCenterX + halfDisplayWidth,
-                                               bitmap.height)
-
-                    wallpaperManager.setBitmap(bitmap, visibleCropHint, true, WallpaperManager.FLAG_SYSTEM)
-                    wallpaperManager.setBitmap(bitmap, visibleCropHint, true, WallpaperManager.FLAG_LOCK)
+                    // Create a new bitmap with the specified width and height and cropped from the original bitmap
+                    // from the center of the original bitmap
+                    val bitmapCropped = Bitmap.createBitmap(bitmap, (bitmap.width - displayWidth) / 2, (bitmap.height - displayHeight) / 2, displayWidth, displayHeight)
+                    wallpaperManager.setBitmap(bitmapCropped, null, true, WallpaperManager.FLAG_LOCK or WallpaperManager.FLAG_SYSTEM)
+                    bitmapCropped.recycle()
                     stopSelf()
                 }
             }
