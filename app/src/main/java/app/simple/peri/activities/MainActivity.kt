@@ -155,7 +155,7 @@ class MainActivity : AppCompatActivity(), android.content.SharedPreferences.OnSh
             val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
             val intent = Intent(this, AutoWallpaperService::class.java)
             val pendingIntent = PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
-            val interval = MainPreferences.getAutoWallpaperInterval().toInt() * 60 * 60 * 1000
+            val interval = MainPreferences.getAutoWallpaperInterval().toInt()
             alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), interval.toLong(), pendingIntent)
             Log.d("MainActivity", "Auto wallpaper alarm set for every ${MainPreferences.getAutoWallpaperInterval()} minutes")
         } else {

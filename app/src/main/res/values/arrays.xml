@@ -24,6 +24,9 @@
 
     <string-array name="auto_wallpaper_interval">
         <item>Off</item>
+        <item>Every 5 Minutes</item>
+        <item>Every 15 Minutes</item>
+        <item>Every 30 Minutes</item>
         <item>Every 1 Hour</item>
         <item>Every 3 Hours</item>
         <item>Every 6 Hours</item>
@@ -33,11 +36,14 @@
 
     <string-array name="auto_wallpaper_interval_values">
         <item>0</item>
-        <item>1</item>
-        <item>3</item>
-        <item>6</item>
-        <item>12</item>
-        <item>24</item>
+        <item>300000</item>
+        <item>900000</item>
+        <item>1800000</item>
+        <item>3600000</item>
+        <item>10800000</item>
+        <item>21600000</item>
+        <item>43200000</item>
+        <item>86400000</item>
     </string-array>
 
 </resources>

@@ -96,7 +96,7 @@
         app:entries="@array/auto_wallpaper_interval"
         app:entryValues="@array/auto_wallpaper_interval_values"
         app:iconSpaceReserved="true"
-        app:key="auto_wallpaper_interval_"
+        app:key="auto_wallpaper_interval_1"
         app:summary="@string/auto_wallpaper_summary"
         app:title="@string/auto_wallpaper" />
 
