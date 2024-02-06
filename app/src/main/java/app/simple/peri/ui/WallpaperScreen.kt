@@ -34,6 +34,7 @@ import app.simple.peri.constants.BundleConstants
 import app.simple.peri.databinding.FragmentWallpaperScreenBinding
 import app.simple.peri.databinding.WallpaperEditBinding
 import app.simple.peri.models.Wallpaper
+import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.tools.StackBlur
 import app.simple.peri.utils.BitmapUtils.changeBitmapContrastBrightness
 import app.simple.peri.utils.FileUtils.toUri
@@ -129,35 +130,21 @@ class WallpaperScreen : Fragment() {
         }
 
         binding?.fab?.setOnClickListener {
-            val list = arrayOf(
-                    getString(R.string.home_screen),
-                    getString(R.string.lock_screen),
-                    getString(R.string.both))
-
-            MaterialAlertDialogBuilder(requireContext())
-                .setTitle(R.string.set_as_wallpaper)
-                .setItems(list) { d, which ->
-                    when (which) {
-                        0 -> {
-                            setWallpaper(WallpaperManager.FLAG_SYSTEM)
-                            d.dismiss()
-                        }
-
-                        1 -> {
-                            setWallpaper(WallpaperManager.FLAG_LOCK)
-                            d.dismiss()
-                        }
-
-                        2 -> {
-                            setWallpaper(WallpaperManager.FLAG_SYSTEM or WallpaperManager.FLAG_LOCK)
-                            d.dismiss()
-                        }
+            if (MainPreferences.getAutoWallpaperInterval().toInt() > 0) {
+                // Since auto wallpaper is on, we'll  show a warning
+                MaterialAlertDialogBuilder(requireContext())
+                    .setMessage(R.string.auto_wallpaper_warning)
+                    .setPositiveButton(R.string.yes) { dialog, _ ->
+                        showWallpaperPopup()
+                        dialog.dismiss()
                     }
-                }
-                .setNegativeButton(R.string.close) { d, _ ->
-                    d.dismiss()
-                }
-                .show()
+                    .setNegativeButton(R.string.cancel) { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    .show()
+            } else {
+                showWallpaperPopup()
+            }
         }
 
         binding?.fab0?.setOnClickListener {
@@ -239,6 +226,38 @@ class WallpaperScreen : Fragment() {
         } else {
             binding?.fab0?.visibility = View.GONE
         }
+    }
+
+    private fun showWallpaperPopup() {
+        val list = arrayOf(
+                getString(R.string.home_screen),
+                getString(R.string.lock_screen),
+                getString(R.string.both))
+
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.set_as_wallpaper)
+            .setItems(list) { d, which ->
+                when (which) {
+                    0 -> {
+                        setWallpaper(WallpaperManager.FLAG_SYSTEM)
+                        d.dismiss()
+                    }
+
+                    1 -> {
+                        setWallpaper(WallpaperManager.FLAG_LOCK)
+                        d.dismiss()
+                    }
+
+                    2 -> {
+                        setWallpaper(WallpaperManager.FLAG_SYSTEM or WallpaperManager.FLAG_LOCK)
+                        d.dismiss()
+                    }
+                }
+            }
+            .setNegativeButton(R.string.close) { d, _ ->
+                d.dismiss()
+            }
+            .show()
     }
 
     private fun setRenderEffectOnWallpaper() {

@@ -103,4 +103,6 @@
     <string name="scheduling">Scheduling</string>
     <string name="auto_wallpaper">Change Wallpaper Automatically</string>
     <string name="auto_wallpaper_summary">Automatically change system and lock screen wallpapers over a specified period.\n\nThe app will use your current wallpaper directory.</string>
+    <string name="auto_wallpaper_warning">Setting a wallpaper manually will disable the auto wallpaper service, are you sure?</string>
+    <string name="cancel">Cancel</string>
 </resources>

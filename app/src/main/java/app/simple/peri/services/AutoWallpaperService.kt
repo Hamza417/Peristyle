@@ -52,7 +52,8 @@ class AutoWallpaperService : Service() {
                 it.uri.let { uri ->
                     contentResolver.openInputStream(uri)?.use { stream ->
                         val bitmap = BitmapFactory.decodeStream(stream).cropBitmapFromCenter()
-                        wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_SYSTEM or WallpaperManager.FLAG_LOCK)
+                        val scaledBitmap = Bitmap.createScaledBitmap(bitmap, displayWidth, displayHeight, true)
+                        wallpaperManager.setBitmap(scaledBitmap, null, true, WallpaperManager.FLAG_SYSTEM or WallpaperManager.FLAG_LOCK)
                         bitmap.recycle()
                     }
                 }
