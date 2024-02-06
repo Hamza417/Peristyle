@@ -46,7 +46,7 @@ from there? then Peristyle is for you :)
 ## Translate
 [![Crowdin](https://badges.crowdin.net/peristyle/localized.svg)](https://crowdin.com/project/peristyle)
 
-Peristyle supports localization but only available in English at the moment, If you want to translate Peristyle in your language/s, you can do so here on [Crowdin](https://crowdin.com/project/peristyle). 
+Peristyle supports localization but only available in English at the moment, If you want to translate Peristyle in your language/s, you can do so [here on Crowdin](https://crowdin.com/project/peristyle). 
 
 ## License
 ```
