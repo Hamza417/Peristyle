@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
 import android.util.Log
+import app.simple.peri.utils.BitmapUtils
 import app.simple.peri.utils.FileUtils.toUri
 import com.bumptech.glide.Priority
 import com.bumptech.glide.load.DataSource
@@ -21,8 +22,13 @@ class WallpaperFetcher(private val wallpaper: Wallpaper) : DataFetcher<Bitmap> {
         try {
             wallpaper.context.contentResolver.openFileDescriptor(wallpaper.wallpaper.uri.toUri(), "r")?.use {
                 val bitmap = BitmapFactory.decodeFileDescriptor(it.fileDescriptor, null, BitmapFactory.Options().apply {
-                    inPreferredConfig = Bitmap.Config.ARGB_8888
-                    inSampleSize = calculateInSampleSize(this, 540, 540)
+                    inPreferredConfig = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        Bitmap.Config.RGBA_1010102
+                    } else {
+                        Bitmap.Config.ARGB_8888
+                    }
+
+                    inSampleSize = BitmapUtils.calculateInSampleSize(this, 540, 540)
                     inJustDecodeBounds = false
                 })
 
@@ -107,25 +113,7 @@ class WallpaperFetcher(private val wallpaper: Wallpaper) : DataFetcher<Bitmap> {
         }
     }
 
-    private fun calculateInSampleSize(options: BitmapFactory.Options, reqWidth: Int, reqHeight: Int): Int {
-        // Raw height and width of image
-        val (height: Int, width: Int) = options.run { outHeight to outWidth }
-        var inSampleSize = 1
 
-        if (height > reqHeight || width > reqWidth) {
-
-            val halfHeight: Int = height / 2
-            val halfWidth: Int = width / 2
-
-            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
-            // height and width larger than the requested height and width.
-            while (halfHeight / inSampleSize >= reqHeight && halfWidth / inSampleSize >= reqWidth) {
-                inSampleSize *= 2
-            }
-        }
-
-        return inSampleSize
-    }
 
     companion object {
         private const val TAG = "WallpaperFetcher"
