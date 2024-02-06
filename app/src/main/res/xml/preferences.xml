@@ -157,15 +157,15 @@
         app:title="@string/other_apps" />
 
     <Preference
-        app:icon="@drawable/positional"
-        app:key="positional"
-        app:summary="@string/positional_summary"
-        app:title="@string/positional" />
-
-    <Preference
         app:icon="@drawable/inure"
         app:key="inure"
         app:summary="@string/inure_app_manager_summary"
         app:title="@string/inure_app_manager" />
+
+    <Preference
+        app:icon="@drawable/positional"
+        app:key="positional"
+        app:summary="@string/positional_summary"
+        app:title="@string/positional" />
 
 </PreferenceScreen>
