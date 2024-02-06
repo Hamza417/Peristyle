@@ -44,6 +44,9 @@ from there? then Peristyle is for you :)
 |:-----------------------------------------------------------------------:|:-----------------------------------------------------------------------:|:-----------------------------------------------------------------------:|
 | ![03](./fastlane/metadata/android/en-US/images/phoneScreenshots/04.png) | ![05](./fastlane/metadata/android/en-US/images/phoneScreenshots/05.png) | ![06](./fastlane/metadata/android/en-US/images/phoneScreenshots/06.png) |
 
+## Translate
+Peristyle supports localization but only available in English at the moment, If you want to translate Peristyle in your language/s, you can do so here on [Crowdin](https://crowdin.com/project/peristyle). 
+
 ## License
 ```
 Copyright 2023 Hamza Rizwan
