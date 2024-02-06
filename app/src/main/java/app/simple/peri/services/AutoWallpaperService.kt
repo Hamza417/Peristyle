@@ -44,26 +44,37 @@ class AutoWallpaperService : Service() {
     }
 
     private fun setWallpaper() {
-        val dir = DocumentFile.fromTreeUri(this, Uri.parse(MainPreferences.getStorageUri()))
-        val files = dir?.listFiles()
-        files?.random()?.let {
-            val wallpaperManager = WallpaperManager.getInstance(this)
-            it.uri.let { uri ->
-                contentResolver.openInputStream(uri)?.use { stream ->
-                    val bitmap = BitmapFactory.decodeStream(stream)
-                    // Create a new bitmap with the specified width and height and cropped from the original bitmap
-                    // from the center of the original bitmap
-                    val bitmapCropped = Bitmap.createBitmap(bitmap, (bitmap.width - displayWidth) / 2, (bitmap.height - displayHeight) / 2, displayWidth, displayHeight)
-                    wallpaperManager.setBitmap(bitmapCropped, null, true, WallpaperManager.FLAG_LOCK or WallpaperManager.FLAG_SYSTEM)
-                    bitmapCropped.recycle()
-                    setNextAlarm()
-                    stopSelf()
+        runCatching {
+            val dir = DocumentFile.fromTreeUri(this, Uri.parse(MainPreferences.getStorageUri()))
+            val files = dir?.listFiles()
+            files?.random()?.let {
+                val wallpaperManager = WallpaperManager.getInstance(this)
+                it.uri.let { uri ->
+                    contentResolver.openInputStream(uri)?.use { stream ->
+                        val bitmap = BitmapFactory.decodeStream(stream).cropBitmapFromCenter()
+                        wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_SYSTEM or WallpaperManager.FLAG_LOCK)
+                        bitmap.recycle()
+                    }
                 }
             }
+        }.getOrElse {
+            Log.e("AutoWallpaperService", "Error setting wallpaper: $it")
+            Log.e("AutoWallpaperService", "Trying again...")
+            setWallpaper()
         }
     }
 
-    private fun setNextAlarm() {
+    private fun Bitmap.cropBitmapFromCenter(): Bitmap {
+        val aspectRatio: Float = displayWidth.toFloat() / displayHeight.toFloat()
+        var newHeight: Int = (width / aspectRatio).toInt()
 
+        // Ensure newHeight does not exceed the original height
+        if (newHeight > height) {
+            newHeight = height
+        }
+
+        val yOffset: Int = (height - newHeight) / 2
+
+        return Bitmap.createBitmap(this, 0, yOffset, width, newHeight)
     }
 }
