@@ -101,7 +101,7 @@
         app:title="@string/auto_wallpaper" />
 
     <CheckBoxPreference
-        app:defaultValue="true"
+        app:defaultValue="false"
         app:enabled="true"
         app:iconSpaceReserved="true"
         app:key="crop_wallpaper"
