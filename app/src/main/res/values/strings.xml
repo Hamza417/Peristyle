@@ -105,4 +105,7 @@
     <string name="auto_wallpaper_summary">Automatically change system and lock screen wallpapers over a specified period.\n\nThe app will use your current wallpaper directory.</string>
     <string name="auto_wallpaper_warning">Setting a wallpaper manually will disable the auto wallpaper service, are you sure?</string>
     <string name="cancel">Cancel</string>
+    <string name="crop_wallpaper_summary">Crop wallpaper to screen dimensions, disables wallpaper scroll.</string>
+    <string name="crop_wallpaper">Crop Wallpaper</string>
+    <string name="different_wallpaper_for_lock_screen">Separate Wallpaper For Lock Screen</string>
 </resources>

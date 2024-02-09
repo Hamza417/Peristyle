@@ -100,6 +100,21 @@
         app:summary="@string/auto_wallpaper_summary"
         app:title="@string/auto_wallpaper" />
 
+    <CheckBoxPreference
+        app:defaultValue="true"
+        app:enabled="true"
+        app:iconSpaceReserved="true"
+        app:key="crop_wallpaper"
+        app:summary="@string/crop_wallpaper_summary"
+        app:title="@string/crop_wallpaper" />
+
+    <CheckBoxPreference
+        app:defaultValue="true"
+        app:enabled="true"
+        app:iconSpaceReserved="true"
+        app:key="different_wallpaper_for_lock_screen"
+        app:title="@string/different_wallpaper_for_lock_screen" />
+
     <PreferenceCategory
         app:iconSpaceReserved="false"
         app:title="@string/security" />

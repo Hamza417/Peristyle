@@ -92,7 +92,12 @@ class AutoWallpaperService : Service() {
 
                             val visibleCropHint = Rect(left, top, right, bottom)
 
-                            wallpaperManager.setBitmap(bitmap, visibleCropHint, true, WallpaperManager.FLAG_SYSTEM or WallpaperManager.FLAG_LOCK)
+                            if (MainPreferences.getCropWallpaper()) {
+                                wallpaperManager.setBitmap(bitmap, visibleCropHint, true, WallpaperManager.FLAG_SYSTEM or WallpaperManager.FLAG_LOCK)
+                            } else {
+                                wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_SYSTEM or WallpaperManager.FLAG_LOCK)
+                            }
+
                             bitmap.recycle()
 
                             withContext(Dispatchers.Main) {

@@ -10,6 +10,8 @@ object MainPreferences {
     private const val isBiometric = "is_biometric"
     private const val rememberScrollPosition = "remember_scroll_position"
     private const val scrollPosition = "scrollPosition"
+    private const val cropWallpaper = "crop_wallpaper"
+    private const val differentWallpaper = "different_wallpaper_for_lock_screen"
 
     const val sort = "sort"
     const val order = "order"
@@ -103,5 +105,13 @@ object MainPreferences {
 
     fun getAutoWallpaperInterval(): String {
         return SharedPreferences.getSharedPreferences().getString(autoWallpaperInterval, "0")!!
+    }
+
+    fun getCropWallpaper(): Boolean {
+        return SharedPreferences.getSharedPreferences().getBoolean(cropWallpaper, false)
+    }
+
+    fun isDifferentWallpaperForLockScreen(): Boolean {
+        return SharedPreferences.getSharedPreferences().getBoolean(differentWallpaper, false)
     }
 }
