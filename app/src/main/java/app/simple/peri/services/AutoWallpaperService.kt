@@ -17,6 +17,8 @@ import app.simple.peri.utils.BitmapUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.ByteArrayInputStream
 
 class AutoWallpaperService : Service() {
 
@@ -58,16 +60,27 @@ class AutoWallpaperService : Service() {
                     val wallpaperManager = WallpaperManager.getInstance(applicationContext)
                     it.uri.let { uri ->
                         contentResolver.openInputStream(uri)?.use { stream ->
-                            val bitmap = BitmapFactory.decodeStream(stream, null, BitmapFactory.Options().apply {
+                            val byteArray = stream.readBytes()
+                            val bitmapOptions = BitmapFactory.Options().apply {
+                                inJustDecodeBounds = true
+                            }
+
+                            BitmapFactory.decodeStream(ByteArrayInputStream(byteArray), null, bitmapOptions)
+
+                            val bitmap = BitmapFactory.decodeStream(ByteArrayInputStream(byteArray), null, BitmapFactory.Options().apply {
                                 inPreferredConfig = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                                     Bitmap.Config.RGBA_1010102
                                 } else {
                                     Bitmap.Config.ARGB_8888
                                 }
 
-                                inSampleSize = BitmapUtils.calculateInSampleSize(this, displayWidth, displayHeight)
+                                Log.d("AutoWallpaperService", "Expected bitmap size: $displayWidth x $displayHeight")
+                                inSampleSize = BitmapUtils.calculateInSampleSize(bitmapOptions, displayWidth, displayHeight)
                                 inJustDecodeBounds = false
+                                Log.d("AutoWallpaperService", "Bitmap decoded with sample size: ${this.inSampleSize}")
                             })
+
+                            Log.d("AutoWallpaperService", "Bitmap size: ${bitmap?.width}x${bitmap?.height}")
 
                             val bitmapWidth = bitmap?.width
                             val bitmapHeight = bitmap?.height
@@ -79,15 +92,21 @@ class AutoWallpaperService : Service() {
 
                             val visibleCropHint = Rect(left, top, right, bottom)
 
-                            wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_SYSTEM or WallpaperManager.FLAG_LOCK)
+                            wallpaperManager.setBitmap(bitmap, visibleCropHint, true, WallpaperManager.FLAG_SYSTEM or WallpaperManager.FLAG_LOCK)
                             bitmap.recycle()
+
+                            withContext(Dispatchers.Main) {
+                                stopSelf()
+                            }
                         }
                     }
                 }
             }.getOrElse {
                 Log.e("AutoWallpaperService", "Error setting wallpaper: $it")
-                Log.e("AutoWallpaperService", "Trying again...")
-                setWallpaper()
+                Log.d("AutoWallpaperService", "Service stopped, wait for next alarm to start again")
+                withContext(Dispatchers.Main) {
+                    stopSelf()
+                }
             }
         }
     }

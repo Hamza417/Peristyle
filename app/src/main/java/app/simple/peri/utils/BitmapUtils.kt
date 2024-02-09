@@ -6,6 +6,7 @@ import android.graphics.Canvas
 import android.graphics.ColorMatrix
 import android.graphics.ColorMatrixColorFilter
 import android.graphics.Paint
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 
@@ -104,9 +105,13 @@ object BitmapUtils {
     }
 
     fun calculateInSampleSize(options: BitmapFactory.Options, reqWidth: Int, reqHeight: Int): Int {
+        Log.d("BitmapUtils", "calculateInSampleSize: reqWidth: $reqWidth, reqHeight: $reqHeight")
+
         // Raw height and width of image
         val (height: Int, width: Int) = options.run { outHeight to outWidth }
         var inSampleSize = 1
+
+        Log.d("BitmapUtils", "calculateInSampleSize: outWidth: ${options.outWidth}, outHeight: ${options.outHeight}")
 
         if (height > reqHeight || width > reqWidth) {
 
