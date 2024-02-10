@@ -1,0 +1,6 @@
+- Added 5, 15, and 30 intervals in auto wallpaper changer (#15)
+- Updated auto wallpaper cropper algorithm
+- Fixed various issues with auto wallpaper changer
+- Added crop wallpaper for auto wallpaper
+- Added boot completed receiver for auto wallpaper
+- Option to use separate wallpaper for lockscreen
