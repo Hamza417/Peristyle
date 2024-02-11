@@ -5,6 +5,7 @@
 
     <PreferenceCategory
         app:iconSpaceReserved="false"
+        app:allowDividerAbove="false"
         app:title="@string/home" />
 
     <CheckBoxPreference
