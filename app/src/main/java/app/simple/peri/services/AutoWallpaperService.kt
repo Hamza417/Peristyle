@@ -35,20 +35,20 @@ class AutoWallpaperService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        Log.d("AutoWallpaperService", "Service started")
+        Log.d(TAG, "Service started")
         init()
         return super.onStartCommand(intent, flags, startId)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.d("AutoWallpaperService", "Service destroyed")
+        Log.d(TAG, "Service destroyed")
     }
 
     private fun init() {
         SharedPreferences.init(this)
         setWallpaper()
-        Log.d("AutoWallpaperService", "Wallpaper set")
+        Log.d(TAG, "Wallpaper set")
     }
 
     private fun setWallpaper() {
@@ -74,21 +74,18 @@ class AutoWallpaperService : Service() {
                                     Bitmap.Config.ARGB_8888
                                 }
 
-                                Log.d("AutoWallpaperService", "Expected bitmap size: $displayWidth x $displayHeight")
+                                Log.d(TAG, "Expected bitmap size: $displayWidth x $displayHeight")
                                 inSampleSize = BitmapUtils.calculateInSampleSize(bitmapOptions, displayWidth, displayHeight)
                                 inJustDecodeBounds = false
-                                Log.d("AutoWallpaperService", "Bitmap decoded with sample size: ${this.inSampleSize}")
-                            })
+                                Log.d(TAG, "Bitmap decoded with sample size: ${this.inSampleSize}")
+                            })!!
 
-                            Log.d("AutoWallpaperService", "Bitmap size: ${bitmap?.width}x${bitmap?.height}")
+                            Log.d(TAG, "Bitmap size: ${bitmap.width}x${bitmap.height}")
 
-                            val bitmapWidth = bitmap?.width
-                            val bitmapHeight = bitmap?.height
-
-                            val left = (bitmapWidth!! - displayWidth) / 2
+                            val left = bitmap.width.div(2) - displayWidth.div(2)
                             val top = 0
                             val right = left + displayWidth
-                            val bottom = bitmapHeight!!
+                            val bottom = bitmap.height
 
                             val visibleCropHint = Rect(left, top, right, bottom)
 
@@ -117,7 +114,7 @@ class AutoWallpaperService : Service() {
                     }
                 }
             }.getOrElse {
-                Log.e("AutoWallpaperService", "Error setting wallpaper: $it")
+                Log.e(TAG, "Error setting wallpaper: $it")
             }
         }
     }
@@ -144,21 +141,18 @@ class AutoWallpaperService : Service() {
                                 Bitmap.Config.ARGB_8888
                             }
 
-                            Log.d("AutoWallpaperService", "Expected bitmap size: $displayWidth x $displayHeight")
+                            Log.d(TAG, "Expected bitmap size: $displayWidth x $displayHeight")
                             inSampleSize = BitmapUtils.calculateInSampleSize(bitmapOptions, displayWidth, displayHeight)
                             inJustDecodeBounds = false
-                            Log.d("AutoWallpaperService", "Bitmap decoded with sample size: ${this.inSampleSize}")
-                        })
+                            Log.d(TAG, "Bitmap decoded with sample size: ${this.inSampleSize}")
+                        })!!
 
-                        Log.d("AutoWallpaperService", "Bitmap size: ${bitmap?.width}x${bitmap?.height}")
+                        Log.d(TAG, "Bitmap size: ${bitmap.width}x${bitmap.height}")
 
-                        val bitmapWidth = bitmap?.width
-                        val bitmapHeight = bitmap?.height
-
-                        val left = (bitmapWidth!! - displayWidth) / 2
+                        val left = bitmap.width.div(2) - displayWidth.div(2)
                         val top = 0
                         val right = left + displayWidth
-                        val bottom = bitmapHeight!!
+                        val bottom = bitmap.height
 
                         val visibleCropHint = Rect(left, top, right, bottom)
 
@@ -173,8 +167,12 @@ class AutoWallpaperService : Service() {
                 }
             }
         }.getOrElse {
-            Log.e("AutoWallpaperService", "Error setting wallpaper: $it")
-            Log.d("AutoWallpaperService", "Service stopped, wait for next alarm to start again")
+            Log.e(TAG, "Error setting wallpaper: $it")
+            Log.d(TAG, "Service stopped, wait for next alarm to start again")
         }
+    }
+
+    companion object {
+        private const val TAG = "AutoWallpaperService"
     }
 }
