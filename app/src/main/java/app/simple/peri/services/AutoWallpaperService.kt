@@ -14,6 +14,7 @@ import androidx.documentfile.provider.DocumentFile
 import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.preferences.SharedPreferences
 import app.simple.peri.utils.BitmapUtils
+import app.simple.peri.utils.BitmapUtils.cropBitmap
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -67,7 +68,7 @@ class AutoWallpaperService : Service() {
 
                             BitmapFactory.decodeStream(ByteArrayInputStream(byteArray), null, bitmapOptions)
 
-                            val bitmap = BitmapFactory.decodeStream(ByteArrayInputStream(byteArray), null, BitmapFactory.Options().apply {
+                            var bitmap = BitmapFactory.decodeStream(ByteArrayInputStream(byteArray), null, BitmapFactory.Options().apply {
                                 inPreferredConfig = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                                     Bitmap.Config.RGBA_1010102
                                 } else {
@@ -86,23 +87,17 @@ class AutoWallpaperService : Service() {
                             val top = 0
                             val right = left + displayWidth
                             val bottom = bitmap.height
-
                             val visibleCropHint = Rect(left, top, right, bottom)
 
-                            if (MainPreferences.isDifferentWallpaperForLockScreen()) {
-                                if (MainPreferences.getCropWallpaper()) {
-                                    wallpaperManager.setBitmap(bitmap, visibleCropHint, true, WallpaperManager.FLAG_SYSTEM)
-                                } else {
-                                    wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_SYSTEM)
-                                }
+                            if (MainPreferences.getCropWallpaper()) {
+                                bitmap = bitmap.cropBitmap(visibleCropHint)
+                            }
 
+                            if (MainPreferences.isDifferentWallpaperForLockScreen()) {
+                                wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_SYSTEM)
                                 setLockScreenWallpaper()
                             } else {
-                                if (MainPreferences.getCropWallpaper()) {
-                                    wallpaperManager.setBitmap(bitmap, visibleCropHint, true, WallpaperManager.FLAG_SYSTEM or WallpaperManager.FLAG_LOCK)
-                                } else {
-                                    wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_SYSTEM or WallpaperManager.FLAG_LOCK)
-                                }
+                                wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_SYSTEM or WallpaperManager.FLAG_LOCK)
                             }
 
                             bitmap.recycle()
@@ -134,7 +129,7 @@ class AutoWallpaperService : Service() {
 
                         BitmapFactory.decodeStream(ByteArrayInputStream(byteArray), null, bitmapOptions)
 
-                        val bitmap = BitmapFactory.decodeStream(ByteArrayInputStream(byteArray), null, BitmapFactory.Options().apply {
+                        var bitmap = BitmapFactory.decodeStream(ByteArrayInputStream(byteArray), null, BitmapFactory.Options().apply {
                             inPreferredConfig = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                                 Bitmap.Config.RGBA_1010102
                             } else {
@@ -153,14 +148,13 @@ class AutoWallpaperService : Service() {
                         val top = 0
                         val right = left + displayWidth
                         val bottom = bitmap.height
-
                         val visibleCropHint = Rect(left, top, right, bottom)
 
                         if (MainPreferences.getCropWallpaper()) {
-                            wallpaperManager.setBitmap(bitmap, visibleCropHint, true, WallpaperManager.FLAG_LOCK)
-                        } else {
-                            wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_LOCK)
+                            bitmap = bitmap.cropBitmap(visibleCropHint)
                         }
+
+                        wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_LOCK)
 
                         bitmap.recycle()
                     }

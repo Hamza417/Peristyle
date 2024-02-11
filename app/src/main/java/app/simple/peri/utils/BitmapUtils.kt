@@ -6,6 +6,7 @@ import android.graphics.Canvas
 import android.graphics.ColorMatrix
 import android.graphics.ColorMatrixColorFilter
 import android.graphics.Paint
+import android.graphics.Rect
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
@@ -126,5 +127,12 @@ object BitmapUtils {
         }
 
         return inSampleSize
+    }
+
+    fun Bitmap.cropBitmap(rect: Rect): Bitmap {
+        val ret = Bitmap.createBitmap(rect.width(), rect.height(), config)
+        val canvas = Canvas(ret)
+        canvas.drawBitmap(this, rect, Rect(0, 0, rect.width(), rect.height()), null)
+        return ret
     }
 }
