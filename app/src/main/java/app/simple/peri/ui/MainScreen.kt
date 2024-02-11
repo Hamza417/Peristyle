@@ -404,6 +404,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
             binding?.recyclerView?.adapter = adapterWallpaper
             binding?.recyclerView?.setActivity(requireActivity())
             binding?.recyclerView?.setOriId(R.id.wallpaperImageView)
+            binding?.recyclerView?.scheduleLayoutAnimation()
 
             if (MainPreferences.getSwipeToDelete()) {
                 itemTouchHelper?.attachToRecyclerView(binding?.recyclerView)

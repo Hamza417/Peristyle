@@ -9,8 +9,9 @@ import android.widget.Toast;
 
 import app.simple.peri.BuildConfig;
 import app.simple.peri.preferences.MainPreferences;
-import app.simple.peri.preferences.SharedPreferences;
 import app.simple.peri.services.AutoWallpaperService;
+
+import static android.content.Context.ALARM_SERVICE;
 
 public class BootReceiver extends android.content.BroadcastReceiver {
     @Override
@@ -37,24 +38,19 @@ public class BootReceiver extends android.content.BroadcastReceiver {
     }
     
     private void setAutoWallpaperAlarm(Context context) {
-        SharedPreferences.INSTANCE.init(context);
-        int interval = Integer.parseInt(MainPreferences.INSTANCE.getAutoWallpaperInterval());
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(ALARM_SERVICE);
+        Intent intent = new Intent(context.getApplicationContext(), AutoWallpaperService.class);
+        PendingIntent pendingIntent = PendingIntent.getService(context.getApplicationContext(), 0, intent, PendingIntent.FLAG_IMMUTABLE);
         
-        if (interval > 0) {
-            AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-            Intent intent = new Intent(context.getApplicationContext(), AutoWallpaperService.class);
-            PendingIntent pendingIntent = PendingIntent.getService(context.getApplicationContext(), 0, intent, PendingIntent.FLAG_IMMUTABLE);
-            
-            long currentTimeMillis = System.currentTimeMillis();
-            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, currentTimeMillis, interval, pendingIntent);
-            
-            Log.d("BootReceiver", "Auto wallpaper alarm set for every " + MainPreferences.INSTANCE.getAutoWallpaperInterval() + " ms");
+        // Cancel any existing alarms
+        alarmManager.cancel(pendingIntent);
+        
+        if (Integer.parseInt(MainPreferences.INSTANCE.getAutoWallpaperInterval()) > 0) {
+            int interval = Integer.parseInt(MainPreferences.INSTANCE.getAutoWallpaperInterval());
+            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), interval, pendingIntent);
+            Log.d("MainActivity", "Auto wallpaper alarm set for every " + MainPreferences.INSTANCE.getAutoWallpaperInterval() + " ms");
         } else {
-            AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-            Intent intent = new Intent(context.getApplicationContext(), AutoWallpaperService.class);
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(context.getApplicationContext(), 0, intent, PendingIntent.FLAG_IMMUTABLE);
-            alarmManager.cancel(pendingIntent);
-            Log.d("BootReceiver", "Auto wallpaper alarm cancelled");
+            Log.d("MainActivity", "Auto wallpaper alarm cancelled");
         }
     }
 }

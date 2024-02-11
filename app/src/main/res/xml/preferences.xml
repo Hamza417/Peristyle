@@ -109,7 +109,7 @@
         app:title="@string/crop_wallpaper" />
 
     <CheckBoxPreference
-        app:defaultValue="true"
+        app:defaultValue="false"
         app:enabled="true"
         app:iconSpaceReserved="true"
         app:key="different_wallpaper_for_lock_screen"

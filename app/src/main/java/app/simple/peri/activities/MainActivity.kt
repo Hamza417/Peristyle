@@ -49,6 +49,7 @@ class MainActivity : AppCompatActivity(), android.content.SharedPreferences.OnSh
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         SharedPreferences.init(this)
+        SharedPreferences.getSharedPreferences().registerOnSharedPreferenceChangeListener(this)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding?.root)
         makeAppFullScreen()
@@ -151,18 +152,18 @@ class MainActivity : AppCompatActivity(), android.content.SharedPreferences.OnSh
     }
 
     private fun setAutoWallpaperAlarm() {
+        val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
+        val intent = Intent(applicationContext, AutoWallpaperService::class.java)
+        val pendingIntent = PendingIntent.getService(applicationContext, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+
+        // Cancel any existing alarms
+        alarmManager.cancel(pendingIntent)
+
         if (MainPreferences.getAutoWallpaperInterval().toInt() > 0) {
-            val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
-            val intent = Intent(this, AutoWallpaperService::class.java)
-            val pendingIntent = PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
             val interval = MainPreferences.getAutoWallpaperInterval().toInt()
             alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), interval.toLong(), pendingIntent)
             Log.d("MainActivity", "Auto wallpaper alarm set for every ${MainPreferences.getAutoWallpaperInterval()} ms")
         } else {
-            val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
-            val intent = Intent(this, AutoWallpaperService::class.java)
-            val pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
-            alarmManager.cancel(pendingIntent)
             Log.d("MainActivity", "Auto wallpaper alarm cancelled")
         }
     }
@@ -173,5 +174,10 @@ class MainActivity : AppCompatActivity(), android.content.SharedPreferences.OnSh
                 setAutoWallpaperAlarm()
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        SharedPreferences.getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this)
     }
 }
