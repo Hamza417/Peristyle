@@ -1,0 +1,3 @@
+- Fixed various issues with Auto Wallpaper
+- Fixed Auto Wallpaper setting pixelated wallpapers
+- Fixed some crashes in Auto Wallpaper framework
