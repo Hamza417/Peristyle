@@ -135,10 +135,15 @@ class WallpaperScreen : Fragment() {
                 MaterialAlertDialogBuilder(requireContext())
                     .setMessage(R.string.auto_wallpaper_warning)
                     .setPositiveButton(R.string.yes) { dialog, _ ->
+                        MainPreferences.turnOffAutoWallpaperInterval()
                         showWallpaperPopup()
                         dialog.dismiss()
                     }
-                    .setNegativeButton(R.string.cancel) { dialog, _ ->
+                    .setNegativeButton(R.string.no) { dialog, _ ->
+                        showWallpaperPopup()
+                        dialog.dismiss()
+                    }
+                    .setNeutralButton(R.string.cancel) { dialog, _ ->
                         dialog.dismiss()
                     }
                     .show()

@@ -107,6 +107,10 @@ object MainPreferences {
         return SharedPreferences.getSharedPreferences().getString(autoWallpaperInterval, "0")!!
     }
 
+    fun turnOffAutoWallpaperInterval() {
+        SharedPreferences.getSharedPreferences().edit().putString(autoWallpaperInterval, "0").apply()
+    }
+
     fun getCropWallpaper(): Boolean {
         return SharedPreferences.getSharedPreferences().getBoolean(cropWallpaper, false)
     }
