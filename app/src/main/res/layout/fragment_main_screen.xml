@@ -18,6 +18,7 @@
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layoutAnimation="@anim/zoom_in_controller"
             app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
@@ -31,13 +32,13 @@
         android:fitsSystemWindows="true"
         app:addElevationShadow="true"
         app:fabAlignmentMode="end"
+        app:fabCradleVerticalOffset="0dp"
         app:fabAnchorMode="cradle"
         app:fabAnimationMode="scale"
-        app:fabCradleRoundedCornerRadius="5dp"
+        app:fabCradleRoundedCornerRadius="15dp"
         app:hideOnScroll="true"
         app:menu="@menu/bottom_bar_menu"
-        android:layoutAnimation="@anim/zoom_in_controller"
-        app:menuAlignmentMode="auto"
+        app:menuAlignmentMode="start"
         app:srcCompat="@mipmap/ic_launcher_round"
         app:title="@string/app_name" />
 
@@ -45,8 +46,10 @@
         android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        app:fabCustomSize="65dp"
         android:contentDescription="@string/wallpaper_settings"
         android:src="@drawable/ic_shuffle"
+        app:shapeAppearanceOverlay="@style/fab_3_rounded"
         app:layout_anchor="@id/bottomAppBar" />
 
     <TextView
