@@ -1,0 +1,3 @@
+- Permissive auto wallpaper warning
+- Updated settings interface
+- Major improvements in animations framework
