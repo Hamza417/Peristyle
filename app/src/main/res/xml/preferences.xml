@@ -4,8 +4,8 @@
     <PreferenceCategory app:layout="@layout/preferences_toolbar" />
 
     <PreferenceCategory
-        app:iconSpaceReserved="false"
         app:allowDividerAbove="false"
+        app:iconSpaceReserved="true"
         app:title="@string/home" />
 
     <CheckBoxPreference
@@ -85,7 +85,7 @@
         app:title="@string/margin_between_wallpapers" />
 
     <PreferenceCategory
-        app:iconSpaceReserved="false"
+        app:iconSpaceReserved="true"
         app:title="@string/scheduling" />
 
     <ListPreference
@@ -117,7 +117,7 @@
         app:title="@string/different_wallpaper_for_lock_screen" />
 
     <PreferenceCategory
-        app:iconSpaceReserved="false"
+        app:iconSpaceReserved="true"
         app:title="@string/security" />
 
     <CheckBoxPreference
@@ -130,46 +130,46 @@
         app:title="@string/enable_biometric" />
 
     <PreferenceCategory
-        app:iconSpaceReserved="false"
+        app:iconSpaceReserved="true"
         app:title="@string/data" />
 
     <Preference
         android:title="@string/clear_cache"
-        app:iconSpaceReserved="false"
+        app:iconSpaceReserved="true"
         app:key="clear_cache"
         app:summary="@string/clear_cache_summary" />
 
 
     <Preference
         android:title="@string/recreate_database"
-        app:iconSpaceReserved="false"
+        app:iconSpaceReserved="true"
         app:key="recreate_database"
         app:summary="@string/recreate_database_summary" />
 
     <Preference
         android:title="@string/change_directory"
-        app:iconSpaceReserved="false"
+        app:iconSpaceReserved="true"
         app:key="change_directory"
         app:summary="@string/change_directory_desc" />
 
     <Preference
         android:title="@string/library_stats"
-        app:iconSpaceReserved="false"
+        app:iconSpaceReserved="true"
         app:key="library_stats"
         app:summary="@string/library_stats_desc" />
 
     <PreferenceCategory
-        app:iconSpaceReserved="false"
+        app:iconSpaceReserved="true"
         app:title="@string/about" />
 
     <Preference
-        app:iconSpaceReserved="false"
+        app:iconSpaceReserved="true"
         app:key="info"
         app:summary="@string/full_info"
         app:title="" />
 
     <PreferenceCategory
-        app:iconSpaceReserved="false"
+        app:iconSpaceReserved="true"
         app:title="@string/other_apps" />
 
     <Preference
