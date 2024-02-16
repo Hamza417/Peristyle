@@ -511,7 +511,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                             uris.forEach {
                                 with(DocumentFile.fromSingleUri(requireContext(), it.toUri())) {
                                     if (this?.delete() == true) {
-                                        Log.d("MainScreen", "Failed file deleted: $it")
+                                        Log.d(TAG, "Failed file deleted: $it")
                                     }
                                 }
                             }
@@ -567,7 +567,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                 //                        dialog.dismiss()
                 //                    }
                 //                    .show()
-                Log.e("MainScreen", "Loader is already running...")
+                Log.e(TAG, "Loader is already running...")
                 binding?.swipeRefreshLayout?.isRefreshing = false
             }
 
@@ -658,7 +658,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
 
     private fun saveBottomBarState() {
         requireArguments().putBoolean(BundleConstants.BOTTOM_APP_BAR, binding?.bottomAppBar?.isScrolledUp!!)
-        Log.d("MainScreen", "BottomAppBar state saved: ${binding?.bottomAppBar?.isScrolledUp}")
+        Log.d(TAG, "BottomAppBar state saved: ${binding?.bottomAppBar?.isScrolledUp}")
     }
 
     private fun invalidateLayoutManager() {
