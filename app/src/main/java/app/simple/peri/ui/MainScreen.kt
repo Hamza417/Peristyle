@@ -41,6 +41,7 @@ import app.simple.peri.models.Wallpaper
 import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.preferences.SharedPreferences.registerSharedPreferenceChangeListener
 import app.simple.peri.preferences.SharedPreferences.unregisterSharedPreferenceChangeListener
+import app.simple.peri.utils.AppUtils.isLandscape
 import app.simple.peri.utils.ConditionUtils.invert
 import app.simple.peri.utils.ConditionUtils.isNotNull
 import app.simple.peri.utils.FileUtils.toUri
@@ -396,9 +397,8 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                 }
             })
 
-            val spanCount = if (MainPreferences.getGridSpan() == MainPreferences.SPAN_RANDOM) 2 else MainPreferences.getGridSpan().toInt()
             binding?.recyclerView?.setHasFixedSize(false)
-            staggeredGridLayoutManager = StaggeredGridLayoutManager(spanCount, StaggeredGridLayoutManager.VERTICAL)
+            staggeredGridLayoutManager = StaggeredGridLayoutManager(getSpanCount(), StaggeredGridLayoutManager.VERTICAL)
             staggeredGridLayoutManager?.gapStrategy = StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS
             binding?.recyclerView?.layoutManager = staggeredGridLayoutManager
             binding?.recyclerView?.adapter = adapterWallpaper
@@ -722,6 +722,26 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
         }
     }
 
+    private fun getSpanCount(): Int {
+        return when (MainPreferences.SPAN_DYNAMIC) {
+            MainPreferences.getGridSpan() -> {
+                2
+            }
+
+            else -> {
+                if (requireContext().isLandscape()) {
+                    if (MainPreferences.getGridSpan().toInt() == 1) {
+                        1
+                    } else {
+                        MainPreferences.getGridSpan().toInt().times(2)
+                    }
+                } else {
+                    MainPreferences.getGridSpan().toInt()
+                }
+            }
+        }
+    }
+
     override fun onResume() {
         super.onResume()
         registerSharedPreferenceChangeListener()
@@ -764,7 +784,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
             }
 
             MainPreferences.gridSpan -> {
-                val spanCount = if (MainPreferences.getGridSpan() == MainPreferences.SPAN_RANDOM) 2 else MainPreferences.getGridSpan().toInt()
+                val spanCount = if (MainPreferences.getGridSpan() == MainPreferences.SPAN_DYNAMIC) 2 else MainPreferences.getGridSpan().toInt()
                 staggeredGridLayoutManager?.spanCount = spanCount
                 adapterWallpaper?.notifyDataSetChanged()
             }

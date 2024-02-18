@@ -45,7 +45,7 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>,
     }
 
     override fun onBindViewHolder(holder: WallpaperViewHolder, position: Int) {
-        if (MainPreferences.getGridSpan() == MainPreferences.SPAN_RANDOM) {
+        if (MainPreferences.getGridSpan() == MainPreferences.SPAN_DYNAMIC) {
             if (holder.bindingAdapterPosition % 5 == 0) {
                 val layoutParams = holder.itemView.layoutParams as StaggeredGridLayoutManager.LayoutParams
                 layoutParams.isFullSpan = true
@@ -170,7 +170,7 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>,
     inner class WallpaperViewHolder(private val binding: AdapterWallpaperBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(wallpaper: Wallpaper) {
             binding.wallpaperContainer.transitionName = wallpaper.uri
-            val width = if (MainPreferences.getGridSpan() == MainPreferences.SPAN_RANDOM) {
+            val width = if (MainPreferences.getGridSpan() == MainPreferences.SPAN_DYNAMIC) {
                 if (bindingAdapterPosition % 5 == 0) {
                     wallpaper.width!!
                 } else {
@@ -180,7 +180,7 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>,
                 wallpaper.width
             }
 
-            val height = if (MainPreferences.getGridSpan() == MainPreferences.SPAN_RANDOM) {
+            val height = if (MainPreferences.getGridSpan() == MainPreferences.SPAN_DYNAMIC) {
                 if (bindingAdapterPosition % 5 == 0) {
                     wallpaper.height!!
                 } else {
@@ -206,7 +206,7 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>,
                 binding.wallpaperContainer.layoutParams = marginLayoutParams
             }
 
-            if (MainPreferences.getGridSpan() == MainPreferences.SPAN_RANDOM) {
+            if (MainPreferences.getGridSpan() == MainPreferences.SPAN_DYNAMIC) {
                 binding.wallpaperImageView.scaleType = if (bindingAdapterPosition % 5 == 0) {
                     ImageView.ScaleType.FIT_XY
                 } else {
@@ -252,7 +252,7 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>,
             }
 
             when (MainPreferences.getGridSpan()) {
-                MainPreferences.SPAN_RANDOM -> {
+                MainPreferences.SPAN_DYNAMIC -> {
                     val textMargin = binding.root.resources.getDimensionPixelSize(R.dimen.margin_8dp)
                     if (absoluteAdapterPosition == 0) {
                         val marginLayoutParams = binding.name.layoutParams as ViewGroup.MarginLayoutParams

@@ -25,7 +25,7 @@ object MainPreferences {
 
     const val SPAN_ONE = "1"
     const val SPAN_TWO = "2"
-    const val SPAN_RANDOM = "3"
+    const val SPAN_DYNAMIC = "3"
 
     fun getStorageUri(): String? {
         return SharedPreferences.getSharedPreferences().getString(storageUri, null)
@@ -56,7 +56,7 @@ object MainPreferences {
     }
 
     fun getGridSpan(): String {
-        return SharedPreferences.getSharedPreferences().getString(gridSpan, SPAN_RANDOM)!!
+        return SharedPreferences.getSharedPreferences().getString(gridSpan, SPAN_DYNAMIC)!!
     }
 
     fun getShowNomediaDialog(): Boolean {

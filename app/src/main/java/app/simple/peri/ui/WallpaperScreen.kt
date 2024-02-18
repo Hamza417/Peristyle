@@ -15,11 +15,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -75,17 +73,12 @@ class WallpaperScreen : Fragment() {
                 ZoomableGlideImage(
                         model = wallpaper?.uri?.toUri(),
                         contentDescription = null,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .pointerInput(Unit) {
-                                detectTapGestures(
-                                        onLongPress = {
-                                            binding?.fab?.performClick()
-                                        }
-                                )
-                            },
+                        modifier = Modifier.fillMaxSize(),
                         alignment = Alignment.Center,
-                        contentScale = ContentScale.FillHeight
+                        contentScale = ContentScale.Crop,
+                        onLongClick = {
+                            binding?.fab?.performClick()
+                        }
                 )
                 {
                     it.addListener(object : RequestListener<Drawable> {
