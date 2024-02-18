@@ -408,6 +408,8 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
             if (requireArguments().getBoolean(HAS_LOADED_BEFORE, true)) {
                 binding?.recyclerView?.scheduleLayoutAnimation()
                 requireArguments().putBoolean(HAS_LOADED_BEFORE, false)
+            } else {
+                binding?.recyclerView?.layoutAnimation = null
             }
 
             if (MainPreferences.getSwipeToDelete()) {
