@@ -41,10 +41,10 @@ import app.simple.peri.models.Wallpaper
 import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.preferences.SharedPreferences.registerSharedPreferenceChangeListener
 import app.simple.peri.preferences.SharedPreferences.unregisterSharedPreferenceChangeListener
-import app.simple.peri.utils.AppUtils.isLandscape
 import app.simple.peri.utils.ConditionUtils.invert
 import app.simple.peri.utils.ConditionUtils.isNotNull
 import app.simple.peri.utils.FileUtils.toUri
+import app.simple.peri.utils.ScreenMetrics.isLandscape
 import app.simple.peri.utils.WallpaperSort
 import app.simple.peri.viewmodels.WallpaperViewModel
 import com.google.android.material.checkbox.MaterialCheckBox
@@ -771,17 +771,6 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
         when (p1) {
             MainPreferences.sort,
             MainPreferences.order -> {
-                //                if (wallpaperViewModel.isDatabaseLoaded()) {
-                //                    wallpaperViewModel.sortWallpapers()
-                //                } else {
-                //                    MaterialAlertDialogBuilder(requireContext())
-                //                        .setTitle(R.string.error)
-                //                        .setMessage(R.string.still_loading)
-                //                        .setPositiveButton(R.string.close) { dialog, _ ->
-                //                            dialog.dismiss()
-                //                        }
-                //                        .show()
-                //                }
                 adapterWallpaper?.sortWallpapers()
             }
 

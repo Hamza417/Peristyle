@@ -126,4 +126,8 @@ object ScreenMetrics {
             else -> context.resources.getString(R.string.unknown)
         }
     }
+
+    fun Context.isLandscape(): Boolean {
+        return resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+    }
 }

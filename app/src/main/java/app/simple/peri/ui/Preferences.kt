@@ -49,7 +49,6 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
                 MainPreferences.setStorageUri(null)
                 requireActivity().contentResolver.takePersistableUriPermission(uri, flags)
                 MainPreferences.setStorageUri(uri.toString())
-                Log.d("Preferences", "Storage Uri: $uri")
                 LocalBroadcastManager.getInstance(requireContext())
                     .sendBroadcast(Intent().apply {
                         action = BundleConstants.INTENT_RECREATE_DATABASE
