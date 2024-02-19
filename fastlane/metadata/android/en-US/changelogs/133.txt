@@ -1,0 +1,2 @@
+- Landscape orientation support
+- Fixed animations issues
