@@ -110,4 +110,5 @@
     <string name="different_wallpaper_for_lock_screen">Separate Wallpaper For Lock Screen</string>
     <string name="no">No</string>
     <string name="main_menu">Main Menu</string>
+    <string name="back">Back</string>
 </resources>

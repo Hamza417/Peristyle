@@ -8,13 +8,13 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewGroup.MarginLayoutParams
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.biometric.BiometricPrompt
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.children
 import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -27,6 +27,9 @@ import app.simple.peri.constants.BundleConstants
 import app.simple.peri.databinding.DialogDeleteBinding
 import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.utils.FileUtils.toSize
+import app.simple.peri.utils.ViewUtils.firstChild
+import app.simple.peri.utils.ViewUtils.setPaddingBottom
+import app.simple.peri.utils.ViewUtils.setPaddingTop
 import com.bumptech.glide.Glide
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.Dispatchers
@@ -38,24 +41,24 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
 
     private val flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
 
-    private val storageResult = registerForActivityResult(
-            ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result != null) {
-            val uri = result.data?.data
-            if (uri != null) {
-                requireActivity().contentResolver.persistedUriPermissions.forEach {
-                    requireActivity().contentResolver.releasePersistableUriPermission(it.uri, flags)
+    private val storageResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result != null) {
+                val uri = result.data?.data
+                if (uri != null) {
+                    requireActivity().contentResolver.persistedUriPermissions.forEach {
+                        requireActivity().contentResolver.releasePersistableUriPermission(it.uri, flags)
+                    }
+                    MainPreferences.setStorageUri(null)
+                    requireActivity().contentResolver.takePersistableUriPermission(uri, flags)
+                    MainPreferences.setStorageUri(uri.toString())
+                    LocalBroadcastManager.getInstance(requireContext())
+                        .sendBroadcast(Intent().apply {
+                            action = BundleConstants.INTENT_RECREATE_DATABASE
+                        })
                 }
-                MainPreferences.setStorageUri(null)
-                requireActivity().contentResolver.takePersistableUriPermission(uri, flags)
-                MainPreferences.setStorageUri(uri.toString())
-                LocalBroadcastManager.getInstance(requireContext())
-                    .sendBroadcast(Intent().apply {
-                        action = BundleConstants.INTENT_RECREATE_DATABASE
-                    })
             }
         }
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         requireActivity().findViewById<CoordinatorLayout>(R.id.mainContainer)
@@ -64,9 +67,21 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
         return super.onCreateView(inflater, container, savedInstanceState)
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        fixNavigationBarOverlap()
+
+        (requireView() as ViewGroup).children.forEach {
+            if (it.id == R.id.back_button) {
+                it.setOnClickListener {
+                    requireActivity().onBackPressedDispatcher.onBackPressed()
+                }
+            }
+        }
+    }
+
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.preferences, rootKey)
-
         preferenceScreen.sharedPreferences?.registerOnSharedPreferenceChangeListener(this)
 
         preferenceScreen.findPreference<Preference>("positional")?.setOnPreferenceClickListener {
@@ -264,13 +279,12 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
         ViewCompat.setOnApplyWindowInsetsListener(requireView()) { view, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
 
-            /**
-             * Setting the bottom margin to the view to make it not overlap with the
-             * navigation system bar
-             */
-            view.layoutParams = (view.layoutParams as MarginLayoutParams).apply {
-                if (bottomMargin < insets.bottom.times(4)) {
-                    bottomMargin = insets.bottom.times(4)
+            view.firstChild()?.apply {
+                setPaddingTop(insets.top + paddingTop)
+                setPaddingBottom(insets.bottom + paddingBottom)
+                with(this as ViewGroup) {
+                    clipToPadding = false
+                    clipToPadding = false
                 }
             }
 
