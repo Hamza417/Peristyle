@@ -6,7 +6,7 @@
         app:iconSpaceReserved="true"
         app:title="@string/home" />
 
-    <CheckBoxPreference
+    <SwitchPreferenceCompat
         android:icon="@drawable/ic_label"
         app:defaultValue="true"
         app:enabled="true"
@@ -15,7 +15,7 @@
         app:summary="@string/show_wallpaper_names_on_the_main_screen"
         app:title="@string/enabled_wallpaper_names" />
 
-    <CheckBoxPreference
+    <SwitchPreferenceCompat
         android:icon="@drawable/ic_description"
         app:defaultValue="true"
         app:enabled="true"
@@ -24,7 +24,7 @@
         app:summary="@string/show_wallpaper_details_on_the_main_screen"
         app:title="@string/enabled_wallpaper_details" />
 
-    <CheckBoxPreference
+    <SwitchPreferenceCompat
         android:icon="@drawable/ic_blur"
         app:defaultValue="true"
         app:enabled="true"
@@ -55,7 +55,7 @@
         app:title="@string/main_screen_background"
         app:useSimpleSummaryProvider="false" />
 
-    <CheckBoxPreference
+    <SwitchPreferenceCompat
         android:icon="@drawable/ic_delete_sweep"
         app:defaultValue="true"
         app:enabled="true"
@@ -64,7 +64,7 @@
         app:summary="@string/swipe_to_delete_summary"
         app:title="@string/swipe_to_delete" />
 
-    <CheckBoxPreference
+    <SwitchPreferenceCompat
         android:icon="@drawable/ic_pin_drop"
         app:defaultValue="false"
         app:enabled="true"
@@ -73,7 +73,7 @@
         app:summary="@string/remember_scroll_position_summary"
         app:title="@string/remember_scroll_position" />
 
-    <CheckBoxPreference
+    <SwitchPreferenceCompat
         android:icon="@drawable/ic_margin"
         app:defaultValue="false"
         app:enabled="true"
@@ -99,7 +99,7 @@
         app:summary="@string/auto_wallpaper_summary"
         app:title="@string/auto_wallpaper" />
 
-    <CheckBoxPreference
+    <SwitchPreferenceCompat
         app:defaultValue="false"
         app:enabled="true"
         app:iconSpaceReserved="true"
@@ -107,7 +107,7 @@
         app:summary="@string/crop_wallpaper_summary"
         app:title="@string/crop_wallpaper" />
 
-    <CheckBoxPreference
+    <SwitchPreferenceCompat
         app:defaultValue="false"
         app:enabled="true"
         app:iconSpaceReserved="true"
@@ -118,7 +118,7 @@
         app:iconSpaceReserved="true"
         app:title="@string/security" />
 
-    <CheckBoxPreference
+    <SwitchPreferenceCompat
         android:icon="@drawable/ic_fingerprint"
         app:defaultValue="false"
         app:enabled="true"
