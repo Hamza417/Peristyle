@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.drawToBitmap
@@ -55,6 +56,7 @@ class WallpaperScreen : Fragment() {
 
     private var binding: FragmentWallpaperScreenBinding? = null
     private var wallpaper: Wallpaper? = null
+    private var drawable: Drawable? = null
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -89,6 +91,7 @@ class WallpaperScreen : Fragment() {
                         override fun onResourceReady(resource: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
                             startPostponedEnterTransition()
                             setRenderEffectOnWallpaper()
+                            drawable = resource
                             return false
                         }
                     })
@@ -235,22 +238,50 @@ class WallpaperScreen : Fragment() {
         MaterialAlertDialogBuilder(requireContext())
             .setTitle(R.string.set_as_wallpaper)
             .setItems(list) { d, which ->
-                when (which) {
-                    0 -> {
-                        setWallpaper(WallpaperManager.FLAG_SYSTEM)
-                        d.dismiss()
-                    }
+                MaterialAlertDialogBuilder(requireContext())
+                    .setMessage(R.string.crop_wallpaper_warning)
+                    .setPositiveButton(R.string.yes) { dialog, _ ->
+                        when (which) {
+                            0 -> {
+                                setWallpaper(mode = WallpaperManager.FLAG_SYSTEM, shouldCrop = true)
+                                d.dismiss()
+                            }
 
-                    1 -> {
-                        setWallpaper(WallpaperManager.FLAG_LOCK)
-                        d.dismiss()
-                    }
+                            1 -> {
+                                setWallpaper(mode = WallpaperManager.FLAG_LOCK, shouldCrop = true)
+                                d.dismiss()
+                            }
 
-                    2 -> {
-                        setWallpaper(WallpaperManager.FLAG_SYSTEM or WallpaperManager.FLAG_LOCK)
-                        d.dismiss()
+                            2 -> {
+                                setWallpaper(mode = WallpaperManager.FLAG_SYSTEM or WallpaperManager.FLAG_LOCK, shouldCrop = true)
+                                d.dismiss()
+                            }
+                        }
+                        dialog.dismiss()
                     }
-                }
+                    .setNegativeButton(R.string.no) { dialog, _ ->
+                        when (which) {
+                            0 -> {
+                                setWallpaper(mode = WallpaperManager.FLAG_SYSTEM, shouldCrop = false)
+                                d.dismiss()
+                            }
+
+                            1 -> {
+                                setWallpaper(mode = WallpaperManager.FLAG_LOCK, shouldCrop = false)
+                                d.dismiss()
+                            }
+
+                            2 -> {
+                                setWallpaper(mode = WallpaperManager.FLAG_SYSTEM or WallpaperManager.FLAG_LOCK, shouldCrop = false)
+                                d.dismiss()
+                            }
+                        }
+                        dialog.dismiss()
+                    }
+                    .setNeutralButton(R.string.cancel) { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    .show()
             }
             .setNegativeButton(R.string.close) { d, _ ->
                 d.dismiss()
@@ -305,7 +336,7 @@ class WallpaperScreen : Fragment() {
         }
     }
 
-    private fun setWallpaper(mode: Int) {
+    private fun setWallpaper(mode: Int, shouldCrop: Boolean) {
         val loader = MaterialAlertDialogBuilder(requireContext())
             .setTitle(R.string.preparing)
             .setMessage(R.string.copying)
@@ -320,8 +351,16 @@ class WallpaperScreen : Fragment() {
                 val hue = requireArguments().getFloat(BundleConstants.HUE_VALUE, resources.getFloatCompat(R.dimen.default_hue))
                 val blur = requireArguments().getFloat(BundleConstants.BLUR_VALUE, resources.getFloatCompat(R.dimen.default_blur))
 
-                val bitmap = binding?.composeView?.drawToBitmap()
-                    ?.changeBitmapContrastBrightness(contrast, brightness, saturation, hue)
+                val bitmap = when {
+                    shouldCrop -> {
+                        binding?.composeView?.drawToBitmap()
+                            ?.changeBitmapContrastBrightness(contrast, brightness, saturation, hue)
+                    }
+
+                    else -> {
+                        drawable?.toBitmap()?.changeBitmapContrastBrightness(contrast, brightness, saturation, hue)
+                    }
+                }
 
                 bitmap?.let {
                     StackBlur().blurRgb(it, blur.toInt())
