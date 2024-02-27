@@ -1,0 +1,3 @@
+- Added option to set un-cropped wallpaper on wallpaper screen
+- Switch style preferences instead of check box
+- Removed settings toolbar due to UI inconsistencies

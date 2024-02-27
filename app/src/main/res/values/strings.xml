@@ -111,5 +111,5 @@
     <string name="no">No</string>
     <string name="main_menu">Main Menu</string>
     <string name="back">Back</string>
-    <string name="crop_wallpaper_warning">Would you like to set cropped wallpaper?</string>
+    <string name="crop_wallpaper_warning">Would you like to use cropped wallpaper as visible on the screen?</string>
 </resources>
