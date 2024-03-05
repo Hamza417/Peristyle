@@ -23,6 +23,12 @@ import java.io.ByteArrayInputStream
 
 class AutoWallpaperService : Service() {
 
+    /**
+     * Flag to prevent multiple next wallpaper actions from running at the same time
+     * This is necessary because the widget can be clicked multiple times in a short period of time
+     */
+    private var isNextWallpaperActionRunning = false
+
     private val displayWidth: Int by lazy {
         resources.displayMetrics.widthPixels
     }
@@ -37,7 +43,18 @@ class AutoWallpaperService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.d(TAG, "Service started")
-        init()
+
+        if (intent?.action == ACTION_NEXT_WALLPAPER) {
+            Log.d(TAG, "Next wallpaper action received")
+            if (!isNextWallpaperActionRunning) {
+                isNextWallpaperActionRunning = true
+                init()
+                isNextWallpaperActionRunning = false
+            }
+        } else {
+            init()
+        }
+
         return super.onStartCommand(intent, flags, startId)
     }
 
@@ -167,6 +184,7 @@ class AutoWallpaperService : Service() {
     }
 
     companion object {
+        const val ACTION_NEXT_WALLPAPER: String = "app.simple.peri.services.action.NEXT_WALLPAPER"
         private const val TAG = "AutoWallpaperService"
     }
 }
