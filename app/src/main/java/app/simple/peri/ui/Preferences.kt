@@ -284,7 +284,7 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
                 setPaddingBottom(insets.bottom + paddingBottom)
                 with(this as ViewGroup) {
                     clipToPadding = false
-                    clipToPadding = false
+                    clipChildren = false
                 }
             }
 

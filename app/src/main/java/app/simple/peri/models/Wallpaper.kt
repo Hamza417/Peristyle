@@ -47,15 +47,6 @@ class Wallpaper : Parcelable, Comparable<Wallpaper> {
         isSelected = parcel.readByte() != 0.toByte()
     }
 
-    constructor(name: String?, uri: String, width: Int?, height: Int?, dateModified: Long, isSelected: Boolean) {
-        this.name = name
-        this.uri = uri
-        this.width = width
-        this.height = height
-        this.dateModified = dateModified
-        this.isSelected = isSelected
-    }
-
     constructor()
 
     override fun toString(): String {
