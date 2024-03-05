@@ -25,7 +25,7 @@ class NextWallpaperWidget : AppWidgetProvider() {
 
             // Get the layout for the App Widget and attach an on-click listener to the button
             val views = RemoteViews(context?.packageName, R.layout.widget_next_wallpaper)
-            views.setOnClickPendingIntent(R.id.widget_next_wallpaper_container, pendingIntent)
+            views.setOnClickPendingIntent(R.id.widget_next_wallpaper, pendingIntent)
 
             // Log a message when the widget is clicked
             Log.d(TAG, "Widget clicked")
