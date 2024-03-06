@@ -114,7 +114,12 @@ class AutoWallpaperService : Service() {
                                 wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_SYSTEM)
                                 setLockScreenWallpaper()
                             } else {
-                                wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_SYSTEM or WallpaperManager.FLAG_LOCK)
+                                /**
+                                 * Setting them separately to avoid the wallpaper not setting
+                                 * in some devices for lock screen.
+                                 */
+                                wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_SYSTEM)
+                                wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_LOCK)
                             }
 
                             bitmap.recycle()

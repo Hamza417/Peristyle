@@ -1,3 +1,11 @@
 /build
 /prod/release/app-prod-release.zip
 /play/release/app-play-release.aab
+/play/release/baselineProfiles/0/app-play-release.dm
+/play/release/baselineProfiles/1/app-play-release.dm
+/play/release/app-play-release.apk
+/play/release/output-metadata.json
+/dev/release/baselineProfiles/0/app-dev-release.dm
+/dev/release/baselineProfiles/1/app-dev-release.dm
+/dev/release/app-dev-release.apk
+/dev/release/output-metadata.json

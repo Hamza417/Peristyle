@@ -241,41 +241,12 @@ class WallpaperScreen : Fragment() {
                 MaterialAlertDialogBuilder(requireContext())
                     .setMessage(R.string.crop_wallpaper_warning)
                     .setPositiveButton(R.string.yes) { dialog, _ ->
-                        when (which) {
-                            0 -> {
-                                setWallpaper(mode = WallpaperManager.FLAG_SYSTEM, shouldCrop = true)
-                                d.dismiss()
-                            }
-
-                            1 -> {
-                                setWallpaper(mode = WallpaperManager.FLAG_LOCK, shouldCrop = true)
-                                d.dismiss()
-                            }
-
-                            2 -> {
-                                setWallpaper(mode = WallpaperManager.FLAG_SYSTEM or WallpaperManager.FLAG_LOCK, shouldCrop = true)
-                                d.dismiss()
-                            }
-                        }
+                        setWallpaper(mode = which, shouldCrop = true)
+                        d.dismiss()
                         dialog.dismiss()
                     }
                     .setNegativeButton(R.string.no) { dialog, _ ->
-                        when (which) {
-                            0 -> {
-                                setWallpaper(mode = WallpaperManager.FLAG_SYSTEM, shouldCrop = false)
-                                d.dismiss()
-                            }
-
-                            1 -> {
-                                setWallpaper(mode = WallpaperManager.FLAG_LOCK, shouldCrop = false)
-                                d.dismiss()
-                            }
-
-                            2 -> {
-                                setWallpaper(mode = WallpaperManager.FLAG_SYSTEM or WallpaperManager.FLAG_LOCK, shouldCrop = false)
-                                d.dismiss()
-                            }
-                        }
+                        setWallpaper(mode = which, shouldCrop = false)
                         dialog.dismiss()
                     }
                     .setNeutralButton(R.string.cancel) { dialog, _ ->
@@ -368,7 +339,24 @@ class WallpaperScreen : Fragment() {
 
                 withContext(Dispatchers.Main) {
                     kotlin.runCatching {
-                        wallpaperManager.setBitmap(bitmap, null, true, mode)
+                        when (mode) {
+                            HOME_SCREEN -> {
+                                wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_SYSTEM)
+                            }
+
+                            LOCK_SCREEN -> {
+                                wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_LOCK)
+                            }
+
+                            BOTH -> {
+                                /**
+                                 * Setting them separately to avoid the wallpaper not setting
+                                 * in some devices for lock screen
+                                 */
+                                wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_SYSTEM)
+                                wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_LOCK)
+                            }
+                        }
                         loader.dismiss()
                     }.onFailure {
                         loader.dismiss()
@@ -475,5 +463,8 @@ class WallpaperScreen : Fragment() {
             return fragment
         }
 
+        private const val HOME_SCREEN = 0
+        private const val LOCK_SCREEN = 1
+        private const val BOTH = 2
     }
 }
