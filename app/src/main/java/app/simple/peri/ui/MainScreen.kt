@@ -26,9 +26,7 @@ import androidx.core.view.doOnPreDraw
 import androidx.documentfile.provider.DocumentFile
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -53,7 +51,6 @@ import com.google.android.material.checkbox.MaterialCheckBox
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.MaterialSharedAxis
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -316,7 +313,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                 binding?.loadingStatus?.visibility = View.GONE
             }
 
-            adapterWallpaper = AdapterWallpaper(wallpapers, displayWidth, displayHeight)
+            adapterWallpaper = AdapterWallpaper(wallpapers, displayWidth, displayHeight, requireArguments().getInt(LAST_WALLPAPER_POSITION, -1))
             adapterWallpaper?.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.ALLOW
 
             adapterWallpaper!!.setWallpaperCallbacks(object : WallpaperCallbacks {
@@ -324,6 +321,8 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                     // binding?.bottomAppBar?.performHide(false)
                     binding?.fab?.transitionName = null // remove transition name to prevent shared element transition
                     saveBottomBarState()
+                    requireArguments().putBoolean(SHOULD_REFRESH, false)
+                    requireArguments().putInt(LAST_WALLPAPER_POSITION, position)
 
                     requireActivity().supportFragmentManager.beginTransaction()
                         .addSharedElement(constraintLayout!!, constraintLayout.transitionName)
@@ -407,9 +406,9 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
             binding?.recyclerView?.setActivity(requireActivity())
             binding?.recyclerView?.setOriId(R.id.wallpaperImageView)
 
-            if (requireArguments().getBoolean(HAS_LOADED_BEFORE, true)) {
+            if (requireArguments().getBoolean(FIRST_RV_STATE, true)) {
                 binding?.recyclerView?.scheduleLayoutAnimation()
-                requireArguments().putBoolean(HAS_LOADED_BEFORE, false)
+                requireArguments().putBoolean(FIRST_RV_STATE, false)
             } else {
                 binding?.recyclerView?.layoutAnimation = null
             }
@@ -551,6 +550,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
 
                 if (randomWallpaper.isNotNull()) {
                     saveBottomBarState()
+                    requireArguments().putBoolean(SHOULD_REFRESH, false)
                     requireActivity().supportFragmentManager.beginTransaction()
                         .addSharedElement(binding!!.fab, binding!!.fab.transitionName)
                         .replace(R.id.mainContainer, WallpaperScreen.newInstance(randomWallpaper!!), "WallpaperScreen")
@@ -583,27 +583,6 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
             }
 
             unBlurRoot()
-        }
-
-        /**
-         * Should we just refresh the list everytime the app is resumed?
-         */
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.RESUMED) {
-                binding?.progressIndicator?.animate()
-                    ?.alpha(1F)
-                    ?.setDuration(500)
-                    ?.withStartAction {
-                        binding?.progressIndicator?.visibility = View.VISIBLE
-                    }
-                    ?.start()
-
-                wallpaperViewModel.refreshWallpapers {
-                    Log.d(TAG, "Wallpapers refreshed")
-                }
-
-                delay(1000)
-            }
         }
     }
 
@@ -677,7 +656,6 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
 
     private fun saveBottomBarState() {
         requireArguments().putBoolean(BundleConstants.BOTTOM_APP_BAR, binding?.bottomAppBar?.isScrolledUp!!)
-        Log.d(TAG, "BottomAppBar state saved: ${binding?.bottomAppBar?.isScrolledUp}")
     }
 
     private fun invalidateLayoutManager() {
@@ -764,23 +742,26 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
     override fun onResume() {
         super.onResume()
         registerSharedPreferenceChangeListener()
+        if (requireArguments().getBoolean(SHOULD_REFRESH, false)) {
+            binding?.progressIndicator?.animate()
+                ?.alpha(1F)
+                ?.setDuration(500)
+                ?.withStartAction {
+                    binding?.progressIndicator?.visibility = View.VISIBLE
+                }
+                ?.start()
+
+            wallpaperViewModel.refreshWallpapers {
+                Log.d(TAG, "Wallpapers are already refreshing")
+            }
+        } else {
+            requireArguments().putBoolean(SHOULD_REFRESH, true)
+        }
     }
 
     override fun onDestroy() {
         super.onDestroy()
         unregisterSharedPreferenceChangeListener()
-    }
-
-    companion object {
-        fun newInstance(): MainScreen {
-            val args = Bundle()
-            val fragment = MainScreen()
-            fragment.arguments = args
-            return fragment
-        }
-
-        private const val TAG = "MainScreen"
-        private const val HAS_LOADED_BEFORE = "has_loaded_before"
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -817,5 +798,19 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                 }
             }
         }
+    }
+
+    companion object {
+        fun newInstance(): MainScreen {
+            val args = Bundle()
+            val fragment = MainScreen()
+            fragment.arguments = args
+            return fragment
+        }
+
+        private const val TAG = "MainScreen"
+        private const val FIRST_RV_STATE = "first_rv_state"
+        private const val SHOULD_REFRESH = "should_refresh"
+        private const val LAST_WALLPAPER_POSITION = "last_wallpaper_position"
     }
 }

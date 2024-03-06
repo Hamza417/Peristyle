@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import app.simple.peri.R
 import app.simple.peri.databinding.AdapterWallpaperBinding
 import app.simple.peri.glide.utils.GlideUtils.loadWallpaper
+import app.simple.peri.glide.utils.GlideUtils.loadWallpaperCrossfade
 import app.simple.peri.interfaces.WallpaperCallbacks
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.preferences.MainPreferences
@@ -23,7 +24,8 @@ import com.bumptech.glide.Glide
 
 class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>,
                        private val displayWidth: Int,
-                       private val displayHeight: Int) : RecyclerView.Adapter<AdapterWallpaper.WallpaperViewHolder>() {
+                       private val displayHeight: Int,
+                       val lastWallpaperPosition: Int) : RecyclerView.Adapter<AdapterWallpaper.WallpaperViewHolder>() {
 
     private val set = ConstraintSet()
     private var wallpaperCallbacks: WallpaperCallbacks? = null
@@ -217,7 +219,15 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>,
             }
 
             binding.wallpaperImageView.post {
-                binding.wallpaperImageView.loadWallpaper(wallpaper)
+                if (lastWallpaperPosition == -1) {
+                    binding.wallpaperImageView.loadWallpaper(wallpaper)
+                } else {
+                    if (bindingAdapterPosition == lastWallpaperPosition) {
+                        binding.wallpaperImageView.loadWallpaperCrossfade(wallpaper)
+                    } else {
+                        binding.wallpaperImageView.loadWallpaper(wallpaper)
+                    }
+                }
             }
 
             if (MainPreferences.getName()) {

@@ -28,6 +28,16 @@ object GlideUtils {
             .into(this)
     }
 
+    fun ImageView.loadWallpaperCrossfade(wallpaper: Wallpaper) {
+        GlideApp.with(context.applicationContext)
+            .asBitmap()
+            .load(app.simple.peri.glide.wallpaper.Wallpaper(wallpaper, context.applicationContext))
+            .transition(BitmapTransitionOptions.withCrossFade())
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .set(Downsampler.ALLOW_HARDWARE_CONFIG, true)
+            .into(this)
+    }
+
     fun ImageView.loadWallpaper(wallpaper: Wallpaper, onLoad: (Bitmap) -> Unit) {
         GlideApp.with(context)
             .asBitmap()
