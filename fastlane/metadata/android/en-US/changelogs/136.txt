@@ -1,0 +1,5 @@
+- Added a consistent loader that refreshes wallpaper automatically
+- Removed swipe down to refresh
+- Make sure the animating view have only one animation pipeline working on it
+- Added multilevel subdirectory tree support
+- Fixed wallpaper not setting for lock screen in some devices
