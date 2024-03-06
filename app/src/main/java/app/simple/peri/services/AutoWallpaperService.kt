@@ -15,6 +15,7 @@ import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.preferences.SharedPreferences
 import app.simple.peri.utils.BitmapUtils
 import app.simple.peri.utils.BitmapUtils.cropBitmap
+import app.simple.peri.utils.FileUtils.listCompleteFiles
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -73,7 +74,7 @@ class AutoWallpaperService : Service() {
         CoroutineScope(Dispatchers.Default).launch {
             runCatching {
                 val dir = DocumentFile.fromTreeUri(applicationContext, Uri.parse(MainPreferences.getStorageUri()))
-                val files = dir?.listFiles()
+                val files = dir?.listCompleteFiles()
                 files?.random()?.let {
                     val wallpaperManager = WallpaperManager.getInstance(applicationContext)
                     it.uri.let { uri ->
@@ -112,7 +113,7 @@ class AutoWallpaperService : Service() {
 
                             if (MainPreferences.isDifferentWallpaperForLockScreen()) {
                                 wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_SYSTEM)
-                                setLockScreenWallpaper()
+                                setLockScreenWallpaper(files)
                             } else {
                                 /**
                                  * Setting them separately to avoid the wallpaper not setting
@@ -136,11 +137,9 @@ class AutoWallpaperService : Service() {
         }
     }
 
-    private fun setLockScreenWallpaper() {
+    private fun setLockScreenWallpaper(files: List<DocumentFile>) {
         runCatching {
-            val dir = DocumentFile.fromTreeUri(applicationContext, Uri.parse(MainPreferences.getStorageUri()))
-            val files = dir?.listFiles()
-            files?.random()?.let {
+            files.random().let {
                 val wallpaperManager = WallpaperManager.getInstance(applicationContext)
                 it.uri.let { uri ->
                     contentResolver.openInputStream(uri)?.use { stream ->
