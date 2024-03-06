@@ -532,6 +532,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                                 }
                             }
                         }
+
                         dialog.dismiss()
                     }
                     .setNegativeButton(R.string.close) { dialog, _ ->

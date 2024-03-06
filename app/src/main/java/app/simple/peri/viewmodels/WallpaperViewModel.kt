@@ -216,6 +216,7 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
                     wallpaperDao?.insert(it)
                 }
             } catch (e: ConcurrentModificationException) {
+                // rarely occurs
                 Log.e(TAG, "initDatabase: ConcurrentModificationException occurred while inserting wallpapers into database - ${e.message}")
             }
 
