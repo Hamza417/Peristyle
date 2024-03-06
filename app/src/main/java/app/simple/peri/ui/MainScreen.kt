@@ -26,7 +26,9 @@ import androidx.core.view.doOnPreDraw
 import androidx.documentfile.provider.DocumentFile
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -458,7 +460,19 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
         }
 
         wallpaperViewModel.getLoadingStatusLiveData().observe(viewLifecycleOwner) { status ->
-            binding?.loadingStatus?.text = status
+            if (status == "Done") {
+                binding?.progressIndicator?.animate()
+                    ?.alpha(0F)
+                    ?.setDuration(500)
+                    ?.withEndAction {
+                        binding?.progressIndicator?.visibility = View.GONE
+                    }
+                    ?.start()
+
+                binding?.loadingStatus?.visibility = View.GONE
+            } else {
+                binding?.loadingStatus?.text = status
+            }
         }
 
         wallpaperViewModel.getIsNomediaDirectoryLiveData().observe(viewLifecycleOwner) {
@@ -560,25 +574,6 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
             true
         }
 
-        binding?.swipeRefreshLayout?.setOnRefreshListener {
-            wallpaperViewModel.refreshWallpapers {
-                //                MaterialAlertDialogBuilder(requireContext())
-                //                    .setTitle(R.string.error)
-                //                    .setMessage(getString(R.string.parallel_loading_error))
-                //                    .setPositiveButton(R.string.close) { dialog, _ ->
-                //                        dialog.dismiss()
-                //                    }
-                //                    .show()
-                Log.e(TAG, "Loader is already running...")
-                binding?.swipeRefreshLayout?.isRefreshing = false
-            }
-
-            viewLifecycleOwner.lifecycleScope.launch {
-                delay(1000)
-                binding?.swipeRefreshLayout?.isRefreshing = false
-            }
-        }
-
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             if (adapterWallpaper?.selectionMode == true) {
                 adapterWallpaper?.cancelSelection()
@@ -587,6 +582,27 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
             }
 
             unBlurRoot()
+        }
+
+        /**
+         * Should we just refresh the list everytime the app is resumed?
+         */
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.RESUMED) {
+                binding?.progressIndicator?.animate()
+                    ?.alpha(1F)
+                    ?.setDuration(500)
+                    ?.withStartAction {
+                        binding?.progressIndicator?.visibility = View.VISIBLE
+                    }
+                    ?.start()
+
+                wallpaperViewModel.refreshWallpapers {
+                    Log.d(TAG, "Wallpapers refreshed")
+                }
+
+                delay(1000)
+            }
         }
     }
 

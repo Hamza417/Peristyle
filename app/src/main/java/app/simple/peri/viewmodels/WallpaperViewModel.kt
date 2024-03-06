@@ -18,7 +18,8 @@ import app.simple.peri.database.instances.WallpaperDatabase
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.utils.ConditionUtils.invert
-import app.simple.peri.utils.FileUtils.isImageFile
+import app.simple.peri.utils.FileUtils.listCompleteFiles
+import app.simple.peri.utils.FileUtils.toUri
 import app.simple.peri.utils.WallpaperSort.getSortedList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -30,8 +31,10 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
     private val intentFilter = IntentFilter().apply {
         addAction(BundleConstants.INTENT_RECREATE_DATABASE)
     }
+
     private var wallpapers: ArrayList<Wallpaper> = ArrayList()
     private val failedURIs: ArrayList<String> = ArrayList()
+    private var alreadyLoaded: Map<String, Wallpaper>? = null
 
     private var isDatabaseLoaded = false
 
@@ -121,6 +124,7 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
             @Suppress("UNCHECKED_CAST")
             wallpapersData.postValue(wallpaperList.clone() as ArrayList<Wallpaper>)
 
+            alreadyLoaded = WallpaperDatabase.getInstance(getApplication())?.wallpaperDao()?.getWallpapers()?.associateBy { it.uri }
             loadWallpaperImages()
         }
     }
@@ -128,77 +132,37 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
     private fun loadWallpaperImages() {
         viewModelScope.launch(Dispatchers.IO) {
             isDatabaseLoaded = false
-            val alreadyLoaded = WallpaperDatabase.getInstance(getApplication())?.wallpaperDao()?.getWallpapers()?.associateBy { it.uri }
-            val storageUri = MainPreferences.getStorageUri()
-            val pickedDirectory = DocumentFile.fromTreeUri(getApplication(), Uri.parse(storageUri))
-            var count = 0
-            val total = pickedDirectory?.listFiles()?.size ?: 0
 
-            pickedDirectory?.listFiles()?.toList()?.parallelStream()?.forEach { file ->
+            val uri = MainPreferences.getStorageUri()?.toUri()!!
+            val pickedDirectory = DocumentFile.fromTreeUri(getApplication(), uri)
+            loadingStatus.postValue("0 : 0%")
+            val files = pickedDirectory?.listCompleteFiles()
+            var count = 0
+            val total = files?.size ?: 0
+
+            files?.parallelStream()?.forEach { file ->
                 try {
                     val wallpaper = Wallpaper()
-                    var alreadyLoadedWallpaper = false
 
-                    if (file.isDirectory) {
-                        file?.listFiles()?.toList()?.parallelStream()?.forEach { subFile ->
-                            if (subFile.isFile && subFile.isImageFile()) {
-                                val exists = kotlin.runCatching {
-                                    alreadyLoaded?.containsKey(subFile.uri.toString()) ?: false
-                                }.getOrElse {
-                                    false
-                                }
+                    if ((alreadyLoaded?.containsKey(file.uri.toString()) == true).invert()) {
+                        wallpaper.name = file.name
+                        wallpaper.uri = file.uri.toString()
+                        wallpaper.dateModified = file.lastModified()
+                        wallpaper.size = file.length()
 
-                                if (exists.invert()) {
-                                    wallpaper.name = subFile.name
-                                    wallpaper.uri = subFile.uri.toString()
-                                    wallpaper.dateModified = subFile.lastModified()
-                                    wallpaper.size = subFile.length()
-
-                                    getApplication<Application>().contentResolver.openInputStream(subFile.uri)?.use { inputStream ->
-                                        val options = BitmapFactory.Options()
-                                        options.inJustDecodeBounds = true
-                                        BitmapFactory.decodeStream(inputStream, null, options)
-                                        wallpaper.width = options.outWidth
-                                        wallpaper.height = options.outHeight
-                                    }
-
-                                    // Log.d(TAG, "loadWallpaperImages: ${wallpaper.name}, ${wallpaper.width}, ${wallpaper.height}")
-                                } else {
-                                    // Log.d(TAG, "loadWallpaperImages: ${subFile.name} already loaded")
-                                    alreadyLoadedWallpaper = true
-                                }
-                            }
-                        }
-                    } else if (file.isFile && file.isImageFile()) {
-                        val exists = kotlin.runCatching {
-                            alreadyLoaded?.containsKey(file.uri.toString()) ?: false
-                        }.getOrElse {
-                            false
+                        getApplication<Application>().contentResolver.openInputStream(file.uri)?.use { inputStream ->
+                            val options = BitmapFactory.Options()
+                            options.inJustDecodeBounds = true
+                            BitmapFactory.decodeStream(inputStream, null, options)
+                            wallpaper.width = options.outWidth
+                            wallpaper.height = options.outHeight
                         }
 
-                        if (exists.invert()) {
-                            wallpaper.name = file.name
-                            wallpaper.uri = file.uri.toString()
-                            wallpaper.dateModified = file.lastModified()
-                            wallpaper.size = file.length()
-
-                            getApplication<Application>().contentResolver.openInputStream(file.uri)?.use { inputStream ->
-                                val options = BitmapFactory.Options()
-                                options.inJustDecodeBounds = true
-                                BitmapFactory.decodeStream(inputStream, null, options)
-                                wallpaper.width = options.outWidth
-                                wallpaper.height = options.outHeight
-                            }
-
-                            // Log.d(TAG, "loadWallpaperImages: ${wallpaper.name}, ${wallpaper.width}, ${wallpaper.height}")
-                        } else {
-                            // Log.d(TAG, "loadWallpaperImages: ${file.name} already loaded")
-                            alreadyLoadedWallpaper = true
-                        }
+                        // Log.d(TAG, "loadWallpaperImages: ${wallpaper.name}, ${wallpaper.width}, ${wallpaper.height}")
                     }
 
                     if (wallpaper.isNull().invert()) {
-                        if (alreadyLoadedWallpaper.invert()) {
+                        if ((alreadyLoaded?.containsKey(file.uri.toString()) == true).invert()) {
                             count++
                             wallpapers.add(wallpaper)
                             if (alreadyLoaded?.isNotEmpty() == true) {
@@ -215,22 +179,18 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
                 }
             }
 
-            wallpapers.sortByDescending { it.dateModified }
-
             if (alreadyLoaded?.isEmpty() == true) {
                 wallpapers.getSortedList()
 
-                for (i in 0 until wallpapers.size) {
-                    if (wallpapers[i].isSelected) {
-                        Log.d(TAG, "loadWallpaperImages: ${wallpapers[i].isSelected}")
-                    }
-                    wallpapers[i].isSelected = false
+                wallpapers.forEach {
+                    it.isSelected = false
                 }
 
                 wallpapersData.postValue(wallpapers)
             }
 
             initDatabase()
+            loadingStatus.postValue("Done")
         }
     }
 
@@ -260,6 +220,7 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
             }
 
             isDatabaseLoaded = true
+            Log.d(TAG, "initDatabase: database loaded")
 
             if (failedURIs.isNotEmpty()) {
                 failedURIsData.postValue(failedURIs)
@@ -320,8 +281,8 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
 
     fun refreshWallpapers(func: () -> Unit) {
         if (isDatabaseLoaded) {
-            loadWallpaperImages()
             Log.d(TAG, "refreshWallpapers: refreshing wallpapers")
+            loadWallpaperImages()
         } else {
             Log.d(TAG, "refreshWallpapers: database not loaded")
             func()

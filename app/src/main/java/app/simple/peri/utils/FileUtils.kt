@@ -38,4 +38,22 @@ object FileUtils {
         }
         return String.format("%.1f %cB", bytes / 1000.0, ci.current())
     }
+
+    fun DocumentFile.listCompleteFiles(): List<DocumentFile> {
+        val allFiles = mutableListOf<DocumentFile>()
+
+        listFiles().forEach { child ->
+            when {
+                child.isDirectory -> {
+                    allFiles.addAll(child.listCompleteFiles()) // Recursive call for subdirectory
+                }
+
+                child.isFile -> {
+                    allFiles.add(child)
+                }
+            }
+        }
+
+        return allFiles
+    }
 }
