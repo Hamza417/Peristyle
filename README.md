@@ -14,7 +14,7 @@ from there? then Peristyle is for you :)
 
 - Simple architecture, browse wallpapers and use system wallpaper manager to set them as wallpaper.
 - Can scan .nomedia directories, useful if you want to keep your wallpapers away from gallery.
-- Apply blur and color filters dynamically on any wallpaper.
+- Apply blur and color filters dynamically on any wallpaper (Android 12 and up only).
 - Auto wallpaper changer.
 - Simple yet pretty animations with proper optimizations.
 - Biometric lock support.
