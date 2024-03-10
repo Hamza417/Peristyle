@@ -12,6 +12,7 @@ object MainPreferences {
     private const val scrollPosition = "scrollPosition"
     private const val cropWallpaper = "crop_wallpaper"
     private const val differentWallpaper = "different_wallpaper_for_lock_screen"
+    private const val wallpaperWhenSleeping = "wallpaper_when_sleeping"
 
     const val sort = "sort"
     const val order = "order"
@@ -117,5 +118,13 @@ object MainPreferences {
 
     fun isDifferentWallpaperForLockScreen(): Boolean {
         return SharedPreferences.getSharedPreferences().getBoolean(differentWallpaper, false)
+    }
+
+    fun isWallpaperWhenSleeping(): Boolean {
+        return SharedPreferences.getSharedPreferences().getBoolean(wallpaperWhenSleeping, true)
+    }
+
+    fun setWallpaperWhenSleeping(isWallpaperWhenSleeping: Boolean) {
+        SharedPreferences.getSharedPreferences().edit().putBoolean(wallpaperWhenSleeping, isWallpaperWhenSleeping).apply()
     }
 }

@@ -16,6 +16,7 @@ import app.simple.peri.preferences.SharedPreferences
 import app.simple.peri.utils.BitmapUtils
 import app.simple.peri.utils.BitmapUtils.cropBitmap
 import app.simple.peri.utils.FileUtils.listCompleteFiles
+import app.simple.peri.utils.ScreenUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -66,8 +67,17 @@ class AutoWallpaperService : Service() {
 
     private fun init() {
         SharedPreferences.init(this)
-        setWallpaper()
-        Log.d(TAG, "Wallpaper set")
+
+        if (MainPreferences.isWallpaperWhenSleeping()) {
+            setWallpaper()
+            Log.d(TAG, "Wallpaper set when the user is sleeping")
+        } else {
+            if (ScreenUtils.isDeviceSleeping(applicationContext)) {
+                Log.d(TAG, "Device is sleeping, waiting for next alarm to set wallpaper")
+            } else {
+                setWallpaper()
+            }
+        }
     }
 
     private fun setWallpaper() {

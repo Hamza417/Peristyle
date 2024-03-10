@@ -1,16 +1,18 @@
 package app.simple.peri.utils
 
+import android.app.KeyguardManager
 import android.content.Context
 import android.content.res.Configuration
 import android.content.res.Resources
 import android.os.Build
+import android.os.PowerManager
 import android.util.DisplayMetrics
 import android.util.Size
 import android.view.WindowManager
 import android.view.WindowMetrics
 import app.simple.peri.R
 
-object ScreenMetrics {
+object ScreenUtils {
 
     /**
      * Returns screen size in pixels.
@@ -129,5 +131,13 @@ object ScreenMetrics {
 
     fun Context.isLandscape(): Boolean {
         return resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+    }
+
+    fun isDeviceLocked(context: Context): Boolean {
+        return (context.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager).isDeviceLocked
+    }
+
+    fun isDeviceSleeping(context: Context): Boolean {
+        return (context.getSystemService(Context.POWER_SERVICE) as PowerManager).isInteractive
     }
 }

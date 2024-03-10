@@ -11,6 +11,7 @@ pluginManagement {
         id("org.jetbrains.compose") version "1.5.11"
     }
 }
+
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
@@ -21,5 +22,6 @@ dependencyResolutionManagement {
         }
     }
 }
-rootProject.name = "Peri"
+
+rootProject.name = "Peristyle"
 include ':app'

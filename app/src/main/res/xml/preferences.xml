@@ -114,6 +114,13 @@
         app:key="different_wallpaper_for_lock_screen"
         app:title="@string/different_wallpaper_for_lock_screen" />
 
+    <SwitchPreferenceCompat
+        app:defaultValue="true"
+        app:enabled="true"
+        app:iconSpaceReserved="true"
+        app:key="wallpaper_when_sleeping"
+        app:title="@string/change_wallpaper_when_sleeping" />
+
     <PreferenceCategory
         app:iconSpaceReserved="true"
         app:title="@string/security" />

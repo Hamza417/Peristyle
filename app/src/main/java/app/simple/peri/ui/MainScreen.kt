@@ -44,7 +44,7 @@ import app.simple.peri.preferences.SharedPreferences.unregisterSharedPreferenceC
 import app.simple.peri.utils.ConditionUtils.invert
 import app.simple.peri.utils.ConditionUtils.isNotNull
 import app.simple.peri.utils.FileUtils.toUri
-import app.simple.peri.utils.ScreenMetrics.isLandscape
+import app.simple.peri.utils.ScreenUtils.isLandscape
 import app.simple.peri.utils.WallpaperSort
 import app.simple.peri.viewmodels.WallpaperViewModel
 import com.google.android.material.checkbox.MaterialCheckBox

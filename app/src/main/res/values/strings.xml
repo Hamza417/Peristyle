@@ -114,4 +114,5 @@
     <string name="crop_wallpaper_warning">Would you like to use cropped wallpaper as visible on the screen?</string>
     <string name="next_wallpaper_desc">Skip to next wallpaper.</string>
     <string name="next_wallpaper">Next Wallpaper</string>
+    <string name="change_wallpaper_when_sleeping">Change When Sleeping</string>
 </resources>
