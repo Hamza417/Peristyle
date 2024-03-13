@@ -121,16 +121,28 @@ class AutoWallpaperService : Service() {
                                 bitmap = bitmap.cropBitmap(visibleCropHint)
                             }
 
-                            if (MainPreferences.isDifferentWallpaperForLockScreen()) {
-                                wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_SYSTEM)
-                                setLockScreenWallpaper(files)
-                            } else {
-                                /**
-                                 * Setting them separately to avoid the wallpaper not setting
-                                 * in some devices for lock screen.
-                                 */
-                                wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_SYSTEM)
-                                wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_LOCK)
+                            when (MainPreferences.getWallpaperSetFor()) {
+                                MainPreferences.BOTH -> {
+                                    if (MainPreferences.isDifferentWallpaperForLockScreen()) {
+                                        wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_SYSTEM)
+                                        setLockScreenWallpaper(files)
+                                    } else {
+                                        /**
+                                         * Setting them separately to avoid the wallpaper not setting
+                                         * in some devices for lock screen.
+                                         */
+                                        wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_SYSTEM)
+                                        wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_LOCK)
+                                    }
+                                }
+
+                                MainPreferences.HOME -> {
+                                    wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_SYSTEM)
+                                }
+
+                                MainPreferences.LOCK -> {
+                                    wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_LOCK)
+                                }
                             }
 
                             bitmap.recycle()

@@ -99,6 +99,15 @@
         app:summary="@string/auto_wallpaper_summary"
         app:title="@string/auto_wallpaper" />
 
+    <ListPreference
+        android:entries="@array/set_for_screen"
+        android:entryValues="@array/set_for_screen_values"
+        app:defaultValue="3"
+        app:iconSpaceReserved="true"
+        app:key="auto_wallpaper_set_for"
+        app:summary="@string/auto_wallpaper_set_for_summary"
+        app:title="@string/auto_wallpaper_set_for" />
+
     <SwitchPreferenceCompat
         app:defaultValue="false"
         app:enabled="true"
@@ -118,7 +127,7 @@
         app:defaultValue="true"
         app:enabled="true"
         app:iconSpaceReserved="true"
-        app:key="wallpaper_when_sleeping"
+        app:key="wallpaper_when_landscape"
         app:title="@string/change_wallpaper_when_sleeping" />
 
     <PreferenceCategory

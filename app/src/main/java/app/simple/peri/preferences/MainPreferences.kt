@@ -13,6 +13,7 @@ object MainPreferences {
     private const val cropWallpaper = "crop_wallpaper"
     private const val differentWallpaper = "different_wallpaper_for_lock_screen"
     private const val wallpaperWhenSleeping = "wallpaper_when_sleeping"
+    private const val wallpaperSetFor = "auto_wallpaper_set_for"
 
     const val sort = "sort"
     const val order = "order"
@@ -27,6 +28,10 @@ object MainPreferences {
     const val SPAN_ONE = "1"
     const val SPAN_TWO = "2"
     const val SPAN_DYNAMIC = "3"
+
+    const val BOTH = "3"
+    const val HOME = "1"
+    const val LOCK = "2"
 
     fun getStorageUri(): String? {
         return SharedPreferences.getSharedPreferences().getString(storageUri, null)
@@ -126,5 +131,13 @@ object MainPreferences {
 
     fun setWallpaperWhenSleeping(isWallpaperWhenSleeping: Boolean) {
         SharedPreferences.getSharedPreferences().edit().putBoolean(wallpaperWhenSleeping, isWallpaperWhenSleeping).apply()
+    }
+
+    fun getWallpaperSetFor(): String {
+        return SharedPreferences.getSharedPreferences().getString(wallpaperSetFor, "3")!!
+    }
+
+    fun setWallpaperSetFor(wallpaperSetFor: String) {
+        SharedPreferences.getSharedPreferences().edit().putString(MainPreferences.wallpaperSetFor, wallpaperSetFor).apply()
     }
 }

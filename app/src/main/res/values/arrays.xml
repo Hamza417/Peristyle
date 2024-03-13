@@ -48,4 +48,16 @@
         <item>86400000</item>
     </string-array>
 
+    <string-array name="set_for_screen">
+        <item>Home Screen</item>
+        <item>Lock Screen</item>
+        <item>Both</item>
+    </string-array>
+
+    <string-array name="set_for_screen_values">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+
 </resources>
