@@ -78,16 +78,16 @@ android {
 
 dependencies {
 
-    def composeBom = platform('androidx.compose:compose-bom:2024.02.01')
+    def composeBom = platform('androidx.compose:compose-bom:2024.02.02')
     implementation composeBom
     androidTestImplementation composeBom
 
     // Compose
-    implementation 'androidx.compose.material3:material3:1.2.0'
+    implementation 'androidx.compose.material3:material3:1.2.1'
     implementation 'androidx.activity:activity-compose:1.8.2'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0'
     implementation 'androidx.compose.runtime:runtime-livedata'
-    implementation 'androidx.compose.foundation:foundation:1.6.2'
+    implementation 'androidx.compose.foundation:foundation:1.6.3'
 
     implementation 'androidx.window:window:1.2.0'
     implementation 'androidx.core:core-ktx:1.12.0'
