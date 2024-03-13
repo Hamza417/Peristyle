@@ -37,12 +37,22 @@ from there? then Peristyle is for you :)
 |:-----------------------------------------------------------------------:|:-----------------------------------------------------------------------:|:-----------------------------------------------------------------------:|
 | ![03](./fastlane/metadata/android/en-US/images/phoneScreenshots/04.png) | ![05](./fastlane/metadata/android/en-US/images/phoneScreenshots/05.png) | ![06](./fastlane/metadata/android/en-US/images/phoneScreenshots/06.png) |
 
+## Triggering AutoWallpaperService from Other Apps
+
+Peristyle supports triggering the AutoWallpaperService from other apps using the following
+intent: `app.peristyle.START_AUTO_WALLPAPER_SERVICE`
+Use the intent to start the service as you'd like and it'll start the AutoWallpaperService.
+
 ## Translate
+
 [![Crowdin](https://badges.crowdin.net/peristyle/localized.svg)](https://crowdin.com/project/peristyle)
 
-Peristyle supports localization but only available in English at the moment, If you want to translate Peristyle in your language/s, you can do so [here on Crowdin](https://crowdin.com/project/peristyle). 
+Peristyle supports localization but only available in English at the moment, If you want to
+translate Peristyle in your language/s, you can do
+so [here on Crowdin](https://crowdin.com/project/peristyle).
 
 ## License
+
 ```
 Copyright 2023 Hamza Rizwan
 
@@ -58,4 +68,3 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 ```
-

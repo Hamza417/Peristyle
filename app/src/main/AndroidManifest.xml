@@ -49,7 +49,11 @@
             android:exported="true"
             android:foregroundServiceType="shortService"
             android:permission="android.permission.FOREGROUND_SERVICE"
-            android:process=":auto_wallpaper_service" />
+            android:process=":auto_wallpaper_service">
+            <intent-filter>
+                <action android:name="app.peristyle.START_AUTO_WALLPAPER_SERVICE" />
+            </intent-filter>
+        </service>
 
         <provider
             android:name="androidx.core.content.FileProvider"
