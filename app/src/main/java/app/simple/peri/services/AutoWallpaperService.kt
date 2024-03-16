@@ -6,16 +6,18 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Rect
-import android.net.Uri
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
-import androidx.documentfile.provider.DocumentFile
+import android.widget.Toast
+import androidx.core.net.toUri
+import app.simple.peri.R
+import app.simple.peri.database.instances.WallpaperDatabase
+import app.simple.peri.models.Wallpaper
 import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.preferences.SharedPreferences
 import app.simple.peri.utils.BitmapUtils
 import app.simple.peri.utils.BitmapUtils.cropBitmap
-import app.simple.peri.utils.FileUtils.listCompleteFiles
 import app.simple.peri.utils.ScreenUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -50,8 +52,14 @@ class AutoWallpaperService : Service() {
             Log.d(TAG, "Next wallpaper action received")
             if (!isNextWallpaperActionRunning) {
                 isNextWallpaperActionRunning = true
+                runCatching {
+                    Toast.makeText(applicationContext, R.string.changing_wallpaper, Toast.LENGTH_SHORT).show()
+                }
                 init()
                 isNextWallpaperActionRunning = false
+            } else {
+                Log.d(TAG, "Next wallpaper action already running, ignoring")
+                Toast.makeText(applicationContext, R.string.next_wallpaper_already_running, Toast.LENGTH_SHORT).show()
             }
         } else {
             init()
@@ -83,12 +91,11 @@ class AutoWallpaperService : Service() {
     private fun setWallpaper() {
         CoroutineScope(Dispatchers.Default).launch {
             runCatching {
-                val dir = DocumentFile.fromTreeUri(applicationContext, Uri.parse(MainPreferences.getStorageUri()))
-                val files = dir?.listCompleteFiles()
-                files?.random()?.let {
+                val files = WallpaperDatabase.getInstance(applicationContext)?.wallpaperDao()?.getWallpapers()
+                files?.random()?.uri?.toUri().let {
                     val wallpaperManager = WallpaperManager.getInstance(applicationContext)
-                    it.uri.let { uri ->
-                        contentResolver.openInputStream(uri)?.use { stream ->
+                    it.let { uri ->
+                        contentResolver.openInputStream(uri!!)?.use { stream ->
                             val byteArray = stream.readBytes()
                             val bitmapOptions = BitmapFactory.Options().apply {
                                 inJustDecodeBounds = true
@@ -159,12 +166,13 @@ class AutoWallpaperService : Service() {
         }
     }
 
-    private fun setLockScreenWallpaper(files: List<DocumentFile>) {
+    private fun setLockScreenWallpaper(files: List<Wallpaper>?) {
         runCatching {
-            files.random().let {
+            files?.random()?.uri?.toUri().let {
                 val wallpaperManager = WallpaperManager.getInstance(applicationContext)
-                it.uri.let { uri ->
-                    contentResolver.openInputStream(uri)?.use { stream ->
+
+                it.let { uri ->
+                    contentResolver.openInputStream(uri!!)?.use { stream ->
                         val byteArray = stream.readBytes()
                         val bitmapOptions = BitmapFactory.Options().apply {
                             inJustDecodeBounds = true
