@@ -1,0 +1,5 @@
+- Option to prevent setting wallpaper when device is sleeping
+- Added intent support to run AutoWallpaperService using other apps
+- Added option to specify which screen to set wallpaper to for Auto Wallpaper
+- Improved wallpaper service to reduce wallpaper load time
+- Better loading status
