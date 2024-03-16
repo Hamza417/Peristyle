@@ -5,6 +5,7 @@ import androidx.documentfile.provider.DocumentFile
 import app.simple.peri.utils.StringUtils.endsWithAny
 import java.text.CharacterIterator
 import java.text.StringCharacterIterator
+import java.util.Stack
 
 object FileUtils {
 
@@ -39,17 +40,24 @@ object FileUtils {
         return String.format("%.1f %cB", bytes / 1000.0, ci.current())
     }
 
-    fun DocumentFile.listCompleteFiles(): List<DocumentFile> {
+    fun DocumentFile.listCompleteFiles(func: (String) -> Unit): List<DocumentFile> {
         val allFiles = mutableListOf<DocumentFile>()
+        val stack = Stack<DocumentFile>()
+        stack.push(this)
 
-        listFiles().forEach { child ->
-            when {
-                child.isDirectory -> {
-                    allFiles.addAll(child.listCompleteFiles()) // Recursive call for subdirectory
-                }
+        while (stack.isNotEmpty()) {
+            val currentFile = stack.pop()
 
-                child.isFile -> {
-                    allFiles.add(child)
+            currentFile.listFiles().forEach { child ->
+                when {
+                    child.isDirectory -> {
+                        func(child.name!!)
+                        stack.push(child)
+                    }
+
+                    child.isFile -> {
+                        allFiles.add(child)
+                    }
                 }
             }
         }
