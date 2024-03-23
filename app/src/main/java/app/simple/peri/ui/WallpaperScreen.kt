@@ -16,6 +16,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -72,14 +74,26 @@ class WallpaperScreen : Fragment() {
             // Set the content of the ComposeView to a @Composable
             // function
             setContent {
+                val currentScale = remember {
+                    mutableStateOf(ContentScale.Crop)
+                }
+
                 ZoomableGlideImage(
                         model = wallpaper?.uri?.toUri(),
                         contentDescription = null,
                         modifier = Modifier.fillMaxSize(),
                         alignment = Alignment.Center,
-                        contentScale = ContentScale.Crop,
+                        contentScale = currentScale.value,
                         onLongClick = {
                             binding?.fab?.performClick()
+                        },
+                        onClick = {
+                            // Set content scale to alternate between crop and fill
+                            currentScale.value = if (currentScale.value == ContentScale.Crop) {
+                                ContentScale.Inside
+                            } else {
+                                ContentScale.Crop
+                            }
                         }
                 )
                 {
