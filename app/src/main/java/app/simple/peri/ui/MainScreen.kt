@@ -460,6 +460,14 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
 
         wallpaperViewModel.getLoadingStatusLiveData().observe(viewLifecycleOwner) { status ->
             if (status == "Done") {
+                binding?.loadingStatus?.visibility = View.GONE
+            } else {
+                binding?.loadingStatus?.text = status
+            }
+        }
+
+        wallpaperViewModel.getDatabaseLoaded().observe(viewLifecycleOwner) {
+            if (it) {
                 binding?.progressIndicator?.animate()
                     ?.alpha(0F)
                     ?.setDuration(500)
@@ -467,10 +475,14 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                         binding?.progressIndicator?.visibility = View.GONE
                     }
                     ?.start()
-
-                binding?.loadingStatus?.visibility = View.GONE
             } else {
-                binding?.loadingStatus?.text = status
+                binding?.progressIndicator?.animate()
+                    ?.alpha(1F)
+                    ?.setDuration(500)
+                    ?.withStartAction {
+                        binding?.progressIndicator?.visibility = View.VISIBLE
+                    }
+                    ?.start()
             }
         }
 
@@ -743,14 +755,6 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
         super.onResume()
         registerSharedPreferenceChangeListener()
         if (requireArguments().getBoolean(SHOULD_REFRESH, false)) {
-            binding?.progressIndicator?.animate()
-                ?.alpha(1F)
-                ?.setDuration(500)
-                ?.withStartAction {
-                    binding?.progressIndicator?.visibility = View.VISIBLE
-                }
-                ?.start()
-
             wallpaperViewModel.refreshWallpapers {
                 Log.d(TAG, "Wallpapers are already refreshing")
             }

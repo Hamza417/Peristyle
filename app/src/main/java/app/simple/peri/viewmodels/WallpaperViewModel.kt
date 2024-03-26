@@ -36,7 +36,7 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
     private val failedURIs: ArrayList<String> = ArrayList()
     private var alreadyLoaded: Map<String, Wallpaper>? = null
 
-    private var isDatabaseLoaded = false
+    private var isDatabaseLoaded: MutableLiveData<Boolean> = MutableLiveData(false)
 
     init {
         broadcastReceiver = object : BroadcastReceiver() {
@@ -110,6 +110,10 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
         return failedURIsData
     }
 
+    fun getDatabaseLoaded(): MutableLiveData<Boolean> {
+        return isDatabaseLoaded
+    }
+
     private fun loadWallpaperDatabase() {
         viewModelScope.launch(Dispatchers.IO) {
             val wallpaperDatabase = WallpaperDatabase.getInstance(getApplication())
@@ -131,7 +135,7 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
 
     private fun loadWallpaperImages() {
         viewModelScope.launch(Dispatchers.IO) {
-            isDatabaseLoaded = false
+            isDatabaseLoaded.postValue(false)
 
             val uri = MainPreferences.getStorageUri()?.toUri()!!
             val pickedDirectory = DocumentFile.fromTreeUri(getApplication(), uri)
@@ -223,7 +227,7 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
                 Log.e(TAG, "initDatabase: ConcurrentModificationException occurred while inserting wallpapers into database - ${e.message}")
             }
 
-            isDatabaseLoaded = true
+            isDatabaseLoaded.postValue(true)
             Log.d(TAG, "initDatabase: database loaded")
 
             if (failedURIs.isNotEmpty()) {
@@ -241,7 +245,7 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     fun sortWallpapers() {
-        if (isDatabaseLoaded) {
+        if (isDatabaseLoaded.value == true) {
             wallpapers = wallpapersData.value ?: ArrayList()
             wallpapers.getSortedList()
             wallpapersData.postValue(wallpapers)
@@ -249,7 +253,7 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     fun isDatabaseLoaded(): Boolean {
-        return isDatabaseLoaded
+        return isDatabaseLoaded.value ?: false
     }
 
     fun updateWallpaper(wallpaper: Wallpaper) {
@@ -270,7 +274,7 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
 
     fun recreateDatabase() {
         viewModelScope.launch(Dispatchers.IO) {
-            isDatabaseLoaded = false
+            isDatabaseLoaded.postValue(false)
             wallpapers.clear()
             wallpapersData.postValue(wallpapers)
             val wallpaperDatabase = WallpaperDatabase.getInstance(getApplication())
@@ -284,7 +288,7 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     fun refreshWallpapers(func: () -> Unit) {
-        if (isDatabaseLoaded) {
+        if (isDatabaseLoaded.value == true) {
             Log.d(TAG, "refreshWallpapers: refreshing wallpapers")
             loadWallpaperImages()
         } else {
