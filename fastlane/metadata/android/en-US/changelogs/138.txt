@@ -1,0 +1,2 @@
+- Added toggle to switch between original and crop bounds
+- Fixed loader states
