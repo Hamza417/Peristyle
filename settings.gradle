@@ -7,8 +7,9 @@ pluginManagement {
             url "https://jitpack.io"
         }
     }
+
     plugins {
-        id("org.jetbrains.compose") version "1.5.11"
+        id("org.jetbrains.compose") version "1.6.1"
     }
 }
 
