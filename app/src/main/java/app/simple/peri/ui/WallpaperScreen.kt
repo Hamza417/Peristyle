@@ -480,5 +480,7 @@ class WallpaperScreen : Fragment() {
         private const val HOME_SCREEN = 0
         private const val LOCK_SCREEN = 1
         private const val BOTH = 2
+
+        const val TAG = "WallpaperScreen"
     }
 }

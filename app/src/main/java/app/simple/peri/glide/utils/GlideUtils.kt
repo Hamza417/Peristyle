@@ -6,6 +6,8 @@ import android.widget.ImageView
 import app.simple.peri.R
 import app.simple.peri.glide.modules.GlideApp
 import app.simple.peri.models.Wallpaper
+import app.simple.peri.preferences.MainPreferences
+import app.simple.peri.utils.ConditionUtils.invert
 import com.bumptech.glide.GenericTransitionOptions
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -18,14 +20,18 @@ import com.bumptech.glide.request.target.Target
 object GlideUtils {
 
     fun ImageView.loadWallpaper(wallpaper: Wallpaper) {
-        GlideApp.with(context.applicationContext)
-            .asBitmap()
-            .load(app.simple.peri.glide.wallpaper.Wallpaper(wallpaper, context.applicationContext))
-            // .transition(BitmapTransitionOptions.withCrossFade())
-            .transition(GenericTransitionOptions.with(R.anim.zoom_in))
-            .diskCacheStrategy(DiskCacheStrategy.ALL)
-            .set(Downsampler.ALLOW_HARDWARE_CONFIG, true)
-            .into(this)
+        if (MainPreferences.getReduceMotion().invert()) {
+            GlideApp.with(context.applicationContext)
+                .asBitmap()
+                .load(app.simple.peri.glide.wallpaper.Wallpaper(wallpaper, context.applicationContext))
+                // .transition(BitmapTransitionOptions.withCrossFade())
+                .transition(GenericTransitionOptions.with(R.anim.zoom_in))
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .set(Downsampler.ALLOW_HARDWARE_CONFIG, true)
+                .into(this)
+        } else {
+            loadWallpaperCrossfade(wallpaper)
+        }
     }
 
     fun ImageView.loadWallpaperCrossfade(wallpaper: Wallpaper) {

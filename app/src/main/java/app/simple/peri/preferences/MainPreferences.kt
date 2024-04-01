@@ -4,26 +4,27 @@ import app.simple.peri.utils.WallpaperSort
 
 object MainPreferences {
 
-    private const val storageUri = "storageUri"
-    private const val nomediaDialog = "nomediaDialog"
-    private const val blur = "blur"
-    private const val isBiometric = "is_biometric"
-    private const val rememberScrollPosition = "remember_scroll_position"
-    private const val scrollPosition = "scrollPosition"
-    private const val cropWallpaper = "crop_wallpaper"
-    private const val differentWallpaper = "different_wallpaper_for_lock_screen"
-    private const val wallpaperWhenSleeping = "wallpaper_when_sleeping"
-    private const val wallpaperSetFor = "auto_wallpaper_set_for"
+    private const val STORAGE_URI = "storageUri"
+    private const val NOMEDIA_DIALOG = "nomediaDialog"
+    private const val BLUR = "blur"
+    private const val IS_BIOMETRIC = "is_biometric"
+    private const val REMEMBER_SCROLL_POSITION = "remember_scroll_position"
+    private const val SCROLL_POSITION = "scrollPosition"
+    private const val CROP_WALLPAPER = "crop_wallpaper"
+    private const val DIFFERENT_WALLPAPER = "different_wallpaper_for_lock_screen"
+    private const val WALLPAPER_WHEN_SLEEPING = "wallpaper_when_sleeping"
+    private const val WALLPAPER_SET_FOR = "auto_wallpaper_set_for"
+    private const val REDUCE_MOTION = "reduce_motion"
 
-    const val sort = "sort"
-    const val order = "order"
-    const val name = "is_name"
-    const val gridSpan = "grid_span"
-    const val details = "is_details"
-    const val marginBetween = "margin_between_wallpapers"
-    const val mainScreenBackground = "main_screen_background"
-    const val swipeToDelete = "swipe_to_delete"
-    const val autoWallpaperInterval = "auto_wallpaper_interval_1"
+    const val SORT = "sort"
+    const val ORDER = "order"
+    const val NAME = "is_name"
+    const val GRID_SPAN = "grid_span"
+    const val DETAILS = "is_details"
+    const val MARGIN_BETWEEN = "margin_between_wallpapers"
+    const val MAIN_SCREEN_BACKGROUND = "main_screen_background"
+    const val SWIPE_TO_DELETE = "swipe_to_delete"
+    const val AUTO_WALLPAPER_INTERVAL = "auto_wallpaper_interval_1"
 
     const val SPAN_ONE = "1"
     const val SPAN_TWO = "2"
@@ -34,110 +35,118 @@ object MainPreferences {
     const val LOCK = "2"
 
     fun getStorageUri(): String? {
-        return SharedPreferences.getSharedPreferences().getString(storageUri, null)
+        return SharedPreferences.getSharedPreferences().getString(STORAGE_URI, null)
     }
 
     fun setStorageUri(uri: String?) {
-        SharedPreferences.getSharedPreferences().edit().putString(storageUri, uri).apply()
+        SharedPreferences.getSharedPreferences().edit().putString(STORAGE_URI, uri).apply()
     }
 
     fun getSort(): String? {
-        return SharedPreferences.getSharedPreferences().getString(sort, WallpaperSort.DATE)
+        return SharedPreferences.getSharedPreferences().getString(SORT, WallpaperSort.DATE)
     }
 
     fun setSort(sort: String) {
-        SharedPreferences.getSharedPreferences().edit().putString(MainPreferences.sort, sort).apply()
+        SharedPreferences.getSharedPreferences().edit().putString(MainPreferences.SORT, sort).apply()
     }
 
     fun getOrder(): String? {
-        return SharedPreferences.getSharedPreferences().getString(order, WallpaperSort.DESC)
+        return SharedPreferences.getSharedPreferences().getString(ORDER, WallpaperSort.DESC)
     }
 
     fun setOrder(order: String) {
-        SharedPreferences.getSharedPreferences().edit().putString(MainPreferences.order, order).apply()
+        SharedPreferences.getSharedPreferences().edit().putString(MainPreferences.ORDER, order).apply()
     }
 
     fun getName(): Boolean {
-        return SharedPreferences.getSharedPreferences().getBoolean(name, true)
+        return SharedPreferences.getSharedPreferences().getBoolean(NAME, true)
     }
 
     fun getGridSpan(): String {
-        return SharedPreferences.getSharedPreferences().getString(gridSpan, SPAN_DYNAMIC)!!
+        return SharedPreferences.getSharedPreferences().getString(GRID_SPAN, SPAN_DYNAMIC)!!
     }
 
     fun getShowNomediaDialog(): Boolean {
-        return SharedPreferences.getSharedPreferences().getBoolean(nomediaDialog, true)
+        return SharedPreferences.getSharedPreferences().getBoolean(NOMEDIA_DIALOG, true)
     }
 
     fun setShowNomediaDialog(show: Boolean) {
-        SharedPreferences.getSharedPreferences().edit().putBoolean(nomediaDialog, show).apply()
+        SharedPreferences.getSharedPreferences().edit().putBoolean(NOMEDIA_DIALOG, show).apply()
     }
 
     fun getBlur(): Boolean {
-        return SharedPreferences.getSharedPreferences().getBoolean(blur, true)
+        return SharedPreferences.getSharedPreferences().getBoolean(BLUR, true)
     }
 
     fun getDetails(): Boolean {
-        return SharedPreferences.getSharedPreferences().getBoolean(details, true)
+        return SharedPreferences.getSharedPreferences().getBoolean(DETAILS, true)
     }
 
     fun isBiometric(): Boolean {
-        return SharedPreferences.getSharedPreferences().getBoolean(isBiometric, false)
+        return SharedPreferences.getSharedPreferences().getBoolean(IS_BIOMETRIC, false)
     }
 
     fun isRememberScrollPosition(): Boolean {
-        return SharedPreferences.getSharedPreferences().getBoolean(rememberScrollPosition, false)
+        return SharedPreferences.getSharedPreferences().getBoolean(REMEMBER_SCROLL_POSITION, false)
     }
 
     fun getScrollPosition(): Int {
-        return SharedPreferences.getSharedPreferences().getInt(scrollPosition, 0)
+        return SharedPreferences.getSharedPreferences().getInt(SCROLL_POSITION, 0)
     }
 
     fun setScrollPosition(position: Int) {
-        SharedPreferences.getSharedPreferences().edit().putInt(scrollPosition, position).apply()
+        SharedPreferences.getSharedPreferences().edit().putInt(SCROLL_POSITION, position).apply()
     }
 
     fun getMarginBetween(): Boolean {
-        return SharedPreferences.getSharedPreferences().getBoolean(marginBetween, false)
+        return SharedPreferences.getSharedPreferences().getBoolean(MARGIN_BETWEEN, false)
     }
 
     fun getMainScreenBackground(): String? {
-        return SharedPreferences.getSharedPreferences().getString(mainScreenBackground, "1")
+        return SharedPreferences.getSharedPreferences().getString(MAIN_SCREEN_BACKGROUND, "1")
     }
 
     fun getSwipeToDelete(): Boolean {
-        return SharedPreferences.getSharedPreferences().getBoolean(swipeToDelete, true)
+        return SharedPreferences.getSharedPreferences().getBoolean(SWIPE_TO_DELETE, true)
     }
 
     fun getAutoWallpaperInterval(): String {
-        return SharedPreferences.getSharedPreferences().getString(autoWallpaperInterval, "0")!!
+        return SharedPreferences.getSharedPreferences().getString(AUTO_WALLPAPER_INTERVAL, "0")!!
     }
 
     fun turnOffAutoWallpaperInterval() {
-        SharedPreferences.getSharedPreferences().edit().putString(autoWallpaperInterval, "0").apply()
+        SharedPreferences.getSharedPreferences().edit().putString(AUTO_WALLPAPER_INTERVAL, "0").apply()
     }
 
     fun getCropWallpaper(): Boolean {
-        return SharedPreferences.getSharedPreferences().getBoolean(cropWallpaper, false)
+        return SharedPreferences.getSharedPreferences().getBoolean(CROP_WALLPAPER, false)
     }
 
     fun isDifferentWallpaperForLockScreen(): Boolean {
-        return SharedPreferences.getSharedPreferences().getBoolean(differentWallpaper, false)
+        return SharedPreferences.getSharedPreferences().getBoolean(DIFFERENT_WALLPAPER, false)
     }
 
     fun isWallpaperWhenSleeping(): Boolean {
-        return SharedPreferences.getSharedPreferences().getBoolean(wallpaperWhenSleeping, true)
+        return SharedPreferences.getSharedPreferences().getBoolean(WALLPAPER_WHEN_SLEEPING, true)
     }
 
     fun setWallpaperWhenSleeping(isWallpaperWhenSleeping: Boolean) {
-        SharedPreferences.getSharedPreferences().edit().putBoolean(wallpaperWhenSleeping, isWallpaperWhenSleeping).apply()
+        SharedPreferences.getSharedPreferences().edit().putBoolean(WALLPAPER_WHEN_SLEEPING, isWallpaperWhenSleeping).apply()
     }
 
     fun getWallpaperSetFor(): String {
-        return SharedPreferences.getSharedPreferences().getString(wallpaperSetFor, "3")!!
+        return SharedPreferences.getSharedPreferences().getString(WALLPAPER_SET_FOR, "3")!!
     }
 
     fun setWallpaperSetFor(wallpaperSetFor: String) {
-        SharedPreferences.getSharedPreferences().edit().putString(MainPreferences.wallpaperSetFor, wallpaperSetFor).apply()
+        SharedPreferences.getSharedPreferences().edit().putString(MainPreferences.WALLPAPER_SET_FOR, wallpaperSetFor).apply()
+    }
+
+    fun getReduceMotion(): Boolean {
+        return SharedPreferences.getSharedPreferences().getBoolean(REDUCE_MOTION, false)
+    }
+
+    fun setReduceMotion(reduceMotion: Boolean) {
+        SharedPreferences.getSharedPreferences().edit().putBoolean(REDUCE_MOTION, reduceMotion).apply()
     }
 }

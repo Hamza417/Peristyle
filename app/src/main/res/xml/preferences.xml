@@ -56,6 +56,19 @@
         app:useSimpleSummaryProvider="false" />
 
     <SwitchPreferenceCompat
+        android:icon="@drawable/ic_pin_drop"
+        app:defaultValue="false"
+        app:enabled="true"
+        app:iconSpaceReserved="true"
+        app:key="remember_scroll_position"
+        app:summary="@string/remember_scroll_position_summary"
+        app:title="@string/remember_scroll_position" />
+
+    <PreferenceCategory
+        app:iconSpaceReserved="true"
+        app:title="@string/accessibility" />
+
+    <SwitchPreferenceCompat
         android:icon="@drawable/ic_delete_sweep"
         app:defaultValue="true"
         app:enabled="true"
@@ -65,15 +78,6 @@
         app:title="@string/swipe_to_delete" />
 
     <SwitchPreferenceCompat
-        android:icon="@drawable/ic_pin_drop"
-        app:defaultValue="false"
-        app:enabled="true"
-        app:iconSpaceReserved="true"
-        app:key="remember_scroll_position"
-        app:summary="@string/remember_scroll_position_summary"
-        app:title="@string/remember_scroll_position" />
-
-    <SwitchPreferenceCompat
         android:icon="@drawable/ic_margin"
         app:defaultValue="false"
         app:enabled="true"
@@ -81,6 +85,15 @@
         app:key="margin_between_wallpapers"
         app:summary="@string/margin_between_wallpapers_summary"
         app:title="@string/margin_between_wallpapers" />
+
+    <SwitchPreferenceCompat
+        android:icon="@drawable/ic_motion"
+        app:defaultValue="false"
+        app:enabled="true"
+        app:iconSpaceReserved="true"
+        app:key="reduce_motion"
+        app:summary="@string/reduce_motion_summary"
+        app:title="@string/reduce_motion" />
 
     <PreferenceCategory
         app:iconSpaceReserved="true"

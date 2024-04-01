@@ -320,15 +320,8 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                 override fun onWallpaperClicked(wallpaper: Wallpaper?, position: Int, constraintLayout: ConstraintLayout?) {
                     // binding?.bottomAppBar?.performHide(false)
                     binding?.fab?.transitionName = null // remove transition name to prevent shared element transition
-                    saveBottomBarState()
-                    requireArguments().putBoolean(SHOULD_REFRESH, false)
                     requireArguments().putInt(LAST_WALLPAPER_POSITION, position)
-
-                    requireActivity().supportFragmentManager.beginTransaction()
-                        .addSharedElement(constraintLayout!!, constraintLayout.transitionName)
-                        .replace(R.id.mainContainer, WallpaperScreen.newInstance(wallpaper!!), "WallpaperScreen")
-                        .addToBackStack("WallpaperScreen")
-                        .commit()
+                    openWallpaperScreen(wallpaper!!)
                 }
 
                 override fun onWallpaperLongClicked(wallpaper: Wallpaper, position: Int, view: View, checkBox: MaterialCheckBox) {
@@ -561,13 +554,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                 requireArguments().putString(BundleConstants.FAB_TRANSITION, randomWallpaper?.uri.toString())
 
                 if (randomWallpaper.isNotNull()) {
-                    saveBottomBarState()
-                    requireArguments().putBoolean(SHOULD_REFRESH, false)
-                    requireActivity().supportFragmentManager.beginTransaction()
-                        .addSharedElement(binding!!.fab, binding!!.fab.transitionName)
-                        .replace(R.id.mainContainer, WallpaperScreen.newInstance(randomWallpaper!!), "WallpaperScreen")
-                        .addToBackStack("WallpaperScreen")
-                        .commit()
+                    openWallpaperScreen(randomWallpaper!!)
                 } else {
                     throw Exception(getString(R.string.no_wallpaper_found))
                 }
@@ -631,6 +618,23 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                     }
                     .show()
             }
+        }
+    }
+
+    private fun openWallpaperScreen(wallpaper: Wallpaper) {
+        saveBottomBarState()
+        requireArguments().putBoolean(SHOULD_REFRESH, false)
+        if (MainPreferences.getReduceMotion()) {
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.mainContainer, WallpaperScreen.newInstance(wallpaper), WallpaperScreen.TAG)
+                .addToBackStack(WallpaperScreen.TAG)
+                .commit()
+        } else {
+            requireActivity().supportFragmentManager.beginTransaction()
+                .addSharedElement(binding!!.fab, binding!!.fab.transitionName)
+                .replace(R.id.mainContainer, WallpaperScreen.newInstance(wallpaper), WallpaperScreen.TAG)
+                .addToBackStack(WallpaperScreen.TAG)
+                .commit()
         }
     }
 
@@ -771,30 +775,30 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
     @SuppressLint("NotifyDataSetChanged")
     override fun onSharedPreferenceChanged(p0: SharedPreferences?, p1: String?) {
         when (p1) {
-            MainPreferences.sort,
-            MainPreferences.order -> {
+            MainPreferences.SORT,
+            MainPreferences.ORDER -> {
                 adapterWallpaper?.sortWallpapers()
             }
 
-            MainPreferences.gridSpan -> {
+            MainPreferences.GRID_SPAN -> {
                 staggeredGridLayoutManager?.spanCount = getSpanCount()
                 adapterWallpaper?.notifyDataSetChanged()
             }
 
-            MainPreferences.marginBetween -> {
+            MainPreferences.MARGIN_BETWEEN -> {
                 adapterWallpaper?.setMarginLayout(MainPreferences.getMarginBetween())
             }
 
-            MainPreferences.name,
-            MainPreferences.details -> {
+            MainPreferences.NAME,
+            MainPreferences.DETAILS -> {
                 adapterWallpaper?.notifyDataSetChanged()
             }
 
-            MainPreferences.mainScreenBackground -> {
+            MainPreferences.MAIN_SCREEN_BACKGROUND -> {
                 setMainBackground()
             }
 
-            MainPreferences.swipeToDelete -> {
+            MainPreferences.SWIPE_TO_DELETE -> {
                 if (MainPreferences.getSwipeToDelete()) {
                     itemTouchHelper?.attachToRecyclerView(binding?.recyclerView)
                 } else {

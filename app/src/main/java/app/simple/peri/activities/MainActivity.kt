@@ -170,7 +170,7 @@ class MainActivity : AppCompatActivity(), android.content.SharedPreferences.OnSh
 
     override fun onSharedPreferenceChanged(sharedPreferences: android.content.SharedPreferences?, key: String?) {
         when (key) {
-            MainPreferences.autoWallpaperInterval -> {
+            MainPreferences.AUTO_WALLPAPER_INTERVAL -> {
                 setAutoWallpaperAlarm()
             }
         }

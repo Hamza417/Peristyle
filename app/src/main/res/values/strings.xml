@@ -119,4 +119,7 @@
     <string name="auto_wallpaper_set_for_summary">Set a screen for changing wallpaper automatically.</string>
     <string name="changing_wallpaper">Changing Wallpaper, Please Wait…</string>
     <string name="next_wallpaper_already_running">An instance is already running, please wait…</string>
+    <string name="accessibility">Accessibility</string>
+    <string name="reduce_motion">Reduce Motion</string>
+    <string name="reduce_motion_summary">Disables some of the animations to reduce motion sickness.</string>
 </resources>
