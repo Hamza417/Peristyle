@@ -43,6 +43,8 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
             override fun onReceive(context: Context?, intent: Intent?) {
                 if (intent?.action == BundleConstants.INTENT_RECREATE_DATABASE) {
                     recreateDatabase()
+                } else {
+                    Log.d(TAG, "onReceive: unsupported action: ${intent?.action ?: "unknown"}")
                 }
             }
         }
@@ -146,8 +148,13 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
             var count = 0
             val total = files?.size ?: 0
 
+            if (files.isNullOrEmpty()) {
+                loadingStatus.postValue("no files found")
+                return@launch
+            }
+
             loadingStatus.postValue("0 : 0%")
-            files?.parallelStream()?.forEach { file ->
+            files.parallelStream().forEach { file ->
                 try {
                     val wallpaper = Wallpaper()
 
