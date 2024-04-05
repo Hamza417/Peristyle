@@ -1,0 +1,2 @@
+- Added option to reduce motions in the app
+- More info in Library Stats
