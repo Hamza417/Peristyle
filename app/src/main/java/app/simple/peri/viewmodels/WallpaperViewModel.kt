@@ -142,9 +142,7 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
             val uri = MainPreferences.getStorageUri()?.toUri()!!
             val pickedDirectory = DocumentFile.fromTreeUri(getApplication(), uri)
             loadingStatus.postValue(getApplication<Application>().getString(app.simple.peri.R.string.preparing))
-            val files = pickedDirectory?.listCompleteFiles() {
-                loadingStatus.postValue(it)
-            }
+            val files = pickedDirectory?.listCompleteFiles()
             var count = 0
             val total = files?.size ?: 0
 

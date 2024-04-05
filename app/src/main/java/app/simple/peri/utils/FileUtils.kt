@@ -40,7 +40,7 @@ object FileUtils {
         return String.format("%.1f %cB", bytes / 1000.0, ci.current())
     }
 
-    fun DocumentFile.listCompleteFiles(func: (String) -> Unit): List<DocumentFile> {
+    fun DocumentFile.listCompleteFiles(): List<DocumentFile> {
         val allFiles = mutableListOf<DocumentFile>()
         val stack = Stack<DocumentFile>()
         stack.push(this)
@@ -51,7 +51,6 @@ object FileUtils {
             currentFile.listFiles().forEach { child ->
                 when {
                     child.isDirectory -> {
-                        func(child.name!!)
                         stack.push(child)
                     }
 

@@ -24,8 +24,10 @@ import androidx.preference.PreferenceFragmentCompat
 import app.simple.peri.BuildConfig
 import app.simple.peri.R
 import app.simple.peri.constants.BundleConstants
+import app.simple.peri.database.instances.WallpaperDatabase
 import app.simple.peri.databinding.DialogDeleteBinding
 import app.simple.peri.preferences.MainPreferences
+import app.simple.peri.utils.FileUtils.listCompleteFiles
 import app.simple.peri.utils.FileUtils.toSize
 import app.simple.peri.utils.ViewUtils.firstChild
 import app.simple.peri.utils.ViewUtils.setPaddingBottom
@@ -183,7 +185,7 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
                 }
 
                 val size = DocumentFile.fromTreeUri(requireContext(), Uri.parse(MainPreferences.getStorageUri()))
-                    ?.listFiles()?.toList()?.parallelStream()?.mapToLong { it.length() }?.sum()
+                    ?.listCompleteFiles()?.toList()?.parallelStream()?.mapToLong { it.length() }?.sum()
 
                 withContext(Dispatchers.Main) {
                     dialogDeleteBinding.progress.text = getString(R.string.cache_info)
@@ -193,11 +195,26 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
                     it.length()
                 }
 
+                val displayWidth = requireContext().resources.displayMetrics.widthPixels
+                val displayHeight = requireContext().resources.displayMetrics.heightPixels
+                val wallpaperDatabase = WallpaperDatabase.getInstance(requireContext())?.wallpaperDao()
+
+                val normalWallpapers = wallpaperDatabase?.getWallpapersByWidthAndHeight(displayWidth, displayHeight)?.size
+                val inadequateWallpapers = wallpaperDatabase?.getInadequateWallpapers(displayWidth, displayHeight)?.size
+                val excessiveWallpapers = wallpaperDatabase?.getExcessivelyLargeWallpapers(displayWidth, displayHeight)?.size
+
                 withContext(Dispatchers.Main) {
                     progressDialog.dismiss()
 
                     MaterialAlertDialogBuilder(requireContext())
-                        .setMessage(getString(R.string.library_stats_message, totalWallpapers, size?.toSize(), cacheSize.toSize()))
+                        .setMessage(
+                                getString(R.string.library_stats_message,
+                                          totalWallpapers,
+                                          size?.toSize(),
+                                          cacheSize.toSize(),
+                                          normalWallpapers,
+                                          inadequateWallpapers,
+                                          excessiveWallpapers))
                         .setPositiveButton(R.string.close) { dialog, _ ->
                             dialog.dismiss()
                         }

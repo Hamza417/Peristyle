@@ -84,7 +84,7 @@
     <string name="portrait">Portrait</string>
     <string name="library_stats">Library Stats</string>
     <string name="library_stats_desc">Details about your wallpaper library.</string>
-    <string name="library_stats_message">Total Wallpapers: %1$d\nSize: %2$s\nCache: %3$s</string>
+    <string name="library_stats_message">Total Wallpapers: %1$d\nSize: %2$s\nCache: %3$s\nFitting Wallpapers: %4$d\nInsufficient Wallpapers: %5$d\nExcessive Wallpapers: %6$d</string>
     <string name="fetching">Fetching</string>
     <string name="cache_info">Fetching cache info</string>
     <string name="total_info">Counting total wallpapers</string>

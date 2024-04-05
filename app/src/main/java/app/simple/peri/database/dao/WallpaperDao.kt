@@ -13,6 +13,18 @@ interface WallpaperDao {
     @Query("SELECT * FROM wallpapers ORDER BY dateModified DESC")
     fun getWallpapers(): List<Wallpaper>
 
+    fun getWallpapersByWidthAndHeight(width: Int, height: Int): List<Wallpaper> {
+        return getWallpapers().filter { it.width == width && it.height == height }
+    }
+
+    fun getInadequateWallpapers(width: Int, height: Int): List<Wallpaper> {
+        return getWallpapers().filter { it.width!! < width || it.height!! < height }
+    }
+
+    fun getExcessivelyLargeWallpapers(width: Int, height: Int): List<Wallpaper> {
+        return getWallpapers().filter { it.width!! > width || it.height!! > height }
+    }
+
     /**
      * Delete a wallpaper from the database
      */
