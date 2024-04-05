@@ -321,7 +321,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                     // binding?.bottomAppBar?.performHide(false)
                     binding?.fab?.transitionName = null // remove transition name to prevent shared element transition
                     requireArguments().putInt(LAST_WALLPAPER_POSITION, position)
-                    openWallpaperScreen(wallpaper!!)
+                    openWallpaperScreen(wallpaper!!, constraintLayout!!)
                 }
 
                 override fun onWallpaperLongClicked(wallpaper: Wallpaper, position: Int, view: View, checkBox: MaterialCheckBox) {
@@ -554,7 +554,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                 requireArguments().putString(BundleConstants.FAB_TRANSITION, randomWallpaper?.uri.toString())
 
                 if (randomWallpaper.isNotNull()) {
-                    openWallpaperScreen(randomWallpaper!!)
+                    openWallpaperScreen(randomWallpaper!!, binding?.fab!!)
                 } else {
                     throw Exception(getString(R.string.no_wallpaper_found))
                 }
@@ -621,7 +621,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
         }
     }
 
-    private fun openWallpaperScreen(wallpaper: Wallpaper) {
+    private fun openWallpaperScreen(wallpaper: Wallpaper, view: View) {
         saveBottomBarState()
         requireArguments().putBoolean(SHOULD_REFRESH, false)
         if (MainPreferences.getReduceMotion()) {
@@ -631,7 +631,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                 .commit()
         } else {
             requireActivity().supportFragmentManager.beginTransaction()
-                .addSharedElement(binding!!.fab, binding!!.fab.transitionName)
+                .addSharedElement(view, view.transitionName)
                 .replace(R.id.mainContainer, WallpaperScreen.newInstance(wallpaper), WallpaperScreen.TAG)
                 .addToBackStack(WallpaperScreen.TAG)
                 .commit()
