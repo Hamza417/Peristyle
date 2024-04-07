@@ -41,7 +41,6 @@ from there? then Peristyle is for you :)
 
 Peristyle supports triggering the AutoWallpaperService from other apps using the following
 intent: `app.peristyle.START_AUTO_WALLPAPER_SERVICE`
-Use it as required.
 
 ## Translate
 
