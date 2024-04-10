@@ -280,7 +280,7 @@ class WallpaperScreen : Fragment() {
             val brightness = requireArguments().getFloat(BundleConstants.BRIGHTNESS_VALUE, resources.getFloatCompat(R.dimen.default_brightness))
             val saturation = requireArguments().getFloat(BundleConstants.SATURATION_VALUE, resources.getFloatCompat(R.dimen.default_saturation))
             val hue = requireArguments().getFloat(BundleConstants.HUE_VALUE, resources.getFloatCompat(R.dimen.default_hue))
-            val blur = requireArguments().getFloat(BundleConstants.BLUR_VALUE, resources.getFloatCompat(R.dimen.default_blur))
+            val blur = requireArguments().getFloat(BundleConstants.BLUR_VALUE, resources.getFloatCompat(R.dimen.default_blur)).coerceAtLeast(0.01F)
 
             val blurEffect = RenderEffect.createBlurEffect(blur, blur, Shader.TileMode.MIRROR)
             val colorFilterEffect = RenderEffect.createColorFilterEffect(ColorMatrixColorFilter(ColorMatrix().apply {
