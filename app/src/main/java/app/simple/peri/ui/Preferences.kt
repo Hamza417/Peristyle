@@ -14,7 +14,6 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.children
 import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -72,14 +71,6 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         fixNavigationBarOverlap()
-
-        (requireView() as ViewGroup).children.forEach {
-            if (it.id == R.id.back_button) {
-                it.setOnClickListener {
-                    requireActivity().onBackPressedDispatcher.onBackPressed()
-                }
-            }
-        }
     }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
