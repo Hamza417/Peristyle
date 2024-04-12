@@ -26,8 +26,11 @@ import app.simple.peri.constants.BundleConstants
 import app.simple.peri.database.instances.WallpaperDatabase
 import app.simple.peri.databinding.DialogDeleteBinding
 import app.simple.peri.preferences.MainPreferences
+import app.simple.peri.utils.ConditionUtils.invert
 import app.simple.peri.utils.FileUtils.listCompleteFiles
 import app.simple.peri.utils.FileUtils.toSize
+import app.simple.peri.utils.PermissionUtils.isBatteryOptimizationDisabled
+import app.simple.peri.utils.PermissionUtils.requestIgnoreBatteryOptimizations
 import app.simple.peri.utils.ViewUtils.firstChild
 import app.simple.peri.utils.ViewUtils.setPaddingBottom
 import app.simple.peri.utils.ViewUtils.setPaddingTop
@@ -274,6 +277,14 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
                 } else {
                     preferenceScreen.findPreference<CheckBoxPreference>("is_biometric")?.isChecked = false
                     p0!!.edit().putBoolean(p1, false).apply()
+                }
+            }
+
+            MainPreferences.AUTO_WALLPAPER_INTERVAL -> {
+                if (p0?.getString(p1, "0") != "0") {
+                    if (requireContext().isBatteryOptimizationDisabled().invert()) {
+                        requireContext().requestIgnoreBatteryOptimizations()
+                    }
                 }
             }
         }
