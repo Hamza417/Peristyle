@@ -1,0 +1,2 @@
+- Added battery optimization permission
+- Fixed blurry wallpaper issue
