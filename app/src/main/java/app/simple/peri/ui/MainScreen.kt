@@ -44,6 +44,8 @@ import app.simple.peri.preferences.SharedPreferences.unregisterSharedPreferenceC
 import app.simple.peri.utils.ConditionUtils.invert
 import app.simple.peri.utils.ConditionUtils.isNotNull
 import app.simple.peri.utils.FileUtils.toUri
+import app.simple.peri.utils.PermissionUtils.isBatteryOptimizationDisabled
+import app.simple.peri.utils.PermissionUtils.requestIgnoreBatteryOptimizations
 import app.simple.peri.utils.ScreenUtils.isLandscape
 import app.simple.peri.utils.WallpaperSort
 import app.simple.peri.viewmodels.WallpaperViewModel
@@ -311,6 +313,12 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
         wallpaperViewModel.getWallpapersLiveData().observe(requireActivity()) { wallpapers ->
             if (wallpapers.isNotEmpty()) {
                 binding?.loadingStatus?.visibility = View.GONE
+            }
+
+            if (MainPreferences.isAutoWallpaperIntervalEnabled()) {
+                if (requireContext().isBatteryOptimizationDisabled().invert()) {
+                    requireContext().requestIgnoreBatteryOptimizations()
+                }
             }
 
             adapterWallpaper = AdapterWallpaper(wallpapers, displayWidth, displayHeight, requireArguments().getInt(LAST_WALLPAPER_POSITION, -1))

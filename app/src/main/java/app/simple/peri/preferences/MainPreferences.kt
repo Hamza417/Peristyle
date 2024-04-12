@@ -114,6 +114,10 @@ object MainPreferences {
         return SharedPreferences.getSharedPreferences().getString(AUTO_WALLPAPER_INTERVAL, "0")!!
     }
 
+    fun isAutoWallpaperIntervalEnabled(): Boolean {
+        return SharedPreferences.getSharedPreferences().getString(AUTO_WALLPAPER_INTERVAL, "0") != "0"
+    }
+
     fun turnOffAutoWallpaperInterval() {
         SharedPreferences.getSharedPreferences().edit().putString(AUTO_WALLPAPER_INTERVAL, "0").apply()
     }

@@ -281,7 +281,7 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
             }
 
             MainPreferences.AUTO_WALLPAPER_INTERVAL -> {
-                if (p0?.getString(p1, "0") != "0") {
+                if (MainPreferences.isAutoWallpaperIntervalEnabled()) {
                     if (requireContext().isBatteryOptimizationDisabled().invert()) {
                         requireContext().requestIgnoreBatteryOptimizations()
                     }
