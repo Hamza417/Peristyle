@@ -1,0 +1,3 @@
+- Disabled crop wallpaper popup for fitting images
+- Fixed crash when blur radius is too low
+- Fixed incorrect screen measurements
