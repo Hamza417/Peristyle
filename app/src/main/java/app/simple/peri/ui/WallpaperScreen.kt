@@ -348,7 +348,11 @@ class WallpaperScreen : Fragment() {
                 }
 
                 bitmap?.let {
-                    StackBlur().blurRgb(it, blur.toInt())
+                    try {
+                        StackBlur().blurRgb(it, blur.toInt())
+                    } catch (e: IllegalStateException) {
+                        e.printStackTrace()
+                    }
                 }
 
                 withContext(Dispatchers.Main) {
