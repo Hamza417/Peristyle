@@ -41,6 +41,7 @@ import app.simple.peri.utils.BitmapUtils.changeBitmapContrastBrightness
 import app.simple.peri.utils.FileUtils.toUri
 import app.simple.peri.utils.ParcelUtils.parcelable
 import app.simple.peri.utils.ResourceUtils.getFloatCompat
+import app.simple.peri.utils.ScreenUtils.isWallpaperFittingScreen
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
@@ -249,29 +250,43 @@ class WallpaperScreen : Fragment() {
                 getString(R.string.lock_screen),
                 getString(R.string.both))
 
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle(R.string.set_as_wallpaper)
-            .setItems(list) { d, which ->
-                MaterialAlertDialogBuilder(requireContext())
-                    .setMessage(R.string.crop_wallpaper_warning)
-                    .setPositiveButton(R.string.yes) { dialog, _ ->
-                        setWallpaper(mode = which, shouldCrop = true)
-                        d.dismiss()
-                        dialog.dismiss()
-                    }
-                    .setNegativeButton(R.string.no) { dialog, _ ->
-                        setWallpaper(mode = which, shouldCrop = false)
-                        dialog.dismiss()
-                    }
-                    .setNeutralButton(R.string.cancel) { dialog, _ ->
-                        dialog.dismiss()
-                    }
-                    .show()
-            }
-            .setNegativeButton(R.string.close) { d, _ ->
-                d.dismiss()
-            }
-            .show()
+        if (wallpaper?.isWallpaperFittingScreen(requireContext())!!) {
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.set_as_wallpaper)
+                .setItems(list) { d, which ->
+                    setWallpaper(mode = which, shouldCrop = false)
+                    d.dismiss()
+                }
+                .setNegativeButton(R.string.close) { d, _ ->
+                    d.dismiss()
+                }
+                .show()
+            return
+        } else {
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.set_as_wallpaper)
+                .setItems(list) { d, which ->
+                    MaterialAlertDialogBuilder(requireContext())
+                        .setMessage(R.string.crop_wallpaper_warning)
+                        .setPositiveButton(R.string.yes) { dialog, _ ->
+                            setWallpaper(mode = which, shouldCrop = true)
+                            d.dismiss()
+                            dialog.dismiss()
+                        }
+                        .setNegativeButton(R.string.no) { dialog, _ ->
+                            setWallpaper(mode = which, shouldCrop = false)
+                            dialog.dismiss()
+                        }
+                        .setNeutralButton(R.string.cancel) { dialog, _ ->
+                            dialog.dismiss()
+                        }
+                        .show()
+                }
+                .setNegativeButton(R.string.close) { d, _ ->
+                    d.dismiss()
+                }
+                .show()
+        }
     }
 
     private fun setRenderEffectOnWallpaper() {

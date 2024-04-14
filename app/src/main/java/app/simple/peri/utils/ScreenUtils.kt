@@ -11,6 +11,7 @@ import android.util.Size
 import android.view.WindowManager
 import android.view.WindowMetrics
 import app.simple.peri.R
+import app.simple.peri.models.Wallpaper
 
 object ScreenUtils {
 
@@ -32,6 +33,11 @@ object ScreenUtils {
 
             Size(metrics.widthPixels, metrics.heightPixels)
         }
+    }
+
+    fun Wallpaper.isWallpaperFittingScreen(context: Context): Boolean {
+        val screenSize = getScreenSize(context)
+        return width == screenSize.width && height == screenSize.height
     }
 
     fun getScreenDensity(context: Context): String {
