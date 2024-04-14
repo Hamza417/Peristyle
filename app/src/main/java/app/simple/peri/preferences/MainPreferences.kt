@@ -7,7 +7,6 @@ object MainPreferences {
     private const val STORAGE_URI = "storageUri"
     private const val NOMEDIA_DIALOG = "nomediaDialog"
     private const val BLUR = "blur"
-    private const val IS_BIOMETRIC = "is_biometric"
     private const val REMEMBER_SCROLL_POSITION = "remember_scroll_position"
     private const val SCROLL_POSITION = "scrollPosition"
     private const val CROP_WALLPAPER = "crop_wallpaper"
@@ -16,6 +15,7 @@ object MainPreferences {
     private const val WALLPAPER_SET_FOR = "auto_wallpaper_set_for"
     private const val REDUCE_MOTION = "reduce_motion"
 
+    const val IS_BIOMETRIC = "is_biometric"
     const val SORT = "sort"
     const val ORDER = "order"
     const val NAME = "is_name"

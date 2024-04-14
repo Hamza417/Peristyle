@@ -46,6 +46,7 @@ import app.simple.peri.utils.ConditionUtils.isNotNull
 import app.simple.peri.utils.FileUtils.toUri
 import app.simple.peri.utils.PermissionUtils.isBatteryOptimizationDisabled
 import app.simple.peri.utils.PermissionUtils.requestIgnoreBatteryOptimizations
+import app.simple.peri.utils.ScreenUtils
 import app.simple.peri.utils.ScreenUtils.isLandscape
 import app.simple.peri.utils.WallpaperSort
 import app.simple.peri.viewmodels.WallpaperViewModel
@@ -87,8 +88,11 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
         reenterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, /* forward = */ false)
         binding?.fab?.transitionName = requireArguments().getString(BundleConstants.FAB_TRANSITION)
 
-        displayWidth = requireContext().resources.displayMetrics.widthPixels
-        displayHeight = requireContext().resources.displayMetrics.heightPixels
+        with(ScreenUtils.getScreenSize(requireContext())) {
+            displayWidth = width
+            displayHeight = height
+        }
+
         fixNavigationBarOverlap()
         itemTouchHelper = ItemTouchHelper(simpleItemTouchCallback)
 

@@ -31,6 +31,7 @@ import app.simple.peri.utils.FileUtils.listCompleteFiles
 import app.simple.peri.utils.FileUtils.toSize
 import app.simple.peri.utils.PermissionUtils.isBatteryOptimizationDisabled
 import app.simple.peri.utils.PermissionUtils.requestIgnoreBatteryOptimizations
+import app.simple.peri.utils.ScreenUtils
 import app.simple.peri.utils.ViewUtils.firstChild
 import app.simple.peri.utils.ViewUtils.setPaddingBottom
 import app.simple.peri.utils.ViewUtils.setPaddingTop
@@ -189,8 +190,9 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
                     it.length()
                 }
 
-                val displayWidth = requireContext().resources.displayMetrics.widthPixels
-                val displayHeight = requireContext().resources.displayMetrics.heightPixels
+                val displayWidth = ScreenUtils.getScreenSize(requireContext()).width
+                val displayHeight = ScreenUtils.getScreenSize(requireContext()).height
+                Log.d("Preferences", "Display width: $displayWidth, Display height: $displayHeight")
                 val wallpaperDatabase = WallpaperDatabase.getInstance(requireContext())?.wallpaperDao()
 
                 val normalWallpapers = wallpaperDatabase?.getWallpapersByWidthAndHeight(displayWidth, displayHeight)?.size
@@ -232,7 +234,7 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
 
     override fun onSharedPreferenceChanged(p0: SharedPreferences?, p1: String?) {
         when (p1) {
-            "is_biometric" -> {
+            MainPreferences.IS_BIOMETRIC -> {
                 if (p0?.getBoolean(p1, false) == true) {
                     val promptInfo = BiometricPrompt.PromptInfo.Builder()
                         .setTitle(getString(R.string.app_name))
