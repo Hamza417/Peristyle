@@ -122,4 +122,19 @@
     <string name="accessibility">Accessibility</string>
     <string name="reduce_motion">Reduce Motion</string>
     <string name="reduce_motion_summary">Disables some of the animations to reduce motion sickness.</string>
+    <string name="one">One</string>
+    <string name="two">Two</string>
+    <string name="dynamic">Dynamic</string>
+    <string name="light">Light</string>
+    <string name="dark">Dark</string>
+    <string name="off">Off</string>
+    <string name="every_minute">Every Minute</string>
+    <string name="every_5_minutes">Every 5 Minutes</string>
+    <string name="every_15_minutes">Every 15 Minutes</string>
+    <string name="every_30_minutes">Every 30 Minutes</string>
+    <string name="every_1_hour">Every 1 Hour</string>
+    <string name="every_3_hours">Every 3 Hours</string>
+    <string name="every_6_hours">Every 6 Hours</string>
+    <string name="every_12_hours">Every 12 Hours</string>
+    <string name="every_24_hours">Every 24 Hours</string>
 </resources>

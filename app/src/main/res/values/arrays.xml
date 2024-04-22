@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="grid_span">
-        <item>One</item>
-        <item>Two</item>
-        <item>Dynamic</item>
+        <item>@string/one</item>
+        <item>@string/two</item>
+        <item>@string/dynamic</item>
     </string-array>
 
     <string-array name="grid_span_values">
@@ -13,8 +13,8 @@
     </string-array>
 
     <string-array name="main_screen_background">
-        <item>Light</item>
-        <item>Dark</item>
+        <item>@string/light</item>
+        <item>@string/dark</item>
     </string-array>
 
     <string-array name="main_screen_background_values">
@@ -23,16 +23,16 @@
     </string-array>
 
     <string-array name="auto_wallpaper_interval">
-        <item>Off</item>
-        <item>Every Minute</item>
-        <item>Every 5 Minutes</item>
-        <item>Every 15 Minutes</item>
-        <item>Every 30 Minutes</item>
-        <item>Every 1 Hour</item>
-        <item>Every 3 Hours</item>
-        <item>Every 6 Hours</item>
-        <item>Every 12 Hours</item>
-        <item>Every 24 Hours</item>
+        <item>@string/off</item>
+        <item>@string/every_minute</item>
+        <item>@string/every_5_minutes</item>
+        <item>@string/every_15_minutes</item>
+        <item>@string/every_30_minutes</item>
+        <item>@string/every_1_hour</item>
+        <item>@string/every_3_hours</item>
+        <item>@string/every_6_hours</item>
+        <item>@string/every_12_hours</item>
+        <item>@string/every_24_hours</item>
     </string-array>
 
     <string-array name="auto_wallpaper_interval_values">
@@ -49,9 +49,9 @@
     </string-array>
 
     <string-array name="set_for_screen">
-        <item>Home Screen</item>
-        <item>Lock Screen</item>
-        <item>Both</item>
+        <item>@string/home_screen</item>
+        <item>@string/lock_screen</item>
+        <item>@string/both</item>
     </string-array>
 
     <string-array name="set_for_screen_values">
