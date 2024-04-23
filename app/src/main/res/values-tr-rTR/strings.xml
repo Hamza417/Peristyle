@@ -120,4 +120,19 @@
     <string name="accessibility">Erişilebilirlik</string>
     <string name="reduce_motion">Hareket azaltma</string>
     <string name="reduce_motion_summary">Hareket hastalığını azaltmak için bazı animasyonları devre dışı bırakır.</string>
+    <string name="one">Bir</string>
+    <string name="two">İki</string>
+    <string name="dynamic">Dinamik</string>
+    <string name="light">Aydınlık</string>
+    <string name="dark">Karanlık</string>
+    <string name="off">Kapalı</string>
+    <string name="every_minute">Her dakika</string>
+    <string name="every_5_minutes">5 dakikada bir</string>
+    <string name="every_15_minutes">15 dakikada bir</string>
+    <string name="every_30_minutes">30 dakikada bir</string>
+    <string name="every_1_hour">Saatte bir</string>
+    <string name="every_3_hours">3 saatte bir</string>
+    <string name="every_6_hours">6 saatte bir</string>
+    <string name="every_12_hours">12 saatte bir</string>
+    <string name="every_24_hours">24 saatte bir</string>
 </resources>
