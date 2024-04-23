@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string-array name="grid_span">
         <item>@string/one</item>
         <item>@string/two</item>
@@ -23,7 +23,7 @@
     </string-array>
 
     <string-array name="auto_wallpaper_interval">
-        <item>@string/off</item>
+        <item tools:ignore="PrivateResource">@string/off</item>
         <item>@string/every_minute</item>
         <item>@string/every_5_minutes</item>
         <item>@string/every_15_minutes</item>
