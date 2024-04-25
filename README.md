@@ -51,7 +51,10 @@ translate Peristyle in your language/s, you can do
 so [here on Crowdin](https://crowdin.com/project/peristyle).
 
 ### Translations
-Turkish [@mikropsoft](https://crowdin.com/profile/mikropsoft)
+
+| Language | Translators                                           |
+|----------|-------------------------------------------------------|
+| Turkish  | [@mikropsoft](https://crowdin.com/profile/mikropsoft) |
 
 ## License
 
