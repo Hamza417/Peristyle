@@ -46,9 +46,12 @@ intent: `app.peristyle.START_AUTO_WALLPAPER_SERVICE`
 
 [![Crowdin](https://badges.crowdin.net/peristyle/localized.svg)](https://crowdin.com/project/peristyle)
 
-Peristyle supports localization but only available in English at the moment, If you want to
+Peristyle supports localization, If you want to
 translate Peristyle in your language/s, you can do
 so [here on Crowdin](https://crowdin.com/project/peristyle).
+
+### Translations
+Turkish [@mikropsoft](https://crowdin.com/profile/mikropsoft)
 
 ## License
 
