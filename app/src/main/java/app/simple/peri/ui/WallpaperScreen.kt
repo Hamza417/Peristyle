@@ -2,6 +2,7 @@ package app.simple.peri.ui
 
 import android.annotation.SuppressLint
 import android.app.WallpaperManager
+import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.ColorMatrix
 import android.graphics.ColorMatrixColorFilter
@@ -15,6 +16,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -54,12 +56,40 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.saket.telephoto.zoomable.glide.ZoomableGlideImage
+import java.io.IOException
 
 class WallpaperScreen : Fragment() {
 
     private var binding: FragmentWallpaperScreenBinding? = null
     private var wallpaper: Wallpaper? = null
     private var drawable: Drawable? = null
+    private var bitmap: Bitmap? = null
+
+    private var wallpaperExportLauncher = registerForActivityResult(ActivityResultContracts.CreateDocument("image/x-png")) { uri ->
+        uri?.let {
+            try {
+                requireContext().contentResolver.openOutputStream(it)?.use { outputStream ->
+                    bitmap?.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+                }
+
+                MaterialAlertDialogBuilder(requireContext())
+                    .setMessage(R.string.exported)
+                    .setPositiveButton(R.string.close) { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    .show()
+            } catch (e: IOException) {
+                e.printStackTrace()
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle(R.string.error)
+                    .setMessage(e.message)
+                    .setPositiveButton(R.string.close) { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    .show()
+            }
+        }
+    }
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -248,7 +278,8 @@ class WallpaperScreen : Fragment() {
         val list = arrayOf(
                 getString(R.string.home_screen),
                 getString(R.string.lock_screen),
-                getString(R.string.both))
+                getString(R.string.both),
+                getString(R.string.export))
 
         if (wallpaper?.isWallpaperFittingScreen(requireContext())!!) {
             MaterialAlertDialogBuilder(requireContext())
@@ -351,7 +382,7 @@ class WallpaperScreen : Fragment() {
                 val hue = requireArguments().getFloat(BundleConstants.HUE_VALUE, resources.getFloatCompat(R.dimen.default_hue))
                 val blur = requireArguments().getFloat(BundleConstants.BLUR_VALUE, resources.getFloatCompat(R.dimen.default_blur))
 
-                val bitmap = when {
+                bitmap = when {
                     shouldCrop -> {
                         binding?.composeView?.drawToBitmap()
                             ?.changeBitmapContrastBrightness(contrast, brightness, saturation, hue)
@@ -388,6 +419,12 @@ class WallpaperScreen : Fragment() {
                                  */
                                 wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_SYSTEM)
                                 wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_LOCK)
+                            }
+
+                            EXPORT -> {
+                                val extension = wallpaper?.name?.substringAfterLast(".")
+                                val fileName = wallpaper?.name?.replace(extension!!, "_edited.png")
+                                wallpaperExportLauncher.launch(fileName)
                             }
                         }
                         loader.dismiss()
@@ -499,6 +536,7 @@ class WallpaperScreen : Fragment() {
         private const val HOME_SCREEN = 0
         private const val LOCK_SCREEN = 1
         private const val BOTH = 2
+        private const val EXPORT = 3
 
         const val TAG = "WallpaperScreen"
     }

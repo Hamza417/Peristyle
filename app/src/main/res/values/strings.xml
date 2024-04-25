@@ -137,4 +137,6 @@
     <string name="every_6_hours">Every 6 Hours</string>
     <string name="every_12_hours">Every 12 Hours</string>
     <string name="every_24_hours">Every 24 Hours</string>
+    <string name="export">Export</string>
+    <string name="exported">Exported</string>
 </resources>
