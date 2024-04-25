@@ -135,4 +135,6 @@
     <string name="every_6_hours">6 saatte bir</string>
     <string name="every_12_hours">12 saatte bir</string>
     <string name="every_24_hours">24 saatte bir</string>
+    <string name="export">Dışa aktar</string>
+    <string name="exported">Dışa aktarıldı</string>
 </resources>
