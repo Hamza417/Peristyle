@@ -116,6 +116,9 @@ class AutoWallpaperService : Service() {
                                 Log.d(TAG, "Bitmap decoded with sample size: ${this.inSampleSize}")
                             })!!
 
+                            // Correct orientation of the bitmap if faulty due to EXIF data
+                            bitmap = BitmapUtils.correctOrientation(bitmap, ByteArrayInputStream(byteArray))
+
                             Log.d(TAG, "Bitmap size: ${bitmap.width}x${bitmap.height}")
 
                             val left = bitmap.width.div(2) - displayWidth.div(2)
@@ -192,6 +195,9 @@ class AutoWallpaperService : Service() {
                             inJustDecodeBounds = false
                             Log.d(TAG, "Bitmap decoded with sample size: ${this.inSampleSize}")
                         })!!
+
+                        // Correct orientation of the bitmap if faulty due to EXIF data
+                        bitmap = BitmapUtils.correctOrientation(bitmap, ByteArrayInputStream(byteArray))
 
                         Log.d(TAG, "Bitmap size: ${bitmap.width}x${bitmap.height}")
 

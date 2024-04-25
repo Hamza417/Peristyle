@@ -5,11 +5,14 @@ import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.ColorMatrix
 import android.graphics.ColorMatrixColorFilter
+import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.Rect
+import android.media.ExifInterface
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
+import java.io.InputStream
 
 object BitmapUtils {
 
@@ -134,5 +137,37 @@ object BitmapUtils {
         val canvas = Canvas(ret)
         canvas.drawBitmap(this, rect, Rect(0, 0, rect.width(), rect.height()), null)
         return ret
+    }
+
+    /**
+     * Corrects the orientation of the bitmap based on the Exif information.
+     * @param bitmap The bitmap to correct the orientation.
+     * @param inputStream The input stream of the image.
+     * @return The corrected bitmap.
+     * @see ExifInterface
+     */
+    fun correctOrientation(bitmap: Bitmap, inputStream: InputStream): Bitmap {
+        val ei = ExifInterface(inputStream)
+        val orientation: Int = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
+
+        return when (orientation) {
+            ExifInterface.ORIENTATION_ROTATE_90 -> rotateImage(bitmap, 90f)
+            ExifInterface.ORIENTATION_ROTATE_180 -> rotateImage(bitmap, 180f)
+            ExifInterface.ORIENTATION_ROTATE_270 -> rotateImage(bitmap, 270f)
+            else -> bitmap
+        }
+    }
+
+    /**
+     * Rotates the image by the specified angle.
+     * @param source The source bitmap to rotate.
+     * @param angle The angle to rotate the image.
+     * @return The rotated bitmap.
+     * @see Matrix
+     */
+    fun rotateImage(source: Bitmap, angle: Float): Bitmap {
+        val matrix = Matrix()
+        matrix.postRotate(angle)
+        return Bitmap.createBitmap(source, 0, 0, source.width, source.height, matrix, true)
     }
 }
