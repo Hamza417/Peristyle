@@ -30,18 +30,16 @@ class MainActivity : AppCompatActivity(), android.content.SharedPreferences.OnSh
     private val modeFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
 
     private val storageResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result != null) {
-            val uri = result.data?.data
-            if (uri != null) {
-                contentResolver.takePersistableUriPermission(uri, modeFlags)
-                MainPreferences.setStorageUri(uri.toString())
-                Log.d("MainActivity", "Storage Uri: $uri")
+        val uri = result.data?.data
+        if (uri != null) {
+            contentResolver.takePersistableUriPermission(uri, modeFlags)
+            MainPreferences.setStorageUri(uri.toString())
+            Log.d("MainActivity", "Storage Uri: $uri")
 
-                binding?.mainContainer?.id?.let {
-                    supportFragmentManager.beginTransaction()
-                        .replace(it, MainScreen.newInstance())
-                        .commit()
-                }
+            binding?.mainContainer?.id?.let {
+                supportFragmentManager.beginTransaction()
+                    .replace(it, MainScreen.newInstance())
+                    .commit()
             }
         }
     }

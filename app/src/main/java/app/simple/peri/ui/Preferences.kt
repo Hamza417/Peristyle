@@ -48,20 +48,18 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
 
     private val storageResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result != null) {
-                val uri = result.data?.data
-                if (uri != null) {
-                    requireActivity().contentResolver.persistedUriPermissions.forEach {
-                        requireActivity().contentResolver.releasePersistableUriPermission(it.uri, flags)
-                    }
-                    MainPreferences.setStorageUri(null)
-                    requireActivity().contentResolver.takePersistableUriPermission(uri, flags)
-                    MainPreferences.setStorageUri(uri.toString())
-                    LocalBroadcastManager.getInstance(requireContext())
-                        .sendBroadcast(Intent().apply {
-                            action = BundleConstants.INTENT_RECREATE_DATABASE
-                        })
+            val uri = result.data?.data
+            if (uri != null) {
+                requireActivity().contentResolver.persistedUriPermissions.forEach {
+                    requireActivity().contentResolver.releasePersistableUriPermission(it.uri, flags)
                 }
+                MainPreferences.setStorageUri(null)
+                requireActivity().contentResolver.takePersistableUriPermission(uri, flags)
+                MainPreferences.setStorageUri(uri.toString())
+                LocalBroadcastManager.getInstance(requireContext())
+                    .sendBroadcast(Intent().apply {
+                        action = BundleConstants.INTENT_RECREATE_DATABASE
+                    })
             }
         }
 
