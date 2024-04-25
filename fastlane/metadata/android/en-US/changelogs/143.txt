@@ -1,1 +1,2 @@
 - Added option to export edited wallpapers
+- Added option to edit wallpaper externally

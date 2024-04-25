@@ -338,8 +338,8 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
 
                 override fun onWallpaperLongClicked(wallpaper: Wallpaper, position: Int, view: View, checkBox: MaterialCheckBox) {
                     blurRoot()
-                    val items = arrayOf(getString(R.string.send), getString(R.string.delete), getString(R.string.select), getString(R.string.reload_metadata))
-                    val itemIds = intArrayOf(R.id.send, R.id.delete, R.id.select, R.id.reload_metadata)
+                    val items = arrayOf(getString(R.string.send), getString(R.string.delete), getString(R.string.select), getString(R.string.reload_metadata), getString(R.string.edit))
+                    val itemIds = intArrayOf(R.id.send, R.id.delete, R.id.select, R.id.reload_metadata, R.string.edit)
 
                     MaterialAlertDialogBuilder(requireContext())
                         .setTitle("Wallpaper Menu")
@@ -392,6 +392,14 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                                     wallpaperViewModel.reloadMetadata(wallpaper) {
                                         adapterWallpaper?.updateWallpaper(wallpaper, position)
                                     }
+                                }
+
+                                R.string.edit -> {
+                                    // Edit
+                                    val intent = Intent(Intent.ACTION_EDIT)
+                                    intent.setDataAndType(wallpaper.uri.toUri(), "image/*")
+                                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                    startActivity(Intent.createChooser(intent, getString(R.string.edit)))
                                 }
                             }
                             dialog.dismiss()
