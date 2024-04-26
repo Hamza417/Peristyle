@@ -1,13 +1,11 @@
 package app.simple.peri.adapters
 
 import android.annotation.SuppressLint
-import android.content.res.Resources
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -171,167 +169,113 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>,
 
     inner class WallpaperViewHolder(private val binding: AdapterWallpaperBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(wallpaper: Wallpaper) {
+            setTransitionName(wallpaper)
+            setDimensions(wallpaper)
+            setMarginLayout()
+            setScaleType()
+            loadImage(wallpaper)
+            setNameVisibility(wallpaper)
+            setDetailsVisibility(wallpaper)
+            setErrorVisibility(wallpaper)
+            setCheckBoxVisibility(wallpaper)
+            setOnClickListeners(wallpaper)
+        }
+
+        private fun setTransitionName(wallpaper: Wallpaper) {
             binding.wallpaperContainer.transitionName = wallpaper.uri
-            val width = if (MainPreferences.getGridSpan() == MainPreferences.SPAN_DYNAMIC) {
-                if (bindingAdapterPosition % 5 == 0) {
-                    wallpaper.width!!
-                } else {
-                    displayWidth
-                }
-            } else {
-                wallpaper.width
-            }
+        }
 
-            val height = if (MainPreferences.getGridSpan() == MainPreferences.SPAN_DYNAMIC) {
-                if (bindingAdapterPosition % 5 == 0) {
-                    wallpaper.height!!
-                } else {
-                    displayHeight
-                }
-            } else {
-                wallpaper.height
-            }
-
+        private fun setDimensions(wallpaper: Wallpaper) {
+            val width = getWidth(wallpaper)
+            val height = getHeight(wallpaper)
             val ratio = String.format("%d:%d", width, height)
             set.clone(binding.wallpaperContainer)
             set.setDimensionRatio(binding.wallpaperImageView.id, ratio)
             set.applyTo(binding.wallpaperContainer)
+        }
 
+        private fun getWidth(wallpaper: Wallpaper): Int {
+            return if (MainPreferences.getGridSpan() == MainPreferences.SPAN_DYNAMIC && bindingAdapterPosition % 5 == 0) {
+                wallpaper.width ?: displayWidth
+            } else {
+                displayWidth
+            }
+        }
+
+        private fun getHeight(wallpaper: Wallpaper): Int {
+            return if (MainPreferences.getGridSpan() == MainPreferences.SPAN_DYNAMIC && bindingAdapterPosition % 5 == 0) {
+                wallpaper.height ?: displayHeight
+            } else {
+                displayHeight
+            }
+        }
+
+        private fun setMarginLayout() {
+            val marginLayoutParams = binding.wallpaperContainer.layoutParams as ViewGroup.MarginLayoutParams
             if (isMarginLayout) {
                 val margin = binding.root.resources.getDimensionPixelSize(R.dimen.margin_8dp).div(2)
-                val marginLayoutParams = binding.wallpaperContainer.layoutParams as ViewGroup.MarginLayoutParams
                 marginLayoutParams.setMargins(margin, margin, margin, margin)
-                binding.wallpaperContainer.layoutParams = marginLayoutParams
             } else {
-                val marginLayoutParams = binding.wallpaperContainer.layoutParams as ViewGroup.MarginLayoutParams
                 marginLayoutParams.setMargins(0, 0, 0, 0)
-                binding.wallpaperContainer.layoutParams = marginLayoutParams
             }
+            binding.wallpaperContainer.layoutParams = marginLayoutParams
+        }
 
-            if (MainPreferences.getGridSpan() == MainPreferences.SPAN_DYNAMIC) {
-                binding.wallpaperImageView.scaleType = if (bindingAdapterPosition % 5 == 0) {
-                    ImageView.ScaleType.FIT_XY
-                } else {
-                    ImageView.ScaleType.CENTER_CROP
-                }
+        private fun setScaleType() {
+            binding.wallpaperImageView.scaleType = if (MainPreferences.getGridSpan() == MainPreferences.SPAN_DYNAMIC && bindingAdapterPosition % 5 == 0) {
+                ImageView.ScaleType.FIT_XY
             } else {
-                binding.wallpaperImageView.scaleType = ImageView.ScaleType.FIT_XY
+                ImageView.ScaleType.CENTER_CROP
             }
+        }
 
+        private fun loadImage(wallpaper: Wallpaper) {
             binding.wallpaperImageView.post {
-                if (lastWallpaperPosition == -1) {
+                if (lastWallpaperPosition == -1 || bindingAdapterPosition != lastWallpaperPosition) {
                     binding.wallpaperImageView.loadWallpaper(wallpaper)
                 } else {
-                    if (bindingAdapterPosition == lastWallpaperPosition) {
-                        binding.wallpaperImageView.loadWallpaperCrossfade(wallpaper)
-                    } else {
-                        binding.wallpaperImageView.loadWallpaper(wallpaper)
-                    }
+                    binding.wallpaperImageView.loadWallpaperCrossfade(wallpaper)
                 }
             }
+        }
 
+        private fun setNameVisibility(wallpaper: Wallpaper) {
             if (MainPreferences.getName()) {
                 binding.name.text = wallpaper.name
+                binding.name.visibility = View.VISIBLE
             } else {
                 binding.name.visibility = View.GONE
             }
+        }
 
+        private fun setDetailsVisibility(wallpaper: Wallpaper) {
             if (MainPreferences.getDetails()) {
+                binding.resolution.text = String.format("%dx%d • %s", wallpaper.width, wallpaper.height, wallpaper.size.toSize())
                 binding.resolution.visibility = View.VISIBLE
-
-                binding.resolution.text = String.format(
-                        "%dx%d • %s",
-                        wallpaper.width, wallpaper.height, wallpaper.size.toSize())
-
-                binding.error.layoutParams = (binding.error.layoutParams as ConstraintLayout.LayoutParams).apply {
-                    startToEnd = binding.resolution.id
-                    bottomToBottom = binding.resolution.id
-                    topToTop = binding.resolution.id
-                    bottomMargin = 0
-                }
             } else {
                 binding.resolution.visibility = View.GONE
-
-                // Set constraint start to parent start
-                binding.error.layoutParams = (binding.error.layoutParams as ConstraintLayout.LayoutParams).apply {
-                    startToStart = ConstraintSet.PARENT_ID
-                    bottomToBottom = ConstraintSet.PARENT_ID
-                    topToTop = ConstraintSet.PARENT_ID
-                    bottomMargin = binding.root.resources.getDimensionPixelSize(R.dimen.margin_8dp)
-                }
             }
+        }
 
-            when (MainPreferences.getGridSpan()) {
-                MainPreferences.SPAN_DYNAMIC -> {
-                    val textMargin = binding.root.resources.getDimensionPixelSize(R.dimen.margin_8dp)
-                    if (absoluteAdapterPosition == 0) {
-                        val marginLayoutParams = binding.name.layoutParams as ViewGroup.MarginLayoutParams
-                        marginLayoutParams.setMargins(textMargin, getStatusBarHeight(binding.name.resources), textMargin, textMargin)
-                        binding.name.layoutParams = marginLayoutParams
-                    } else {
-                        val marginLayoutParams = binding.name.layoutParams as ViewGroup.MarginLayoutParams
-                        marginLayoutParams.setMargins(textMargin, textMargin, textMargin, textMargin)
-                        binding.name.layoutParams = marginLayoutParams
-                    }
-                }
-
-                MainPreferences.SPAN_ONE -> {
-                    if (absoluteAdapterPosition == 0) {
-                        val marginLayoutParams = binding.name.layoutParams as ViewGroup.MarginLayoutParams
-                        marginLayoutParams.setMargins(0, getStatusBarHeight(binding.name.resources), 0, 0)
-                        binding.name.layoutParams = marginLayoutParams
-                    } else {
-                        val marginLayoutParams = binding.name.layoutParams as ViewGroup.MarginLayoutParams
-                        marginLayoutParams.setMargins(0, 0, 0, 0)
-                        binding.name.layoutParams = marginLayoutParams
-
-                    }
-                }
-
-                MainPreferences.SPAN_TWO -> {
-                    if (absoluteAdapterPosition == 0 || absoluteAdapterPosition == 1) {
-                        val marginLayoutParams = binding.name.layoutParams as ViewGroup.MarginLayoutParams
-                        marginLayoutParams.setMargins(0, getStatusBarHeight(binding.name.resources), 0, 0)
-                        binding.name.layoutParams = marginLayoutParams
-                    } else {
-                        val marginLayoutParams = binding.name.layoutParams as ViewGroup.MarginLayoutParams
-                        marginLayoutParams.setMargins(0, 0, 0, 0)
-                        binding.name.layoutParams = marginLayoutParams
-
-                    }
-                }
-            }
-
+        private fun setErrorVisibility(wallpaper: Wallpaper) {
             if (wallpaper.width!! < displayWidth || wallpaper.height!! < displayHeight) {
                 binding.error.visibility = View.VISIBLE
             } else {
                 binding.error.visibility = View.GONE
-
-                if (MainPreferences.getDetails()) {
-                    binding.progressBar.layoutParams = (binding.progressBar.layoutParams as ConstraintLayout.LayoutParams).apply {
-                        startToEnd = binding.resolution.id
-                        bottomToBottom = binding.resolution.id
-                        topToTop = binding.resolution.id
-                        bottomMargin = 0
-                    }
-                } else {
-                    binding.progressBar.layoutParams = (binding.progressBar.layoutParams as ConstraintLayout.LayoutParams).apply {
-                        startToStart = ConstraintSet.PARENT_ID
-                        bottomToBottom = ConstraintSet.PARENT_ID
-                        topToTop = ConstraintSet.PARENT_ID
-                        bottomMargin = binding.root.resources.getDimensionPixelSize(R.dimen.margin_8dp)
-                    }
-                }
             }
+        }
 
+        private fun setCheckBoxVisibility(wallpaper: Wallpaper) {
             if (selectionMode) {
-                binding.checkBox.visibility = View.VISIBLE
                 binding.checkBox.isChecked = wallpaper.isSelected
+                binding.checkBox.visibility = View.VISIBLE
             } else {
-                binding.checkBox.visibility = View.GONE
                 binding.checkBox.isChecked = false
+                binding.checkBox.visibility = View.GONE
             }
+        }
 
+        private fun setOnClickListeners(wallpaper: Wallpaper) {
             binding.wallpaperContainer.setOnClickListener {
                 if (selectionMode) {
                     binding.checkBox.isChecked = !binding.checkBox.isChecked
@@ -344,31 +288,11 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>,
             }
 
             binding.wallpaperContainer.setOnLongClickListener {
-                /**
-                 * Pretty hacky but it works, if we are zooming the wallpaper
-                 * we don't want to trigger the long click.
-                 */
                 if (binding.wallpaperImageView.scaleX == 1.0f) {
                     wallpaperCallbacks?.onWallpaperLongClicked(wallpaper, bindingAdapterPosition, it, binding.checkBox)
                 }
                 true
             }
         }
-    }
-
-    /**
-     * Get status bar height using system framework resources
-     *
-     * @param resources of the android system package
-     * @return int
-     */
-    @SuppressLint("InternalInsetResource", "DiscouragedApi")
-    fun getStatusBarHeight(resources: Resources): Int {
-        var result = 0
-        val resourceId = resources.getIdentifier("status_bar_height", "dimen", "android")
-        if (resourceId > 0) {
-            result = resources.getDimensionPixelSize(resourceId)
-        }
-        return result
     }
 }
