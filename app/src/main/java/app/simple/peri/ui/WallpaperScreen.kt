@@ -258,7 +258,6 @@ class WallpaperScreen : Fragment() {
                 dialog.window?.setBackgroundBlurRadius(30)
             }
             dialog.window?.setDimAmount(0F)
-            dialog.window?.attributes = dialog.window?.attributes
 
             dialog.show()
         }

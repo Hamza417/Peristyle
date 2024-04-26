@@ -117,14 +117,8 @@ object ScreenUtils {
     }
 
     fun getRefreshRate(context: Context): Float {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            // TODO - fix display context for android 11
-            @Suppress("deprecation")
-            context.getSystemService(WindowManager::class.java).defaultDisplay.refreshRate
-        } else {
-            @Suppress("deprecation")
-            context.getSystemService(WindowManager::class.java).defaultDisplay.refreshRate
-        }
+        @Suppress("deprecation")
+        return context.getSystemService(WindowManager::class.java).defaultDisplay.refreshRate
     }
 
     fun getOrientation(context: Context): String {

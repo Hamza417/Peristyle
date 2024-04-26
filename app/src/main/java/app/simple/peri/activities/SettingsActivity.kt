@@ -5,7 +5,6 @@ import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.os.ConfigurationCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import app.simple.peri.R
@@ -14,7 +13,7 @@ import app.simple.peri.ui.Preferences
 import app.simple.peri.utils.ConditionUtils.isNull
 import com.google.android.material.color.DynamicColors
 
-class SettingsActivity: AppCompatActivity() {
+class SettingsActivity : AppCompatActivity() {
 
     private var binding: ActivityMainBinding? = null
 
