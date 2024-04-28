@@ -35,11 +35,11 @@ class AutoWallpaperService : Service() {
     private var isNextWallpaperActionRunning = false
 
     private val displayWidth: Int by lazy {
-        resources.displayMetrics.widthPixels
+        ScreenUtils.getScreenSize(applicationContext).width
     }
 
     private val displayHeight: Int by lazy {
-        resources.displayMetrics.heightPixels
+        ScreenUtils.getScreenSize(applicationContext).height
     }
 
     override fun onBind(intent: Intent?): IBinder? {
