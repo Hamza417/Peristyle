@@ -94,5 +94,22 @@
                 android:resource="@xml/widget_next_wallpaper" />
         </receiver>
 
+        <receiver
+            android:name=".widgets.NextWallpaperWidgetTransparent"
+            android:enabled="true"
+            android:exported="true"
+            android:icon="@drawable/ic_fast_forward"
+            android:label="@string/next_wallpaper"
+            android:roundIcon="@drawable/ic_fast_forward">
+
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_next_wallpaper_transparent" />
+        </receiver>
+
     </application>
 </manifest>
