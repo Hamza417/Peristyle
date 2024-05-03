@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.SET_WALLPAPER" />
     <uses-permission android:name="android.permission.USE_BIOMETRIC" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
@@ -19,17 +20,18 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
+        android:appCategory="image"
         android:supportsRtl="true"
         android:theme="@style/Base.Theme.Peri"
         tools:targetApi="tiramisu">
 
         <meta-data
             android:name="open_source"
-            android:value="true" /> <!-- Set to true to indicate the app is open source -->
+            android:value="true" />
 
         <meta-data
             android:name="open_source_license"
-            android:value="Apache License, Version 2.0" /> <!-- License of your app -->
+            android:value="Apache License, Version 2.0" />
 
         <activity
             android:name=".activities.MainActivity"
