@@ -1,0 +1,2 @@
+- Added transparent next wallpaper widget
+- Various improvements and bug fixes
