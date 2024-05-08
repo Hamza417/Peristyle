@@ -1,6 +1,8 @@
 package app.simple.peri.adapters
 
 import android.annotation.SuppressLint
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -258,10 +260,18 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>,
         }
 
         private fun setErrorVisibility(wallpaper: Wallpaper) {
-            if (wallpaper.width!! < displayWidth || wallpaper.height!! < displayHeight) {
-                binding.error.visibility = View.VISIBLE
-            } else {
-                binding.error.visibility = View.GONE
+            when {
+                wallpaper.width!! < displayWidth || wallpaper.height!! < displayHeight -> {
+                    binding.error.imageTintList = ColorStateList.valueOf(Color.RED)
+                }
+
+                wallpaper.width!! > displayWidth || wallpaper.height!! > displayHeight -> {
+                    binding.error.imageTintList = ColorStateList.valueOf(Color.GRAY)
+                }
+
+                else -> {
+                    binding.error.visibility = View.GONE
+                }
             }
         }
 

@@ -58,8 +58,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/resolution"
         app:layout_constraintStart_toEndOf="@+id/resolution"
         app:layout_constraintTop_toTopOf="@+id/resolution"
-        app:layout_constraintVertical_bias="1.0"
-        app:tint="#FF5722" />
+        app:layout_constraintVertical_bias="1.0" />
 
     <ProgressBar
         android:id="@+id/progressBar"
