@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Peristyle</string>
+    <string name="inure_app_manager" translatable="false">Inure App Manager</string>
+    <string name="positional" translatable="false">Positional</string>
+    <string name="inure_app_manager_summary" translatable="false">An elegant and beautiful premium Android app manager for both rooted and non-rooted devices and a built-in terminal, analytics panel and an independent custom theme engine, developed with purely custom APIs created for this app.</string>
+    <string name="positional_summary">An elegant and colorful location information app for Android with Compass, Clock, Level, Sun, Moon, Trail Marker and many other features.</string>
+</resources>

@@ -1,5 +1,4 @@
-<resources>
-    <string name="app_name">Peristyle</string>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="sort">Sort</string>
     <string name="settings">Settings</string>
     <string name="set_as_wallpaper">Set as Wallpaper</string>
@@ -16,8 +15,6 @@
     <string name="ascending">Ascending</string>
     <string name="descending">Descending</string>
     <string name="full_info">Peri is a simple wallpaper manager app.\nDeveloped by Hamza Rizwan.\n%1$s</string>
-    <string name="inure_app_manager" translatable="false">Inure App Manager</string>
-    <string name="positional" translatable="false">Positional</string>
     <string name="close">Close</string>
     <string name="delete_message">You are deleting %1$s wallpapers, are you sure?</string>
     <string name="no_wallpaper_selected">No wallpaper selected</string>
@@ -40,8 +37,6 @@
     <string name="dont_show_again">Don\'t show again</string>
     <string name="blur_summary">Enable blur on the main screen.</string>
     <string name="blur">Blur</string>
-    <string name="inure_app_manager_summary" translatable="false">An elegant and beautiful premium Android app manager for both rooted and non-rooted devices and a built-in terminal, analytics panel and an independent custom theme engine, developed with purely custom APIs created for this app.</string>
-    <string name="positional_summary">An elegant and colorful location information app for Android with Compass, Clock, Level, Sun, Moon, Trail Marker and many other features.</string>
     <string name="clear_cache_summary">Clear image cache</string>
     <string name="clear_cache">Clear Cache</string>
     <string name="recreate_database">Recreate Database</string>
@@ -97,8 +92,6 @@
     <string name="main_screen_background">Main Screen Background</string>
     <string name="swipe_to_delete_summary">Allows to swipe delete a wallpaper from the list.</string>
     <string name="swipe_to_delete">Swipe to Delete</string>
-    <string name="inure_url">https://github.com/Hamza417/Inure</string>
-    <string name="positional_url">https://github.com/Hamza417/Positional</string>
     <string name="hue">Hue</string>
     <string name="scheduling">Scheduling</string>
     <string name="auto_wallpaper">Auto Wallpaper</string>
@@ -127,7 +120,7 @@
     <string name="dynamic">Dynamic</string>
     <string name="light">Light</string>
     <string name="dark">Dark</string>
-    <string name="off">Off</string>
+    <string name="off" tools:ignore="PrivateResource">Off</string>
     <string name="every_minute">Every Minute</string>
     <string name="every_5_minutes">Every 5 Minutes</string>
     <string name="every_15_minutes">Every 15 Minutes</string>

@@ -80,18 +80,46 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
         preferenceScreen.sharedPreferences?.registerOnSharedPreferenceChangeListener(this)
 
         preferenceScreen.findPreference<Preference>("positional")?.setOnPreferenceClickListener {
-            val url = getString(R.string.positional_url)
-            val intent = Intent(Intent.ACTION_VIEW)
-            intent.data = Uri.parse(url)
-            startActivity(intent)
+            val list = listOf("GitHub", "Play Store")
+
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.positional)
+                .setItems(list.toTypedArray()) { dialog, which ->
+                    val url = when (which) {
+                        0 -> POSITIONAL_GITHUB_URL
+                        1 -> POSITIONAL_PLAY_STORE_URL
+                        else -> POSITIONAL_GITHUB_URL
+                    }
+                    val intent = Intent(Intent.ACTION_VIEW)
+                    intent.data = Uri.parse(url)
+                    startActivity(intent)
+                    dialog.dismiss()
+                }
+                .show()
+
             true
         }
 
         preferenceScreen.findPreference<Preference>("inure")?.setOnPreferenceClickListener {
-            val url = getString(R.string.inure_url)
-            val intent = Intent(Intent.ACTION_VIEW)
-            intent.data = Uri.parse(url)
-            startActivity(intent)
+            val list = listOf("GitHub", "Play Store", "F-Droid")
+
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.inure_app_manager)
+                .setItems(list.toTypedArray()) { dialog, which ->
+                    val url = when (which) {
+                        0 -> INURE_GITHUB_URL
+                        1 -> INURE_PLAY_STORE_URL
+                        2 -> INURE_F_DROID_URL
+                        else -> INURE_GITHUB_URL
+                    }
+
+                    val intent = Intent(Intent.ACTION_VIEW)
+                    intent.data = Uri.parse(url)
+                    startActivity(intent)
+                    dialog.dismiss()
+                }
+                .show()
+
             true
         }
 
@@ -322,5 +350,15 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
             fragment.arguments = args
             return fragment
         }
+
+        //     <string name="inure_url"></string>
+        //    <string name="positional_url">https://github.com/Hamza417/Positional</string>
+
+        private const val INURE_GITHUB_URL = "https://github.com/Hamza417/Inure"
+        private const val INURE_PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=app.simple.inure.play"
+        private const val INURE_F_DROID_URL = "https://f-droid.org/packages/app.simple.inure"
+
+        private const val POSITIONAL_GITHUB_URL = "https://github.com/Hamza417/Positional"
+        private const val POSITIONAL_PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=app.simple.positional"
     }
 }
