@@ -95,8 +95,6 @@
     <string name="main_screen_background">Ana ekran arka planı</string>
     <string name="swipe_to_delete_summary">Listeden bir duvar kağıdını kaydırarak silmeye izin verin.</string>
     <string name="swipe_to_delete">Silmek için kaydırın</string>
-    <string name="inure_url">https://github.com/Hamza417/Inure</string>
-    <string name="positional_url">https://github.com/Hamza417/Positional</string>
     <string name="hue">Ton</string>
     <string name="scheduling">Planlama</string>
     <string name="auto_wallpaper">Otomatik duvar kağıdı</string>
