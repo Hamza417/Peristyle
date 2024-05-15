@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="app_name">Peristyle</string>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="sort">Sırala</string>
     <string name="settings">Ayarlar</string>
     <string name="set_as_wallpaper">Duvar kağıdı olarak ayarla</string>
@@ -39,7 +38,6 @@
     <string name="dont_show_again">Bir daha gösterme</string>
     <string name="blur_summary">Ana ekranda bulanıklığı etkinleştir.</string>
     <string name="blur">Bulanıklık</string>
-    <string name="positional_summary">Pusula, Saat, Seviye, Güneş, Ay, İz İşaretleyici ve diğer birçok özelliğe sahip Android için zarif ve renkli bir konum bilgisi uygulaması.</string>
     <string name="clear_cache_summary">Görüntü önbelleğini temizle</string>
     <string name="clear_cache">Önbelleği temizle</string>
     <string name="recreate_database">Veritabanını yeniden oluştur</string>
@@ -62,7 +60,7 @@
     <string name="lock_screen">Kilit ekranı</string>
     <string name="both">Her ikisi de</string>
     <string name="scroll_to_top">Yukarı kaydır</string>
-    <string name="clear_cache_message">%1$s temizlendi</string>
+    <string name="clear_cache_message">1$s temizlendi</string>
     <string name="initiate_recreate_database_message">Veritabanı yeniden oluşturma süreci başlatıldı…</string>
     <string name="reload_metadata">Meta veriyi yeniden yükle</string>
     <string name="failed_files">Bu dosyalar yüklenemedi. Onları silmek ister misiniz?\n</string>
@@ -123,7 +121,7 @@
     <string name="dynamic">Dinamik</string>
     <string name="light">Aydınlık</string>
     <string name="dark">Karanlık</string>
-    <string name="off">Kapalı</string>
+    <string name="off" tools:ignore="PrivateResource">Kapalı</string>
     <string name="every_minute">Her dakika</string>
     <string name="every_5_minutes">5 dakikada bir</string>
     <string name="every_15_minutes">15 dakikada bir</string>
