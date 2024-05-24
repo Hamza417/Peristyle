@@ -25,6 +25,7 @@ object MainPreferences {
     const val MAIN_SCREEN_BACKGROUND = "main_screen_background"
     const val SWIPE_TO_DELETE = "swipe_to_delete"
     const val AUTO_WALLPAPER_INTERVAL = "auto_wallpaper_interval_1"
+    const val TWEAKS = "tweaks"
 
     const val SPAN_ONE = "1"
     const val SPAN_TWO = "2"
@@ -33,6 +34,9 @@ object MainPreferences {
     const val BOTH = "3"
     const val HOME = "1"
     const val LOCK = "2"
+
+    const val IGNORE_DOT_FILES = "1"
+    const val IGNORE_SUB_DIRS = "2"
 
     fun getStorageUri(): String? {
         return SharedPreferences.getSharedPreferences().getString(STORAGE_URI, null)
@@ -152,5 +156,14 @@ object MainPreferences {
 
     fun setReduceMotion(reduceMotion: Boolean) {
         SharedPreferences.getSharedPreferences().edit().putBoolean(REDUCE_MOTION, reduceMotion).apply()
+    }
+
+    private fun getTweaks(): Set<String>? {
+        return SharedPreferences.getSharedPreferences().getStringSet(TWEAKS, null)
+    }
+
+    fun isTweakOptionSelected(option: String): Boolean {
+        val tweaks = getTweaks()
+        return tweaks?.contains(option) ?: false
     }
 }

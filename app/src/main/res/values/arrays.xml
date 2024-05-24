@@ -60,4 +60,15 @@
         <item>3</item>
     </string-array>
 
+    <!-- Tweaks -->
+    <string-array name="tweaks">
+        <item>@string/ignore_dot_files</item>
+        <item>@string/ignore_subdirectories</item>
+    </string-array>
+
+    <string-array name="tweaks_values">
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
 </resources>

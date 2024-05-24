@@ -18,7 +18,9 @@ import app.simple.peri.database.instances.WallpaperDatabase
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.utils.ConditionUtils.invert
+import app.simple.peri.utils.FileUtils.filterDotFiles
 import app.simple.peri.utils.FileUtils.listCompleteFiles
+import app.simple.peri.utils.FileUtils.listOnlyFirstLevelFiles
 import app.simple.peri.utils.FileUtils.toUri
 import app.simple.peri.utils.WallpaperSort.getSortedList
 import kotlinx.coroutines.Dispatchers
@@ -142,7 +144,7 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
             val uri = MainPreferences.getStorageUri()?.toUri()!!
             val pickedDirectory = DocumentFile.fromTreeUri(getApplication(), uri)
             loadingStatus.postValue(getApplication<Application>().getString(app.simple.peri.R.string.preparing))
-            val files = pickedDirectory?.listCompleteFiles()
+            val files = pickedDirectory?.getFiles()?.filterDotFiles()
             var count = 0
             val total = files?.size ?: 0
 
@@ -330,6 +332,22 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
             withContext(Dispatchers.Main) {
                 func(wallpaper)
             }
+        }
+    }
+
+    private fun DocumentFile.getFiles(): List<DocumentFile> {
+        return if (MainPreferences.isTweakOptionSelected(MainPreferences.IGNORE_SUB_DIRS)) {
+            listCompleteFiles()
+        } else {
+            listOnlyFirstLevelFiles()
+        }
+    }
+
+    private fun List<DocumentFile>.dotFilter(): List<DocumentFile> {
+        if (MainPreferences.isTweakOptionSelected(MainPreferences.IGNORE_DOT_FILES)) {
+            return filterDotFiles()
+        } else {
+            return this
         }
     }
 

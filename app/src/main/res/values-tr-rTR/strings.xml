@@ -60,7 +60,7 @@
     <string name="lock_screen">Kilit ekranı</string>
     <string name="both">Her ikisi de</string>
     <string name="scroll_to_top">Yukarı kaydır</string>
-    <string name="clear_cache_message">1$s temizlendi</string>
+    <string name="clear_cache_message">%1$s temizlendi</string>
     <string name="initiate_recreate_database_message">Veritabanı yeniden oluşturma süreci başlatıldı…</string>
     <string name="reload_metadata">Meta veriyi yeniden yükle</string>
     <string name="failed_files">Bu dosyalar yüklenemedi. Onları silmek ister misiniz?\n</string>

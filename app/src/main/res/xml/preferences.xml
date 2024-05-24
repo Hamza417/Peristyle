@@ -97,6 +97,15 @@
         app:summary="@string/reduce_motion_summary"
         app:title="@string/reduce_motion" />
 
+    <MultiSelectListPreference
+        android:icon="@drawable/ic_tweaks"
+        app:entries="@array/tweaks"
+        app:entryValues="@array/tweaks_values"
+        app:iconSpaceReserved="true"
+        app:key="tweaks"
+        app:summary="@string/tweaks_summary"
+        app:title="@string/tweaks" />
+
     <PreferenceCategory
         app:iconSpaceReserved="true"
         app:title="@string/scheduling" />

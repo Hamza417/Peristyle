@@ -56,10 +56,7 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
                 MainPreferences.setStorageUri(null)
                 requireActivity().contentResolver.takePersistableUriPermission(uri, flags)
                 MainPreferences.setStorageUri(uri.toString())
-                LocalBroadcastManager.getInstance(requireContext())
-                    .sendBroadcast(Intent().apply {
-                        action = BundleConstants.INTENT_RECREATE_DATABASE
-                    })
+                recreateDatabase()
             }
         }
 
@@ -127,10 +124,7 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
             MaterialAlertDialogBuilder(requireContext())
                 .setMessage(R.string.recreate_database_message)
                 .setPositiveButton(R.string.yes) { dialog, _ ->
-                    LocalBroadcastManager.getInstance(requireContext())
-                        .sendBroadcast(Intent().apply {
-                            action = BundleConstants.INTENT_RECREATE_DATABASE
-                        })
+                    recreateDatabase()
                     dialog.dismiss()
                     MaterialAlertDialogBuilder(requireContext())
                         .setMessage(R.string.initiate_recreate_database_message)
@@ -315,6 +309,15 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
                     }
                 }
             }
+
+            MainPreferences.TWEAKS -> {
+                when {
+                    MainPreferences.isTweakOptionSelected(MainPreferences.IGNORE_SUB_DIRS) ||
+                            MainPreferences.isTweakOptionSelected(MainPreferences.IGNORE_DOT_FILES) -> {
+                        recreateDatabase()
+                    }
+                }
+            }
         }
     }
 
@@ -341,6 +344,13 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
              */
             WindowInsetsCompat.CONSUMED
         }
+    }
+
+    private fun recreateDatabase() {
+        LocalBroadcastManager.getInstance(requireContext())
+            .sendBroadcast(Intent().apply {
+                action = BundleConstants.INTENT_RECREATE_DATABASE
+            })
     }
 
     companion object {

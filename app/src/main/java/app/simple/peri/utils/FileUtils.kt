@@ -63,4 +63,19 @@ object FileUtils {
 
         return allFiles
     }
+
+    fun DocumentFile.listOnlyFirstLevelFiles(): List<DocumentFile> {
+        val allFiles = mutableListOf<DocumentFile>()
+        this.listFiles().forEach { child ->
+            if (child.isFile) {
+                allFiles.add(child)
+            }
+        }
+
+        return allFiles
+    }
+
+    fun List<DocumentFile>.filterDotFiles(): ArrayList<DocumentFile> {
+        return this.filter { !it.name!!.startsWith(".") } as ArrayList<DocumentFile>
+    }
 }

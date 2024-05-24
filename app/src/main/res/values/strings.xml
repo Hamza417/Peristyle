@@ -132,4 +132,8 @@
     <string name="every_24_hours">Every 24 Hours</string>
     <string name="export">Export</string>
     <string name="exported">Exported</string>
+    <string name="tweaks">Tweaks</string>
+    <string name="tweaks_summary">Change some default behavior of the app to fit your needs.</string>
+    <string name="ignore_dot_files">Ignore .dot files</string>
+    <string name="ignore_subdirectories">Ignore subdirectories</string>
 </resources>
