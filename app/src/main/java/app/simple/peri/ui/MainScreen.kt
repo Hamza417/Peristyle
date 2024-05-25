@@ -19,6 +19,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.activity.addCallback
+import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.animation.addListener
@@ -336,7 +337,9 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
             }
 
             if (wallpapers.isNotEmpty()) {
-                requestAddNextWallpaperTile()
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    requestAddNextWallpaperTile()
+                }
             }
 
             adapterWallpaper = AdapterWallpaper(wallpapers, displayWidth, displayHeight, requireArguments().getInt(LAST_WALLPAPER_POSITION, -1))
@@ -842,6 +845,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun requestAddNextWallpaperTile() {
         viewLifecycleOwner.lifecycleScope.launch {
             delay(2500)
