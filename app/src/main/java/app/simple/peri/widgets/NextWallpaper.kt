@@ -18,7 +18,6 @@ open class NextWallpaper : AppWidgetProvider() {
 
         // Loop through all widget instances
         appWidgetIds?.forEach { appWidgetId ->
-            // Create an Intent to launch MainActivity
             val intent = Intent(context, AutoWallpaperService::class.java)
             intent.action = AutoWallpaperService.ACTION_NEXT_WALLPAPER
             val pendingIntent = PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)

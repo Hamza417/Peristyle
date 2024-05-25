@@ -13,6 +13,7 @@
     <application
         android:name=".application.PeriApplication"
         android:allowBackup="true"
+        android:appCategory="image"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:enableOnBackInvokedCallback="true"
         android:fullBackupContent="@xml/backup_rules"
@@ -20,7 +21,6 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
-        android:appCategory="image"
         android:supportsRtl="true"
         android:theme="@style/Base.Theme.Peri"
         tools:targetApi="tiramisu">
@@ -58,6 +58,20 @@
             <intent-filter>
                 <action android:name="app.peristyle.START_AUTO_WALLPAPER_SERVICE" />
             </intent-filter>
+        </service>
+
+        <service
+            android:name=".services.NextWallpaperTileService"
+            android:exported="true"
+            android:icon="@drawable/ic_peristyle"
+            android:label="@string/next_wallpaper"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.service.quicksettings.ACTIVE_TILE"
+                android:value="true" />
         </service>
 
         <provider
