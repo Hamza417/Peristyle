@@ -2,11 +2,14 @@ package app.simple.peri.ui
 
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
+import android.app.StatusBarManager
+import android.content.ComponentName
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Color
 import android.graphics.RenderEffect
 import android.graphics.Shader
+import android.graphics.drawable.Icon
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -41,6 +44,7 @@ import app.simple.peri.models.Wallpaper
 import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.preferences.SharedPreferences.registerSharedPreferenceChangeListener
 import app.simple.peri.preferences.SharedPreferences.unregisterSharedPreferenceChangeListener
+import app.simple.peri.services.NextWallpaperTileService
 import app.simple.peri.utils.ConditionUtils.invert
 import app.simple.peri.utils.ConditionUtils.isNotNull
 import app.simple.peri.utils.FileUtils.toUri
@@ -54,8 +58,10 @@ import com.google.android.material.checkbox.MaterialCheckBox
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.MaterialSharedAxis
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.concurrent.Executor
 
 class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -70,6 +76,10 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
     private var displayHeight: Int = 0
     private val blurRadius: Float = 25F
     private val blurDuration: Long = 250
+
+    private val resultSuccessExecutor = Executor {
+        Log.d(TAG, "requestAddTileService result success")
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = FragmentMainScreenBinding.inflate(inflater, container, false)
@@ -325,6 +335,10 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                 }
             }
 
+            if (wallpapers.isNotEmpty()) {
+                requestAddNextWallpaperTile()
+            }
+
             adapterWallpaper = AdapterWallpaper(wallpapers, displayWidth, displayHeight, requireArguments().getInt(LAST_WALLPAPER_POSITION, -1))
             adapterWallpaper?.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.ALLOW
 
@@ -342,7 +356,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                     val itemIds = intArrayOf(R.id.send, R.id.delete, R.id.select, R.id.reload_metadata, R.string.edit)
 
                     MaterialAlertDialogBuilder(requireContext())
-                        .setTitle("Wallpaper Menu")
+                        .setTitle(getString(R.string.main_menu))
                         .setItems(items) { dialog, which ->
                             when (itemIds[which]) {
                                 R.id.send -> {
@@ -824,6 +838,22 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                 } else {
                     itemTouchHelper?.attachToRecyclerView(null)
                 }
+            }
+        }
+    }
+
+    private fun requestAddNextWallpaperTile() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            delay(2500)
+
+            if (MainPreferences.shouldRequestAddTile()) {
+                val componentName = ComponentName(requireContext(), NextWallpaperTileService::class.java)
+                val icon = Icon.createWithResource(requireContext(), R.drawable.ic_peristyle)
+                val statusBarManager: StatusBarManager = requireContext().getSystemService(StatusBarManager::class.java)
+                statusBarManager.requestAddTileService(componentName, getString(R.string.next_wallpaper), icon, resultSuccessExecutor) {
+                    Log.d(TAG, "requestAddNextWallpaperTile: $it")
+                }
+                MainPreferences.setRequestAddTile(false)
             }
         }
     }

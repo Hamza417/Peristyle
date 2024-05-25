@@ -14,6 +14,7 @@ object MainPreferences {
     private const val WALLPAPER_WHEN_SLEEPING = "wallpaper_when_sleeping"
     private const val WALLPAPER_SET_FOR = "auto_wallpaper_set_for"
     private const val REDUCE_MOTION = "reduce_motion"
+    private const val REQUEST_ADD_TILE = "request_add_tile"
 
     const val IS_BIOMETRIC = "is_biometric"
     const val SORT = "sort"
@@ -156,6 +157,14 @@ object MainPreferences {
 
     fun setReduceMotion(reduceMotion: Boolean) {
         SharedPreferences.getSharedPreferences().edit().putBoolean(REDUCE_MOTION, reduceMotion).apply()
+    }
+
+    fun shouldRequestAddTile(): Boolean {
+        return SharedPreferences.getSharedPreferences().getBoolean(REQUEST_ADD_TILE, true)
+    }
+
+    fun setRequestAddTile(requestAddTile: Boolean) {
+        SharedPreferences.getSharedPreferences().edit().putBoolean(REQUEST_ADD_TILE, requestAddTile).apply()
     }
 
     private fun getTweaks(): Set<String>? {
