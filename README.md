@@ -50,10 +50,11 @@ Peristyle supports localization, If you want to
 translate Peristyle in your language/s, you can do
 so [here on Crowdin](https://crowdin.com/project/peristyle).
 
-### Translations
+### Translation Contributors
 
 | Language | Translators                                           |
 |----------|-------------------------------------------------------|
+| French   | [@ppp987](https://crowdin.com/profile/ppp987)         |
 | Turkish  | [@mikropsoft](https://crowdin.com/profile/mikropsoft) |
 
 ## License
