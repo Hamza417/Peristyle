@@ -1,0 +1,5 @@
+- Add next wallpaper quick tiles
+- Add tweaks in settings
+- Add option to ignore .dot files
+- Add option to ignore sub-folders
+- Add French translations (Thanks to ppp987)
