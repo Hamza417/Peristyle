@@ -60,7 +60,7 @@
     <string name="lock_screen">Kilit ekranı</string>
     <string name="both">Her ikisi de</string>
     <string name="scroll_to_top">Yukarı kaydır</string>
-    <string name="clear_cache_message">%1$s temizlendi</string>
+    <string name="clear_cache_message">1$s temizlendi</string>
     <string name="initiate_recreate_database_message">Veritabanı yeniden oluşturma süreci başlatıldı…</string>
     <string name="reload_metadata">Meta veriyi yeniden yükle</string>
     <string name="failed_files">Bu dosyalar yüklenemedi. Onları silmek ister misiniz?\n</string>
@@ -133,4 +133,8 @@
     <string name="every_24_hours">24 saatte bir</string>
     <string name="export">Dışa aktar</string>
     <string name="exported">Dışa aktarıldı</string>
+    <string name="tweaks">İnce Ayarlar</string>
+    <string name="tweaks_summary">Uygulamanın bazı varsayılan davranışlarını ihtiyaçlarınıza uyacak şekilde değiştirin.</string>
+    <string name="ignore_dot_files">.dot dosyalarını yoksay</string>
+    <string name="ignore_subdirectories">Alt dizinleri yoksay</string>
 </resources>
