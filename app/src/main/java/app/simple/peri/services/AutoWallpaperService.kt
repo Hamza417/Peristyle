@@ -93,8 +93,23 @@ class AutoWallpaperService : Service() {
         CoroutineScope(Dispatchers.Default).launch {
             runCatching {
                 val files = getWallpapersFromDatabase()
-                files?.random()?.uri?.toUri()?.let { uri ->
-                    setWallpaperFromUri(uri, files)
+                if (MainPreferences.isTweakOptionSelected(MainPreferences.LINEAR_AUTO_WALLPAPER)) {
+                    if (MainPreferences.getLastWallpaperPosition() >= (files?.size?.minus(1) ?: 0)) {
+                        files?.get(0)?.uri?.toUri()?.let { uri ->
+                            setWallpaperFromUri(uri, files)
+                            MainPreferences.setLastWallpaperPosition(0)
+                        }
+                    } else {
+                        files?.get(MainPreferences.getLastWallpaperPosition().plus(1))?.uri?.toUri()?.let { uri ->
+                            setWallpaperFromUri(uri, files)
+                            MainPreferences.setLastWallpaperPosition(MainPreferences.getLastWallpaperPosition() + 1)
+                        }
+                    }
+                } else {
+                    files?.random()?.uri?.toUri()?.let { uri ->
+                        setWallpaperFromUri(uri, files)
+                        MainPreferences.setLastWallpaperPosition(files.indexOf(files.find { it.uri == uri.toString() }))
+                    }
                 }
             }.getOrElse {
                 Log.e(TAG, "Error setting wallpaper: $it")

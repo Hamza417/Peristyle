@@ -136,4 +136,5 @@
     <string name="tweaks_summary">Change some default behavior of the app to fit your needs.</string>
     <string name="ignore_dot_files">Ignore .dot files</string>
     <string name="ignore_subdirectories">Ignore subdirectories</string>
+    <string name="linear_auto_wallpaper">Pick wallpaper linearly in auto wallpaper</string>
 </resources>

@@ -64,11 +64,13 @@
     <string-array name="tweaks">
         <item>@string/ignore_dot_files</item>
         <item>@string/ignore_subdirectories</item>
+        <item>@string/linear_auto_wallpaper</item>
     </string-array>
 
     <string-array name="tweaks_values">
         <item>1</item>
         <item>2</item>
+        <item>3</item>
     </string-array>
 
 </resources>

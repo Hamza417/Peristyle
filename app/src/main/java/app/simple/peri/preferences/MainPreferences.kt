@@ -15,6 +15,7 @@ object MainPreferences {
     private const val WALLPAPER_SET_FOR = "auto_wallpaper_set_for"
     private const val REDUCE_MOTION = "reduce_motion"
     private const val REQUEST_ADD_TILE = "request_add_tile"
+    private const val LAST_WALLPAPER_POSITION = "last_wallpaper_position"
 
     const val IS_BIOMETRIC = "is_biometric"
     const val SORT = "sort"
@@ -38,6 +39,7 @@ object MainPreferences {
 
     const val IGNORE_DOT_FILES = "1"
     const val IGNORE_SUB_DIRS = "2"
+    const val LINEAR_AUTO_WALLPAPER = "3"
 
     fun getStorageUri(): String? {
         return SharedPreferences.getSharedPreferences().getString(STORAGE_URI, null)
@@ -52,7 +54,7 @@ object MainPreferences {
     }
 
     fun setSort(sort: String) {
-        SharedPreferences.getSharedPreferences().edit().putString(MainPreferences.SORT, sort).apply()
+        SharedPreferences.getSharedPreferences().edit().putString(SORT, sort).apply()
     }
 
     fun getOrder(): String? {
@@ -60,7 +62,7 @@ object MainPreferences {
     }
 
     fun setOrder(order: String) {
-        SharedPreferences.getSharedPreferences().edit().putString(MainPreferences.ORDER, order).apply()
+        SharedPreferences.getSharedPreferences().edit().putString(ORDER, order).apply()
     }
 
     fun getName(): Boolean {
@@ -148,7 +150,7 @@ object MainPreferences {
     }
 
     fun setWallpaperSetFor(wallpaperSetFor: String) {
-        SharedPreferences.getSharedPreferences().edit().putString(MainPreferences.WALLPAPER_SET_FOR, wallpaperSetFor).apply()
+        SharedPreferences.getSharedPreferences().edit().putString(WALLPAPER_SET_FOR, wallpaperSetFor).apply()
     }
 
     fun getReduceMotion(): Boolean {
@@ -165,6 +167,14 @@ object MainPreferences {
 
     fun setRequestAddTile(requestAddTile: Boolean) {
         SharedPreferences.getSharedPreferences().edit().putBoolean(REQUEST_ADD_TILE, requestAddTile).apply()
+    }
+
+    fun getLastWallpaperPosition(): Int {
+        return SharedPreferences.getSharedPreferences().getInt(LAST_WALLPAPER_POSITION, 0)
+    }
+
+    fun setLastWallpaperPosition(position: Int) {
+        SharedPreferences.getSharedPreferences().edit().putInt(LAST_WALLPAPER_POSITION, position).apply()
     }
 
     private fun getTweaks(): Set<String>? {
