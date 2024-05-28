@@ -13,6 +13,7 @@ import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import app.simple.peri.R
+import app.simple.peri.crash.CrashReport
 import app.simple.peri.databinding.ActivityMainBinding
 import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.preferences.SharedPreferences
@@ -55,6 +56,7 @@ class MainActivity : AppCompatActivity(), android.content.SharedPreferences.OnSh
         checkUriPermissions()
         initBiometricPromptInfo()
         handleStorageUri()
+        initCrashHandler()
     }
 
     private fun initSharedPreferences() {
@@ -96,6 +98,10 @@ class MainActivity : AppCompatActivity(), android.content.SharedPreferences.OnSh
                 storageResult.launch(intent)
             }
         }
+    }
+
+    private fun initCrashHandler() {
+        CrashReport(this).initialize() // Can leak?
     }
 
     private fun handleBiometricAuthentication() {
