@@ -137,4 +137,5 @@
     <string name="tweaks_summary">Uygulamanın bazı varsayılan davranışlarını ihtiyaçlarınıza uyacak şekilde değiştirin.</string>
     <string name="ignore_dot_files">.dot dosyalarını yoksay</string>
     <string name="ignore_subdirectories">Alt dizinleri yoksay</string>
+    <string name="linear_auto_wallpaper">Otomatik duvar kağıdında doğrusal olarak duvar kağıdı seç</string>
 </resources>
