@@ -144,7 +144,7 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
             val uri = MainPreferences.getStorageUri()?.toUri()!!
             val pickedDirectory = DocumentFile.fromTreeUri(getApplication(), uri)
             loadingStatus.postValue(getApplication<Application>().getString(app.simple.peri.R.string.preparing))
-            val files = pickedDirectory?.getFiles()?.filterDotFiles()
+            val files = pickedDirectory?.getFiles()?.dotFilter()
             var count = 0
             val total = files?.size ?: 0
 
@@ -344,10 +344,10 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     private fun List<DocumentFile>.dotFilter(): List<DocumentFile> {
-        if (MainPreferences.isTweakOptionSelected(MainPreferences.IGNORE_DOT_FILES)) {
-            return filterDotFiles()
+        return if (MainPreferences.isTweakOptionSelected(MainPreferences.IGNORE_DOT_FILES)) {
+            filterDotFiles()
         } else {
-            return this
+            this
         }
     }
 

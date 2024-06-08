@@ -1,0 +1,4 @@
+- Added option to set wallpapers linearly
+- Added realtime crash monitor
+- Fixes crash on enabling biometric lock
+- Added set as wallpaper option to set wallpaper from file managers
