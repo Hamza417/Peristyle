@@ -17,9 +17,9 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import androidx.preference.CheckBoxPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.SwitchPreferenceCompat
 import app.simple.peri.BuildConfig
 import app.simple.peri.R
 import app.simple.peri.constants.BundleConstants
@@ -272,7 +272,7 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
                                     MaterialAlertDialogBuilder(requireContext())
                                         .setMessage(errString.toString())
                                         .setPositiveButton(R.string.close) { dialog, _ ->
-                                            preferenceScreen.findPreference<CheckBoxPreference>("is_biometric")?.isChecked = false
+                                            preferenceScreen.findPreference<SwitchPreferenceCompat>("is_biometric")?.isChecked = false
                                             dialog.dismiss()
                                         }
                                         .show()
@@ -297,7 +297,7 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
 
                     biometricPrompt.authenticate(promptInfo)
                 } else {
-                    preferenceScreen.findPreference<CheckBoxPreference>("is_biometric")?.isChecked = false
+                    preferenceScreen.findPreference<SwitchPreferenceCompat>("is_biometric")?.isChecked = false
                     p0!!.edit().putBoolean(p1, false).apply()
                 }
             }
