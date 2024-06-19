@@ -237,6 +237,9 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
             isDatabaseLoaded.postValue(true)
             Log.d(TAG, "initDatabase: database loaded")
 
+            wallpaperDao?.cleanWallpapers()
+            Log.d(TAG, "initDatabase: database cleaned")
+
             if (failedURIs.isNotEmpty()) {
                 failedURIsData.postValue(failedURIs)
             }

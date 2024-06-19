@@ -55,7 +55,9 @@ object FileUtils {
                     }
 
                     child.isFile -> {
-                        allFiles.add(child)
+                        if (child.isImageFile()) {
+                            allFiles.add(child)
+                        }
                     }
                 }
             }
@@ -68,7 +70,9 @@ object FileUtils {
         val allFiles = mutableListOf<DocumentFile>()
         this.listFiles().forEach { child ->
             if (child.isFile) {
-                allFiles.add(child)
+                if (child.isImageFile()) {
+                    allFiles.add(child)
+                }
             }
         }
 
