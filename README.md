@@ -55,6 +55,7 @@ so [here on Crowdin](https://crowdin.com/project/peristyle).
 | Language | Translators                                           |
 |----------|-------------------------------------------------------|
 | French   | [@ppp987](https://crowdin.com/profile/ppp987)         |
+| Polish   | [@Tama10](https://crowdin.com/profile/tama10)         |
 | Turkish  | [@mikropsoft](https://crowdin.com/profile/mikropsoft) |
 
 ## License
