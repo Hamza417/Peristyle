@@ -122,6 +122,7 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
         viewModelScope.launch(Dispatchers.IO) {
             val wallpaperDatabase = WallpaperDatabase.getInstance(getApplication())
             val wallpaperDao = wallpaperDatabase?.wallpaperDao()
+            wallpaperDao?.sanitizeEntries() // Sanitize the database
             val wallpaperList = wallpaperDao?.getWallpapers()
             (wallpaperList as ArrayList<Wallpaper>).getSortedList()
 
@@ -236,9 +237,6 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
 
             isDatabaseLoaded.postValue(true)
             Log.d(TAG, "initDatabase: database loaded")
-
-            wallpaperDao?.cleanWallpapers()
-            Log.d(TAG, "initDatabase: database cleaned")
 
             if (failedURIs.isNotEmpty()) {
                 failedURIsData.postValue(failedURIs)

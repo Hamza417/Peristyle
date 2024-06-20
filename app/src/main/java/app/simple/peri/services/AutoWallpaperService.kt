@@ -119,7 +119,9 @@ class AutoWallpaperService : Service() {
 
     private suspend fun getWallpapersFromDatabase(): List<Wallpaper>? {
         return withContext(Dispatchers.IO) {
-            WallpaperDatabase.getInstance(applicationContext)?.wallpaperDao()?.getWallpapers()
+            val dao = WallpaperDatabase.getInstance(applicationContext)?.wallpaperDao()
+            dao?.sanitizeEntries()
+            dao?.getWallpapers()
         }
     }
 
