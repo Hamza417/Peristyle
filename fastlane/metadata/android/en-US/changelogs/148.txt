@@ -1,0 +1,2 @@
+- Fixed inclusion of non-image files in the database
+- Added polish translations (thanks to @tama10)
