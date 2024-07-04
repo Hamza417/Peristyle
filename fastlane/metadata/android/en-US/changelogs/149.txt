@@ -1,0 +1,1 @@
+- Added Simplified Chinese translations (thanks to @shanzhaxiaok)
