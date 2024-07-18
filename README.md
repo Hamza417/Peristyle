@@ -58,6 +58,7 @@ so [here on Crowdin](https://crowdin.com/project/peristyle).
 | French             | [@ppp987](https://crowdin.com/profile/ppp987)             |
 | Polish             | [@Tama10](https://crowdin.com/profile/tama10)             |
 | Turkish            | [@mikropsoft](https://crowdin.com/profile/mikropsoft)     |
+| Vietnamese         | [@xeus0000](https://crowdin.com/profile/xeus0000)         |
 
 ## License
 
