@@ -2,7 +2,7 @@ package app.simple.peri.glide.wallpaper
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.os.Build
+import app.simple.peri.constants.Misc
 import app.simple.peri.utils.BitmapUtils
 import app.simple.peri.utils.FileUtils.toUri
 import com.bumptech.glide.Priority
@@ -15,18 +15,17 @@ class WallpaperFetcher(private val wallpaper: Wallpaper) : DataFetcher<Bitmap> {
         try {
             wallpaper.context.contentResolver.openFileDescriptor(wallpaper.wallpaper.uri.toUri(), "r")?.use {
                 val bitmap = BitmapFactory.decodeFileDescriptor(it.fileDescriptor, null, BitmapFactory.Options().apply {
-                    inPreferredConfig = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                        Bitmap.Config.RGBA_1010102
-                    } else {
-                        Bitmap.Config.ARGB_8888
-                    }
-
-                    inSampleSize = BitmapUtils.calculateInSampleSize(this, 540, 540)
+                    inPreferredConfig = Bitmap.Config.ARGB_8888
+                    inSampleSize = BitmapUtils.calculateInSampleSize(this, Misc.getDisplayWidth(), Misc.getDisplayHeight())
                     inJustDecodeBounds = false
                 })
 
                 callback.onDataReady(bitmap)
 
+                /**
+                 * Read more about this here:
+                 * https://github.com/bumptech/glide/wiki/Resource-re-use-in-Glide#how
+                 */
                 // bitmap?.recycle()
             }
         } catch (e: FileNotFoundException) {

@@ -12,6 +12,7 @@ import androidx.constraintlayout.widget.ConstraintSet
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import app.simple.peri.R
+import app.simple.peri.constants.Misc
 import app.simple.peri.databinding.AdapterWallpaperBinding
 import app.simple.peri.glide.utils.GlideUtils.loadWallpaper
 import app.simple.peri.glide.utils.GlideUtils.loadWallpaperCrossfade
@@ -21,10 +22,9 @@ import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.utils.FileUtils.toSize
 import app.simple.peri.utils.WallpaperSort.getSortedList
 import com.bumptech.glide.Glide
+import java.util.Locale
 
 class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>,
-                       private val displayWidth: Int,
-                       private val displayHeight: Int,
                        val lastWallpaperPosition: Int) : RecyclerView.Adapter<AdapterWallpaper.WallpaperViewHolder>() {
 
     private val set = ConstraintSet()
@@ -190,7 +190,7 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>,
         private fun setDimensions(wallpaper: Wallpaper) {
             val width = getWidth(wallpaper)
             val height = getHeight(wallpaper)
-            val ratio = String.format("%d:%d", width, height)
+            val ratio = String.format(Locale.getDefault(), "%d:%d", width, height)
             set.clone(binding.wallpaperContainer)
             set.setDimensionRatio(binding.wallpaperImageView.id, ratio)
             set.applyTo(binding.wallpaperContainer)
@@ -198,17 +198,17 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>,
 
         private fun getWidth(wallpaper: Wallpaper): Int {
             return if (MainPreferences.getGridSpan() == MainPreferences.SPAN_DYNAMIC && bindingAdapterPosition % 5 == 0) {
-                wallpaper.width ?: displayWidth
+                wallpaper.width ?: Misc.getDisplayWidth()
             } else {
-                displayWidth
+                Misc.getDisplayWidth()
             }
         }
 
         private fun getHeight(wallpaper: Wallpaper): Int {
             return if (MainPreferences.getGridSpan() == MainPreferences.SPAN_DYNAMIC && bindingAdapterPosition % 5 == 0) {
-                wallpaper.height ?: displayHeight
+                wallpaper.height ?: Misc.getDisplayHeight()
             } else {
-                displayHeight
+                Misc.getDisplayHeight()
             }
         }
 
@@ -252,7 +252,7 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>,
 
         private fun setDetailsVisibility(wallpaper: Wallpaper) {
             if (MainPreferences.getDetails()) {
-                binding.resolution.text = String.format("%dx%d • %s", wallpaper.width, wallpaper.height, wallpaper.size.toSize())
+                binding.resolution.text = String.format(Locale.getDefault(), "%dx%d • %s", wallpaper.width, wallpaper.height, wallpaper.size.toSize())
                 binding.resolution.visibility = View.VISIBLE
             } else {
                 binding.resolution.visibility = View.GONE
@@ -261,11 +261,11 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>,
 
         private fun setErrorVisibility(wallpaper: Wallpaper) {
             when {
-                wallpaper.width!! < displayWidth || wallpaper.height!! < displayHeight -> {
+                wallpaper.width!! < Misc.getDisplayWidth() || wallpaper.height!! < Misc.getDisplayHeight() -> {
                     binding.error.imageTintList = ColorStateList.valueOf(Color.RED)
                 }
 
-                wallpaper.width!! > displayWidth || wallpaper.height!! > displayHeight -> {
+                wallpaper.width!! > Misc.getDisplayWidth() || wallpaper.height!! > Misc.getDisplayHeight() -> {
                     binding.error.imageTintList = ColorStateList.valueOf(Color.GRAY)
                 }
 

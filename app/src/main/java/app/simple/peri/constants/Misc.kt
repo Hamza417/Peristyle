@@ -7,10 +7,26 @@ object Misc {
     var topMargin = 0
     var bottomMargin = 0
 
+    private var displayWidth = 0
+    private var displayHeight = 0
+
     fun setMargins(left: Int, top: Int, right: Int, bottom: Int) {
         leftMargin = left
         rightMargin = right
         topMargin = top
         bottomMargin = bottom
+    }
+
+    fun setDisplaySize(width: Int, height: Int) {
+        displayWidth = width
+        displayHeight = height
+    }
+
+    fun getDisplayWidth(): Int {
+        return displayWidth
+    }
+
+    fun getDisplayHeight(): Int {
+        return displayHeight
     }
 }

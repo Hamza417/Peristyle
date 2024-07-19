@@ -13,6 +13,7 @@ import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import app.simple.peri.R
+import app.simple.peri.constants.Misc
 import app.simple.peri.crash.CrashReport
 import app.simple.peri.databinding.ActivityMainBinding
 import app.simple.peri.preferences.MainPreferences
@@ -53,6 +54,7 @@ class MainActivity : AppCompatActivity(), android.content.SharedPreferences.OnSh
         initSharedPreferences()
         initBinding()
         makeAppFullScreen()
+        setDisplaySize()
         checkUriPermissions()
         initBiometricPromptInfo()
         handleStorageUri()
@@ -198,6 +200,13 @@ class MainActivity : AppCompatActivity(), android.content.SharedPreferences.OnSh
         } else {
             Log.d("MainActivity", "Auto wallpaper alarm cancelled")
         }
+    }
+
+    private fun setDisplaySize() {
+        val displayMetrics = resources.displayMetrics
+        val width = displayMetrics.widthPixels
+        val height = displayMetrics.heightPixels
+        Misc.setDisplaySize(width, height)
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: android.content.SharedPreferences?, key: String?) {

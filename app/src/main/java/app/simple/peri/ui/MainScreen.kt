@@ -342,7 +342,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                 }
             }
 
-            adapterWallpaper = AdapterWallpaper(wallpapers, displayWidth, displayHeight, requireArguments().getInt(LAST_WALLPAPER_POSITION, -1))
+            adapterWallpaper = AdapterWallpaper(wallpapers, requireArguments().getInt(LAST_WALLPAPER_POSITION, -1))
             adapterWallpaper?.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.ALLOW
 
             adapterWallpaper!!.setWallpaperCallbacks(object : WallpaperCallbacks {
