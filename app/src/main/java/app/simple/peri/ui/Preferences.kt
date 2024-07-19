@@ -120,6 +120,13 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
             true
         }
 
+        preferenceScreen.findPreference<Preference>("telegram")?.setOnPreferenceClickListener {
+            val intent = Intent(Intent.ACTION_VIEW)
+            intent.data = Uri.parse("https://t.me/peristyle_app")
+            startActivity(intent)
+            true
+        }
+
         preferenceScreen.findPreference<Preference>("recreate_database")?.setOnPreferenceClickListener {
             MaterialAlertDialogBuilder(requireContext())
                 .setMessage(R.string.recreate_database_message)

@@ -21,6 +21,7 @@ import app.simple.peri.preferences.SharedPreferences
 import app.simple.peri.services.AutoWallpaperService
 import app.simple.peri.ui.MainScreen
 import app.simple.peri.utils.ConditionUtils.isNull
+import app.simple.peri.utils.ScreenUtils
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class MainActivity : AppCompatActivity(), android.content.SharedPreferences.OnSharedPreferenceChangeListener {
@@ -203,10 +204,9 @@ class MainActivity : AppCompatActivity(), android.content.SharedPreferences.OnSh
     }
 
     private fun setDisplaySize() {
-        val displayMetrics = resources.displayMetrics
-        val width = displayMetrics.widthPixels
-        val height = displayMetrics.heightPixels
-        Misc.setDisplaySize(width, height)
+        with(ScreenUtils.getScreenSize(baseContext)) {
+            Misc.setDisplaySize(this.width, this.height)
+        }
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: android.content.SharedPreferences?, key: String?) {
