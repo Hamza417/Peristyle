@@ -2,7 +2,6 @@ package app.simple.peri.glide.wallpaper
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import app.simple.peri.constants.Misc
 import app.simple.peri.utils.BitmapUtils
 import app.simple.peri.utils.FileUtils.toUri
 import com.bumptech.glide.Priority
@@ -16,7 +15,7 @@ class WallpaperFetcher(private val wallpaper: Wallpaper) : DataFetcher<Bitmap> {
             wallpaper.context.contentResolver.openFileDescriptor(wallpaper.wallpaper.uri.toUri(), "r")?.use {
                 val bitmap = BitmapFactory.decodeFileDescriptor(it.fileDescriptor, null, BitmapFactory.Options().apply {
                     inPreferredConfig = Bitmap.Config.ARGB_8888
-                    inSampleSize = BitmapUtils.calculateInSampleSize(this, Misc.getDisplayWidth(), Misc.getDisplayHeight())
+                    inSampleSize = BitmapUtils.calculateInSampleSize(this, MIN_IMAGE_SIZE, MIN_IMAGE_SIZE)
                     inJustDecodeBounds = false
                 })
 
@@ -53,6 +52,8 @@ class WallpaperFetcher(private val wallpaper: Wallpaper) : DataFetcher<Bitmap> {
 
     companion object {
         private const val TAG = "WallpaperFetcher"
+        private const val MIN_IMAGE_SIZE = 500
+
         const val IMAGE_MAX_SIZE = 1200000 // 1.2MP
     }
 }
