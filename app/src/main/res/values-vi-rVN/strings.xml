@@ -138,4 +138,6 @@
     <string name="ignore_dot_files">Bỏ qua tệp .dot</string>
     <string name="ignore_subdirectories">Bỏ qua các thư mục con</string>
     <string name="linear_auto_wallpaper">Chọn hình nền theo thứ tự tuyến tính trong chế độ tự động chuyển hình nền</string>
+    <string name="telegram_group">Nhóm Telegram</string>
+    <string name="telegram_summary">Tham gia nhóm Telegram để thảo luận về ứng dụng và gửi báo cáo lỗi.</string>
 </resources>
