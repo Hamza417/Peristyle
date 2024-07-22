@@ -40,10 +40,13 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
 
     private var isDatabaseLoaded: MutableLiveData<Boolean> = MutableLiveData(false)
 
+    private var isLoading = false
+
     init {
         broadcastReceiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
                 if (intent?.action == BundleConstants.INTENT_RECREATE_DATABASE) {
+                    Log.d(TAG, "onReceive: recreating database")
                     recreateDatabase()
                 } else {
                     Log.d(TAG, "onReceive: unsupported action: ${intent?.action ?: "unknown"}")
@@ -140,6 +143,7 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
 
     private fun loadWallpaperImages() {
         viewModelScope.launch(Dispatchers.IO) {
+            isLoading = true
             isDatabaseLoaded.postValue(false)
 
             val uri = MainPreferences.getStorageUri()?.toUri()!!
@@ -206,41 +210,40 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
 
             initDatabase()
             loadingStatus.postValue("Done")
+            isLoading = false
         }
     }
 
     private fun initDatabase() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val wallpaperDatabase = WallpaperDatabase.getInstance(getApplication())
-            val wallpaperDao = wallpaperDatabase?.wallpaperDao()
+        val wallpaperDatabase = WallpaperDatabase.getInstance(getApplication())
+        val wallpaperDao = wallpaperDatabase?.wallpaperDao()
 
-            wallpaperDao?.getWallpapers()?.forEach {
-                try {
-                    getApplication<Application>().contentResolver.openInputStream(Uri.parse(it.uri))?.use { _ ->
-                        // Log.d(TAG, "initDatabase: ${it.name} exists")
-                    }
-                } catch (e: Exception) {
-                    // Log.d(TAG, "initDatabase: ${it.name} doesn't exist")
-                    wallpaperDao.delete(it)
-                    removedWallpapersData.postValue(it)
-                }
-            }
-
+        wallpaperDao?.getWallpapers()?.forEach {
             try {
-                wallpapers.forEach {
-                    wallpaperDao?.insert(it)
+                getApplication<Application>().contentResolver.openInputStream(Uri.parse(it.uri))?.use { _ ->
+                    // Log.d(TAG, "initDatabase: ${it.name} exists")
                 }
-            } catch (e: ConcurrentModificationException) {
-                // rarely occurs
-                Log.e(TAG, "initDatabase: ConcurrentModificationException occurred while inserting wallpapers into database - ${e.message}")
+            } catch (e: Exception) {
+                // Log.d(TAG, "initDatabase: ${it.name} doesn't exist")
+                wallpaperDao.delete(it)
+                removedWallpapersData.postValue(it)
             }
+        }
 
-            isDatabaseLoaded.postValue(true)
-            Log.d(TAG, "initDatabase: database loaded")
-
-            if (failedURIs.isNotEmpty()) {
-                failedURIsData.postValue(failedURIs)
+        try {
+            wallpapers.forEach {
+                wallpaperDao?.insert(it)
             }
+        } catch (e: ConcurrentModificationException) {
+            // rarely occurs
+            Log.e(TAG, "initDatabase: ConcurrentModificationException occurred while inserting wallpapers into database - ${e.message}")
+        }
+
+        isDatabaseLoaded.postValue(true)
+        Log.d(TAG, "initDatabase: database loaded")
+
+        if (failedURIs.isNotEmpty()) {
+            failedURIsData.postValue(failedURIs)
         }
     }
 
@@ -282,15 +285,21 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
 
     fun recreateDatabase() {
         viewModelScope.launch(Dispatchers.IO) {
-            isDatabaseLoaded.postValue(false)
-            wallpapers.clear()
-            wallpapersData.postValue(wallpapers)
-            val wallpaperDatabase = WallpaperDatabase.getInstance(getApplication())
-            val wallpaperDao = wallpaperDatabase?.wallpaperDao()
-            wallpaperDao?.nukeTable()
+            Log.d(TAG, "recreateDatabase: recreating database")
 
-            withContext(Dispatchers.Main) {
-                loadWallpaperImages()
+            if (isLoading.invert()) {
+                isDatabaseLoaded.postValue(false)
+                wallpapers.clear()
+                wallpapersData.postValue(wallpapers)
+                val wallpaperDatabase = WallpaperDatabase.getInstance(getApplication())
+                val wallpaperDao = wallpaperDatabase?.wallpaperDao()
+                wallpaperDao?.nukeTable()
+
+                withContext(Dispatchers.Main) {
+                    loadWallpaperImages()
+                }
+            } else {
+                Log.d(TAG, "recreateDatabase: previous session is still loading, skipping...")
             }
         }
     }
