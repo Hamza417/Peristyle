@@ -126,11 +126,11 @@
     <string name="every_5_minutes">每5分钟</string>
     <string name="every_15_minutes">每15分钟</string>
     <string name="every_30_minutes">每30分钟</string>
-    <string name="every_1_hour">每 1 小时</string>
-    <string name="every_3_hours">每三小时</string>
-    <string name="every_6_hours">每 6 小时</string>
-    <string name="every_12_hours">每 12 小时</string>
-    <string name="every_24_hours">每 24 小时</string>
+    <string name="every_1_hour">每1小时</string>
+    <string name="every_3_hours">每3小时</string>
+    <string name="every_6_hours">每6小时</string>
+    <string name="every_12_hours">每12小时</string>
+    <string name="every_24_hours">每24小时</string>
     <string name="export">导出</string>
     <string name="exported">已导出</string>
     <string name="tweaks">其他调整项</string>
@@ -138,4 +138,6 @@
     <string name="ignore_dot_files">忽略 .dot 文件</string>
     <string name="ignore_subdirectories">忽略子目录</string>
     <string name="linear_auto_wallpaper">在自动壁纸中顺序选择壁纸</string>
+    <string name="telegram_group">Telegram 群组</string>
+    <string name="telegram_summary">加入我们的 Telegram 群组来讨论应用相关的话题或提交错误报告。</string>
 </resources>
