@@ -1,0 +1,2 @@
+- Fix multiple loading session issue
+- Added app Telegram group link
