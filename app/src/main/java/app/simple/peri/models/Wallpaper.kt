@@ -1,9 +1,14 @@
 package app.simple.peri.models
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Parcel
 import android.os.Parcelable
 import androidx.annotation.NonNull
+import androidx.core.net.toUri
+import androidx.documentfile.provider.DocumentFile
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -114,5 +119,24 @@ class Wallpaper : Parcelable, Comparable<Wallpaper> {
         override fun newArray(size: Int): Array<Wallpaper?> {
             return arrayOfNulls(size)
         }
+    }
+
+    fun createFromUri(uri: String, context: Context): Wallpaper {
+        val wallpaper = Wallpaper()
+        wallpaper.uri = uri
+        val documentFile = DocumentFile.fromSingleUri(context, Uri.parse(uri))
+        wallpaper.name = documentFile?.name
+        wallpaper.size = documentFile?.length() ?: 0
+        wallpaper.dateModified = documentFile?.lastModified() ?: 0
+
+        context.contentResolver.openInputStream(uri.toUri())?.use { inputStream ->
+            val options = BitmapFactory.Options()
+            options.inJustDecodeBounds = true
+            BitmapFactory.decodeStream(inputStream, null, options)
+            wallpaper.width = options.outWidth
+            wallpaper.height = options.outHeight
+        }
+
+        return wallpaper
     }
 }

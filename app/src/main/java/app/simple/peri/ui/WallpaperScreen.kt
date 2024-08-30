@@ -31,6 +31,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.drawToBitmap
 import androidx.core.view.marginBottom
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import app.simple.peri.R
 import app.simple.peri.constants.BundleConstants
@@ -44,6 +45,7 @@ import app.simple.peri.utils.FileUtils.toUri
 import app.simple.peri.utils.ParcelUtils.parcelable
 import app.simple.peri.utils.ResourceUtils.getFloatCompat
 import app.simple.peri.utils.ScreenUtils.isWallpaperFittingScreen
+import app.simple.peri.viewmodels.WallpaperViewModel
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
@@ -64,6 +66,7 @@ class WallpaperScreen : Fragment() {
     private var wallpaper: Wallpaper? = null
     private var drawable: Drawable? = null
     private var bitmap: Bitmap? = null
+    private var wallpaperViewModel: WallpaperViewModel? = null
 
     private var wallpaperExportLauncher = registerForActivityResult(ActivityResultContracts.CreateDocument("image/x-png")) { uri ->
         uri?.let {
@@ -97,6 +100,7 @@ class WallpaperScreen : Fragment() {
 
         wallpaper = requireArguments().parcelable(BundleConstants.WALLPAPER)
         binding?.composeView?.transitionName = wallpaper?.uri
+        wallpaperViewModel = ViewModelProvider(requireActivity())[WallpaperViewModel::class.java]
 
         binding?.composeView?.apply {
             // Dispose of the Composition when the view's LifecycleOwner
@@ -426,6 +430,11 @@ class WallpaperScreen : Fragment() {
                                 wallpaperExportLauncher.launch(fileName)
                             }
                         }
+
+                        if (mode != EXPORT) {
+                            wallpaperViewModel?.postCurrentSystemWallpaper()
+                        }
+
                         loader.dismiss()
                     }.onFailure {
                         loader.dismiss()

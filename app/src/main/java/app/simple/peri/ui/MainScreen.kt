@@ -31,6 +31,7 @@ import androidx.documentfile.provider.DocumentFile
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -66,8 +67,9 @@ import java.util.concurrent.Executor
 
 class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListener {
 
-    private val wallpaperViewModel: WallpaperViewModel by viewModels()
+    private val wallpaperViewModel: WallpaperViewModel by viewModels({ requireActivity() })
     private var adapterWallpaper: AdapterWallpaper? = null
+    private var systemWallpaperAdapter: AdapterWallpaper? = null
     private var staggeredGridLayoutManager: StaggeredGridLayoutManager? = null
     private var binding: FragmentMainScreenBinding? = null
     private var blurAnimator: ValueAnimator? = null
@@ -432,7 +434,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
             staggeredGridLayoutManager = StaggeredGridLayoutManager(getSpanCount(), StaggeredGridLayoutManager.VERTICAL)
             staggeredGridLayoutManager?.gapStrategy = StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS
             binding?.recyclerView?.layoutManager = staggeredGridLayoutManager
-            binding?.recyclerView?.adapter = adapterWallpaper
+            setBothAdapter()
             binding?.recyclerView?.setActivity(requireActivity())
             binding?.recyclerView?.setOriId(R.id.wallpaperImageView)
 
@@ -583,6 +585,21 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
             }
         }
 
+        wallpaperViewModel.getSystemWallpaper().observe(viewLifecycleOwner) { systemWallpapers ->
+            systemWallpaperAdapter = AdapterWallpaper(arrayListOf(systemWallpapers), -1)
+            systemWallpaperAdapter?.setWallpaperCallbacks(object : WallpaperCallbacks {
+                override fun onWallpaperClicked(wallpaper: Wallpaper?, position: Int, constraintLayout: ConstraintLayout?) {
+                    openWallpaperScreen(wallpaper!!, constraintLayout!!)
+                }
+
+                override fun onWallpaperLongClicked(wallpaper: Wallpaper, position: Int, view: View, checkBox: MaterialCheckBox) {
+                    // Do nothing
+                }
+            })
+
+            setBothAdapter()
+        }
+
         binding?.fab?.setOnClickListener {
             kotlin.runCatching {
                 // Pick a random wallpaper from the list
@@ -620,6 +637,14 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
 
             unBlurRoot()
         }
+    }
+
+    private fun setBothAdapter() {
+        adapterWallpaper ?: return
+        systemWallpaperAdapter ?: return
+
+        val concatAdapter = ConcatAdapter(systemWallpaperAdapter, adapterWallpaper)
+        binding?.recyclerView?.adapter = concatAdapter
     }
 
     private val simpleItemTouchCallback: ItemTouchHelper.SimpleCallback = object

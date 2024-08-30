@@ -1,13 +1,17 @@
 package app.simple.peri.viewmodels
 
 import android.app.Application
+import android.app.WallpaperManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.util.Log
+import androidx.core.content.FileProvider
+import androidx.core.graphics.drawable.toBitmap
 import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
@@ -26,6 +30,7 @@ import app.simple.peri.utils.WallpaperSort.getSortedList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
 
 class WallpaperViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -69,6 +74,12 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
 
     private val removedWallpapersData: MutableLiveData<Wallpaper> by lazy {
         MutableLiveData<Wallpaper>()
+    }
+
+    private val systemWallpaperData: MutableLiveData<Wallpaper> by lazy {
+        MutableLiveData<Wallpaper>().also {
+            postCurrentSystemWallpaper()
+        }
     }
 
     private val loadingStatus: MutableLiveData<String> by lazy {
@@ -119,6 +130,10 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
 
     fun getDatabaseLoaded(): MutableLiveData<Boolean> {
         return isDatabaseLoaded
+    }
+
+    fun getSystemWallpaper(): MutableLiveData<Wallpaper> {
+        return systemWallpaperData
     }
 
     private fun loadWallpaperDatabase() {
@@ -255,6 +270,30 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
         return hashMap
     }
 
+    private fun getCurrentSystemWallpaper(): Wallpaper {
+        val bitmap = WallpaperManager.getInstance(getApplication()).drawable?.toBitmap()
+        val file = File(getApplication<Application>().filesDir, SYSTEM_WALLPAPER.replace("$", System.currentTimeMillis().div(1000).toString()))
+
+        if (file.exists()) {
+            file.delete()
+        }
+
+        file.outputStream().use { outputStream ->
+            bitmap?.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+        }
+
+        val uri = FileProvider.getUriForFile(
+                getApplication(), "${getApplication<Application>().packageName}.provider", file)
+
+        return Wallpaper().createFromUri(uri.toString(), getApplication())
+    }
+
+    fun postCurrentSystemWallpaper() {
+        viewModelScope.launch(Dispatchers.IO) {
+            systemWallpaperData.postValue(getCurrentSystemWallpaper())
+        }
+    }
+
     fun sortWallpapers() {
         if (isDatabaseLoaded.value == true) {
             wallpapers = wallpapersData.value ?: ArrayList()
@@ -363,5 +402,6 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
 
     companion object {
         private const val TAG = "WallpaperViewModel"
+        private const val SYSTEM_WALLPAPER = "system_wallpaper_$.png"
     }
 }
