@@ -1,10 +1,11 @@
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="5dp"
     app:cardBackgroundColor="@color/colorPrimaryContainer"
-    app:cardCornerRadius="18dp"
+    app:cardCornerRadius="0dp"
     app:cardElevation="24dp"
     app:cardForegroundColor="@android:color/transparent"
     app:cardUseCompatPadding="false"
@@ -16,7 +17,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <androidx.constraintlayout.widget.ConstraintLayout xmlns:tools="http://schemas.android.com/tools"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/wallpaperContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
