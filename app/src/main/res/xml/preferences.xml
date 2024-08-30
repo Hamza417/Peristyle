@@ -57,15 +57,6 @@
         app:title="@string/main_screen_background"
         app:useSimpleSummaryProvider="false" />
 
-    <SwitchPreferenceCompat
-        android:icon="@drawable/ic_pin_drop"
-        app:defaultValue="false"
-        app:enabled="true"
-        app:iconSpaceReserved="true"
-        app:key="remember_scroll_position"
-        app:summary="@string/remember_scroll_position_summary"
-        app:title="@string/remember_scroll_position" />
-
     <PreferenceCategory
         app:iconSpaceReserved="true"
         app:title="@string/accessibility" />
@@ -89,6 +80,15 @@
         app:title="@string/margin_between_wallpapers" />
 
     <SwitchPreferenceCompat
+        android:icon="@drawable/ic_pin_drop"
+        app:defaultValue="false"
+        app:enabled="true"
+        app:iconSpaceReserved="true"
+        app:key="remember_scroll_position"
+        app:summary="@string/remember_scroll_position_summary"
+        app:title="@string/remember_scroll_position" />
+
+    <SwitchPreferenceCompat
         android:icon="@drawable/ic_motion"
         app:defaultValue="false"
         app:enabled="true"
@@ -105,6 +105,26 @@
         app:key="tweaks"
         app:summary="@string/tweaks_summary"
         app:title="@string/tweaks" />
+
+    <PreferenceCategory
+        app:iconSpaceReserved="true"
+        app:title="@string/permissions" />
+
+    <Preference
+        app:defaultValue="false"
+        app:enabled="true"
+        app:iconSpaceReserved="true"
+        app:key="external_storage"
+        app:summary="@string/external_storage_summary"
+        app:title="@string/external_storage" />
+
+    <Preference
+        app:defaultValue="false"
+        app:enabled="true"
+        app:iconSpaceReserved="true"
+        app:key="battery_optimization"
+        app:summary="@string/battery_optimization_summary"
+        app:title="@string/battery_optimization" />
 
     <PreferenceCategory
         app:iconSpaceReserved="true"

@@ -51,6 +51,7 @@ import app.simple.peri.services.NextWallpaperTileService
 import app.simple.peri.utils.ConditionUtils.invert
 import app.simple.peri.utils.ConditionUtils.isNotNull
 import app.simple.peri.utils.FileUtils.toUri
+import app.simple.peri.utils.PermissionUtils
 import app.simple.peri.utils.PermissionUtils.isBatteryOptimizationDisabled
 import app.simple.peri.utils.PermissionUtils.requestIgnoreBatteryOptimizations
 import app.simple.peri.utils.ScreenUtils
@@ -571,10 +572,14 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
 
     private fun setBothAdapter() {
         adapterWallpaper ?: return
-        systemWallpaperAdapter ?: return
+        systemWallpaperAdapter ?: if (PermissionUtils.checkStoragePermission(requireContext())) return else Unit
 
-        val concatAdapter = ConcatAdapter(systemWallpaperAdapter, adapterWallpaper)
-        binding?.recyclerView?.adapter = concatAdapter
+        if (systemWallpaperAdapter != null) {
+            val concatAdapter = ConcatAdapter(systemWallpaperAdapter, adapterWallpaper)
+            binding?.recyclerView?.adapter = concatAdapter
+        } else {
+            binding?.recyclerView?.adapter = adapterWallpaper
+        }
     }
 
     private val simpleItemTouchCallback: ItemTouchHelper.SimpleCallback = object

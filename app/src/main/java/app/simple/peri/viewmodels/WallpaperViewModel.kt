@@ -26,6 +26,7 @@ import app.simple.peri.utils.FileUtils.filterDotFiles
 import app.simple.peri.utils.FileUtils.listCompleteFiles
 import app.simple.peri.utils.FileUtils.listOnlyFirstLevelFiles
 import app.simple.peri.utils.FileUtils.toUri
+import app.simple.peri.utils.PermissionUtils
 import app.simple.peri.utils.WallpaperSort.getSortedList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -290,7 +291,9 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
 
     fun postCurrentSystemWallpaper() {
         viewModelScope.launch(Dispatchers.IO) {
-            systemWallpaperData.postValue(getCurrentSystemWallpaper())
+            if (PermissionUtils.checkStoragePermission(getApplication())) {
+                systemWallpaperData.postValue(getCurrentSystemWallpaper())
+            }
         }
     }
 

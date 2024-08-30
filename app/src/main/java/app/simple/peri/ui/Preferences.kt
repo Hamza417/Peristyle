@@ -1,9 +1,14 @@
 package app.simple.peri.ui
 
+import android.Manifest
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.os.Environment
+import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -29,6 +34,7 @@ import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.utils.ConditionUtils.invert
 import app.simple.peri.utils.FileUtils.listCompleteFiles
 import app.simple.peri.utils.FileUtils.toSize
+import app.simple.peri.utils.PermissionUtils
 import app.simple.peri.utils.PermissionUtils.isBatteryOptimizationDisabled
 import app.simple.peri.utils.PermissionUtils.requestIgnoreBatteryOptimizations
 import app.simple.peri.utils.ScreenUtils
@@ -59,6 +65,23 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
                 recreateDatabase()
             }
         }
+
+    private var requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+        permissions.forEach {
+            when (it.key) {
+                Manifest.permission.WRITE_EXTERNAL_STORAGE -> {
+                    if (it.value) {
+                        MaterialAlertDialogBuilder(requireContext())
+                            .setMessage(R.string.permission_granted)
+                            .setPositiveButton(R.string.close) { dialog, _ ->
+                                dialog.dismiss()
+                            }
+                            .show()
+                    }
+                }
+            }
+        }
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         requireActivity().findViewById<CoordinatorLayout>(R.id.mainContainer)
@@ -247,6 +270,48 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
             true
         }
 
+        preferenceScreen.findPreference<Preference>("external_storage")?.setOnPreferenceClickListener {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                if (Environment.isExternalStorageManager()) {
+                    MaterialAlertDialogBuilder(requireContext())
+                        .setMessage(R.string.permission_granted)
+                        .setPositiveButton(R.string.close) { dialog, _ ->
+                            dialog.dismiss()
+                        }
+                        .show()
+                } else {
+                    requestManageExternalStoragePermission()
+                }
+            } else {
+                if (PermissionUtils.checkStoragePermission(requireContext())) {
+                    MaterialAlertDialogBuilder(requireContext())
+                        .setMessage(R.string.permission_granted)
+                        .setPositiveButton(R.string.close) { dialog, _ ->
+                            dialog.dismiss()
+                        }
+                        .show()
+                } else {
+                    requestPermissionLauncher.launch(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE))
+                }
+            }
+
+            true
+        }
+
+        preferenceScreen.findPreference<Preference>("battery_optimization")?.setOnPreferenceClickListener {
+            if (requireContext().isBatteryOptimizationDisabled()) {
+                MaterialAlertDialogBuilder(requireContext())
+                    .setMessage(R.string.permission_granted)
+                    .setPositiveButton(R.string.close) { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    .show()
+            } else {
+                requireContext().requestIgnoreBatteryOptimizations()
+            }
+            true
+        }
+
         preferenceScreen.findPreference<Preference>("change_directory")?.summary =
             getString(R.string.change_directory_desc, MainPreferences.getStorageUri())
 
@@ -358,6 +423,34 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
             .sendBroadcast(Intent().apply {
                 action = BundleConstants.INTENT_RECREATE_DATABASE
             })
+    }
+
+    private fun requestManageExternalStoragePermission() {
+        try {
+            val uri = Uri.parse("package:${BuildConfig.APPLICATION_ID}")
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                startActivity(Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION, uri))
+            } else {
+                requestPermissionLauncher.launch(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE))
+            }
+        } catch (e: ActivityNotFoundException) {
+            MaterialAlertDialogBuilder(requireContext())
+                .setMessage(e.localizedMessage ?: e.message ?: e.stackTraceToString())
+                .setPositiveButton(R.string.close) { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .show()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (Environment.isExternalStorageManager()) {
+
+            }
+        }
     }
 
     companion object {
