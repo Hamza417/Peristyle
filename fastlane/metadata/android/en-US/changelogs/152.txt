@@ -1,0 +1,3 @@
+- Show system wallpaper in the main list
+- Allows critical permissions to be granted from Preferences screen
+- Polaroid design for current wallpaper card
