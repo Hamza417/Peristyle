@@ -12,8 +12,10 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.Objects;
 
 import androidx.annotation.NonNull;
+import app.simple.peri.R;
 import app.simple.peri.preferences.CrashPreferences;
 
 /*
@@ -62,7 +64,7 @@ public class CrashReport implements Thread.UncaughtExceptionHandler {
             
             Thread.setDefaultUncaughtExceptionHandler(new CrashReport(context));
         } catch (RuntimeException e) {
-            if (context.getExternalFilesDir("logs").delete()) {
+            if (Objects.requireNonNull(context.getExternalFilesDir("logs")).delete()) {
                 Log.e(TAG, "Crash handler crashed -----> deleted crash logs");
             }
         }
@@ -71,7 +73,7 @@ public class CrashReport implements Thread.UncaughtExceptionHandler {
     @NonNull
     private MaterialAlertDialogBuilder getMaterialAlertDialogBuilder(String stack) {
         MaterialAlertDialogBuilder builder = getAlertDialogBuilder(stack);
-        builder.setNegativeButton("Restart", (dialog, which) -> {
+        builder.setNegativeButton(R.string.restart, (dialog, which) -> {
             clearCrashLogs();
             Intent intent = context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());
             assert intent != null;
@@ -87,14 +89,14 @@ public class CrashReport implements Thread.UncaughtExceptionHandler {
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
         builder.setTitle("Crash Detected");
         builder.setMessage("stacktrace: " + stack);
-        builder.setPositiveButton("Copy", (dialog, which) -> {
+        builder.setPositiveButton(R.string.copy, (dialog, which) -> {
             ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
             ClipData clip = ClipData.newPlainText("stacktrace", stack);
             clipboard.setPrimaryClip(clip);
             clearCrashLogs();
             dialog.dismiss();
         });
-        builder.setNeutralButton("Exit", (dialog, which) -> {
+        builder.setNeutralButton(R.string.close, (dialog, which) -> {
             clearCrashLogs();
             dialog.dismiss();
         });

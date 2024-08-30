@@ -37,6 +37,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import app.simple.peri.R
 import app.simple.peri.activities.SettingsActivity
+import app.simple.peri.adapters.AdapterSystemWallpaper
 import app.simple.peri.adapters.AdapterWallpaper
 import app.simple.peri.constants.BundleConstants
 import app.simple.peri.databinding.DialogDeleteBinding
@@ -56,7 +57,6 @@ import app.simple.peri.utils.ScreenUtils
 import app.simple.peri.utils.ScreenUtils.isLandscape
 import app.simple.peri.utils.WallpaperSort
 import app.simple.peri.viewmodels.WallpaperViewModel
-import com.google.android.material.checkbox.MaterialCheckBox
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.MaterialSharedAxis
 import kotlinx.coroutines.Dispatchers
@@ -69,7 +69,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
 
     private val wallpaperViewModel: WallpaperViewModel by viewModels({ requireActivity() })
     private var adapterWallpaper: AdapterWallpaper? = null
-    private var systemWallpaperAdapter: AdapterWallpaper? = null
+    private var systemWallpaperAdapter: AdapterSystemWallpaper? = null
     private var staggeredGridLayoutManager: StaggeredGridLayoutManager? = null
     private var binding: FragmentMainScreenBinding? = null
     private var blurAnimator: ValueAnimator? = null
@@ -81,7 +81,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
     private val blurDuration: Long = 250
 
     private val resultSuccessExecutor = Executor {
-        Log.d(TAG, "requestAddTileService result success")
+        Log.i(TAG, "requestAddTileService result success")
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -355,78 +355,8 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                     openWallpaperScreen(wallpaper!!, constraintLayout!!)
                 }
 
-                override fun onWallpaperLongClicked(wallpaper: Wallpaper, position: Int, view: View, checkBox: MaterialCheckBox) {
-                    blurRoot()
-                    val items = arrayOf(getString(R.string.send), getString(R.string.delete), getString(R.string.select), getString(R.string.reload_metadata), getString(R.string.edit))
-                    val itemIds = intArrayOf(R.id.send, R.id.delete, R.id.select, R.id.reload_metadata, R.string.edit)
-
-                    MaterialAlertDialogBuilder(requireContext())
-                        .setTitle(getString(R.string.main_menu))
-                        .setItems(items) { dialog, which ->
-                            when (itemIds[which]) {
-                                R.id.send -> {
-                                    // Send
-                                    ShareCompat.IntentBuilder(requireActivity())
-                                        .setType("image/*")
-                                        .setChooserTitle("Share Wallpaper")
-                                        .setStream(wallpaper.uri.toUri())
-                                        .startChooser()
-                                }
-
-                                R.id.delete -> {
-                                    // Delete
-                                    blurRoot()
-
-                                    MaterialAlertDialogBuilder(requireContext())
-                                        .setTitle(R.string.delete)
-                                        .setMessage(getString(R.string.delete_message, wallpaper.name))
-                                        .setPositiveButton(R.string.delete) { dialog1, _ ->
-                                            dialog1.dismiss()
-
-                                            viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
-                                                if (DocumentFile.fromSingleUri(requireContext(), wallpaper.uri.toUri())?.delete() == true) {
-                                                    withContext(Dispatchers.Main) {
-                                                        adapterWallpaper?.removeWallpaper(wallpaper)
-                                                        wallpaperViewModel.removeWallpaper(wallpaper)
-                                                        invalidateLayoutManager()
-                                                    }
-                                                }
-                                            }
-                                        }.setNegativeButton(R.string.close) { dialog1, _ ->
-                                            dialog1.dismiss()
-                                        }
-                                        .setOnDismissListener {
-                                            unBlurRoot()
-                                        }
-                                        .show()
-                                }
-
-                                R.id.select -> {
-                                    // Select
-                                    adapterWallpaper?.selectWallpaper(wallpaper)
-                                }
-
-                                R.id.reload_metadata -> {
-                                    // Reload Metadata
-                                    wallpaperViewModel.reloadMetadata(wallpaper) {
-                                        adapterWallpaper?.updateWallpaper(wallpaper, position)
-                                    }
-                                }
-
-                                R.string.edit -> {
-                                    // Edit
-                                    val intent = Intent(Intent.ACTION_EDIT)
-                                    intent.setDataAndType(wallpaper.uri.toUri(), "image/*")
-                                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                                    startActivity(Intent.createChooser(intent, getString(R.string.edit)))
-                                }
-                            }
-                            dialog.dismiss()
-                        }
-                        .setOnDismissListener {
-                            unBlurRoot()
-                        }
-                        .show()
+                override fun onWallpaperLongClicked(wallpaper: Wallpaper, position: Int, view: View) {
+                    showWallpaperOptions(wallpaper, position)
                 }
             })
 
@@ -586,14 +516,14 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
         }
 
         wallpaperViewModel.getSystemWallpaper().observe(viewLifecycleOwner) { systemWallpapers ->
-            systemWallpaperAdapter = AdapterWallpaper(arrayListOf(systemWallpapers), -1)
+            systemWallpaperAdapter = AdapterSystemWallpaper(arrayListOf(systemWallpapers), -1)
             systemWallpaperAdapter?.setWallpaperCallbacks(object : WallpaperCallbacks {
                 override fun onWallpaperClicked(wallpaper: Wallpaper?, position: Int, constraintLayout: ConstraintLayout?) {
                     openWallpaperScreen(wallpaper!!, constraintLayout!!)
                 }
 
-                override fun onWallpaperLongClicked(wallpaper: Wallpaper, position: Int, view: View, checkBox: MaterialCheckBox) {
-                    // Do nothing
+                override fun onWallpaperLongClicked(wallpaper: Wallpaper, position: Int, view: View) {
+                    showWallpaperOptions(wallpaper, position, true)
                 }
             })
 
@@ -797,6 +727,89 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
         }
     }
 
+    private fun showWallpaperOptions(wallpaper: Wallpaper, position: Int, systemWallpaper: Boolean = false) {
+        blurRoot()
+        val items = if (systemWallpaper) {
+            arrayOf(getString(R.string.send), getString(R.string.edit))
+        } else {
+            arrayOf(getString(R.string.send), getString(R.string.delete), getString(R.string.select), getString(R.string.reload_metadata), getString(R.string.edit))
+        }
+
+        val itemIds = if (systemWallpaper) {
+            intArrayOf(R.id.send, R.string.edit)
+        } else {
+            intArrayOf(R.id.send, R.id.delete, R.id.select, R.id.reload_metadata, R.string.edit)
+        }
+
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(getString(R.string.main_menu))
+            .setItems(items) { dialog, which ->
+                when (itemIds[which]) {
+                    R.id.send -> {
+                        // Send
+                        ShareCompat.IntentBuilder(requireActivity())
+                            .setType("image/*")
+                            .setChooserTitle("Share Wallpaper")
+                            .setStream(wallpaper.uri.toUri())
+                            .startChooser()
+                    }
+
+                    R.id.delete -> {
+                        // Delete
+                        blurRoot()
+
+                        MaterialAlertDialogBuilder(requireContext())
+                            .setTitle(R.string.delete)
+                            .setMessage(getString(R.string.delete_message, wallpaper.name))
+                            .setPositiveButton(R.string.delete) { dialog1, _ ->
+                                dialog1.dismiss()
+
+                                viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+                                    if (DocumentFile.fromSingleUri(requireContext(), wallpaper.uri.toUri())?.delete() == true) {
+                                        withContext(Dispatchers.Main) {
+                                            adapterWallpaper?.removeWallpaper(wallpaper)
+                                            wallpaperViewModel.removeWallpaper(wallpaper)
+                                            invalidateLayoutManager()
+                                        }
+                                    }
+                                }
+                            }.setNegativeButton(R.string.close) { dialog1, _ ->
+                                dialog1.dismiss()
+                            }
+                            .setOnDismissListener {
+                                unBlurRoot()
+                            }
+                            .show()
+                    }
+
+                    R.id.select -> {
+                        // Select
+                        adapterWallpaper?.selectWallpaper(wallpaper)
+                    }
+
+                    R.id.reload_metadata -> {
+                        // Reload Metadata
+                        wallpaperViewModel.reloadMetadata(wallpaper) {
+                            adapterWallpaper?.updateWallpaper(wallpaper, position)
+                        }
+                    }
+
+                    R.string.edit -> {
+                        // Edit
+                        val intent = Intent(Intent.ACTION_EDIT)
+                        intent.setDataAndType(wallpaper.uri.toUri(), "image/*")
+                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                        startActivity(Intent.createChooser(intent, getString(R.string.edit)))
+                    }
+                }
+                dialog.dismiss()
+            }
+            .setOnDismissListener {
+                unBlurRoot()
+            }
+            .show()
+    }
+
     private fun getSpanCount(): Int {
         return when (MainPreferences.SPAN_DYNAMIC) {
             MainPreferences.getGridSpan() -> {
@@ -880,7 +893,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                 val icon = Icon.createWithResource(requireContext(), R.drawable.ic_peristyle)
                 val statusBarManager: StatusBarManager = requireContext().getSystemService(StatusBarManager::class.java)
                 statusBarManager.requestAddTileService(componentName, getString(R.string.next_wallpaper), icon, resultSuccessExecutor) {
-                    Log.d(TAG, "requestAddNextWallpaperTile: $it")
+                    Log.i(TAG, "requestAddNextWallpaperTile: $it")
                 }
                 MainPreferences.setRequestAddTile(false)
             }

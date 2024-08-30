@@ -1,6 +1,5 @@
 package app.simple.peri.adapters
 
-import android.annotation.SuppressLint
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.util.Log
@@ -11,9 +10,8 @@ import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import app.simple.peri.R
 import app.simple.peri.constants.Misc
-import app.simple.peri.databinding.AdapterWallpaperBinding
+import app.simple.peri.databinding.AdapterSystemWallpaperBinding
 import app.simple.peri.glide.utils.GlideUtils.loadWallpaper
 import app.simple.peri.glide.utils.GlideUtils.loadWallpaperCrossfade
 import app.simple.peri.interfaces.WallpaperCallbacks
@@ -24,25 +22,14 @@ import app.simple.peri.utils.WallpaperSort.getSortedList
 import com.bumptech.glide.Glide
 import java.util.Locale
 
-class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>,
-                       val lastWallpaperPosition: Int) : RecyclerView.Adapter<AdapterWallpaper.WallpaperViewHolder>() {
+class AdapterSystemWallpaper(private val wallpapers: ArrayList<Wallpaper>,
+                             val lastWallpaperPosition: Int) : RecyclerView.Adapter<AdapterSystemWallpaper.WallpaperViewHolder>() {
 
     private val set = ConstraintSet()
     private var wallpaperCallbacks: WallpaperCallbacks? = null
-    private var isMarginLayout = MainPreferences.getMarginBetween()
-
-    var selectionMode = false
-        set(value) {
-            if (field != value) {
-                field = value
-                for (i in 0 until wallpapers.size) {
-                    notifyItemChanged(i)
-                }
-            }
-        }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WallpaperViewHolder {
-        val binding = AdapterWallpaperBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding = AdapterSystemWallpaperBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return WallpaperViewHolder(binding)
     }
 
@@ -105,55 +92,6 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>,
         }
     }
 
-    fun getRandomWallpaper(): Wallpaper? {
-        return if (wallpapers.isNotEmpty()) {
-            wallpapers[(0 until wallpapers.size).random()]
-        } else {
-            null
-        }
-    }
-
-    fun selectWallpaper(wallpaper: Wallpaper) {
-        selectionMode = true
-        val idx = wallpapers.indexOf(wallpaper)
-        wallpaper.isSelected = true
-        wallpapers[idx] = wallpaper
-        notifyItemChanged(idx)
-    }
-
-    fun getSelectedWallpapers(): ArrayList<Wallpaper> {
-        val selectedWallpapers = ArrayList<Wallpaper>()
-        for (wallpaper in wallpapers) {
-            if (wallpaper.isSelected) {
-                selectedWallpapers.add(wallpaper)
-            }
-        }
-        return selectedWallpapers
-    }
-
-    @SuppressLint("NotifyDataSetChanged")
-    fun cancelSelection() {
-        selectionMode = false
-        for (wallpaper in wallpapers) {
-            wallpaper.isSelected = false
-        }
-        notifyDataSetChanged()
-    }
-
-    fun shuffleWallpapers() {
-        wallpapers.shuffle()
-        for (i in 0 until wallpapers.size) {
-            notifyItemChanged(i)
-        }
-    }
-
-    fun sortWallpapers() {
-        wallpapers.getSortedList()
-        for (i in 0 until wallpapers.size) {
-            notifyItemChanged(i)
-        }
-    }
-
     fun getWallpaper(position: Int): Wallpaper {
         return wallpapers[position]
     }
@@ -163,23 +101,15 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>,
         notifyItemChanged(position)
     }
 
-    @SuppressLint("NotifyDataSetChanged")
-    fun setMarginLayout(marginLayout: Boolean) {
-        isMarginLayout = marginLayout
-        notifyDataSetChanged()
-    }
-
-    inner class WallpaperViewHolder(private val binding: AdapterWallpaperBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class WallpaperViewHolder(private val binding: AdapterSystemWallpaperBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(wallpaper: Wallpaper) {
             setTransitionName(wallpaper)
             setDimensions(wallpaper)
-            setMarginLayout()
             setScaleType()
             loadImage(wallpaper)
             setNameVisibility(wallpaper)
             setDetailsVisibility(wallpaper)
             setErrorVisibility(wallpaper)
-            setCheckBoxVisibility(wallpaper)
             setOnClickListeners(wallpaper)
         }
 
@@ -210,17 +140,6 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>,
             } else {
                 Misc.getDisplayHeight()
             }
-        }
-
-        private fun setMarginLayout() {
-            val marginLayoutParams = binding.wallpaperContainer.layoutParams as ViewGroup.MarginLayoutParams
-            if (isMarginLayout) {
-                val margin = binding.root.resources.getDimensionPixelSize(R.dimen.margin_8dp).div(2)
-                marginLayoutParams.setMargins(margin, margin, margin, margin)
-            } else {
-                marginLayoutParams.setMargins(0, 0, 0, 0)
-            }
-            binding.wallpaperContainer.layoutParams = marginLayoutParams
         }
 
         private fun setScaleType() {
@@ -275,32 +194,17 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>,
             }
         }
 
-        private fun setCheckBoxVisibility(wallpaper: Wallpaper) {
-            if (selectionMode) {
-                binding.checkBox.isChecked = wallpaper.isSelected
-                binding.checkBox.visibility = View.VISIBLE
-            } else {
-                binding.checkBox.isChecked = false
-                binding.checkBox.visibility = View.GONE
-            }
-        }
-
         private fun setOnClickListeners(wallpaper: Wallpaper) {
             binding.wallpaperContainer.setOnClickListener {
-                if (selectionMode) {
-                    binding.checkBox.isChecked = !binding.checkBox.isChecked
-                    wallpaper.isSelected = binding.checkBox.isChecked
-                    selectionMode = wallpapers.any { wallpaper -> wallpaper.isSelected }
-                } else {
-                    binding.progressBar.visibility = View.VISIBLE
-                    wallpaperCallbacks?.onWallpaperClicked(wallpaper, bindingAdapterPosition, binding.wallpaperContainer)
-                }
+                binding.progressBar.visibility = View.VISIBLE
+                wallpaperCallbacks?.onWallpaperClicked(wallpaper, bindingAdapterPosition, binding.wallpaperContainer)
             }
 
             binding.wallpaperContainer.setOnLongClickListener {
                 if (binding.wallpaperImageView.scaleX == 1.0f) {
                     wallpaperCallbacks?.onWallpaperLongClicked(wallpaper, bindingAdapterPosition, it)
                 }
+
                 true
             }
         }
