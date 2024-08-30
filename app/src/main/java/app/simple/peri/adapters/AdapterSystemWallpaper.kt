@@ -179,18 +179,22 @@ class AdapterSystemWallpaper(private val wallpapers: ArrayList<Wallpaper>,
         }
 
         private fun setErrorVisibility(wallpaper: Wallpaper) {
-            when {
-                wallpaper.width!! < Misc.getDisplayWidth() || wallpaper.height!! < Misc.getDisplayHeight() -> {
-                    binding.error.imageTintList = ColorStateList.valueOf(Color.RED)
-                }
+            if (MainPreferences.getDetails()) {
+                when {
+                    wallpaper.width!! < Misc.getDisplayWidth() || wallpaper.height!! < Misc.getDisplayHeight() -> {
+                        binding.error.imageTintList = ColorStateList.valueOf(Color.RED)
+                    }
 
-                wallpaper.width!! > Misc.getDisplayWidth() || wallpaper.height!! > Misc.getDisplayHeight() -> {
-                    binding.error.imageTintList = ColorStateList.valueOf(Color.GRAY)
-                }
+                    wallpaper.width!! > Misc.getDisplayWidth() || wallpaper.height!! > Misc.getDisplayHeight() -> {
+                        binding.error.imageTintList = ColorStateList.valueOf(Color.GRAY)
+                    }
 
-                else -> {
-                    binding.error.visibility = View.GONE
+                    else -> {
+                        binding.error.visibility = View.GONE
+                    }
                 }
+            } else {
+                binding.error.visibility = View.GONE
             }
         }
 
