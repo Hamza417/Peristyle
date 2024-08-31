@@ -517,7 +517,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
         }
 
         wallpaperViewModel.getSystemWallpaper().observe(viewLifecycleOwner) { systemWallpapers ->
-            systemWallpaperAdapter = AdapterSystemWallpaper(arrayListOf(systemWallpapers), -1)
+            systemWallpaperAdapter = AdapterSystemWallpaper(systemWallpapers, -1)
             systemWallpaperAdapter?.setWallpaperCallbacks(object : WallpaperCallbacks {
                 override fun onWallpaperClicked(wallpaper: Wallpaper?, position: Int, constraintLayout: ConstraintLayout?) {
                     openWallpaperScreen(wallpaper!!, constraintLayout!!)

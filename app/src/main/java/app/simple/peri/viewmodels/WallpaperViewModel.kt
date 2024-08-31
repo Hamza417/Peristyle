@@ -9,6 +9,7 @@ import android.content.IntentFilter
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.os.Build
 import android.util.Log
 import androidx.core.content.FileProvider
 import androidx.core.graphics.drawable.toBitmap
@@ -77,8 +78,8 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
         MutableLiveData<Wallpaper>()
     }
 
-    private val systemWallpaperData: MutableLiveData<Wallpaper> by lazy {
-        MutableLiveData<Wallpaper>().also {
+    private val systemWallpaperData: MutableLiveData<ArrayList<Wallpaper>> by lazy {
+        MutableLiveData<ArrayList<Wallpaper>>().also {
             postCurrentSystemWallpaper()
         }
     }
@@ -133,7 +134,7 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
         return isDatabaseLoaded
     }
 
-    fun getSystemWallpaper(): MutableLiveData<Wallpaper> {
+    fun getSystemWallpaper(): MutableLiveData<ArrayList<Wallpaper>> {
         return systemWallpaperData
     }
 
@@ -271,22 +272,46 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
         return hashMap
     }
 
-    private fun getCurrentSystemWallpaper(): Wallpaper {
-        val bitmap = WallpaperManager.getInstance(getApplication()).drawable?.toBitmap()
-        val file = File(getApplication<Application>().filesDir, SYSTEM_WALLPAPER.replace("$", System.currentTimeMillis().div(1000).toString()))
-
-        if (file.exists()) {
-            file.delete()
+    private fun getCurrentSystemWallpaper(): ArrayList<Wallpaper> {
+        val wallpaperManager = WallpaperManager.getInstance(getApplication())
+        val systemBitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            wallpaperManager.getDrawable(WallpaperManager.FLAG_SYSTEM)?.toBitmap()
+        } else {
+            wallpaperManager.drawable?.toBitmap()
         }
 
-        file.outputStream().use { outputStream ->
-            bitmap?.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+        val lockBitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            wallpaperManager.getDrawable(WallpaperManager.FLAG_LOCK)?.toBitmap()
+        } else {
+            wallpaperManager.drawable?.toBitmap()
         }
 
-        val uri = FileProvider.getUriForFile(
-                getApplication(), "${getApplication<Application>().packageName}.provider", file)
+        val systemFile = createTempFile(SYSTEM_WALLPAPER)
+        val lockFile = createTempFile(LOCK_WALLPAPER)
 
-        return Wallpaper().createFromUri(uri.toString(), getApplication())
+        systemFile.outputStream().use { systemBitmap?.compress(Bitmap.CompressFormat.PNG, 100, it) }
+        lockFile.outputStream().use { lockBitmap?.compress(Bitmap.CompressFormat.PNG, 100, it) }
+
+        val systemUri = getFileUri(systemFile)
+        val lockUri = getFileUri(lockFile)
+
+        return arrayListOf(
+                Wallpaper().createFromUri(systemUri.toString(), getApplication()),
+                Wallpaper().createFromUri(lockUri.toString(), getApplication())
+        )
+    }
+
+    private fun createTempFile(fileName: String): File {
+        val file = File(getApplication<Application>().filesDir,
+                        fileName.replace("$", System.currentTimeMillis().div(1000).toString()))
+        if (file.exists()) file.delete()
+        return file
+    }
+
+    private fun getFileUri(file: File): Uri {
+        return FileProvider.getUriForFile(
+                getApplication(), "${getApplication<Application>().packageName}.provider", file
+        )
     }
 
     fun postCurrentSystemWallpaper() {
@@ -406,5 +431,6 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
     companion object {
         private const val TAG = "WallpaperViewModel"
         private const val SYSTEM_WALLPAPER = "system_wallpaper_$.png"
+        private const val LOCK_WALLPAPER = "lock_wallpaper_$.png"
     }
 }
