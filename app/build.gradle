@@ -74,6 +74,11 @@ android {
     }
 
     namespace 'app.simple.peri'
+
+    dependenciesInfo {
+        includeInApk = false
+        includeInBundle = false
+    }
 }
 
 dependencies {
