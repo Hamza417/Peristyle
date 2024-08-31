@@ -73,6 +73,10 @@ object MainPreferences {
         return SharedPreferences.getSharedPreferences().getString(GRID_SPAN, SPAN_DYNAMIC)!!
     }
 
+    fun isSpanDynamic(): Boolean {
+        return getGridSpan() == SPAN_DYNAMIC
+    }
+
     fun getShowNomediaDialog(): Boolean {
         return SharedPreferences.getSharedPreferences().getBoolean(NOMEDIA_DIALOG, true)
     }

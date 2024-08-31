@@ -200,7 +200,11 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>,
             return if (MainPreferences.getGridSpan() == MainPreferences.SPAN_DYNAMIC && bindingAdapterPosition % 5 == 0) {
                 wallpaper.width ?: Misc.getDisplayWidth()
             } else {
-                Misc.getDisplayWidth()
+                if (MainPreferences.isSpanDynamic()) {
+                    Misc.getDisplayWidth()
+                } else {
+                    wallpaper.width!!
+                }
             }
         }
 
@@ -208,7 +212,11 @@ class AdapterWallpaper(private val wallpapers: ArrayList<Wallpaper>,
             return if (MainPreferences.getGridSpan() == MainPreferences.SPAN_DYNAMIC && bindingAdapterPosition % 5 == 0) {
                 wallpaper.height ?: Misc.getDisplayHeight()
             } else {
-                Misc.getDisplayHeight()
+                if (MainPreferences.isSpanDynamic()) {
+                    Misc.getDisplayHeight()
+                } else {
+                    wallpaper.height!!
+                }
             }
         }
 
