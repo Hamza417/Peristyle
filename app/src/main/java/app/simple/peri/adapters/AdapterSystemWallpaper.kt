@@ -10,6 +10,7 @@ import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import app.simple.peri.R
 import app.simple.peri.constants.Misc
 import app.simple.peri.databinding.AdapterSystemWallpaperBinding
 import app.simple.peri.glide.utils.GlideUtils.loadWallpaper
@@ -34,21 +35,9 @@ class AdapterSystemWallpaper(private val wallpapers: ArrayList<Wallpaper>,
     }
 
     override fun onBindViewHolder(holder: WallpaperViewHolder, position: Int) {
-        if (MainPreferences.getGridSpan() == MainPreferences.SPAN_DYNAMIC) {
-            if (holder.bindingAdapterPosition % 5 == 0) {
-                val layoutParams = holder.itemView.layoutParams as StaggeredGridLayoutManager.LayoutParams
-                layoutParams.isFullSpan = true
-                holder.itemView.layoutParams = layoutParams
-            } else {
-                val layoutParams = holder.itemView.layoutParams as StaggeredGridLayoutManager.LayoutParams
-                layoutParams.isFullSpan = false
-                holder.itemView.layoutParams = layoutParams
-            }
-        } else {
-            val layoutParams = holder.itemView.layoutParams as StaggeredGridLayoutManager.LayoutParams
-            layoutParams.isFullSpan = false
-            holder.itemView.layoutParams = layoutParams
-        }
+        val layoutParams = holder.itemView.layoutParams as StaggeredGridLayoutManager.LayoutParams
+        layoutParams.isFullSpan = false
+        holder.itemView.layoutParams = layoutParams
 
         holder.bind(wallpapers[holder.bindingAdapterPosition])
     }
@@ -111,43 +100,32 @@ class AdapterSystemWallpaper(private val wallpapers: ArrayList<Wallpaper>,
             setDetailsVisibility(wallpaper)
             setErrorVisibility(wallpaper)
             setOnClickListeners(wallpaper)
+            setType(this)
         }
 
         private fun setTransitionName(wallpaper: Wallpaper) {
             binding.wallpaperContainer.transitionName = wallpaper.uri
         }
 
+        private fun setType(holder: WallpaperViewHolder) {
+            if (holder.bindingAdapterPosition == 0) {
+                binding.type.setText(R.string.home_screen)
+            } else {
+                binding.type.setText(R.string.lock_screen)
+            }
+        }
+
         private fun setDimensions(wallpaper: Wallpaper) {
-            val width = getWidth(wallpaper)
-            val height = getHeight(wallpaper)
+            val width = Misc.getDisplayWidth()
+            val height = Misc.getDisplayHeight()
             val ratio = String.format(Locale.getDefault(), "%d:%d", width, height)
             set.clone(binding.wallpaperContainer)
             set.setDimensionRatio(binding.wallpaperImageView.id, ratio)
             set.applyTo(binding.wallpaperContainer)
         }
 
-        private fun getWidth(wallpaper: Wallpaper): Int {
-            return if (MainPreferences.getGridSpan() == MainPreferences.SPAN_DYNAMIC && bindingAdapterPosition % 5 == 0) {
-                wallpaper.width ?: Misc.getDisplayWidth()
-            } else {
-                Misc.getDisplayWidth()
-            }
-        }
-
-        private fun getHeight(wallpaper: Wallpaper): Int {
-            return if (MainPreferences.getGridSpan() == MainPreferences.SPAN_DYNAMIC && bindingAdapterPosition % 5 == 0) {
-                wallpaper.height ?: Misc.getDisplayHeight()
-            } else {
-                Misc.getDisplayHeight()
-            }
-        }
-
         private fun setScaleType() {
-            binding.wallpaperImageView.scaleType = if (MainPreferences.getGridSpan() == MainPreferences.SPAN_DYNAMIC && bindingAdapterPosition % 5 == 0) {
-                ImageView.ScaleType.FIT_XY
-            } else {
-                ImageView.ScaleType.CENTER_CROP
-            }
+            binding.wallpaperImageView.scaleType = ImageView.ScaleType.CENTER_CROP
         }
 
         private fun loadImage(wallpaper: Wallpaper) {

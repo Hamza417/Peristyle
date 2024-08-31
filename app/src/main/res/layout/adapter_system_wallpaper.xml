@@ -10,7 +10,7 @@
     app:cardForegroundColor="@android:color/transparent"
     app:cardUseCompatPadding="false"
     app:strokeColor="@color/colorPrimaryContainer"
-    app:strokeWidth="5dp">
+    app:strokeWidth="3dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -89,8 +89,10 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <TextView
-            android:layout_width="match_parent"
+            android:id="@+id/type"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
             android:layout_margin="8dp"
             android:text="@string/current_wallpaper"
             android:textColor="@color/textPrimary"
