@@ -1,0 +1,4 @@
+- Remove round corners from polaroids
+- Added lock screen wallpaper in the main list
+- Fixed wallpaper dimensions when two spans is selected
+- Fixed crash while opening an image from file manager
