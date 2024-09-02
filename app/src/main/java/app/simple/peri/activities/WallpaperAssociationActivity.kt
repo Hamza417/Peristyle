@@ -11,6 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import app.simple.peri.R
 import app.simple.peri.databinding.ActivityMainBinding
 import app.simple.peri.models.Wallpaper
+import app.simple.peri.preferences.SharedPreferences
 import app.simple.peri.ui.WallpaperScreen
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -22,6 +23,7 @@ class WallpaperAssociationActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        SharedPreferences.init(this)
         activityMainBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(activityMainBinding?.root)
         makeAppFullScreen()
