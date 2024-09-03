@@ -33,6 +33,8 @@
         <item>@string/every_6_hours</item>
         <item>@string/every_12_hours</item>
         <item>@string/every_24_hours</item>
+        <item>@string/every_3_days</item>
+        <item>@string/every_7_days</item>
     </string-array>
 
     <string-array name="auto_wallpaper_interval_values">
@@ -46,6 +48,8 @@
         <item>21600000</item>
         <item>43200000</item>
         <item>86400000</item>
+        <item>259200000</item>
+        <item>604800000</item>
     </string-array>
 
     <string-array name="set_for_screen">
@@ -73,4 +77,6 @@
         <item>3</item>
     </string-array>
 
+    <string name="every_3_days">Every 3 Days</string>
+    <string name="every_7_days">Every 7 Days</string>
 </resources>
