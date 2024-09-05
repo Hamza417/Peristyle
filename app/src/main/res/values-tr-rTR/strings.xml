@@ -138,4 +138,15 @@
     <string name="ignore_dot_files">.dot dosyalarını yoksay</string>
     <string name="ignore_subdirectories">Alt dizinleri yoksay</string>
     <string name="linear_auto_wallpaper">Otomatik duvar kağıdında doğrusal olarak duvar kağıdı seç</string>
+    <string name="telegram_group">Telegram Grubu</string>
+    <string name="telegram_summary">Uygulama ile ilgili tartışmalar ve hata raporları göndermek için uygulamanın Telegram grubuna katılın.</string>
+    <string name="copy">Kopyala</string>
+    <string name="restart">Yeniden Başlat</string>
+    <string name="permission_granted">İzin Verildi!</string>
+    <string name="permissions">İzinler</string>
+    <string name="external_storage">Tüm Dosyalara Erişime İzin Ver</string>
+    <string name="external_storage_summary">Ana listede mevcut sistem duvar kağıdını göstermek için kullanılacaktır.</string>
+    <string name="battery_optimization">Pil Optimizasyonunu Yoksay</string>
+    <string name="battery_optimization_summary">Otomatik Duvar Kağıdı\'nın düzgün çalıştığından emin olmak için pil optimizasyonunu devre dışı bırakın.</string>
+    <string name="current_wallpaper">Mevcut Duvar Kağıdı</string>
 </resources>
