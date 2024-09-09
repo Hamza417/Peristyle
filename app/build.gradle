@@ -128,6 +128,10 @@ dependencies {
 
     implementation 'me.saket.telephoto:zoomable-image-glide:0.7.1'
 
+    def hazeVersion = "0.9.0-beta01"
+    implementation "dev.chrisbanes.haze:haze:$hazeVersion"
+    implementation("dev.chrisbanes.haze:haze-materials:$hazeVersion")
+
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.2.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.6.1'

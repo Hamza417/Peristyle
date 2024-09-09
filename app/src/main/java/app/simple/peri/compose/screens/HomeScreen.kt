@@ -53,6 +53,10 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
+import dev.chrisbanes.haze.HazeDefaults
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.haze
+import dev.chrisbanes.haze.hazeChild
 import kotlin.math.absoluteValue
 
 @Composable
@@ -133,6 +137,8 @@ fun CardItem(title: String, onClick: () -> Unit, modifier: Modifier = Modifier, 
         mutableStateOf(ContentScale.Crop)
     }
 
+    val hazeState = remember { HazeState() }
+
     ElevatedCard(
             elevation = CardDefaults.cardElevation(
                     defaultElevation = 6.dp
@@ -147,16 +153,20 @@ fun CardItem(title: String, onClick: () -> Unit, modifier: Modifier = Modifier, 
             GlideImage(
                     model = wallpaper?.uri?.toUri(),
                     contentDescription = null,
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .haze(state = hazeState),
                     alignment = Alignment.Center,
                     contentScale = currentScale.value,
             ) {
                 it.addListener(object : RequestListener<Drawable> {
-                    override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>, isFirstResource: Boolean): Boolean {
+                    override fun onLoadFailed(
+                            e: GlideException?, model: Any?, target: Target<Drawable>, isFirstResource: Boolean): Boolean {
                         return false
                     }
 
-                    override fun onResourceReady(resource: Drawable, model: Any, target: Target<Drawable>?, dataSource: DataSource, isFirstResource: Boolean): Boolean {
+                    override fun onResourceReady(
+                            resource: Drawable, model: Any, target: Target<Drawable>?, dataSource: DataSource, isFirstResource: Boolean): Boolean {
                         return false
                     }
                 })
@@ -165,14 +175,26 @@ fun CardItem(title: String, onClick: () -> Unit, modifier: Modifier = Modifier, 
                     .fitCenter()
             }
 
-            Text(
-                    text = title,
+            Box(
                     modifier = Modifier
-                        .align(Alignment.Center) // Align the text to the center of the Box
-                        .padding(16.dp)
-                        .background(Color(0x80000000)),
-                    textAlign = TextAlign.Center,
-            )
+                        .wrapContentHeight()
+                        .fillMaxWidth()
+                        .hazeChild(
+                                state = hazeState,
+                                style = HazeDefaults.style(backgroundColor = Color(0x35000000), blurRadius = 15.dp))
+                        .background(Color(0x35000000))
+                        .align(Alignment.BottomCenter)
+            ) {
+                Text(
+                        text = title,
+                        modifier = Modifier
+                            .padding(16.dp),
+                        textAlign = TextAlign.Start,
+                        fontSize = 24.sp, // Set the font size
+                        fontWeight = FontWeight.Bold, // Make the text bold
+                        color = Color.White, // Set the text color
+                )
+            }
         }
     }
 }
