@@ -431,10 +431,6 @@ class WallpaperScreen : Fragment() {
                             }
                         }
 
-                        if (mode != EXPORT) {
-                            wallpaperViewModel?.postCurrentSystemWallpaper()
-                        }
-
                         loader.dismiss()
                     }.onFailure {
                         loader.dismiss()
