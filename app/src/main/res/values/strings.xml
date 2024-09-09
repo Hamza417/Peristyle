@@ -148,4 +148,5 @@
     <string name="battery_optimization">Ignore Battery Optimization</string>
     <string name="battery_optimization_summary">Disable battery optimization to make sure Auto Wallaper works properly.</string>
     <string name="current_wallpaper">Current Wallpaper</string>
+    <string name="wallpapers">Wallpapers</string>
 </resources>
