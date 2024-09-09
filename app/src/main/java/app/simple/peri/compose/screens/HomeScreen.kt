@@ -112,8 +112,10 @@ fun HomeScreen(context: Context, navController: NavController? = null) {
                             else -> context.getString(R.string.lock_screen)
                         },
                         onClick = {
-                            navController?.navigate(Routes.WALLPAPER) {
-                                navController.currentBackStackEntry?.savedStateHandle?.set(Routes.WALLPAPER_ARG, wallpaper)
+                            if (wallpaper != null) {
+                                navController?.navigate(Routes.WALLPAPER) {
+                                    navController.currentBackStackEntry?.savedStateHandle?.set(Routes.WALLPAPER_ARG, wallpaper)
+                                }
                             }
                         },
                         modifier = Modifier
@@ -224,7 +226,7 @@ fun CardItem(title: String, onClick: () -> Unit, modifier: Modifier = Modifier, 
                 )
 
                 Text(
-                        text = wallpaper?.width.toString() + "x" + wallpaper?.height.toString(),
+                        text = (wallpaper?.width ?: 0).toString() + "x" + (wallpaper?.height ?: 0).toString(),
                         modifier = Modifier
                             .padding(start = 16.dp, top = 4.dp, bottom = 16.dp),
                         textAlign = TextAlign.End,
