@@ -181,8 +181,7 @@ fun CardItem(title: String, onClick: () -> Unit, modifier: Modifier = Modifier, 
                         .fillMaxWidth()
                         .hazeChild(
                                 state = hazeState,
-                                style = HazeDefaults.style(backgroundColor = Color(0x35000000), blurRadius = 15.dp))
-                        .background(Color(0x35000000))
+                                style = HazeDefaults.style(backgroundColor = Color(0x50000000), blurRadius = 15.dp))
                         .align(Alignment.BottomCenter)
             ) {
                 Text(
@@ -205,7 +204,7 @@ fun Header(title: String, modifier: Modifier = Modifier, navController: NavContr
             modifier = modifier
                 .fillMaxWidth()
                 .wrapContentHeight(),
-            verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
                 text = title,
