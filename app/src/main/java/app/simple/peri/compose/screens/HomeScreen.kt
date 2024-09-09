@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerDefaults
@@ -19,9 +19,9 @@ import androidx.compose.foundation.pager.PagerSnapDistance
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddCircle
-import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
@@ -29,6 +29,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -38,8 +39,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -100,7 +101,10 @@ fun HomeScreen(context: Context, navController: NavController? = null) {
                 val wallpaper = systemWallpapers.getOrNull(page)
 
                 CardItem(
-                        title = if (page == 0) context.getString(R.string.lock_screen) else context.getString(R.string.home_screen),
+                        title = when (page) {
+                            0 -> context.getString(R.string.home_screen)
+                            else -> context.getString(R.string.lock_screen)
+                        },
                         onClick = {
                             if (page == 0) {
                                 navController?.navigate("wallpaper")
@@ -251,63 +255,120 @@ fun Header(title: String, modifier: Modifier = Modifier, navController: NavContr
 
 @Composable
 fun BottomMenu(context: Context, modifier: Modifier = Modifier) {
+    val height = 60.dp
+    val rowPadding = 16.dp
+
     Row(
             modifier = modifier
-                .fillMaxWidth()
-                .wrapContentHeight(),
-            verticalAlignment = Alignment.Bottom
+                .fillMaxHeight()
+                .padding(start = rowPadding, end = rowPadding),
+            verticalAlignment = Alignment.CenterVertically
     ) {
-        BottomMenuItem(title = context.getString(R.string.home),
-                       imageVector = Icons.Filled.Home,
-                       modifier = Modifier.weight(1f))
+        BottomMenuItem(
+                title = context.getString(R.string.tags),
+                drawableID = R.drawable.ic_label,
+                modifier = Modifier
+                    .weight(0.2F)
+                    .height(height) // Set a smaller height
+        )
 
-        BottomMenuItem(title = context.getString(R.string.settings),
-                       imageVector = Icons.Filled.Settings,
-                       modifier = Modifier.weight(1f))
+        BottomMenuItem(
+                title = context.getString(R.string.auto_wallpaper),
+                drawableID = R.drawable.ic_schedule,
+                modifier = Modifier
+                    .weight(0.2F)
+                    .height(height) // Set a smaller height
+        )
 
-        BottomMenuItem(title = context.getString(R.string.wallpapers),
-                       imageVector = Icons.Filled.AddCircle,
-                       modifier = Modifier.weight(1f))
-    }
-}
-
-@Composable
-fun BottomMenuItem(modifier: Modifier = Modifier, title: String = "", imageVector: ImageVector? = null) {
-    Column(
-            modifier = modifier
-                .wrapContentHeight(),
-            horizontalAlignment = Alignment.CenterHorizontally
-    ) {
         Card(
                 elevation = CardDefaults.cardElevation(
                         defaultElevation = 0.dp
                 ),
                 modifier = Modifier
                     .padding(8.dp)
-                    .width(64.dp)
-                    .height(64.dp)
-                    .weight(1f),
+                    .weight(0.6f)
+                    .height(height), // Set a smaller height
                 shape = RoundedCornerShape(32.dp),
+                onClick = {
+                    // Navigate to the wallpapers screen
+                }
         ) {
-            IconButton(
+            Row(
                     modifier = Modifier.fillMaxSize(),
-                    onClick = {
-                        // Navigate to the home screen
-                    },
+                    verticalAlignment = Alignment.CenterVertically
             ) {
+                Text(
+                        text = context.getString(R.string.wallpapers),
+                        textAlign = TextAlign.Center,
+                        fontSize = 20.sp, // Set the font size
+                        modifier = Modifier.weight(1f), // Set the weight
+                        fontWeight = FontWeight.Bold, // Make the text bold
+                )
                 Icon(
-                        imageVector = imageVector ?: Icons.Filled.Home,
+                        imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                         contentDescription = null,
+                        modifier = Modifier
+                            .size(64.dp)
+                            .padding(16.dp)
                 )
             }
         }
-
-        Text(
-                text = title,
-                textAlign = TextAlign.Center,
-                fontSize = 16.sp, // Set the font size
-                modifier = Modifier.weight(1f), // Set the weight
-                fontWeight = FontWeight.Bold, // Make the text bold
-        )
     }
+}
+
+@Composable
+fun BottomMenuItem(modifier: Modifier = Modifier, title: String = "", drawableID: Int = 0) {
+    val showDialog = remember { mutableStateOf(false) }
+
+    if (showDialog.value) {
+        ShowTagDialog(title = title, onDismiss = { showDialog.value = false })
+    }
+
+    Column(
+            modifier = modifier,
+            horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Card(
+                elevation = CardDefaults.cardElevation(
+                        defaultElevation = 0.dp
+                ),
+                modifier = modifier
+                    .padding(start = 8.dp, end = 8.dp)
+                    .weight(1f),
+                shape = RoundedCornerShape(32.dp),
+                onClick = {
+                    // Show a dialog with the tags
+                    showDialog.value = true
+                },
+        ) {
+            Icon(
+                    painter = painterResource(id = drawableID),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .fillMaxWidth()
+                        .padding(16.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun ShowTagDialog(title: String, onDismiss: () -> Unit) {
+    AlertDialog(
+            onDismissRequest = onDismiss,
+            title = {
+                Text(text = title)
+            },
+            text = {
+                Text(text = "This is a placeholder")
+            },
+            confirmButton = {
+                TextButton(
+                        onClick = onDismiss
+                ) {
+                    Text(text = "OK")
+                }
+            }
+    )
 }
