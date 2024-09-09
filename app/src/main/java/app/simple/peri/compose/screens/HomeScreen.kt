@@ -6,12 +6,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerDefaults
@@ -49,6 +52,7 @@ import androidx.compose.ui.util.lerp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import app.simple.peri.R
+import app.simple.peri.compose.nav.Routes
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.utils.FileUtils.toUri
 import app.simple.peri.viewmodels.HomeScreenViewModel
@@ -81,7 +85,9 @@ fun HomeScreen(context: Context, navController: NavController? = null) {
             by homeScreenViewModel.getSystemWallpaper().observeAsState(initial = arrayListOf())
 
     Surface(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .windowInsetsPadding(WindowInsets.safeDrawing),
             color = Color.Transparent
     ) {
         Column {
@@ -106,10 +112,8 @@ fun HomeScreen(context: Context, navController: NavController? = null) {
                             else -> context.getString(R.string.lock_screen)
                         },
                         onClick = {
-                            if (page == 0) {
-                                navController?.navigate("wallpaper")
-                            } else {
-                                navController?.navigate("settings")
+                            navController?.navigate(Routes.WALLPAPER) {
+                                navController.currentBackStackEntry?.savedStateHandle?.set(Routes.WALLPAPER_ARG, wallpaper)
                             }
                         },
                         modifier = Modifier

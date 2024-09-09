@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import app.simple.peri.compose.screens.HomeScreen
+import app.simple.peri.compose.screens.WallpaperScreen
 
 @Composable
 fun PeristyleNavigation(context: Context) {
@@ -16,16 +17,8 @@ fun PeristyleNavigation(context: Context) {
             HomeScreen(context, navController)
         }
 
-        composable(Routes.LIST) {
-            // ListScreen()
-        }
-
-        composable(Routes.WALLPAPER) {
-            // WallpaperScreen()
-        }
-
-        composable(Routes.SETTINGS) {
-            // SettingsScreen()
+        composable(route = Routes.WALLPAPER) { backStackEntry ->
+            WallpaperScreen(context, navController)
         }
     }
 }

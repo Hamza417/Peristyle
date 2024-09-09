@@ -14,9 +14,10 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.utils.WallpaperSort
+import java.io.Serializable
 
 @Entity(tableName = "wallpapers")
-class Wallpaper : Parcelable, Comparable<Wallpaper> {
+class Wallpaper : Parcelable, Comparable<Wallpaper>, Serializable {
 
     @ColumnInfo(name = "name")
     var name: String? = null
