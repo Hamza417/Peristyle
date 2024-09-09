@@ -121,7 +121,7 @@ fun WallpaperScreen(context: Context, navController: NavHostController) {
         ) {
             Text(
                     text = wallpaper?.name ?: "",
-                    fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                    fontWeight = FontWeight.Bold,
                     color = Color.White,
                     modifier = Modifier.padding(top = 16.dp, start = 16.dp),
                     fontSize = 22.sp
@@ -135,7 +135,7 @@ fun WallpaperScreen(context: Context, navController: NavHostController) {
                         append(" ")
                         append(wallpaper?.size?.toSize() ?: "")
                     },
-                    fontWeight = androidx.compose.ui.text.font.FontWeight.Light,
+                    fontWeight = FontWeight.Light,
                     color = Color.White,
                     modifier = Modifier.padding(bottom = 16.dp, start = 16.dp, top = 4.dp),
                     fontSize = 18.sp
@@ -159,7 +159,7 @@ fun WallpaperScreen(context: Context, navController: NavHostController) {
                             color = Color.White,
                             fontSize = 18.sp,
                             modifier = Modifier.padding(12.dp),
-                            fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold
+                            fontWeight = FontWeight.SemiBold
                     )
                 }
 
@@ -180,7 +180,7 @@ fun WallpaperScreen(context: Context, navController: NavHostController) {
                             color = Color.Black,
                             fontSize = 18.sp,
                             modifier = Modifier.padding(12.dp),
-                            fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold
+                            fontWeight = FontWeight.SemiBold
                     )
                 }
             }
@@ -188,7 +188,6 @@ fun WallpaperScreen(context: Context, navController: NavHostController) {
 
         if (showDialog) {
             CustomDialog(
-                    value = "",
                     setShowDialog = { showDialog = it },
                     context = context,
                     drawable = drawable
@@ -198,11 +197,7 @@ fun WallpaperScreen(context: Context, navController: NavHostController) {
 }
 
 @Composable
-fun CustomDialog(value: String, setShowDialog: (Boolean) -> Unit, context: Context, drawable: Drawable?) {
-
-    val txtFieldError = remember { mutableStateOf("") }
-    val txtField = remember { mutableStateOf(value) }
-
+fun CustomDialog(setShowDialog: (Boolean) -> Unit, context: Context, drawable: Drawable?) {
     Dialog(onDismissRequest = { setShowDialog(false) }) {
         Surface(
                 shape = RoundedCornerShape(16.dp),
