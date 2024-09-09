@@ -187,7 +187,7 @@ fun CardItem(title: String, onClick: () -> Unit, modifier: Modifier = Modifier, 
                     .fitCenter()
             }
 
-            Box(
+            Column(
                     modifier = Modifier
                         .wrapContentHeight()
                         .fillMaxWidth()
@@ -199,10 +199,20 @@ fun CardItem(title: String, onClick: () -> Unit, modifier: Modifier = Modifier, 
                 Text(
                         text = title,
                         modifier = Modifier
-                            .padding(16.dp),
+                            .padding(start = 16.dp, top = 16.dp, end = 16.dp),
                         textAlign = TextAlign.Start,
                         fontSize = 24.sp, // Set the font size
                         fontWeight = FontWeight.Bold, // Make the text bold
+                        color = Color.White, // Set the text color
+                )
+
+                Text(
+                        text = wallpaper?.width.toString() + "x" + wallpaper?.height.toString(),
+                        modifier = Modifier
+                            .padding(start = 16.dp, top = 4.dp, bottom = 16.dp),
+                        textAlign = TextAlign.End,
+                        fontSize = 16.sp, // Set the font size
+                        fontWeight = FontWeight.Light, // Make the text bold
                         color = Color.White, // Set the text color
                 )
             }
@@ -247,17 +257,22 @@ fun BottomMenu(context: Context, modifier: Modifier = Modifier) {
                 .wrapContentHeight(),
             verticalAlignment = Alignment.Bottom
     ) {
-        BottomMenuItem(title = context.getString(R.string.home), Icons.Filled.Home, modifier = Modifier.weight(1f))
+        BottomMenuItem(title = context.getString(R.string.home),
+                       imageVector = Icons.Filled.Home,
+                       modifier = Modifier.weight(1f))
+
         BottomMenuItem(title = context.getString(R.string.settings),
                        imageVector = Icons.Filled.Settings,
                        modifier = Modifier.weight(1f))
-        BottomMenuItem(title = context.getString(R.string.wallpapers), Icons.Filled.AddCircle, modifier = Modifier.weight(1f)
-        )
+
+        BottomMenuItem(title = context.getString(R.string.wallpapers),
+                       imageVector = Icons.Filled.AddCircle,
+                       modifier = Modifier.weight(1f))
     }
 }
 
 @Composable
-fun BottomMenuItem(title: String = "", imageVector: ImageVector? = null, modifier: Modifier = Modifier) {
+fun BottomMenuItem(modifier: Modifier = Modifier, title: String = "", imageVector: ImageVector? = null) {
     Column(
             modifier = modifier
                 .wrapContentHeight(),
