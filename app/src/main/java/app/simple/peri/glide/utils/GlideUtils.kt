@@ -50,13 +50,13 @@ object GlideUtils {
             .diskCacheStrategy(DiskCacheStrategy.ALL)
             .set(Downsampler.ALLOW_HARDWARE_CONFIG, false)
             .addListener(object : RequestListener<Bitmap> {
-                override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Bitmap>?, isFirstResource: Boolean): Boolean {
+                override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Bitmap>, isFirstResource: Boolean): Boolean {
                     /* no-op */
                     return false
                 }
 
-                override fun onResourceReady(resource: Bitmap?, model: Any?, target: Target<Bitmap>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
-                    onLoad(resource!!)
+                override fun onResourceReady(resource: Bitmap, model: Any, target: Target<Bitmap>?, dataSource: DataSource, isFirstResource: Boolean): Boolean {
+                    onLoad(resource)
                     return false
                 }
             })
@@ -70,13 +70,13 @@ object GlideUtils {
             .diskCacheStrategy(DiskCacheStrategy.ALL)
             .set(Downsampler.ALLOW_HARDWARE_CONFIG, false)
             .addListener(object : RequestListener<Bitmap> {
-                override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Bitmap>?, isFirstResource: Boolean): Boolean {
+                override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Bitmap>, isFirstResource: Boolean): Boolean {
                     /* no-op */
                     return false
                 }
 
-                override fun onResourceReady(resource: Bitmap?, model: Any?, target: Target<Bitmap>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
-                    onLoad(resource!!)
+                override fun onResourceReady(resource: Bitmap, model: Any, target: Target<Bitmap>?, dataSource: DataSource, isFirstResource: Boolean): Boolean {
+                    onLoad(resource)
                     return false
                 }
             })
