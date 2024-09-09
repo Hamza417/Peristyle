@@ -15,9 +15,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -148,7 +150,7 @@ fun WallpaperScreen(context: Context, navController: NavHostController) {
                         },
                         shape = RoundedCornerShape(20.dp),
                         modifier = Modifier
-                            .weight(0.5F)
+                            .wrapContentWidth()
                             .padding(start = 16.dp, bottom = 16.dp),
                         colors = ButtonDefaults.buttonColors(
                                 containerColor = Color.Unspecified,
@@ -160,6 +162,16 @@ fun WallpaperScreen(context: Context, navController: NavHostController) {
                             fontSize = 18.sp,
                             modifier = Modifier.padding(12.dp),
                             fontWeight = FontWeight.SemiBold
+                    )
+
+                    Icon(
+                            imageVector = Icons.Rounded.Edit,
+                            contentDescription = "",
+                            tint = Color.White,
+                            modifier = Modifier
+                                .width(24.dp)
+                                .height(24.dp)
+                                .padding(end = 8.dp)
                     )
                 }
 
