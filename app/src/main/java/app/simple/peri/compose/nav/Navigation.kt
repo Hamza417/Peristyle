@@ -5,10 +5,11 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import app.simple.peri.compose.screens.HomeScreen
+import app.simple.peri.compose.screens.Home
+import app.simple.peri.compose.screens.List
+import app.simple.peri.compose.screens.Settings
 import app.simple.peri.compose.screens.Setup
-import app.simple.peri.compose.screens.WallpaperScreen
-import app.simple.peri.compose.screens.Wallpapers
+import app.simple.peri.compose.screens.Wallpaper
 import app.simple.peri.compose.screens.isSetupComplete
 import app.simple.peri.utils.ConditionUtils.invert
 
@@ -26,15 +27,19 @@ fun PeristyleNavigation(context: Context) {
         }
 
         composable(Routes.HOME) {
-            HomeScreen(context, navController)
+            Home(context, navController)
         }
 
         composable(route = Routes.WALLPAPER) {
-            WallpaperScreen(context, navController)
+            Wallpaper(context, navController)
         }
 
         composable(route = Routes.WALLPAPERS) {
-            Wallpapers(navController)
+            List(navController)
+        }
+
+        composable(route = Routes.SETTINGS) {
+            Settings(navController)
         }
     }
 }

@@ -75,7 +75,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @Composable
-fun Wallpapers(navController: NavController? = null) {
+fun List(navController: NavController? = null) {
     val wallpaperViewModel: WallpaperViewModel = viewModel()
     var wallpapers by remember { mutableStateOf(emptyList<Wallpaper>()) }
 

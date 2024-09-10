@@ -189,4 +189,38 @@ object MainPreferences {
         val tweaks = getTweaks()
         return tweaks?.contains(option) ?: false
     }
+
+    fun isIgnoreDotFiles(): Boolean {
+        return isTweakOptionSelected(IGNORE_DOT_FILES)
+    }
+
+    fun isIgnoreSubDirs(): Boolean {
+        return isTweakOptionSelected(IGNORE_SUB_DIRS)
+    }
+
+    fun isLinearAutoWallpaper(): Boolean {
+        return isTweakOptionSelected(LINEAR_AUTO_WALLPAPER)
+    }
+
+    fun setIgnoreDotFiles(ignoreDotFiles: Boolean) {
+        setTweakOption(IGNORE_DOT_FILES, ignoreDotFiles)
+    }
+
+    fun setIgnoreSubDirs(ignoreSubDirs: Boolean) {
+        setTweakOption(IGNORE_SUB_DIRS, ignoreSubDirs)
+    }
+
+    fun setLinearAutoWallpaper(linearAutoWallpaper: Boolean) {
+        setTweakOption(LINEAR_AUTO_WALLPAPER, linearAutoWallpaper)
+    }
+
+    private fun setTweakOption(option: String, enabled: Boolean) {
+        val tweaks = getTweaks()?.toMutableSet() ?: mutableSetOf()
+        if (enabled) {
+            tweaks.add(option)
+        } else {
+            tweaks.remove(option)
+        }
+        SharedPreferences.getSharedPreferences().edit().putStringSet(TWEAKS, tweaks).apply()
+    }
 }

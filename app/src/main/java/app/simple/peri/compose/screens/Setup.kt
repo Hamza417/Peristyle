@@ -13,7 +13,6 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -36,20 +35,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import app.simple.peri.BuildConfig
 import app.simple.peri.R
+import app.simple.peri.compose.commons.COMMON_PADDING
+import app.simple.peri.compose.commons.TopHeader
 import app.simple.peri.compose.dialogs.ShowWarningDialog
 import app.simple.peri.compose.nav.Routes
 import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.utils.PermissionUtils
 import app.simple.peri.utils.PermissionUtils.isBatteryOptimizationDisabled
 import app.simple.peri.utils.PermissionUtils.requestIgnoreBatteryOptimizations
-
-private val commonPadding = 16.dp
 
 @Composable
 fun Setup(context: Context, navController: NavController? = null) {
@@ -69,20 +67,20 @@ fun Setup(context: Context, navController: NavController? = null) {
     Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(commonPadding)
+                .padding(COMMON_PADDING)
                 .windowInsetsPadding(WindowInsets.safeDrawing),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
     ) {
         TopHeader(context.getString(R.string.setup),
-                  modifier = Modifier.padding(commonPadding))
+                  modifier = Modifier.padding(COMMON_PADDING))
 
         Permissions(context = context, navController = navController, modifier = Modifier
-            .padding(commonPadding)
+            .padding(COMMON_PADDING)
             .wrapContentHeight())
 
         Folder(context = context, navController = navController, modifier = Modifier
-            .padding(commonPadding)
+            .padding(COMMON_PADDING)
             .weight(1F))
 
         Button(
@@ -94,7 +92,7 @@ fun Setup(context: Context, navController: NavController? = null) {
                     }
                 },
                 modifier = Modifier
-                    .padding(commonPadding)
+                    .padding(COMMON_PADDING)
                     .fillMaxWidth(),
         ) {
             Text(text = context.getString(R.string.continue_button),
@@ -102,24 +100,6 @@ fun Setup(context: Context, navController: NavController? = null) {
                  fontSize = 18.sp,
                  modifier = Modifier.padding(12.dp))
         }
-    }
-}
-
-@Composable
-fun TopHeader(title: String, modifier: Modifier = Modifier) {
-    Row(
-            modifier = modifier
-                .fillMaxWidth()
-                .wrapContentHeight(),
-            verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-                text = title,
-                textAlign = TextAlign.Start,
-                fontSize = 32.sp, // Set the font size
-                modifier = Modifier.weight(1f), // Set the weight
-                fontWeight = FontWeight.Bold, // Make the text bold
-        )
     }
 }
 
@@ -168,7 +148,7 @@ fun Permissions(modifier: Modifier, context: Context, navController: NavControll
         )
 
         HorizontalDivider(
-                modifier = Modifier.padding(bottom = commonPadding, start = commonPadding, end = commonPadding)
+                modifier = Modifier.padding(bottom = COMMON_PADDING, start = COMMON_PADDING, end = COMMON_PADDING)
         )
 
         Card(
@@ -254,7 +234,7 @@ fun Folder(modifier: Modifier, context: Context, navController: NavController? =
         )
 
         HorizontalDivider(
-                modifier = Modifier.padding(bottom = commonPadding, start = commonPadding, end = commonPadding)
+                modifier = Modifier.padding(bottom = COMMON_PADDING, start = COMMON_PADDING, end = COMMON_PADDING)
         )
 
         Card(
@@ -273,7 +253,7 @@ fun Folder(modifier: Modifier, context: Context, navController: NavController? =
                     text = context.getString(R.string.select_folder),
                     fontSize = 18.sp,
                     modifier = Modifier
-                        .padding(top = commonPadding, start = commonPadding, end = commonPadding)
+                        .padding(top = COMMON_PADDING, start = COMMON_PADDING, end = COMMON_PADDING)
                         .fillMaxWidth(),
                     fontWeight = FontWeight.Medium
             )
@@ -282,7 +262,7 @@ fun Folder(modifier: Modifier, context: Context, navController: NavController? =
                     text = context.getString(R.string.select_folder_summary),
                     fontSize = 14.sp,
                     modifier = Modifier
-                        .padding(bottom = commonPadding, start = commonPadding, end = commonPadding)
+                        .padding(bottom = COMMON_PADDING, start = COMMON_PADDING, end = COMMON_PADDING)
                         .fillMaxWidth(),
                     fontWeight = FontWeight.Normal
             )
@@ -296,7 +276,7 @@ fun PermissionText(text: String, summary: String = "") {
             text = text,
             fontSize = 18.sp,
             modifier = Modifier
-                .padding(top = commonPadding, start = commonPadding, end = commonPadding)
+                .padding(top = COMMON_PADDING, start = COMMON_PADDING, end = COMMON_PADDING)
                 .fillMaxWidth(),
             fontWeight = FontWeight.Medium
     )
@@ -305,7 +285,7 @@ fun PermissionText(text: String, summary: String = "") {
             text = summary,
             fontSize = 14.sp,
             modifier = Modifier
-                .padding(bottom = commonPadding, start = commonPadding, end = commonPadding)
+                .padding(bottom = COMMON_PADDING, start = COMMON_PADDING, end = COMMON_PADDING)
                 .fillMaxWidth(),
             fontWeight = FontWeight.Normal
     )

@@ -70,7 +70,7 @@ import dev.chrisbanes.haze.hazeChild
 import kotlin.math.absoluteValue
 
 @Composable
-fun HomeScreen(context: Context, navController: NavController? = null) {
+fun Home(context: Context, navController: NavController? = null) {
     val pagerState = rememberPagerState(pageCount = {
         2
     })
@@ -258,7 +258,7 @@ fun Header(title: String, modifier: Modifier = Modifier, navController: NavContr
 
         IconButton(
                 onClick = {
-                    navController?.navigate("settings")
+                    navController?.navigate(Routes.SETTINGS)
                 },
         ) {
             Icon(

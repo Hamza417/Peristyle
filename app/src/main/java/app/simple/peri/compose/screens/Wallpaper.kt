@@ -64,7 +64,7 @@ import dev.chrisbanes.haze.hazeChild
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun WallpaperScreen(context: Context, navController: NavHostController) {
+fun Wallpaper(context: Context, navController: NavHostController) {
     val wallpaper = navController.previousBackStackEntry?.savedStateHandle?.get<Wallpaper>(Routes.WALLPAPER_ARG)
     var showDialog by remember { mutableStateOf(false) }
     var drawable by remember { mutableStateOf<Drawable?>(null) }
