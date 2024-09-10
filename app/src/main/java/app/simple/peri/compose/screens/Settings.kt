@@ -1,6 +1,7 @@
 package app.simple.peri.compose.screens
 
 import ClickablePreference
+import OtherApps
 import SecondaryHeader
 import SwitchPreference
 import android.content.Intent
@@ -13,12 +14,16 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import app.simple.peri.R
 import app.simple.peri.compose.commons.COMMON_PADDING
 import app.simple.peri.compose.commons.TopHeader
+import app.simple.peri.compose.dialogs.ShowInureAppManagerDialog
+import app.simple.peri.compose.dialogs.ShowPositionalDialog
 import app.simple.peri.preferences.MainPreferences
 
 @Composable
@@ -73,6 +78,40 @@ fun Settings(navController: NavController? = null) {
                 val intent = Intent(Intent.ACTION_VIEW)
                 intent.data = Uri.parse("https://t.me/peristyle_app")
                 context.startActivity(intent)
+            }
+        }
+        item {
+            val inureDialog = remember { mutableStateOf(false) }
+            val positionalDialog = remember { mutableStateOf(false) }
+
+            if (inureDialog.value) {
+                ShowInureAppManagerDialog {
+                    inureDialog.value = false
+                }
+            }
+
+            if (positionalDialog.value) {
+                ShowPositionalDialog {
+                    positionalDialog.value = false
+                }
+            }
+
+            SecondaryHeader(title = context.getString(R.string.other_apps))
+
+            OtherApps(
+                    title = context.getString(R.string.inure_app_manager),
+                    description = context.getString(R.string.inure_app_manager_summary),
+                    iconResId = R.drawable.inure,
+            ) {
+                inureDialog.value = true
+            }
+
+            OtherApps(
+                    title = context.getString(R.string.positional),
+                    description = context.getString(R.string.positional_summary),
+                    iconResId = R.drawable.positional,
+            ) {
+                positionalDialog.value = true
             }
         }
     }
