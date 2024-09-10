@@ -1,6 +1,7 @@
 package app.simple.peri.compose.screens
 
 import android.graphics.drawable.Drawable
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -22,6 +24,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
@@ -32,6 +35,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -117,6 +121,18 @@ fun WallpaperItem(wallpaper: Wallpaper, navController: NavController? = null, on
     val hazeState = remember { HazeState() }
     var showDialog by remember { mutableStateOf(false) }
 
+    var displayWidth by remember { mutableIntStateOf(0) }
+    var displayHeight by remember { mutableIntStateOf(0) }
+
+    displayWidth = LocalView.current.width
+    displayHeight = LocalView.current.height
+
+    val aspectRatio by remember {
+        mutableFloatStateOf(displayWidth.toFloat() / displayHeight.toFloat())
+    }
+
+    Log.d("List", "Display Width: $displayWidth, Display Height: $displayHeight")
+
     if (showDialog) {
         WallpaperMenu({
                           showDialog = it
@@ -128,12 +144,13 @@ fun WallpaperItem(wallpaper: Wallpaper, navController: NavController? = null, on
                     defaultElevation = 6.dp
             ),
             modifier = Modifier
-                .aspectRatio(9F / 16F)
+                .aspectRatio(aspectRatio)
                 .padding(8.dp)
                 .combinedClickable(
                         onClick = {
                             navController?.navigate(Routes.WALLPAPER) {
-                                navController.currentBackStackEntry?.savedStateHandle?.set(Routes.WALLPAPER_ARG, wallpaper)
+                                navController.currentBackStackEntry
+                                    ?.savedStateHandle?.set(Routes.WALLPAPER_ARG, wallpaper)
                             }
                         },
                         onLongClick = {
@@ -192,15 +209,7 @@ fun WallpaperItem(wallpaper: Wallpaper, navController: NavController? = null, on
                         softWrap = false,
                 )
 
-                Text(
-                        text = (wallpaper.width ?: 0).toString() + "x" + (wallpaper.height ?: 0).toString(),
-                        modifier = Modifier
-                            .padding(start = 16.dp, top = 4.dp, bottom = 16.dp),
-                        textAlign = TextAlign.End,
-                        fontSize = 14.sp, // Set the font size
-                        fontWeight = FontWeight.Light, // Make the text bold
-                        color = Color.White, // Set the text color
-                )
+                WallpaperDimensionsText(wallpaper, displayWidth, displayHeight)
             }
         }
     }
@@ -299,6 +308,47 @@ fun WallpaperMenu(setShowDialog: (Boolean) -> Unit, wallpaper: Wallpaper, onDele
                         )
                     }
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun WallpaperDimensionsText(wallpaper: Wallpaper, displayWidth: Int, displayHeight: Int) {
+    Row(
+            modifier = Modifier
+                .padding(start = 16.dp, top = 4.dp, bottom = 16.dp, end = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+                text = "${wallpaper.width ?: 0}x${wallpaper.height ?: 0}",
+                textAlign = TextAlign.Start,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Light,
+                color = Color.White,
+                modifier = Modifier.weight(1f)
+        )
+        when {
+            (wallpaper.width ?: 0) > displayWidth || (wallpaper.height ?: 0) > displayHeight -> {
+                Icon(
+                        imageVector = Icons.Rounded.Warning, // Use an appropriate icon
+                        contentDescription = null,
+                        tint = Color.LightGray,
+                        modifier = Modifier.size(16.dp)
+                )
+            }
+
+            (wallpaper.width ?: 0) < displayWidth || (wallpaper.height ?: 0) < displayHeight -> {
+                Icon(
+                        imageVector = Icons.Rounded.Warning, // Use an appropriate icon
+                        contentDescription = null,
+                        tint = Color.Red,
+                        modifier = Modifier.size(16.dp)
+                )
+            }
+
+            else -> {
+
             }
         }
     }
