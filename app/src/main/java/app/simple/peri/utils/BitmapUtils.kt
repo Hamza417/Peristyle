@@ -12,6 +12,7 @@ import android.media.ExifInterface
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
+import androidx.palette.graphics.Palette
 import java.io.InputStream
 
 object BitmapUtils {
@@ -169,5 +170,10 @@ object BitmapUtils {
         val matrix = Matrix()
         matrix.postRotate(angle)
         return Bitmap.createBitmap(source, 0, 0, source.width, source.height, matrix, true)
+    }
+
+    fun Bitmap.generatePalette(): Palette {
+        val palette = Palette.from(this).generate()
+        return palette
     }
 }

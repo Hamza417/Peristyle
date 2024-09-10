@@ -3,6 +3,9 @@ package app.simple.peri.utils
 import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
 import app.simple.peri.utils.StringUtils.endsWithAny
+import java.io.InputStream
+import java.math.BigInteger
+import java.security.MessageDigest
 import java.text.CharacterIterator
 import java.text.StringCharacterIterator
 import java.util.Stack
@@ -81,5 +84,11 @@ object FileUtils {
 
     fun List<DocumentFile>.filterDotFiles(): ArrayList<DocumentFile> {
         return this.filter { !it.name!!.startsWith(".") } as ArrayList<DocumentFile>
+    }
+
+    fun InputStream.generateMD5(): String {
+        val md = MessageDigest.getInstance("MD5")
+        return BigInteger(1, md.digest(this.readBytes()))
+            .toString(16).padStart(32, '0')
     }
 }

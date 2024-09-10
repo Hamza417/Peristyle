@@ -1,7 +1,6 @@
 package app.simple.peri.compose.screens
 
 import android.graphics.drawable.Drawable
-import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
@@ -43,6 +42,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -131,8 +131,6 @@ fun WallpaperItem(wallpaper: Wallpaper, navController: NavController? = null, on
         mutableFloatStateOf(displayWidth.toFloat() / displayHeight.toFloat())
     }
 
-    Log.d("List", "Display Width: $displayWidth, Display Height: $displayHeight")
-
     if (showDialog) {
         WallpaperMenu({
                           showDialog = it
@@ -141,11 +139,17 @@ fun WallpaperItem(wallpaper: Wallpaper, navController: NavController? = null, on
 
     ElevatedCard(
             elevation = CardDefaults.cardElevation(
-                    defaultElevation = 6.dp
+                    defaultElevation = 0.dp,
             ),
             modifier = Modifier
                 .aspectRatio(aspectRatio)
                 .padding(8.dp)
+                .shadow(
+                        24.dp,
+                        shape = RoundedCornerShape(16.dp),
+                        clip = false,
+                        spotColor = Color(wallpaper.prominentColor),
+                        ambientColor = Color(wallpaper.prominentColor))
                 .combinedClickable(
                         onClick = {
                             navController?.navigate(Routes.WALLPAPER) {
@@ -157,7 +161,7 @@ fun WallpaperItem(wallpaper: Wallpaper, navController: NavController? = null, on
                             showDialog = true
                         }
                 ),
-            shape = RoundedCornerShape(16.dp)
+            shape = RoundedCornerShape(16.dp),
     ) {
         Box(
                 modifier = Modifier.fillMaxSize(),
@@ -173,12 +177,19 @@ fun WallpaperItem(wallpaper: Wallpaper, navController: NavController? = null, on
             ) {
                 it.addListener(object : RequestListener<Drawable> {
                     override fun onLoadFailed(
-                            e: GlideException?, model: Any?, target: Target<Drawable>, isFirstResource: Boolean): Boolean {
+                            e: GlideException?,
+                            model: Any?,
+                            target: Target<Drawable>,
+                            isFirstResource: Boolean): Boolean {
                         return false
                     }
 
                     override fun onResourceReady(
-                            resource: Drawable, model: Any, target: Target<Drawable>?, dataSource: DataSource, isFirstResource: Boolean): Boolean {
+                            resource: Drawable,
+                            model: Any,
+                            target: Target<Drawable>?,
+                            dataSource: DataSource,
+                            isFirstResource: Boolean): Boolean {
                         return false
                     }
                 })
@@ -216,7 +227,10 @@ fun WallpaperItem(wallpaper: Wallpaper, navController: NavController? = null, on
 }
 
 @Composable
-fun WallpaperMenu(setShowDialog: (Boolean) -> Unit, wallpaper: Wallpaper, onDelete: (Wallpaper) -> Unit, wallpaperViewModel: WallpaperViewModel = viewModel()) {
+fun WallpaperMenu(setShowDialog: (Boolean) -> Unit,
+                  wallpaper: Wallpaper,
+                  onDelete: (Wallpaper) -> Unit,
+                  wallpaperViewModel: WallpaperViewModel = viewModel()) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
 

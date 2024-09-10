@@ -22,8 +22,10 @@ import app.simple.peri.constants.BundleConstants
 import app.simple.peri.database.instances.WallpaperDatabase
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.preferences.MainPreferences
+import app.simple.peri.utils.BitmapUtils.generatePalette
 import app.simple.peri.utils.ConditionUtils.invert
 import app.simple.peri.utils.FileUtils.filterDotFiles
+import app.simple.peri.utils.FileUtils.generateMD5
 import app.simple.peri.utils.FileUtils.listCompleteFiles
 import app.simple.peri.utils.FileUtils.listOnlyFirstLevelFiles
 import app.simple.peri.utils.FileUtils.toUri
@@ -188,13 +190,18 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
 
                         getApplication<Application>().contentResolver.openInputStream(file.uri)?.use { inputStream ->
                             val options = BitmapFactory.Options()
-                            options.inJustDecodeBounds = true
-                            BitmapFactory.decodeStream(inputStream, null, options)
+                            options.inJustDecodeBounds = false
+                            val bitmap = BitmapFactory.decodeStream(inputStream, null, options)
                             wallpaper.width = options.outWidth
                             wallpaper.height = options.outHeight
-                        }
+                            wallpaper.md5 = inputStream.generateMD5()
 
-                        // Log.d(TAG, "loadWallpaperImages: ${wallpaper.name}, ${wallpaper.width}, ${wallpaper.height}")
+                            with(bitmap?.generatePalette()) {
+                                wallpaper.prominentColor = this?.vibrantSwatch?.rgb ?: this?.dominantSwatch?.rgb ?: 0
+                            }
+
+                            bitmap?.recycle()
+                        }
                     }
 
                     if (wallpaper.isNull().invert()) {

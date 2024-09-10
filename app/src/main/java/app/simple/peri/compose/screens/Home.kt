@@ -40,8 +40,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -175,12 +177,20 @@ fun WallpaperItem(title: String, onClick: () -> Unit, modifier: Modifier = Modif
 
     ElevatedCard(
             elevation = CardDefaults.cardElevation(
-                    defaultElevation = 6.dp
+                    defaultElevation = 0.dp
             ),
             modifier = modifier
-                .fillMaxHeight(),
+                .graphicsLayer {
+                    clip = false
+                }
+                .shadow(
+                        16.dp,
+                        shape = RoundedCornerShape(32.dp),
+                        clip = false,
+                        spotColor = Color(wallpaper?.prominentColor ?: Color.DarkGray.toArgb()),
+                        ambientColor = Color(wallpaper?.prominentColor ?: Color.DarkGray.toArgb())),
             onClick = onClick,
-            shape = RoundedCornerShape(32.dp)
+            shape = RoundedCornerShape(32.dp),
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             GlideImage(
