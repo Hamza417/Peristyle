@@ -125,6 +125,10 @@ object MainPreferences {
         return SharedPreferences.getSharedPreferences().getString(AUTO_WALLPAPER_INTERVAL, "0")!!
     }
 
+    fun setAutoWallpaperInterval(interval: String) {
+        SharedPreferences.getSharedPreferences().edit().putString(AUTO_WALLPAPER_INTERVAL, interval).apply()
+    }
+
     fun isAutoWallpaperIntervalEnabled(): Boolean {
         return SharedPreferences.getSharedPreferences().getString(AUTO_WALLPAPER_INTERVAL, "0") != "0"
     }
@@ -137,8 +141,16 @@ object MainPreferences {
         return SharedPreferences.getSharedPreferences().getBoolean(CROP_WALLPAPER, false)
     }
 
+    fun setCropWallpaper(cropWallpaper: Boolean) {
+        SharedPreferences.getSharedPreferences().edit().putBoolean(CROP_WALLPAPER, cropWallpaper).apply()
+    }
+
     fun isDifferentWallpaperForLockScreen(): Boolean {
         return SharedPreferences.getSharedPreferences().getBoolean(DIFFERENT_WALLPAPER, false)
+    }
+
+    fun setDifferentWallpaperForLockScreen(differentWallpaper: Boolean) {
+        SharedPreferences.getSharedPreferences().edit().putBoolean(DIFFERENT_WALLPAPER, differentWallpaper).apply()
     }
 
     fun isWallpaperWhenSleeping(): Boolean {

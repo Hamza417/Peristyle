@@ -1,6 +1,5 @@
 package app.simple.peri.compose.screens
 
-import android.content.Context
 import android.graphics.drawable.Drawable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,6 +29,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -43,7 +43,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -70,7 +72,7 @@ import dev.chrisbanes.haze.hazeChild
 import kotlin.math.absoluteValue
 
 @Composable
-fun Home(context: Context, navController: NavController? = null) {
+fun Home(navController: NavController? = null) {
     val pagerState = rememberPagerState(pageCount = {
         2
     })
@@ -92,7 +94,7 @@ fun Home(context: Context, navController: NavController? = null) {
     ) {
         Column {
             Header(
-                    title = context.getString(R.string.app_name),
+                    title = stringResource(id = R.string.app_name),
                     modifier = Modifier.padding(24.dp),
                     navController = navController
             )
@@ -108,8 +110,8 @@ fun Home(context: Context, navController: NavController? = null) {
 
                 WallpaperItem(
                         title = when (page) {
-                            0 -> context.getString(R.string.home_screen)
-                            else -> context.getString(R.string.lock_screen)
+                            0 -> stringResource(id = R.string.home_screen)
+                            else -> stringResource(id = R.string.lock_screen)
                         },
                         onClick = {
                             if (wallpaper != null) {
@@ -153,7 +155,6 @@ fun Home(context: Context, navController: NavController? = null) {
             }
 
             BottomMenu(
-                    context = context,
                     modifier = Modifier
                         .padding(8.dp)
                         .height(120.dp),
@@ -270,7 +271,7 @@ fun Header(title: String, modifier: Modifier = Modifier, navController: NavContr
 }
 
 @Composable
-fun BottomMenu(context: Context, modifier: Modifier = Modifier, navController: NavController? = null) {
+fun BottomMenu(modifier: Modifier = Modifier, navController: NavController? = null) {
     val height = 60.dp
     val rowPadding = 16.dp
 
@@ -281,20 +282,24 @@ fun BottomMenu(context: Context, modifier: Modifier = Modifier, navController: N
             verticalAlignment = Alignment.CenterVertically
     ) {
         BottomMenuItem(
-                title = context.getString(R.string.tags),
+                title = stringResource(id = R.string.tags),
                 drawableID = R.drawable.ic_label,
                 modifier = Modifier
                     .weight(0.2F)
                     .height(height) // Set a smaller height
-        )
+        ) {
+            navController?.navigate(Routes.AUTO_WALLPAPER)
+        }
 
         BottomMenuItem(
-                title = context.getString(R.string.auto_wallpaper),
+                title = stringResource(id = R.string.auto_wallpaper),
                 drawableID = R.drawable.ic_schedule,
                 modifier = Modifier
                     .weight(0.2F)
                     .height(height) // Set a smaller height
-        )
+        ) {
+            navController?.navigate(Routes.AUTO_WALLPAPER)
+        }
 
         Card(
                 elevation = CardDefaults.cardElevation(
@@ -305,6 +310,9 @@ fun BottomMenu(context: Context, modifier: Modifier = Modifier, navController: N
                     .weight(0.6f)
                     .height(height), // Set a smaller height
                 shape = RoundedCornerShape(32.dp),
+                colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                ),
                 onClick = {
                     navController?.navigate(Routes.WALLPAPERS)
                 }
@@ -314,7 +322,7 @@ fun BottomMenu(context: Context, modifier: Modifier = Modifier, navController: N
                     verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                        text = context.getString(R.string.wallpapers),
+                        text = stringResource(id = R.string.wallpapers),
                         textAlign = TextAlign.Center,
                         fontSize = 20.sp, // Set the font size
                         modifier = Modifier.weight(1f), // Set the weight
@@ -333,12 +341,8 @@ fun BottomMenu(context: Context, modifier: Modifier = Modifier, navController: N
 }
 
 @Composable
-fun BottomMenuItem(modifier: Modifier = Modifier, title: String = "", drawableID: Int = 0) {
-    val showDialog = remember { mutableStateOf(false) }
-
-    if (showDialog.value) {
-        ShowTagDialog(title = title, onDismiss = { showDialog.value = false })
-    }
+fun BottomMenuItem(modifier: Modifier = Modifier, title: String = "", drawableID: Int = 0, navController: NavController? = null, onClick: () -> Unit = {}) {
+    val context = LocalContext.current
 
     Column(
             modifier = modifier,
@@ -352,10 +356,7 @@ fun BottomMenuItem(modifier: Modifier = Modifier, title: String = "", drawableID
                     .padding(start = 8.dp, end = 8.dp)
                     .weight(1f),
                 shape = RoundedCornerShape(32.dp),
-                onClick = {
-                    // Show a dialog with the tags
-                    showDialog.value = true
-                },
+                onClick = onClick,
         ) {
             Icon(
                     painter = painterResource(id = drawableID),

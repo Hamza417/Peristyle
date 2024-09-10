@@ -21,6 +21,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import app.simple.peri.R
 import app.simple.peri.activities.LegacyActivity
@@ -38,11 +39,11 @@ fun Settings(navController: NavController? = null) {
 
     LazyColumn(
             modifier = Modifier
-                .padding(COMMON_PADDING)
+                .padding(start = COMMON_PADDING, end = COMMON_PADDING)
                 .windowInsetsPadding(WindowInsets.safeDrawing)
     ) {
         item { // Header
-            TopHeader(title = "Settings", modifier = Modifier.padding(COMMON_PADDING))
+            TopHeader(title = stringResource(R.string.settings), modifier = Modifier.padding(COMMON_PADDING))
 
             HorizontalDivider(
                     modifier = Modifier
