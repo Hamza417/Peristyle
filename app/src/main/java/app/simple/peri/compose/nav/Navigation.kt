@@ -20,7 +20,7 @@ fun PeristyleNavigation(context: Context) {
             if (isSetupComplete(context).invert()) {
                 Setup(context, navController)
             } else {
-                navController.navigate(Routes.SETUP)
+                navController.navigate(Routes.HOME)
             }
         }
 
