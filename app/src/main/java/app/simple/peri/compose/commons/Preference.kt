@@ -1,4 +1,3 @@
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -64,7 +63,6 @@ fun SwitchPreference(title: String, description: String = "", checked: Boolean, 
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ClickablePreference(title: String, description: String = "", onClick: () -> Unit) {
     val verticalPadding = 16.dp
@@ -92,7 +90,6 @@ fun ClickablePreference(title: String, description: String = "", onClick: () -> 
                     modifier = Modifier.padding(start = 32.dp, end = 32.dp, top = 8.dp, bottom = verticalPadding),
             )
         }
-
     }
 }
 
