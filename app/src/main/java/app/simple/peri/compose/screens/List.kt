@@ -29,6 +29,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -64,6 +65,7 @@ import app.simple.peri.R
 import app.simple.peri.compose.nav.Routes
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.preferences.MainComposePreferences
+import app.simple.peri.utils.ConditionUtils.invert
 import app.simple.peri.utils.FileUtils.toUri
 import app.simple.peri.viewmodels.WallpaperViewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
@@ -85,10 +87,15 @@ import kotlinx.coroutines.withContext
 fun List(navController: NavController? = null) {
     val wallpaperViewModel: WallpaperViewModel = viewModel()
     var wallpapers by remember { mutableStateOf(emptyList<Wallpaper>()) }
+    var loadingState by remember { mutableStateOf("") }
     var statusBarHeight by remember { mutableIntStateOf(0) }
 
     wallpaperViewModel.getWallpapersLiveData().observeAsState().value?.let {
         wallpapers = it
+    }
+
+    wallpaperViewModel.getLoadingStatusLiveData().observeAsState().value?.let {
+        loadingState = it
     }
 
     statusBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
@@ -97,20 +104,37 @@ fun List(navController: NavController? = null) {
     val statusBarHeightDp = with(LocalDensity.current) { statusBarHeightPx.toDp() }
     val topPadding = 8.dp + statusBarHeightDp
 
-    LazyVerticalGrid(
-            columns = GridCells.Fixed(MainComposePreferences.getGridSpanCount()),
-            modifier = Modifier
-                .fillMaxSize(),
-            contentPadding = PaddingValues(
-                    top = topPadding,
-                    start = 8.dp,
-                    end = 8.dp,
-                    bottom = 8.dp)
+    Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.TopCenter
     ) {
-        items(wallpapers.size) { index ->
-            WallpaperItem(wallpapers[index], navController) { deletedWallpaper ->
-                wallpapers = wallpapers.filter { it != deletedWallpaper }
+        LazyVerticalGrid(
+                columns = GridCells.Fixed(MainComposePreferences.getGridSpanCount()),
+                modifier = Modifier
+                    .fillMaxSize(),
+                contentPadding = PaddingValues(
+                        top = topPadding,
+                        start = 8.dp,
+                        end = 8.dp,
+                        bottom = 8.dp)
+        ) {
+            items(wallpapers.size) { index ->
+                WallpaperItem(wallpapers[index], navController) { deletedWallpaper ->
+                    wallpapers = wallpapers.filter { it != deletedWallpaper }
+                }
             }
+        }
+
+        if ((loadingState == "Done").invert()) {
+            Text(
+                    text = loadingState,
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .padding(16.dp),
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface,
+            )
         }
     }
 }

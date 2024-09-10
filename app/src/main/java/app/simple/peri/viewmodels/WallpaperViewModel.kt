@@ -152,6 +152,8 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
                 wallpaperList[i].isSelected = false
             }
 
+            println("Wallpaper list size is ${wallpaperList.size}")
+
             @Suppress("UNCHECKED_CAST")
             wallpapersData.postValue(wallpaperList.clone() as ArrayList<Wallpaper>)
 
@@ -194,13 +196,17 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
                             val bitmap = BitmapFactory.decodeStream(inputStream, null, options)
                             wallpaper.width = options.outWidth
                             wallpaper.height = options.outHeight
-                            wallpaper.md5 = inputStream.generateMD5()
 
                             with(bitmap?.generatePalette()) {
                                 wallpaper.prominentColor = this?.vibrantSwatch?.rgb ?: this?.dominantSwatch?.rgb ?: 0
                             }
 
                             bitmap?.recycle()
+                        }
+
+                        getApplication<Application>().contentResolver.openInputStream(file.uri)?.use { inputStream ->
+                            wallpaper.md5 = inputStream.generateMD5()
+                            Log.i(TAG, "loadWallpaperImages: ${wallpaper.name} - ${wallpaper.md5}")
                         }
                     }
 
@@ -210,6 +216,7 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
                             wallpapers.add(wallpaper)
                             if (alreadyLoaded?.isNotEmpty() == true) {
                                 newWallpapersData.postValue(wallpaper)
+                                Log.d(TAG, "loadWallpaperImages: new wallpaper found - ${wallpaper.md5}")
                                 WallpaperDatabase.getInstance(getApplication())?.wallpaperDao()?.insert(wallpaper)
                             }
 
@@ -245,7 +252,7 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
         wallpaperDao?.getWallpapers()?.forEach {
             try {
                 getApplication<Application>().contentResolver.openInputStream(Uri.parse(it.uri))?.use { _ ->
-                    // Log.d(TAG, "initDatabase: ${it.name} exists")
+                    Log.d(TAG, "initDatabase: ${it.name} exists")
                 }
             } catch (e: Exception) {
                 // Log.d(TAG, "initDatabase: ${it.name} doesn't exist")

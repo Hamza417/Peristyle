@@ -184,7 +184,7 @@ fun WallpaperItem(title: String, onClick: () -> Unit, modifier: Modifier = Modif
                     clip = false
                 }
                 .shadow(
-                        16.dp,
+                        12.dp,
                         shape = RoundedCornerShape(32.dp),
                         clip = false,
                         spotColor = Color(wallpaper?.prominentColor ?: Color.DarkGray.toArgb()),
