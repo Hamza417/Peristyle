@@ -26,6 +26,12 @@ interface WallpaperDao {
     }
 
     /**
+     * Get wallpaper by MD5
+     */
+    @Query("SELECT * FROM wallpapers WHERE md5 = :md5")
+    fun getWallpaperByMD5(md5: String): Wallpaper?
+
+    /**
      * Clean any entry that doesn't have any of the
      * specified extension
      *

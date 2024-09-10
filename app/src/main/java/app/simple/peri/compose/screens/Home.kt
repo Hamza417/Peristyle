@@ -298,7 +298,7 @@ fun BottomMenu(modifier: Modifier = Modifier, navController: NavController? = nu
                     .weight(0.2F)
                     .height(height) // Set a smaller height
         ) {
-            navController?.navigate(Routes.AUTO_WALLPAPER)
+            navController?.navigate(Routes.TAGS)
         }
 
         BottomMenuItem(

@@ -10,6 +10,7 @@ import app.simple.peri.compose.screens.Home
 import app.simple.peri.compose.screens.List
 import app.simple.peri.compose.screens.Settings
 import app.simple.peri.compose.screens.Setup
+import app.simple.peri.compose.screens.Tags
 import app.simple.peri.compose.screens.Wallpaper
 import app.simple.peri.compose.screens.isSetupComplete
 import app.simple.peri.utils.ConditionUtils.invert
@@ -45,6 +46,10 @@ fun PeristyleNavigation(context: Context) {
 
         composable(route = Routes.AUTO_WALLPAPER) {
             AutoWallpaper(navController)
+        }
+
+        composable(route = Routes.TAGS) {
+            Tags(navController)
         }
     }
 }

@@ -161,4 +161,7 @@
     <string name="interface_settings">Interface</string>
     <string name="warning_indicator_title">Hide Warning Indicator</string>
     <string name="warning_indicator_summary">Hide warning indicator for excessive wallpapers from the wallpaper list.</string>
+    <string name="add_tag">Add Tag</string>
+    <string name="add">Add</string>
+    <string name="tag_count">%1$d Wallpapers</string>
 </resources>

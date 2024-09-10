@@ -62,10 +62,12 @@ import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import app.simple.peri.R
+import app.simple.peri.compose.dialogs.AddTagDialog
 import app.simple.peri.compose.nav.Routes
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.utils.FileUtils.toUri
+import app.simple.peri.viewmodels.TagsViewModel
 import app.simple.peri.viewmodels.WallpaperViewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
@@ -254,8 +256,21 @@ fun WallpaperMenu(setShowDialog: (Boolean) -> Unit,
                   wallpaper: Wallpaper,
                   onDelete: (Wallpaper) -> Unit,
                   wallpaperViewModel: WallpaperViewModel = viewModel()) {
+
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
+    val tagsViewModel: TagsViewModel = viewModel()
+    val showTagDialog = remember { mutableStateOf(false) }
+
+    if (showTagDialog.value) {
+        AddTagDialog(
+                onDismiss = { showTagDialog.value = false },
+                onAdd = { tagName ->
+                    tagsViewModel.addTag(tagName, wallpaper)
+                    showTagDialog.value = false
+                }
+        )
+    }
 
     Dialog(onDismissRequest = { setShowDialog(false) }) {
         Surface(
@@ -339,6 +354,28 @@ fun WallpaperMenu(setShowDialog: (Boolean) -> Unit,
                     ) {
                         Text(
                                 text = context.getString(R.string.delete),
+                                color = Color.Black,
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.SemiBold
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(5.dp))
+
+                    Button(
+                            onClick = {
+                                showTagDialog.value = true
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color.White,
+                            ),
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(50.dp),
+                    ) {
+                        Text(
+                                text = context.getString(R.string.add_tag),
                                 color = Color.Black,
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.SemiBold
