@@ -14,6 +14,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.biometric.BiometricPrompt
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
@@ -425,22 +426,13 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
             })
     }
 
+    @RequiresApi(Build.VERSION_CODES.R)
     private fun requestManageExternalStoragePermission() {
         try {
             val uri = Uri.parse("package:${BuildConfig.APPLICATION_ID}")
+            startActivity(Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION, uri))
+        } catch (ignored: ActivityNotFoundException) {
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                startActivity(Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION, uri))
-            } else {
-                requestPermissionLauncher.launch(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE))
-            }
-        } catch (e: ActivityNotFoundException) {
-            MaterialAlertDialogBuilder(requireContext())
-                .setMessage(e.localizedMessage ?: e.message ?: e.stackTraceToString())
-                .setPositiveButton(R.string.close) { dialog, _ ->
-                    dialog.dismiss()
-                }
-                .show()
         }
     }
 
