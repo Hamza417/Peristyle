@@ -32,6 +32,7 @@ import app.simple.peri.compose.dialogs.ShowInureAppManagerDialog
 import app.simple.peri.compose.dialogs.ShowPositionalDialog
 import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.preferences.MainPreferences
+import app.simple.peri.utils.ConditionUtils.invert
 
 @Composable
 fun Settings(navController: NavController? = null) {
@@ -73,6 +74,14 @@ fun Settings(navController: NavController? = null) {
                         numberSelectionDialog.value = true
                     }
             )
+
+            SwitchPreference(
+                    title = context.getString(R.string.warning_indicator_title),
+                    description = context.getString(R.string.warning_indicator_summary),
+                    checked = MainComposePreferences.getShowWarningIndicator().invert()
+            ) {
+                MainComposePreferences.setShowWarningIndicator(it.invert())
+            }
         }
         item { // Accessibility
             SecondaryHeader(title = context.getString(R.string.accessibility))

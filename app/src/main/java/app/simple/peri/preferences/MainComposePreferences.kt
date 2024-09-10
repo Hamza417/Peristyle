@@ -5,6 +5,7 @@ import app.simple.peri.preferences.SharedPreferences.getSharedPreferences
 object MainComposePreferences {
 
     private const val GRID_SPAN_COUNT = "grid_span_count"
+    private const val WARNING_INDICATOR = "warning_indicator"
 
     // ----------------------------------------------------------------------------------------------------- //
 
@@ -14,5 +15,15 @@ object MainComposePreferences {
 
     fun setGridSpanCount(value: Int) {
         getSharedPreferences().edit().putInt(GRID_SPAN_COUNT, value).apply()
+    }
+
+    // ----------------------------------------------------------------------------------------------------- //
+
+    fun getShowWarningIndicator(): Boolean {
+        return getSharedPreferences().getBoolean(WARNING_INDICATOR, true)
+    }
+
+    fun setShowWarningIndicator(value: Boolean) {
+        getSharedPreferences().edit().putBoolean(WARNING_INDICATOR, value).apply()
     }
 }

@@ -65,7 +65,6 @@ import app.simple.peri.R
 import app.simple.peri.compose.nav.Routes
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.preferences.MainComposePreferences
-import app.simple.peri.utils.ConditionUtils.invert
 import app.simple.peri.utils.FileUtils.toUri
 import app.simple.peri.viewmodels.WallpaperViewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
@@ -125,7 +124,7 @@ fun List(navController: NavController? = null) {
             }
         }
 
-        if ((loadingState == "Done").invert()) {
+        if (wallpapers.isEmpty()) {
             Text(
                     text = loadingState,
                     modifier = Modifier
@@ -353,6 +352,8 @@ fun WallpaperMenu(setShowDialog: (Boolean) -> Unit,
 
 @Composable
 fun WallpaperDimensionsText(wallpaper: Wallpaper, displayWidth: Int, displayHeight: Int) {
+    val showWarningIndicator = remember { MainComposePreferences.getShowWarningIndicator() }
+
     Row(
             modifier = Modifier
                 .padding(start = 16.dp, top = 4.dp, bottom = 16.dp, end = 16.dp),
@@ -366,27 +367,30 @@ fun WallpaperDimensionsText(wallpaper: Wallpaper, displayWidth: Int, displayHeig
                 color = Color.White,
                 modifier = Modifier.weight(1f)
         )
-        when {
-            (wallpaper.width ?: 0) > displayWidth || (wallpaper.height ?: 0) > displayHeight -> {
-                Icon(
-                        imageVector = Icons.Rounded.Warning, // Use an appropriate icon
-                        contentDescription = null,
-                        tint = Color.LightGray,
-                        modifier = Modifier.size(16.dp)
-                )
-            }
 
-            (wallpaper.width ?: 0) < displayWidth || (wallpaper.height ?: 0) < displayHeight -> {
-                Icon(
-                        imageVector = Icons.Rounded.Warning, // Use an appropriate icon
-                        contentDescription = null,
-                        tint = Color.Red,
-                        modifier = Modifier.size(16.dp)
-                )
-            }
+        if (showWarningIndicator) {
+            when {
+                (wallpaper.width ?: 0) > displayWidth || (wallpaper.height ?: 0) > displayHeight -> {
+                    Icon(
+                            imageVector = Icons.Rounded.Warning, // Use an appropriate icon
+                            contentDescription = null,
+                            tint = Color.LightGray,
+                            modifier = Modifier.size(16.dp)
+                    )
+                }
 
-            else -> {
+                (wallpaper.width ?: 0) < displayWidth || (wallpaper.height ?: 0) < displayHeight -> {
+                    Icon(
+                            imageVector = Icons.Rounded.Warning, // Use an appropriate icon
+                            contentDescription = null,
+                            tint = Color.Red,
+                            modifier = Modifier.size(16.dp)
+                    )
+                }
 
+                else -> {
+
+                }
             }
         }
     }
