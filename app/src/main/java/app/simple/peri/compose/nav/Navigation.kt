@@ -8,6 +8,8 @@ import androidx.navigation.compose.rememberNavController
 import app.simple.peri.compose.screens.HomeScreen
 import app.simple.peri.compose.screens.Setup
 import app.simple.peri.compose.screens.WallpaperScreen
+import app.simple.peri.compose.screens.isSetupComplete
+import app.simple.peri.utils.ConditionUtils.invert
 
 @Composable
 fun PeristyleNavigation(context: Context) {
@@ -15,7 +17,11 @@ fun PeristyleNavigation(context: Context) {
 
     NavHost(navController = navController, startDestination = Routes.SETUP) {
         composable(Routes.SETUP) {
-            Setup(context, navController)
+            if (isSetupComplete(context).invert()) {
+                Setup(context, navController)
+            } else {
+                navController.navigate(Routes.HOME)
+            }
         }
 
         composable(Routes.HOME) {

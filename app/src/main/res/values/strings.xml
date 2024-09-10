@@ -152,4 +152,8 @@
     <string name="tags">Tags</string>
     <string name="setup">Setup</string>
     <string name="folder">Folders</string>
+    <string name="select_folder">Select Folder</string>
+    <string name="select_folder_summary">Select your primary wallpaper directory.</string>
+    <string name="continue_button">Continue</string>
+    <string name="setup_incomplete">Please complete the setup first.</string>
 </resources>

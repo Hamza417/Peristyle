@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -33,6 +34,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -41,6 +43,8 @@ import androidx.navigation.NavController
 import app.simple.peri.BuildConfig
 import app.simple.peri.R
 import app.simple.peri.compose.dialogs.ShowWarningDialog
+import app.simple.peri.compose.nav.Routes
+import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.utils.PermissionUtils
 import app.simple.peri.utils.PermissionUtils.isBatteryOptimizationDisabled
 import app.simple.peri.utils.PermissionUtils.requestIgnoreBatteryOptimizations
@@ -49,6 +53,19 @@ private val commonPadding = 16.dp
 
 @Composable
 fun Setup(context: Context, navController: NavController? = null) {
+    var showSetupIncompleteDialog by remember { mutableStateOf(false) }
+
+    if (showSetupIncompleteDialog) {
+        ShowWarningDialog(
+                title = context.getString(R.string.setup),
+                warning = context.getString(R.string.setup_incomplete),
+                context = context,
+                onDismiss = {
+                    showSetupIncompleteDialog = false
+                }
+        )
+    }
+
     Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -67,6 +84,24 @@ fun Setup(context: Context, navController: NavController? = null) {
         Folder(context = context, navController = navController, modifier = Modifier
             .padding(commonPadding)
             .weight(1F))
+
+        Button(
+                onClick = {
+                    if (isSetupComplete(context)) {
+                        navController?.navigate(Routes.HOME)
+                    } else {
+                        showSetupIncompleteDialog = true
+                    }
+                },
+                modifier = Modifier
+                    .padding(commonPadding)
+                    .fillMaxWidth(),
+        ) {
+            Text(text = context.getString(R.string.continue_button),
+                 fontWeight = FontWeight.Bold,
+                 fontSize = 18.sp,
+                 modifier = Modifier.padding(12.dp))
+        }
     }
 }
 
@@ -188,6 +223,24 @@ fun Permissions(modifier: Modifier, context: Context, navController: NavControll
 
 @Composable
 fun Folder(modifier: Modifier, context: Context, navController: NavController? = null) {
+    var launchDirectoryPermission by remember { mutableStateOf(false) }
+    var showDirectoryPermissionDialog by remember { mutableStateOf(false) }
+
+    if (launchDirectoryPermission) {
+        RequestDirectoryPermission()
+    }
+
+    if (showDirectoryPermissionDialog) {
+        ShowWarningDialog(
+                title = context.getString(R.string.folder),
+                warning = context.contentResolver.persistedUriPermissions.first().uri.toString(),
+                context = context,
+                onDismiss = {
+                    showDirectoryPermissionDialog = false
+                }
+        )
+    }
+
     Column(
             modifier = modifier
     ) {
@@ -206,28 +259,33 @@ fun Folder(modifier: Modifier, context: Context, navController: NavController? =
 
         Card(
                 onClick = {
-
+                    if (context.contentResolver.persistedUriPermissions.isEmpty()) {
+                        launchDirectoryPermission = true
+                    } else {
+                        showDirectoryPermissionDialog = true
+                    }
                 },
                 colors = CardDefaults.cardColors(
                         containerColor = Color.Transparent
                 ),
         ) {
-            PermissionText(
-                    context.getString(R.string.external_storage),
-                    context.getString(R.string.external_storage_summary))
-        }
+            Text(
+                    text = context.getString(R.string.select_folder),
+                    fontSize = 18.sp,
+                    modifier = Modifier
+                        .padding(top = commonPadding, start = commonPadding, end = commonPadding)
+                        .fillMaxWidth(),
+                    fontWeight = FontWeight.Medium
+            )
 
-        Card(
-                onClick = {
-
-                },
-                colors = CardDefaults.cardColors(
-                        containerColor = Color.Transparent
-                ),
-        ) {
-            PermissionText(
-                    context.getString(R.string.battery_optimization),
-                    context.getString(R.string.battery_optimization_summary))
+            Text(
+                    text = context.getString(R.string.select_folder_summary),
+                    fontSize = 14.sp,
+                    modifier = Modifier
+                        .padding(bottom = commonPadding, start = commonPadding, end = commonPadding)
+                        .fillMaxWidth(),
+                    fontWeight = FontWeight.Normal
+            )
         }
     }
 }
@@ -275,4 +333,37 @@ fun RequestStoragePermissions() {
                     Manifest.permission.WRITE_EXTERNAL_STORAGE
             )
     )
+}
+
+@Composable
+fun RequestDirectoryPermission() {
+    val context = LocalContext.current
+
+    val storageResult = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        val uri: Uri? = result.data?.data
+        if (uri != null) {
+            val modeFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+            context.contentResolver.takePersistableUriPermission(uri, modeFlags)
+            MainPreferences.setStorageUri(uri.toString())
+            Log.d("Setup", "Storage Uri: $uri")
+        }
+    }
+
+    // Launch the directory selection intent
+    val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
+    storageResult.launch(intent)
+}
+
+fun isSetupComplete(context: Context): Boolean {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        context.contentResolver.persistedUriPermissions.isNotEmpty()
+                && Environment.isExternalStorageManager()
+                && context.isBatteryOptimizationDisabled()
+    } else {
+        context.contentResolver.persistedUriPermissions.isNotEmpty()
+                && PermissionUtils.checkStoragePermission(context)
+                && context.isBatteryOptimizationDisabled()
+    }
 }
