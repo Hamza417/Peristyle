@@ -66,7 +66,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.concurrent.Executor
 
-class HomeScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListener {
+class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListener {
 
     private val wallpaperViewModel: WallpaperViewModel by viewModels({ requireActivity() })
     private var adapterWallpaper: AdapterWallpaper? = null
@@ -516,6 +516,21 @@ class HomeScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
             }
         }
 
+        wallpaperViewModel.getSystemWallpaper().observe(viewLifecycleOwner) { systemWallpapers ->
+            systemWallpaperAdapter = AdapterSystemWallpaper(systemWallpapers, -1)
+            systemWallpaperAdapter?.setWallpaperCallbacks(object : WallpaperCallbacks {
+                override fun onWallpaperClicked(wallpaper: Wallpaper?, position: Int, constraintLayout: ConstraintLayout?) {
+                    openWallpaperScreen(wallpaper!!, constraintLayout!!)
+                }
+
+                override fun onWallpaperLongClicked(wallpaper: Wallpaper, position: Int, view: View) {
+                    showWallpaperOptions(wallpaper, position, true)
+                }
+            })
+
+            setBothAdapter()
+        }
+
         binding?.fab?.setOnClickListener {
             kotlin.runCatching {
                 // Pick a random wallpaper from the list
@@ -891,9 +906,9 @@ class HomeScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
     }
 
     companion object {
-        fun newInstance(): HomeScreen {
+        fun newInstance(): MainScreen {
             val args = Bundle()
-            val fragment = HomeScreen()
+            val fragment = MainScreen()
             fragment.arguments = args
             return fragment
         }

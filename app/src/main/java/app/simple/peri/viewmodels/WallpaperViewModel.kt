@@ -1,13 +1,18 @@
 package app.simple.peri.viewmodels
 
 import android.app.Application
+import android.app.WallpaperManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.os.Build
 import android.util.Log
+import androidx.core.content.FileProvider
+import androidx.core.graphics.drawable.toBitmap
 import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
@@ -22,10 +27,12 @@ import app.simple.peri.utils.FileUtils.filterDotFiles
 import app.simple.peri.utils.FileUtils.listCompleteFiles
 import app.simple.peri.utils.FileUtils.listOnlyFirstLevelFiles
 import app.simple.peri.utils.FileUtils.toUri
+import app.simple.peri.utils.PermissionUtils
 import app.simple.peri.utils.WallpaperSort.getSortedList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
 
 class WallpaperViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -69,6 +76,12 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
 
     private val removedWallpapersData: MutableLiveData<Wallpaper> by lazy {
         MutableLiveData<Wallpaper>()
+    }
+
+    private val systemWallpaperData: MutableLiveData<ArrayList<Wallpaper>> by lazy {
+        MutableLiveData<ArrayList<Wallpaper>>().also {
+            postCurrentSystemWallpaper()
+        }
     }
 
     private val loadingStatus: MutableLiveData<String> by lazy {
@@ -119,6 +132,10 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
 
     fun getDatabaseLoaded(): MutableLiveData<Boolean> {
         return isDatabaseLoaded
+    }
+
+    fun getSystemWallpaper(): MutableLiveData<ArrayList<Wallpaper>> {
+        return systemWallpaperData
     }
 
     private fun loadWallpaperDatabase() {
@@ -255,6 +272,56 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
         return hashMap
     }
 
+    private fun getCurrentSystemWallpaper(): ArrayList<Wallpaper> {
+        val wallpaperManager = WallpaperManager.getInstance(getApplication())
+        val systemBitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            wallpaperManager.getDrawable(WallpaperManager.FLAG_SYSTEM)?.toBitmap()
+        } else {
+            wallpaperManager.drawable?.toBitmap()
+        }
+
+        val lockBitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            wallpaperManager.getDrawable(WallpaperManager.FLAG_LOCK)?.toBitmap()
+        } else {
+            wallpaperManager.drawable?.toBitmap()
+        }
+
+        val systemFile = createTempFile(SYSTEM_WALLPAPER)
+        val lockFile = createTempFile(LOCK_WALLPAPER)
+
+        systemFile.outputStream().use { systemBitmap?.compress(Bitmap.CompressFormat.PNG, 100, it) }
+        lockFile.outputStream().use { lockBitmap?.compress(Bitmap.CompressFormat.PNG, 100, it) }
+
+        val systemUri = getFileUri(systemFile)
+        val lockUri = getFileUri(lockFile)
+
+        return arrayListOf(
+                Wallpaper().createFromUri(systemUri.toString(), getApplication()),
+                Wallpaper().createFromUri(lockUri.toString(), getApplication())
+        )
+    }
+
+    private fun createTempFile(fileName: String): File {
+        val file = File(getApplication<Application>().filesDir,
+                        fileName.replace("$", System.currentTimeMillis().div(1000).toString()))
+        if (file.exists()) file.delete()
+        return file
+    }
+
+    private fun getFileUri(file: File): Uri {
+        return FileProvider.getUriForFile(
+                getApplication(), "${getApplication<Application>().packageName}.provider", file
+        )
+    }
+
+    fun postCurrentSystemWallpaper() {
+        viewModelScope.launch(Dispatchers.IO) {
+            if (PermissionUtils.checkStoragePermission(getApplication())) {
+                systemWallpaperData.postValue(getCurrentSystemWallpaper())
+            }
+        }
+    }
+
     fun sortWallpapers() {
         if (isDatabaseLoaded.value == true) {
             wallpapers = wallpapersData.value ?: ArrayList()
@@ -363,5 +430,7 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
 
     companion object {
         private const val TAG = "WallpaperViewModel"
+        private const val SYSTEM_WALLPAPER = "system_wallpaper_$.png"
+        private const val LOCK_WALLPAPER = "lock_wallpaper_$.png"
     }
 }
