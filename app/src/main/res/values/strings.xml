@@ -158,4 +158,5 @@
     <string name="setup_incomplete">Please complete the setup first.</string>
     <string name="go_back_to_legacy_interface">Go Back to Legacy Interface</string>
     <string name="go_back_to_legacy_interface_summary">Switch back to the old interface of Peristyle. \n\nNote: The old interface isn\'t supported anymore.</string>
+    <string name="interface_settings">Interface</string>
 </resources>

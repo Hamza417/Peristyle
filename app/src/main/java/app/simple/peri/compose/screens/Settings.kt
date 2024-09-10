@@ -1,6 +1,7 @@
 package app.simple.peri.compose.screens
 
 import ClickablePreference
+import NumberSelectionDialog
 import OtherApps
 import SecondaryHeader
 import SwitchPreference
@@ -28,6 +29,7 @@ import app.simple.peri.compose.commons.COMMON_PADDING
 import app.simple.peri.compose.commons.TopHeader
 import app.simple.peri.compose.dialogs.ShowInureAppManagerDialog
 import app.simple.peri.compose.dialogs.ShowPositionalDialog
+import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.preferences.MainPreferences
 
 @Composable
@@ -48,7 +50,30 @@ fun Settings(navController: NavController? = null) {
                         .fillMaxWidth()
             )
         }
-        item { // Settings
+        item { // Interface
+            val numberSelectionDialog = remember { mutableStateOf(false) }
+
+            if (numberSelectionDialog.value) {
+                NumberSelectionDialog(
+                        onDismiss = { numberSelectionDialog.value = false },
+                        onNumberSelected = {
+                            MainComposePreferences.setGridSpanCount(it)
+                            numberSelectionDialog.value = false
+                        }
+                )
+            }
+
+            SecondaryHeader(title = context.getString(R.string.interface_settings))
+
+            ClickablePreference(
+                    title = context.getString(R.string.grid_span),
+                    description = context.getString(R.string.grid_span_summary),
+                    onClick = {
+                        numberSelectionDialog.value = true
+                    }
+            )
+        }
+        item { // Accessibility
             SecondaryHeader(title = context.getString(R.string.accessibility))
 
             SwitchPreference(

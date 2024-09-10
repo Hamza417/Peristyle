@@ -32,6 +32,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -58,6 +59,7 @@ import androidx.navigation.NavController
 import app.simple.peri.R
 import app.simple.peri.compose.nav.Routes
 import app.simple.peri.models.Wallpaper
+import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.utils.FileUtils.toUri
 import app.simple.peri.viewmodels.WallpaperViewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
@@ -79,7 +81,7 @@ import kotlinx.coroutines.withContext
 fun List(navController: NavController? = null) {
     val wallpaperViewModel: WallpaperViewModel = viewModel()
     var wallpapers by remember { mutableStateOf(emptyList<Wallpaper>()) }
-    var statusBarHeight by remember { mutableStateOf(0) }
+    var statusBarHeight by remember { mutableIntStateOf(0) }
 
     wallpaperViewModel.getWallpapersLiveData().observeAsState().value?.let {
         wallpapers = it
@@ -92,7 +94,7 @@ fun List(navController: NavController? = null) {
     val topPadding = 8.dp + statusBarHeightDp
 
     LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
+            columns = GridCells.Fixed(MainComposePreferences.getGridSpanCount()),
             modifier = Modifier
                 .fillMaxSize(),
             contentPadding = PaddingValues(
