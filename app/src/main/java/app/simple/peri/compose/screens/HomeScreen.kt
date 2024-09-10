@@ -106,7 +106,7 @@ fun HomeScreen(context: Context, navController: NavController? = null) {
             ) { page ->
                 val wallpaper = systemWallpapers.getOrNull(page)
 
-                CardItem(
+                WallpaperItem(
                         title = when (page) {
                             0 -> context.getString(R.string.home_screen)
                             else -> context.getString(R.string.lock_screen)
@@ -156,7 +156,8 @@ fun HomeScreen(context: Context, navController: NavController? = null) {
                     context = context,
                     modifier = Modifier
                         .padding(8.dp)
-                        .height(120.dp)
+                        .height(120.dp),
+                    navController = navController
             )
         }
     }
@@ -164,7 +165,7 @@ fun HomeScreen(context: Context, navController: NavController? = null) {
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun CardItem(title: String, onClick: () -> Unit, modifier: Modifier = Modifier, wallpaper: Wallpaper?) {
+fun WallpaperItem(title: String, onClick: () -> Unit, modifier: Modifier = Modifier, wallpaper: Wallpaper?) {
     val currentScale = remember {
         mutableStateOf(ContentScale.Crop)
     }
@@ -269,7 +270,7 @@ fun Header(title: String, modifier: Modifier = Modifier, navController: NavContr
 }
 
 @Composable
-fun BottomMenu(context: Context, modifier: Modifier = Modifier) {
+fun BottomMenu(context: Context, modifier: Modifier = Modifier, navController: NavController? = null) {
     val height = 60.dp
     val rowPadding = 16.dp
 
@@ -305,7 +306,7 @@ fun BottomMenu(context: Context, modifier: Modifier = Modifier) {
                     .height(height), // Set a smaller height
                 shape = RoundedCornerShape(32.dp),
                 onClick = {
-                    // Navigate to the wallpapers screen
+                    navController?.navigate(Routes.WALLPAPERS)
                 }
         ) {
             Row(

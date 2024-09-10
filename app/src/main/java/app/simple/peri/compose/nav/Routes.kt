@@ -6,6 +6,7 @@ object Routes {
     const val LIST = "list"
     const val WALLPAPER = "wallpaper"
     const val SETTINGS = "settings"
+    const val WALLPAPERS = "wallpapers"
 
     const val WALLPAPER_ARG = "wallpaper_arg"
 }
