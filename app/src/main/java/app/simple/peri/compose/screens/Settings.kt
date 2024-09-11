@@ -82,6 +82,14 @@ fun Settings(navController: NavController? = null) {
             ) {
                 MainComposePreferences.setShowWarningIndicator(it.invert())
             }
+
+            SwitchPreference(
+                    title = context.getString(R.string.image_shadow_title),
+                    description = context.getString(R.string.image_shadow_summary),
+                    checked = MainComposePreferences.getShowImageShadow()
+            ) {
+                MainComposePreferences.setShowImageShadow(it)
+            }
         }
         item { // Accessibility
             SecondaryHeader(title = context.getString(R.string.accessibility))

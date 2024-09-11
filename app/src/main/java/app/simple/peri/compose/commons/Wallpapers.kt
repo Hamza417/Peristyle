@@ -42,8 +42,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.BlurredEdgeTreatment
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
@@ -141,90 +145,120 @@ fun WallpaperItem(wallpaper: Wallpaper, navController: NavController? = null, on
                       }, wallpaper, onDelete)
     }
 
-    ElevatedCard(
-            elevation = CardDefaults.cardElevation(
-                    defaultElevation = 0.dp,
-            ),
-            modifier = Modifier
-                .aspectRatio(aspectRatio)
-                .padding(8.dp)
-                .shadow(
-                        24.dp,
-                        shape = RoundedCornerShape(16.dp),
-                        clip = false,
-                        spotColor = Color(wallpaper.prominentColor),
-                        ambientColor = Color(wallpaper.prominentColor))
-                .combinedClickable(
-                        onClick = {
-                            navController?.navigate(Routes.WALLPAPER) {
-                                navController.currentBackStackEntry
-                                    ?.savedStateHandle?.set(Routes.WALLPAPER_ARG, wallpaper)
-                            }
-                        },
-                        onLongClick = {
-                            showDialog = true
-                        }
-                ),
-            shape = RoundedCornerShape(16.dp),
-    ) {
-        Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center,
-        ) {
+    Box {
+        val imageShadow = remember { MainComposePreferences.getShowImageShadow() }
+
+        if (imageShadow) {
             GlideImage(
                     model = wallpaper.uri.toUri(),
                     contentDescription = null,
                     modifier = Modifier
-                        .fillMaxSize()
-                        .haze(hazeState),
-                    alignment = Alignment.Center,
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                        .padding(16.dp)
+                        .blur(30.dp, edgeTreatment = BlurredEdgeTreatment.Unbounded)
+                        .alpha(0.5f)
+                        .graphicsLayer {
+                            clip = false
+                        }
+                        .align(Alignment.BottomCenter),
+                    alignment = Alignment.BottomCenter,
             ) {
-                it.addListener(object : RequestListener<Drawable> {
-                    override fun onLoadFailed(
-                            e: GlideException?,
-                            model: Any?,
-                            target: Target<Drawable>,
-                            isFirstResource: Boolean): Boolean {
-                        return false
-                    }
-
-                    override fun onResourceReady(
-                            resource: Drawable,
-                            model: Any,
-                            target: Target<Drawable>?,
-                            dataSource: DataSource,
-                            isFirstResource: Boolean): Boolean {
-                        return false
-                    }
-                })
+                it.override(512, 512)
                     .transition(withCrossFade())
                     .disallowHardwareConfig()
                     .centerCrop()
             }
+        }
 
-            Column(
-                    modifier = Modifier
-                        .wrapContentHeight()
-                        .fillMaxWidth()
-                        .hazeChild(
-                                state = hazeState,
-                                style = HazeDefaults.style(backgroundColor = Color(0x50000000), blurRadius = 5.dp))
-                        .align(Alignment.BottomCenter)
+        ElevatedCard(
+                elevation = CardDefaults.cardElevation(
+                        defaultElevation = if (imageShadow) 24.dp else 0.dp,
+                ),
+                modifier = Modifier
+                    .aspectRatio(aspectRatio)
+                    .padding(start = 8.dp,
+                             bottom = if (imageShadow) 35.dp else 8.dp,
+                             end = 8.dp,
+                             top = 8.dp)
+                    .shadow(
+                            if (imageShadow) 0.dp else 24.dp,
+                            shape = RoundedCornerShape(16.dp),
+                            clip = false,
+                            spotColor = Color(wallpaper.prominentColor),
+                            ambientColor = Color(wallpaper.prominentColor))
+                    .combinedClickable(
+                            onClick = {
+                                navController?.navigate(Routes.WALLPAPER) {
+                                    navController.currentBackStackEntry
+                                        ?.savedStateHandle?.set(Routes.WALLPAPER_ARG, wallpaper)
+                                }
+                            },
+                            onLongClick = {
+                                showDialog = true
+                            }
+                    ),
+                shape = RoundedCornerShape(16.dp),
+        ) {
+            Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center,
             ) {
-                Text(
-                        text = wallpaper.name ?: "",
+                GlideImage(
+                        model = wallpaper.uri.toUri(),
+                        contentDescription = null,
                         modifier = Modifier
-                            .padding(start = 16.dp, top = 16.dp, end = 16.dp),
-                        textAlign = TextAlign.Start,
-                        fontSize = 18.sp, // Set the font size
-                        fontWeight = FontWeight.Bold, // Make the text bold
-                        color = Color.White, // Set the text color
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        softWrap = false,
-                )
+                            .fillMaxSize()
+                            .haze(hazeState),
+                        alignment = Alignment.Center,
+                ) {
+                    it.addListener(object : RequestListener<Drawable> {
+                        override fun onLoadFailed(
+                                e: GlideException?,
+                                model: Any?,
+                                target: Target<Drawable>,
+                                isFirstResource: Boolean): Boolean {
+                            return false
+                        }
 
-                WallpaperDimensionsText(wallpaper, displayWidth, displayHeight)
+                        override fun onResourceReady(
+                                resource: Drawable,
+                                model: Any,
+                                target: Target<Drawable>?,
+                                dataSource: DataSource,
+                                isFirstResource: Boolean): Boolean {
+                            return false
+                        }
+                    })
+                        .transition(withCrossFade())
+                        .disallowHardwareConfig()
+                        .centerCrop()
+                }
+
+                Column(
+                        modifier = Modifier
+                            .wrapContentHeight()
+                            .fillMaxWidth()
+                            .hazeChild(
+                                    state = hazeState,
+                                    style = HazeDefaults.style(backgroundColor = Color(0x50000000), blurRadius = 5.dp))
+                            .align(Alignment.BottomCenter)
+                ) {
+                    Text(
+                            text = wallpaper.name ?: "",
+                            modifier = Modifier
+                                .padding(start = 16.dp, top = 16.dp, end = 16.dp),
+                            textAlign = TextAlign.Start,
+                            fontSize = 18.sp, // Set the font size
+                            fontWeight = FontWeight.Bold, // Make the text bold
+                            color = Color.White, // Set the text color
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            softWrap = false,
+                    )
+
+                    WallpaperDimensionsText(wallpaper, displayWidth, displayHeight)
+                }
             }
         }
     }
