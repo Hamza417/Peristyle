@@ -2,7 +2,7 @@
 
 Simple wallpaper manager app for Android built using Material libraries and design guidelines.
 
-**Update:** Peristyle is going through UI overhaul while migrating towards Compose. [Check the alternative branch for screenshots and code updates](https://github.com/Hamza417/Peristyle/tree/compose_migration).
+**Update:** Peristyle is going through UI overhaul while migrating towards Compose. You may see a new and modern looking interface from the newer versions now.
 
 ## Why Peristyle?
 
