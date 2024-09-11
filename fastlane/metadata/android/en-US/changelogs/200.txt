@@ -1,0 +1,5 @@
+- Total UI overhaul based completely on Jetpack Compose
+- Added option to assign tags to wallpapers
+- Add direct image based shadow
+- MD5 Checksum based ids and prominent color based wallpaper shadows
+- Glassmorphic card based interface
