@@ -1,10 +1,12 @@
 package app.simple.peri.compose.dialogs
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -63,10 +65,12 @@ fun AddTagDialog(onDismiss: () -> Unit, onAdd: (String) -> Unit) {
                 }
             },
             confirmButton = {
-                Button(onClick = {
-                    onAdd(tag.value)
-                    onDismiss()
-                }) {
+                Button(
+                        onClick = {
+                            onAdd(tag.value)
+                            onDismiss()
+                        })
+                {
                     Text(stringResource(id = R.string.add))
                 }
             },
@@ -83,7 +87,9 @@ fun TagItem(tag: Tag, onClick: (String) -> Unit) {
     Button(
             onClick = {
                 onClick(tag.name)
-            }
+            },
+            modifier = androidx.compose.ui.Modifier.padding(start = 2.dp, end = 2.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onSurfaceVariant)
     ) {
         Text(text = tag.name)
     }
