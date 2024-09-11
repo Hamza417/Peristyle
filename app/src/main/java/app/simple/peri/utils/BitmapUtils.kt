@@ -12,6 +12,7 @@ import android.media.ExifInterface
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
+import androidx.palette.graphics.Palette
 import java.io.InputStream
 
 object BitmapUtils {
@@ -47,6 +48,22 @@ object BitmapUtils {
         paint.colorFilter = ColorMatrixColorFilter(colorMatrix)
         canvas.drawBitmap(this, 0f, 0f, paint)
         return ret
+    }
+
+    fun Bitmap.applyEffects(brightness: Float, contrast: Float) {
+        val colorMatrix = ColorMatrix().apply {
+            set(floatArrayOf(
+                    contrast, 0f, 0f, 0f, brightness,
+                    0f, contrast, 0f, 0f, brightness,
+                    0f, 0f, contrast, 0f, brightness,
+                    0f, 0f, 0f, 1f, 0f
+            ))
+        }
+
+        val paint = Paint()
+        paint.colorFilter = ColorMatrixColorFilter(colorMatrix)
+        val canvas = Canvas(this)
+        canvas.drawBitmap(this, 0f, 0f, paint)
     }
 
     fun ViewGroup.createLayoutBitmap(): Bitmap {
@@ -169,5 +186,10 @@ object BitmapUtils {
         val matrix = Matrix()
         matrix.postRotate(angle)
         return Bitmap.createBitmap(source, 0, 0, source.width, source.height, matrix, true)
+    }
+
+    fun Bitmap.generatePalette(): Palette {
+        val palette = Palette.from(this).generate()
+        return palette
     }
 }

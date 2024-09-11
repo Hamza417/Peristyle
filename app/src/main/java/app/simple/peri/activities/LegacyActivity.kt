@@ -24,7 +24,7 @@ import app.simple.peri.utils.ConditionUtils.isNull
 import app.simple.peri.utils.ScreenUtils
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
-class MainActivity : AppCompatActivity(), android.content.SharedPreferences.OnSharedPreferenceChangeListener {
+class LegacyActivity : AppCompatActivity(), android.content.SharedPreferences.OnSharedPreferenceChangeListener {
 
     private var binding: ActivityMainBinding? = null
     private var biometricPrompt: BiometricPrompt? = null
@@ -151,7 +151,7 @@ class MainActivity : AppCompatActivity(), android.content.SharedPreferences.OnSh
             }
 
             else -> {
-                MaterialAlertDialogBuilder(this@MainActivity)
+                MaterialAlertDialogBuilder(this@LegacyActivity)
                     .setTitle(getString(R.string.app_name))
                     .setMessage(errString)
                     .setPositiveButton(getString(R.string.close)) { _, _ ->

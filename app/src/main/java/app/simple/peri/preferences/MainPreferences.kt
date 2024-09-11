@@ -125,6 +125,10 @@ object MainPreferences {
         return SharedPreferences.getSharedPreferences().getString(AUTO_WALLPAPER_INTERVAL, "0")!!
     }
 
+    fun setAutoWallpaperInterval(interval: String) {
+        SharedPreferences.getSharedPreferences().edit().putString(AUTO_WALLPAPER_INTERVAL, interval).apply()
+    }
+
     fun isAutoWallpaperIntervalEnabled(): Boolean {
         return SharedPreferences.getSharedPreferences().getString(AUTO_WALLPAPER_INTERVAL, "0") != "0"
     }
@@ -137,8 +141,16 @@ object MainPreferences {
         return SharedPreferences.getSharedPreferences().getBoolean(CROP_WALLPAPER, false)
     }
 
+    fun setCropWallpaper(cropWallpaper: Boolean) {
+        SharedPreferences.getSharedPreferences().edit().putBoolean(CROP_WALLPAPER, cropWallpaper).apply()
+    }
+
     fun isDifferentWallpaperForLockScreen(): Boolean {
         return SharedPreferences.getSharedPreferences().getBoolean(DIFFERENT_WALLPAPER, false)
+    }
+
+    fun setDifferentWallpaperForLockScreen(differentWallpaper: Boolean) {
+        SharedPreferences.getSharedPreferences().edit().putBoolean(DIFFERENT_WALLPAPER, differentWallpaper).apply()
     }
 
     fun isWallpaperWhenSleeping(): Boolean {
@@ -188,5 +200,39 @@ object MainPreferences {
     fun isTweakOptionSelected(option: String): Boolean {
         val tweaks = getTweaks()
         return tweaks?.contains(option) ?: false
+    }
+
+    fun isIgnoreDotFiles(): Boolean {
+        return isTweakOptionSelected(IGNORE_DOT_FILES)
+    }
+
+    fun isIgnoreSubDirs(): Boolean {
+        return isTweakOptionSelected(IGNORE_SUB_DIRS)
+    }
+
+    fun isLinearAutoWallpaper(): Boolean {
+        return isTweakOptionSelected(LINEAR_AUTO_WALLPAPER)
+    }
+
+    fun setIgnoreDotFiles(ignoreDotFiles: Boolean) {
+        setTweakOption(IGNORE_DOT_FILES, ignoreDotFiles)
+    }
+
+    fun setIgnoreSubDirs(ignoreSubDirs: Boolean) {
+        setTweakOption(IGNORE_SUB_DIRS, ignoreSubDirs)
+    }
+
+    fun setLinearAutoWallpaper(linearAutoWallpaper: Boolean) {
+        setTweakOption(LINEAR_AUTO_WALLPAPER, linearAutoWallpaper)
+    }
+
+    private fun setTweakOption(option: String, enabled: Boolean) {
+        val tweaks = getTweaks()?.toMutableSet() ?: mutableSetOf()
+        if (enabled) {
+            tweaks.add(option)
+        } else {
+            tweaks.remove(option)
+        }
+        SharedPreferences.getSharedPreferences().edit().putStringSet(TWEAKS, tweaks).apply()
     }
 }

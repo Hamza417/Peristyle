@@ -2,8 +2,10 @@ package app.simple.peri.ui
 
 import android.Manifest
 import android.content.ActivityNotFoundException
+import android.content.ComponentName
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -14,6 +16,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.biometric.BiometricPrompt
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
@@ -27,6 +30,8 @@ import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreferenceCompat
 import app.simple.peri.BuildConfig
 import app.simple.peri.R
+import app.simple.peri.activities.LegacyActivity
+import app.simple.peri.activities.MainComposeActivity
 import app.simple.peri.constants.BundleConstants
 import app.simple.peri.database.instances.WallpaperDatabase
 import app.simple.peri.databinding.DialogDeleteBinding
@@ -317,6 +322,31 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
 
         preferenceScreen.findPreference<Preference>("info")?.summary =
             getString(R.string.full_info, BuildConfig.VERSION_NAME)
+
+        preferenceScreen.findPreference<SwitchPreferenceCompat>("legacy_interface")?.isChecked =
+            requireContext().packageManager.getComponentEnabledSetting(
+                    ComponentName(requireContext(), LegacyActivity::class.java)
+            ) == PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+
+        preferenceScreen.findPreference<SwitchPreferenceCompat>("legacy_interface")?.setOnPreferenceChangeListener { _, newValue ->
+            val newState = when {
+                newValue as Boolean -> PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+                else -> PackageManager.COMPONENT_ENABLED_STATE_DISABLED
+            }
+
+            val composeState = when {
+                newValue -> PackageManager.COMPONENT_ENABLED_STATE_DISABLED
+                else -> PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+            }
+
+            requireContext().packageManager.setComponentEnabledSetting(
+                    ComponentName(requireContext(), LegacyActivity::class.java), newState, PackageManager.DONT_KILL_APP)
+
+            requireContext().packageManager.setComponentEnabledSetting(
+                    ComponentName(requireContext(), MainComposeActivity::class.java), composeState, PackageManager.DONT_KILL_APP)
+
+            true
+        }
     }
 
     override fun onDestroy() {
@@ -425,22 +455,13 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
             })
     }
 
+    @RequiresApi(Build.VERSION_CODES.R)
     private fun requestManageExternalStoragePermission() {
         try {
             val uri = Uri.parse("package:${BuildConfig.APPLICATION_ID}")
+            startActivity(Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION, uri))
+        } catch (ignored: ActivityNotFoundException) {
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                startActivity(Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION, uri))
-            } else {
-                requestPermissionLauncher.launch(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE))
-            }
-        } catch (e: ActivityNotFoundException) {
-            MaterialAlertDialogBuilder(requireContext())
-                .setMessage(e.localizedMessage ?: e.message ?: e.stackTraceToString())
-                .setPositiveButton(R.string.close) { dialog, _ ->
-                    dialog.dismiss()
-                }
-                .show()
         }
     }
 
