@@ -109,13 +109,6 @@ fun Settings(navController: NavController? = null) {
             }
 
             SwitchPreference(
-                    title = context.getString(R.string.linear_auto_wallpaper),
-                    checked = MainPreferences.isLinearAutoWallpaper()
-            ) {
-                MainPreferences.setLinearAutoWallpaper(it)
-            }
-
-            SwitchPreference(
                     title = context.getString(R.string.go_back_to_legacy_interface),
                     description = context.getString(R.string.go_back_to_legacy_interface_summary),
                     checked = context.packageManager.getComponentEnabledSetting(ComponentName(context, LegacyActivity::class.java))
@@ -147,6 +140,15 @@ fun Settings(navController: NavController? = null) {
             {
                 val intent = Intent(Intent.ACTION_VIEW)
                 intent.data = Uri.parse("https://t.me/peristyle_app")
+                context.startActivity(intent)
+            }
+
+            ClickablePreference(
+                    title = context.getString(R.string.github),
+                    description = context.getString(R.string.github_summary))
+            {
+                val intent = Intent(Intent.ACTION_VIEW)
+                intent.data = Uri.parse("https://github.com/Hamza417/Peristyle")
                 context.startActivity(intent)
             }
         }

@@ -109,6 +109,13 @@ fun AutoWallpaper(navController: NavController? = null) {
                         MainPreferences.setWallpaperWhenSleeping(it)
                     }
             )
+
+            SwitchPreference(
+                    title = context.getString(R.string.linear_auto_wallpaper),
+                    checked = MainPreferences.isLinearAutoWallpaper()
+            ) {
+                MainPreferences.setLinearAutoWallpaper(it)
+            }
         }
     }
 }

@@ -166,4 +166,5 @@
     <string name="tag_count">%1$d Wallpapers</string>
     <string name="image_shadow_title">Image Shadow</string>
     <string name="image_shadow_summary">Add a direct image based blurred shadow behind the wallpapers in wallpapers list.\n\nDisable it if you encounter performance issues.</string>
+    <string name="github_summary">Open app\'s repository</string>
 </resources>
