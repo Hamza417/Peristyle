@@ -68,6 +68,7 @@ import app.simple.peri.compose.dialogs.EffectsDialog
 import app.simple.peri.compose.nav.Routes
 import app.simple.peri.factories.TagsViewModelFactory
 import app.simple.peri.models.Wallpaper
+import app.simple.peri.tools.StackBlur
 import app.simple.peri.utils.BitmapUtils.applyEffects
 import app.simple.peri.utils.FileUtils.toSize
 import app.simple.peri.utils.FileUtils.toUri
@@ -87,7 +88,7 @@ fun Wallpaper(context: Context, navController: NavHostController) {
     val wallpaper = navController.previousBackStackEntry?.savedStateHandle?.get<Wallpaper>(Routes.WALLPAPER_ARG)
     var showDialog by remember { mutableStateOf(false) }
     var drawable by remember { mutableStateOf<Drawable?>(null) }
-    var blurValue by remember { mutableFloatStateOf(0f) }
+    var blurValue by remember { mutableFloatStateOf(0f) } // 0F..25F
     var brightnessValue by remember { mutableFloatStateOf(0f) } // -255F..255F
     var contrastValue by remember { mutableFloatStateOf(1f) } // 0F..10F
     val saturationValue by remember { mutableFloatStateOf(1f) } // 0F..10F
@@ -239,6 +240,11 @@ fun Wallpaper(context: Context, navController: NavHostController) {
                         coroutineScope.launch {
                             val bitmap = graphicsLayer.toImageBitmap().asAndroidBitmap().copy(Bitmap.Config.ARGB_8888, true)
                             bitmap.applyEffects(brightnessValue, contrastValue)
+                            try {
+                                StackBlur().blurRgb(bitmap, blurValue.toInt().times(4))
+                            } catch (e: IllegalArgumentException) {
+                                e.printStackTrace()
+                            }
                             drawable = BitmapDrawable(context.resources, bitmap)
                             showDialog = true
                             showLaunchedEffect.value = false
