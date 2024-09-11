@@ -34,9 +34,10 @@ from there? then Peristyle is for you :)
 
 ## Screenshots
 
-|   ![01](./fastlane/metadata/android/en-US/images/phoneScreenshots/01.png)   |   ![02](./fastlane/metadata/android/en-US/images/phoneScreenshots/02.png)   |   ![03](./fastlane/metadata/android/en-US/images/phoneScreenshots/03.png)   |
-|   ![04](./fastlane/metadata/android/en-US/images/phoneScreenshots/04.png)   |   ![05](./fastlane/metadata/android/en-US/images/phoneScreenshots/05.png)   |   ![06](./fastlane/metadata/android/en-US/images/phoneScreenshots/06.png)   |
-|   ![07](./fastlane/metadata/android/en-US/images/phoneScreenshots/07.png)   |   ![08](./fastlane/metadata/android/en-US/images/phoneScreenshots/08.png)   |   ![09](./fastlane/metadata/android/en-US/images/phoneScreenshots/09.png)   |
+| ![01](./fastlane/metadata/android/en-US/images/phoneScreenshots/01.png) | ![02](./fastlane/metadata/android/en-US/images/phoneScreenshots/02.png) | ![03](./fastlane/metadata/android/en-US/images/phoneScreenshots/03.png) |
+|:-----------------------------------------------------------------------:|:-----------------------------------------------------------------------:|:-----------------------------------------------------------------------:|
+| ![04](./fastlane/metadata/android/en-US/images/phoneScreenshots/04.png) | ![05](./fastlane/metadata/android/en-US/images/phoneScreenshots/05.png) | ![06](./fastlane/metadata/android/en-US/images/phoneScreenshots/06.png) |
+| ![07](./fastlane/metadata/android/en-US/images/phoneScreenshots/07.png) | ![08](./fastlane/metadata/android/en-US/images/phoneScreenshots/08.png) | ![09](./fastlane/metadata/android/en-US/images/phoneScreenshots/09.png) |
 
 ## Triggering AutoWallpaperService from Other Apps
 
