@@ -1,5 +1,6 @@
 package app.simple.peri.compose.commons
 
+import android.app.Application
 import android.graphics.drawable.Drawable
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
@@ -62,6 +63,7 @@ import androidx.navigation.NavController
 import app.simple.peri.R
 import app.simple.peri.compose.dialogs.AddTagDialog
 import app.simple.peri.compose.nav.Routes
+import app.simple.peri.factories.TagsViewModelFactory
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.utils.FileUtils.toUri
@@ -236,7 +238,9 @@ fun WallpaperMenu(setShowDialog: (Boolean) -> Unit,
 
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
-    val tagsViewModel: TagsViewModel = viewModel()
+    val tagsViewModel: TagsViewModel = viewModel(
+            factory = TagsViewModelFactory(context.applicationContext as Application)
+    )
     val showTagDialog = remember { mutableStateOf(false) }
 
     if (showTagDialog.value) {

@@ -22,19 +22,21 @@ fun EffectsDialog(
         setShowDialog: (Boolean) -> Unit,
         initialBlurValue: Float = 0f,
         initialBrightnessValue: Float = 1f,
-        onApplyEffects: (Float, Float) -> Unit
+        initialContrastValue: Float = 1f,
+        onApplyEffects: (Float, Float, Float) -> Unit
 ) {
     if (showDialog) {
         val blurValue = remember { mutableFloatStateOf(initialBlurValue) }
         val brightnessValue = remember { mutableFloatStateOf(initialBrightnessValue) }
+        val contrastValue = remember { mutableFloatStateOf(initialContrastValue) }
 
-        LaunchedEffect(blurValue.floatValue, brightnessValue.floatValue) {
-            onApplyEffects(blurValue.floatValue, brightnessValue.floatValue)
+        LaunchedEffect(blurValue.floatValue, brightnessValue.floatValue, contrastValue.floatValue) {
+            onApplyEffects(blurValue.floatValue, brightnessValue.floatValue, contrastValue.floatValue)
         }
 
         AlertDialog(
                 onDismissRequest = { setShowDialog(false) },
-                title = { Text(text = "Apply Effects") },
+                title = { Text(text = stringResource(id = R.string.edit)) },
                 text = {
                     Column {
                         Text(text = stringResource(id = R.string.blur))
@@ -44,23 +46,24 @@ fun EffectsDialog(
                                 valueRange = 0f..25f
                         )
                         Spacer(modifier = Modifier.height(16.dp))
-                        //                        Text(text = "Brightness")
-                        //                        Slider(
-                        //                                value = brightnessValue.floatValue,
-                        //                                onValueChange = { brightnessValue.floatValue = it },
-                        //                                valueRange = 0.5f..2f
-                        //                        )
+                        Text(text = stringResource(id = R.string.brightness))
+                        Slider(
+                                value = brightnessValue.floatValue,
+                                onValueChange = { brightnessValue.floatValue = it },
+                                valueRange = -255F..255F
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(text = stringResource(id = R.string.contrast))
+                        Slider(
+                                value = contrastValue.floatValue,
+                                onValueChange = { contrastValue.floatValue = it },
+                                valueRange = 0F..10F
+                        )
                     }
                 },
                 confirmButton = {
                     Button(onClick = { setShowDialog(false) }) {
                         Text(stringResource(id = R.string.close))
-                    }
-                },
-                dismissButton = {
-                    Button(onClick = { setShowDialog(false) }) {
-                        Text(stringResource(id = R.string.cancel))
-                        onApplyEffects(initialBlurValue, initialBrightnessValue)
                     }
                 }
         )

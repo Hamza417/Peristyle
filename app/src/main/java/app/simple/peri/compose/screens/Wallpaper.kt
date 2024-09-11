@@ -3,6 +3,8 @@ package app.simple.peri.compose.screens
 import android.app.Application
 import android.app.WallpaperManager
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -30,18 +32,26 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.ColorMatrix
+import androidx.compose.ui.graphics.asAndroidBitmap
+import androidx.compose.ui.graphics.layer.drawLayer
+import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.TextStyle
@@ -56,23 +66,20 @@ import androidx.navigation.NavHostController
 import app.simple.peri.R
 import app.simple.peri.compose.dialogs.EffectsDialog
 import app.simple.peri.compose.nav.Routes
-import app.simple.peri.compose.util.captureGlideImage
 import app.simple.peri.factories.TagsViewModelFactory
 import app.simple.peri.models.Wallpaper
+import app.simple.peri.utils.BitmapUtils.applyEffects
 import app.simple.peri.utils.FileUtils.toSize
 import app.simple.peri.utils.FileUtils.toUri
 import app.simple.peri.viewmodels.TagsViewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
-import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.target.Target
 import dev.chrisbanes.haze.HazeDefaults
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.hazeChild
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
@@ -81,7 +88,12 @@ fun Wallpaper(context: Context, navController: NavHostController) {
     var showDialog by remember { mutableStateOf(false) }
     var drawable by remember { mutableStateOf<Drawable?>(null) }
     var blurValue by remember { mutableFloatStateOf(0f) }
+    var brightnessValue by remember { mutableFloatStateOf(0f) } // -255F..255F
+    var contrastValue by remember { mutableFloatStateOf(1f) } // 0F..10F
+    val saturationValue by remember { mutableFloatStateOf(1f) } // 0F..10F
     var tags by remember { mutableStateOf(emptyList<String>()) }
+    val coroutineScope = rememberCoroutineScope()
+    val graphicsLayer = rememberGraphicsLayer()
     val tagsViewModel: TagsViewModel = viewModel(
             factory = TagsViewModelFactory(context.applicationContext as Application, wallpaper?.md5 ?: "")
     )
@@ -105,29 +117,35 @@ fun Wallpaper(context: Context, navController: NavHostController) {
 
         val hazeState = remember { HazeState() }
 
+        val colorMatrix = floatArrayOf(
+                contrastValue, 0f, 0f, 0f, brightnessValue,
+                0f, contrastValue, 0f, 0f, brightnessValue,
+                0f, 0f, contrastValue, 0f, brightnessValue,
+                0f, 0f, 0f, 1f, 0f
+        )
+
         GlideImage(
                 model = wallpaper?.uri?.toUri(),
                 contentDescription = null,
                 modifier = Modifier
                     .fillMaxSize()
                     .haze(state = hazeState)
-                    .blur(blurValue.dp),
+                    .blur(blurValue.dp)
+                    .drawWithContent {
+                        // call record to capture the content in the graphics layer
+                        graphicsLayer.record {
+                            // draw the contents of the composable into the graphics layer
+                            this@drawWithContent.drawContent()
+                        }
+                        // draw the graphics layer on the visible canvas
+                        drawLayer(graphicsLayer)
+                    },
                 alignment = Alignment.Center,
                 contentScale = currentScale.value,
+                colorFilter = ColorFilter.colorMatrix(ColorMatrix(colorMatrix)),
         )
         {
-            it.addListener(object : RequestListener<Drawable> {
-                override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>, isFirstResource: Boolean): Boolean {
-                    drawable = null
-                    return false
-                }
-
-                override fun onResourceReady(resource: Drawable, model: Any, target: Target<Drawable>?, dataSource: DataSource, isFirstResource: Boolean): Boolean {
-                    drawable = resource
-                    return false
-                }
-            })
-                .transition(withCrossFade())
+            it.transition(withCrossFade())
                 .disallowHardwareConfig()
                 .fitCenter()
         }
@@ -199,16 +217,33 @@ fun Wallpaper(context: Context, navController: NavHostController) {
 
             Row {
                 val showEditDialog = remember { mutableStateOf(false) }
+                val showLaunchedEffect = remember { mutableStateOf(false) }
 
                 if (showEditDialog.value) {
                     EffectsDialog(
                             showDialog = showEditDialog.value,
                             setShowDialog = { showEditDialog.value = it },
                             initialBlurValue = blurValue,
-                            onApplyEffects = { blur, _ ->
+                            initialBrightnessValue = brightnessValue,
+                            initialContrastValue = contrastValue,
+                            onApplyEffects = { blur, brightness, contrast ->
                                 blurValue = blur
+                                brightnessValue = brightness
+                                contrastValue = contrast
                             }
                     )
+                }
+
+                if (showLaunchedEffect.value) {
+                    LaunchedEffect(showLaunchedEffect) {
+                        coroutineScope.launch {
+                            val bitmap = graphicsLayer.toImageBitmap().asAndroidBitmap().copy(Bitmap.Config.ARGB_8888, true)
+                            bitmap.applyEffects(brightnessValue, contrastValue)
+                            drawable = BitmapDrawable(context.resources, bitmap)
+                            showDialog = true
+                            showLaunchedEffect.value = false
+                        }
+                    }
                 }
 
                 Button(
@@ -244,7 +279,7 @@ fun Wallpaper(context: Context, navController: NavHostController) {
 
                 Button(
                         onClick = {
-                            showDialog = true
+                            showLaunchedEffect.value = true
                         },
                         shape = RoundedCornerShape(20.dp),
                         modifier = Modifier
@@ -269,7 +304,7 @@ fun Wallpaper(context: Context, navController: NavHostController) {
             CustomDialog(
                     setShowDialog = { showDialog = it },
                     context = context,
-                    drawable = captureGlideImage(drawable, displayWidth, displayHeight)
+                    drawable = drawable
             )
         }
     }

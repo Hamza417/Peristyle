@@ -50,6 +50,22 @@ object BitmapUtils {
         return ret
     }
 
+    fun Bitmap.applyEffects(brightness: Float, contrast: Float) {
+        val colorMatrix = ColorMatrix().apply {
+            set(floatArrayOf(
+                    contrast, 0f, 0f, 0f, brightness,
+                    0f, contrast, 0f, 0f, brightness,
+                    0f, 0f, contrast, 0f, brightness,
+                    0f, 0f, 0f, 1f, 0f
+            ))
+        }
+
+        val paint = Paint()
+        paint.colorFilter = ColorMatrixColorFilter(colorMatrix)
+        val canvas = Canvas(this)
+        canvas.drawBitmap(this, 0f, 0f, paint)
+    }
+
     fun ViewGroup.createLayoutBitmap(): Bitmap {
         val spec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
         measure(spec, spec)
