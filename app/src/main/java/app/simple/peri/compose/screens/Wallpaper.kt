@@ -1,8 +1,10 @@
 package app.simple.peri.compose.screens
 
+import android.app.Application
 import android.app.WallpaperManager
 import android.content.Context
 import android.graphics.drawable.Drawable
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,6 +20,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.Label
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material3.Button
@@ -29,6 +32,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -44,12 +48,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.core.graphics.drawable.toBitmap
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import app.simple.peri.R
 import app.simple.peri.compose.nav.Routes
+import app.simple.peri.factories.TagsViewModelFactory
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.utils.FileUtils.toSize
 import app.simple.peri.utils.FileUtils.toUri
+import app.simple.peri.viewmodels.TagsViewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.load.DataSource
@@ -68,6 +75,15 @@ fun Wallpaper(context: Context, navController: NavHostController) {
     val wallpaper = navController.previousBackStackEntry?.savedStateHandle?.get<Wallpaper>(Routes.WALLPAPER_ARG)
     var showDialog by remember { mutableStateOf(false) }
     var drawable by remember { mutableStateOf<Drawable?>(null) }
+    var tags by remember { mutableStateOf(emptyList<String>()) }
+    val tagsViewModel: TagsViewModel = viewModel(
+            factory = TagsViewModelFactory(context.applicationContext as Application, wallpaper?.md5 ?: "")
+    )
+
+    tagsViewModel.getWallpaperTags().observeAsState().value?.let {
+        Log.i("Wallpaper", "Tags: $it")
+        tags = it
+    }
 
     Box(
             modifier = Modifier.fillMaxSize(),
@@ -134,14 +150,37 @@ fun Wallpaper(context: Context, navController: NavHostController) {
                         append(wallpaper?.width ?: 0)
                         append(" x ")
                         append(wallpaper?.height ?: 0)
-                        append(" ")
+                        append(", ")
                         append(wallpaper?.size?.toSize() ?: "")
                     },
                     fontWeight = FontWeight.Light,
                     color = Color.White,
-                    modifier = Modifier.padding(bottom = 16.dp, start = 16.dp, top = 4.dp),
+                    modifier = Modifier.padding(start = 16.dp, top = 4.dp),
                     fontSize = 18.sp
             )
+
+            Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Start,
+                    verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                        imageVector = Icons.AutoMirrored.Rounded.Label,
+                        contentDescription = "",
+                        tint = Color.White,
+                        modifier = Modifier
+                            .width(32.dp)
+                            .height(32.dp)
+                            .padding(start = 12.dp, bottom = 16.dp)
+                )
+                Text(
+                        text = tags.joinToString(", "),
+                        fontWeight = FontWeight.Light,
+                        color = Color.White,
+                        modifier = Modifier.padding(start = 8.dp, bottom = 16.dp),
+                        fontSize = 18.sp
+                )
+            }
 
             Row {
                 Button(

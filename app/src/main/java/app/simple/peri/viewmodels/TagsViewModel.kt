@@ -11,7 +11,7 @@ import app.simple.peri.models.Wallpaper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class TagsViewModel(application: Application) : AndroidViewModel(application) {
+class TagsViewModel(application: Application, private val md5: String) : AndroidViewModel(application) {
 
     private val tags: MutableLiveData<List<Tag>> by lazy {
         MutableLiveData<List<Tag>>().also {
@@ -19,8 +19,18 @@ class TagsViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    private val wallpaperTags: MutableLiveData<List<String>> by lazy {
+        MutableLiveData<List<String>>().also {
+            loadWallpaperTags(md5)
+        }
+    }
+
     fun getTags(): LiveData<List<Tag>> {
         return tags
+    }
+
+    fun getWallpaperTags(): LiveData<List<String>> {
+        return wallpaperTags
     }
 
     private fun loadTags() {
@@ -29,6 +39,15 @@ class TagsViewModel(application: Application) : AndroidViewModel(application) {
             val tagsDao = database?.tagsDao()
             val tags = tagsDao?.getAllTags()
             this@TagsViewModel.tags.postValue(tags)
+        }
+    }
+
+    private fun loadWallpaperTags(md5: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val database = TagsDatabase.getInstance(getApplication())
+            val tagsDao = database?.tagsDao()
+            val tags = tagsDao?.getTagNamesByMD5(md5)
+            wallpaperTags.postValue(tags)
         }
     }
 

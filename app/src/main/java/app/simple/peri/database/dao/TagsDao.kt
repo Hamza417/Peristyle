@@ -15,6 +15,14 @@ interface TagsDao {
     @Query("SELECT * FROM tags WHERE name = :id")
     fun getTagById(id: String): Tag
 
+    /**
+     * Get all tag names whose sum contains the given md5
+     *
+     * @param md5 The md5 to search for
+     */
+    @Query("SELECT name FROM tags WHERE sum LIKE '%' || :md5 || '%'")
+    fun getTagNamesByMD5(md5: String): List<String>
+
     @Query("SELECT EXISTS(SELECT 1 FROM tags WHERE name = :id)")
     fun isTagExists(id: String): Boolean
 
