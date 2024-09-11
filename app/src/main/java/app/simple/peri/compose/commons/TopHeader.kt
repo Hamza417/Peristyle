@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.sp
 val COMMON_PADDING = 16.dp
 
 @Composable
-fun TopHeader(title: String, modifier: Modifier = Modifier) {
+fun TopHeader(title: String, modifier: Modifier = Modifier, count: Int = 0) {
     Row(
             modifier = modifier
                 .fillMaxWidth()
@@ -29,5 +29,15 @@ fun TopHeader(title: String, modifier: Modifier = Modifier) {
                 modifier = Modifier.weight(1f), // Set the weight
                 fontWeight = FontWeight.Bold, // Make the text bold
         )
+
+        if (count > 0) {
+            Text(
+                    text = count.toString(),
+                    textAlign = TextAlign.End,
+                    fontSize = 24.sp,
+                    modifier = Modifier.weight(1f),
+                    fontWeight = FontWeight.Thin,
+            )
+        }
     }
 }

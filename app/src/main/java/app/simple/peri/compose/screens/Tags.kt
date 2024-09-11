@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Text
@@ -27,6 +28,8 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import app.simple.peri.R
+import app.simple.peri.compose.commons.COMMON_PADDING
+import app.simple.peri.compose.commons.TopHeader
 import app.simple.peri.compose.nav.Routes
 import app.simple.peri.factories.TagsViewModelFactory
 import app.simple.peri.models.Tag
@@ -65,8 +68,15 @@ fun Tags(navController: NavController? = null) {
                     end = 8.dp,
                     bottom = 8.dp),
     ) {
+        item(span = StaggeredGridItemSpan.FullLine) {
+            TopHeader(
+                    title = stringResource(R.string.tags),
+                    modifier = Modifier.padding(COMMON_PADDING),
+                    count = tags.size)
+        }
         items(tags.size) { index ->
-            TagItem(tag = tags[index], navController = navController)
+            TagItem(tag = tags[index],
+                    navController = navController)
         }
     }
 }

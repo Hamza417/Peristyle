@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -114,6 +115,10 @@ fun Wallpapers(list: List<Wallpaper>, navController: NavController? = null) {
                         end = 8.dp,
                         bottom = 8.dp)
         ) {
+            item(span = { GridItemSpan(maxLineSpan) }) {
+                TopHeader(title = "Wallpapers", count = wallpapers.size,
+                          modifier = Modifier.padding(COMMON_PADDING))
+            }
             items(wallpapers.size) { index ->
                 WallpaperItem(wallpapers[index], navController) { deletedWallpaper ->
                     wallpapers = wallpapers.filter { it != deletedWallpaper }
