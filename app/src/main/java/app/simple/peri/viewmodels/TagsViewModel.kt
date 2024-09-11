@@ -6,12 +6,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import app.simple.peri.database.instances.TagsDatabase
+import app.simple.peri.database.instances.WallpaperDatabase
 import app.simple.peri.models.Tag
 import app.simple.peri.models.Wallpaper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class TagsViewModel(application: Application, private val md5: String) : AndroidViewModel(application) {
+class TagsViewModel(application: Application, private val md5: String? = null, private val tag: String? = null) : AndroidViewModel(application) {
 
     private val tags: MutableLiveData<List<Tag>> by lazy {
         MutableLiveData<List<Tag>>().also {
@@ -21,7 +22,17 @@ class TagsViewModel(application: Application, private val md5: String) : Android
 
     private val wallpaperTags: MutableLiveData<List<String>> by lazy {
         MutableLiveData<List<String>>().also {
-            loadWallpaperTags(md5)
+            if (md5 != null) {
+                loadWallpaperTags(md5)
+            }
+        }
+    }
+
+    private val wallpapers: MutableLiveData<List<Wallpaper>> by lazy {
+        MutableLiveData<List<Wallpaper>>().also {
+            if (tag != null) {
+                loadWallpapers(tag)
+            }
         }
     }
 
@@ -31,6 +42,10 @@ class TagsViewModel(application: Application, private val md5: String) : Android
 
     fun getWallpaperTags(): LiveData<List<String>> {
         return wallpaperTags
+    }
+
+    fun getWallpapers(): LiveData<List<Wallpaper>> {
+        return wallpapers
     }
 
     private fun loadTags() {
@@ -48,6 +63,17 @@ class TagsViewModel(application: Application, private val md5: String) : Android
             val tagsDao = database?.tagsDao()
             val tags = tagsDao?.getTagNamesByMD5(md5)
             wallpaperTags.postValue(tags)
+        }
+    }
+
+    private fun loadWallpapers(factoryTag: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val tagsDatabase = TagsDatabase.getInstance(getApplication())
+            val wallpaperDatabase = WallpaperDatabase.getInstance(getApplication())
+            val tagsDao = tagsDatabase?.tagsDao()
+            val tag = tagsDao?.getTagById(factoryTag)
+            val wallpapers = wallpaperDatabase?.wallpaperDao()?.getWallpapersByMD5s(tag?.sum!!)
+            this@TagsViewModel.wallpapers.postValue(wallpapers)
         }
     }
 

@@ -1,5 +1,6 @@
 package app.simple.peri.compose.screens
 
+import android.app.Application
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -26,6 +27,8 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import app.simple.peri.R
+import app.simple.peri.compose.nav.Routes
+import app.simple.peri.factories.TagsViewModelFactory
 import app.simple.peri.models.Tag
 import app.simple.peri.viewmodels.TagsViewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
@@ -33,7 +36,11 @@ import com.bumptech.glide.integration.compose.GlideImage
 
 @Composable
 fun Tags(navController: NavController? = null) {
-    val tagsViewModel: TagsViewModel = viewModel()
+    val tagsViewModel: TagsViewModel = viewModel(
+            factory = TagsViewModelFactory(
+                    application = requireNotNull(LocalContext.current.applicationContext as Application),
+            )
+    )
     val tags = remember { mutableListOf<Tag>() }
     var statusBarHeight by remember { mutableIntStateOf(0) }
 
@@ -72,7 +79,7 @@ fun TagItem(tag: Tag, navController: NavController? = null) {
                     defaultElevation = 12.dp,
             ),
             onClick = {
-                navController?.navigate("tag/${tag.name}")
+                navController?.navigate("${Routes.TAGGED_WALLPAPERS}/${tag.name}")
             },
             modifier = Modifier.padding(8.dp)
     ) {

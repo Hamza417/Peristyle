@@ -75,7 +75,7 @@ class TagsFetcher(private val tag: Tag) : DataFetcher<Bitmap> {
 
     companion object {
         private const val TAG = "TagsFetcher"
-        private const val TAG_COUNT = 12
+        private const val TAG_COUNT = 15
         private const val GRID_WIDTH = 3
         private const val REQUEST_WIDTH = 256
     }

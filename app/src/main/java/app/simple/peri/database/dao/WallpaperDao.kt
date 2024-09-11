@@ -32,6 +32,12 @@ interface WallpaperDao {
     fun getWallpaperByMD5(md5: String): Wallpaper?
 
     /**
+     * Get wallpapers by the matching all the MD% in the HashSet
+     */
+    @Query("SELECT * FROM wallpapers WHERE md5 IN (:md5s)")
+    fun getWallpapersByMD5s(md5s: Set<String>): List<Wallpaper>
+
+    /**
      * Clean any entry that doesn't have any of the
      * specified extension
      *

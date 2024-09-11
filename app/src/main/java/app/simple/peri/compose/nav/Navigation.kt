@@ -10,6 +10,7 @@ import app.simple.peri.compose.screens.Home
 import app.simple.peri.compose.screens.List
 import app.simple.peri.compose.screens.Settings
 import app.simple.peri.compose.screens.Setup
+import app.simple.peri.compose.screens.TaggedWallpapers
 import app.simple.peri.compose.screens.Tags
 import app.simple.peri.compose.screens.Wallpaper
 import app.simple.peri.compose.screens.isSetupComplete
@@ -50,6 +51,11 @@ fun PeristyleNavigation(context: Context) {
 
         composable(route = Routes.TAGS) {
             Tags(navController)
+        }
+
+        composable(route = "${Routes.TAGGED_WALLPAPERS}/{tag}") { backStackEntry ->
+            val tag = backStackEntry.arguments?.getString("tag")
+            TaggedWallpapers(navController, tag)
         }
     }
 }
