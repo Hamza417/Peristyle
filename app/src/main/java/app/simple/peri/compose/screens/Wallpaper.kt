@@ -4,7 +4,6 @@ import android.app.Application
 import android.app.WallpaperManager
 import android.content.Context
 import android.graphics.drawable.Drawable
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -33,14 +32,18 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -51,7 +54,9 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import app.simple.peri.R
+import app.simple.peri.compose.dialogs.EffectsDialog
 import app.simple.peri.compose.nav.Routes
+import app.simple.peri.compose.util.captureGlideImage
 import app.simple.peri.factories.TagsViewModelFactory
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.utils.FileUtils.toSize
@@ -75,13 +80,18 @@ fun Wallpaper(context: Context, navController: NavHostController) {
     val wallpaper = navController.previousBackStackEntry?.savedStateHandle?.get<Wallpaper>(Routes.WALLPAPER_ARG)
     var showDialog by remember { mutableStateOf(false) }
     var drawable by remember { mutableStateOf<Drawable?>(null) }
+    var blurValue by remember { mutableFloatStateOf(0f) }
     var tags by remember { mutableStateOf(emptyList<String>()) }
     val tagsViewModel: TagsViewModel = viewModel(
             factory = TagsViewModelFactory(context.applicationContext as Application, wallpaper?.md5 ?: "")
     )
+    var displayWidth by remember { mutableIntStateOf(0) }
+    var displayHeight by remember { mutableIntStateOf(0) }
+
+    displayWidth = LocalView.current.width
+    displayHeight = LocalView.current.height
 
     tagsViewModel.getWallpaperTags().observeAsState().value?.let {
-        Log.i("Wallpaper", "Tags: $it")
         tags = it
     }
 
@@ -100,7 +110,8 @@ fun Wallpaper(context: Context, navController: NavHostController) {
                 contentDescription = null,
                 modifier = Modifier
                     .fillMaxSize()
-                    .haze(state = hazeState),
+                    .haze(state = hazeState)
+                    .blur(blurValue.dp),
                 alignment = Alignment.Center,
                 contentScale = currentScale.value,
         )
@@ -159,33 +170,50 @@ fun Wallpaper(context: Context, navController: NavHostController) {
                     fontSize = 18.sp
             )
 
-            Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Start,
-                    verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                        imageVector = Icons.AutoMirrored.Rounded.Label,
-                        contentDescription = "",
-                        tint = Color.White,
-                        modifier = Modifier
-                            .width(32.dp)
-                            .height(32.dp)
-                            .padding(start = 12.dp, bottom = 16.dp)
-                )
-                Text(
-                        text = tags.joinToString(", "),
-                        fontWeight = FontWeight.Light,
-                        color = Color.White,
-                        modifier = Modifier.padding(start = 8.dp, bottom = 16.dp),
-                        fontSize = 18.sp
-                )
+            if (tags.isNotEmpty()) {
+                Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Start,
+                        verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                            imageVector = Icons.AutoMirrored.Rounded.Label,
+                            contentDescription = "",
+                            tint = Color.White,
+                            modifier = Modifier
+                                .width(32.dp)
+                                .height(32.dp)
+                                .padding(start = 12.dp, bottom = 16.dp)
+                    )
+                    Text(
+                            text = tags.joinToString(", "),
+                            fontWeight = FontWeight.Light,
+                            color = Color.White,
+                            modifier = Modifier.padding(start = 8.dp, bottom = 16.dp),
+                            fontSize = 18.sp
+                    )
+                }
+            } else {
+                Spacer(modifier = Modifier.height(16.dp))
             }
 
             Row {
+                val showEditDialog = remember { mutableStateOf(false) }
+
+                if (showEditDialog.value) {
+                    EffectsDialog(
+                            showDialog = showEditDialog.value,
+                            setShowDialog = { showEditDialog.value = it },
+                            initialBlurValue = blurValue,
+                            onApplyEffects = { blur, _ ->
+                                blurValue = blur
+                            }
+                    )
+                }
+
                 Button(
                         onClick = {
-
+                            showEditDialog.value = true
                         },
                         shape = RoundedCornerShape(20.dp),
                         modifier = Modifier
@@ -241,7 +269,7 @@ fun Wallpaper(context: Context, navController: NavHostController) {
             CustomDialog(
                     setShowDialog = { showDialog = it },
                     context = context,
-                    drawable = drawable
+                    drawable = captureGlideImage(drawable, displayWidth, displayHeight)
             )
         }
     }
