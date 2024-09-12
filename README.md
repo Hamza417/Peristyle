@@ -2,7 +2,8 @@
 
 Simple wallpaper manager app for Android built using Material libraries and design guidelines.
 
-**Update:** Peristyle is going through UI overhaul while migrating towards Compose. You may see a new and modern looking interface from the newer versions now.
+**Update:** Peristyle is going through UI overhaul while migrating towards Compose. You may see a
+new and modern looking interface from the newer versions now.
 
 ## Why Peristyle?
 
@@ -56,13 +57,18 @@ so [here on Crowdin](https://crowdin.com/project/peristyle).
 
 ### Translation Contributors
 
-| Language           | Translators                                               |
-|--------------------|-----------------------------------------------------------|
-| Chinese Simplified | [@shanzhaxiaok](https://crowdin.com/profile/shanzhaxiaok) |
-| French             | [@ppp987](https://crowdin.com/profile/ppp987)             |
-| Polish             | [@Tama10](https://crowdin.com/profile/tama10)             |
-| Turkish            | [@mikropsoft](https://crowdin.com/profile/mikropsoft)     |
-| Vietnamese         | [@xeus0000](https://crowdin.com/profile/xeus0000)         |
+| Language              | Translators                                                                                            |
+|-----------------------|--------------------------------------------------------------------------------------------------------|
+| Chinese Simplified    | [@shanzhaxiaok](https://crowdin.com/profile/shanzhaxiaok)                                              |
+| Chinese Traditional   | [@aaypkzixad](https://crowdin.com/profile/aaypkzixad), [@hugoalh](https://crowdin.com/profile/hugoalh) |
+| French                | [@ppp987](https://crowdin.com/profile/ppp987)                                                          |
+| Polish                | [@Tama10](https://crowdin.com/profile/tama10)                                                          |
+| Portuguese, Brazilian | [@teogabriel](https://crowdin.com/profile/teogabriel)                                                  |
+| Spanish               | [@esneiderfjaimes](https://crowdin.com/profile/esneiderfjaimes)                                        |
+| Turkish               | [@mikropsoft](https://crowdin.com/profile/mikropsoft)                                                  |
+| Vietnamese            | [@xeus0000](https://crowdin.com/profile/xeus0000)                                                      |
+
+Last updated: 9 Sept, 2024
 
 ## License
 
