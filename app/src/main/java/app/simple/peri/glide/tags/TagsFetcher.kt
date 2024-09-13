@@ -29,6 +29,10 @@ class TagsFetcher(private val tag: Tag) : DataFetcher<Bitmap> {
         val topWallpapers = wallpaperList.take(TAG_COUNT)
 
         topWallpapers.forEach { wallpaper ->
+            /**
+             * Reference:
+             * https://bumptech.github.io/glide/doc/getting-started.html#background-threads
+             */
             val bitmap = Glide.with(tag.context)
                 .asBitmap()
                 .load(wallpaper.uri)
@@ -59,6 +63,10 @@ class TagsFetcher(private val tag: Tag) : DataFetcher<Bitmap> {
 
         callback.onDataReady(gridBitmap)
 
+        /**
+         * Reference:
+         * https://bumptech.github.io/glide/doc/getting-started.html#background-threads
+         */
         bitmapList.forEach { Glide.with(tag.context).clear(it) }
     }
 
