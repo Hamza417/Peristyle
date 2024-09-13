@@ -94,4 +94,13 @@ class TagsViewModel(application: Application, private val md5: String? = null, p
             loadTags()
         }
     }
+
+    fun deleteTag(tag: Tag) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val database = TagsDatabase.getInstance(getApplication())
+            val tagsDao = database?.tagsDao()
+            tagsDao?.deleteTag(tag)
+            loadTags()
+        }
+    }
 }

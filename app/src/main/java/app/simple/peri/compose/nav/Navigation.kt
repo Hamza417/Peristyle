@@ -19,8 +19,13 @@ import app.simple.peri.utils.ConditionUtils.invert
 @Composable
 fun PeristyleNavigation(context: Context) {
     val navController = rememberNavController()
+    val startDestination = if (isSetupComplete(context)) {
+        Routes.HOME
+    } else {
+        Routes.SETUP
+    }
 
-    NavHost(navController = navController, startDestination = Routes.SETUP) {
+    NavHost(navController = navController, startDestination = startDestination) {
         composable(Routes.SETUP) {
             if (isSetupComplete(context).invert()) {
                 Setup(context, navController)
