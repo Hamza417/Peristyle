@@ -59,10 +59,14 @@ fun Settings(navController: NavController? = null) {
     val bottomPadding = 8.dp + navigationBarHeightDp
 
     LazyColumn(
-            contentPadding = PaddingValues(start = COMMON_PADDING, end = COMMON_PADDING, top = topPadding, bottom = bottomPadding)
+            contentPadding = PaddingValues(
+                    start = COMMON_PADDING,
+                    end = COMMON_PADDING,
+                    top = topPadding,
+                    bottom = bottomPadding)
     ) {
         item { // Header
-            TopHeader(title = stringResource(R.string.settings), modifier = Modifier.padding(COMMON_PADDING))
+            TopHeader(title = stringResource(R.string.settings), modifier = Modifier.padding(COMMON_PADDING), isSettings = true)
 
             HorizontalDivider(
                     modifier = Modifier

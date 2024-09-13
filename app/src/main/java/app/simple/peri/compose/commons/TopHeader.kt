@@ -23,7 +23,7 @@ import app.simple.peri.compose.nav.Routes
 val COMMON_PADDING = 16.dp
 
 @Composable
-fun TopHeader(title: String, modifier: Modifier = Modifier, count: Int = 0, navController: NavController? = null) {
+fun TopHeader(title: String, modifier: Modifier = Modifier, count: Int = 0, navController: NavController? = null, isSettings: Boolean = false) {
     Row(
             modifier = modifier
                 .fillMaxWidth()
@@ -48,15 +48,17 @@ fun TopHeader(title: String, modifier: Modifier = Modifier, count: Int = 0, navC
             )
         }
 
-        IconButton(
-                onClick = {
-                    navController?.navigate(Routes.SETTINGS)
-                },
-        ) {
-            Icon(
-                    imageVector = Icons.Rounded.Settings,
-                    contentDescription = stringResource(id = R.string.settings),
-            )
+        if (isSettings.not()) {
+            IconButton(
+                    onClick = {
+                        navController?.navigate(Routes.SETTINGS)
+                    },
+            ) {
+                Icon(
+                        imageVector = Icons.Rounded.Settings,
+                        contentDescription = stringResource(id = R.string.settings),
+                )
+            }
         }
     }
 }
