@@ -165,66 +165,28 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
             isLoading = true
             isDatabaseLoaded.postValue(false)
 
-            val uri = MainPreferences.getStorageUri()?.toUri()!!
+            val uri = MainPreferences.getStorageUri()?.toUri() ?: return@launch
             val pickedDirectory = DocumentFile.fromTreeUri(getApplication(), uri)
-            if (wallpapersData.value.isNullOrEmpty()) {
-                loadingStatus.postValue(getApplication<Application>().getString(app.simple.peri.R.string.preparing))
-            }
-            val files = pickedDirectory?.getFiles()?.dotFilter()
-            var count = 0
-            val total = files?.size ?: 0
+            val files = pickedDirectory?.getFiles()?.dotFilter().orEmpty()
+            val total = files.size
 
-            if (files.isNullOrEmpty()) {
+            if (files.isEmpty()) {
                 loadingStatus.postValue("no files found")
                 return@launch
             }
 
             if (wallpapersData.value.isNullOrEmpty()) {
-                loadingStatus.postValue("0 : 0%")
+                loadingStatus.postValue(getApplication<Application>().getString(app.simple.peri.R.string.preparing))
             }
 
             files.parallelStream().forEach { file ->
                 try {
-                    val wallpaper = Wallpaper()
-
-                    if ((alreadyLoaded?.containsKey(file.uri.toString()) == true).invert()) {
-                        wallpaper.name = file.name
-                        wallpaper.uri = file.uri.toString()
-                        wallpaper.dateModified = file.lastModified()
-                        wallpaper.size = file.length()
-
-                        getApplication<Application>().contentResolver.openInputStream(file.uri)?.use { inputStream ->
-                            val options = BitmapFactory.Options()
-                            options.inJustDecodeBounds = false
-                            val bitmap = BitmapFactory.decodeStream(inputStream, null, options)
-                            wallpaper.width = options.outWidth
-                            wallpaper.height = options.outHeight
-
-                            with(bitmap?.generatePalette()) {
-                                wallpaper.prominentColor = this?.vibrantSwatch?.rgb ?: this?.dominantSwatch?.rgb ?: 0
-                            }
-
-                            bitmap?.recycle()
-                        }
-
-                        getApplication<Application>().contentResolver.openInputStream(file.uri)?.use { inputStream ->
-                            wallpaper.md5 = inputStream.generateMD5()
-                            Log.i(TAG, "loadWallpaperImages: ${wallpaper.name} - ${wallpaper.md5}")
-                        }
-                    }
-
-                    if (wallpaper.isNull().invert()) {
-                        if ((alreadyLoaded?.containsKey(file.uri.toString()) == true).invert()) {
-                            count++
-                            wallpapers.add(wallpaper)
-                            if (alreadyLoaded?.isNotEmpty() == true) {
-                                newWallpapersData.postValue(wallpaper)
-                                Log.d(TAG, "loadWallpaperImages: new wallpaper found - ${wallpaper.md5}")
-                                WallpaperDatabase.getInstance(getApplication())?.wallpaperDao()?.insert(wallpaper)
-                            }
-
-                            loadingStatus.postValue("$count : ${(count / total.toFloat() * 100).toInt()}%")
-                        }
+                    val wallpaper = createWallpaperFromFile(file)
+                    if (wallpaper != null && alreadyLoaded?.containsKey(file.uri.toString()) == false) {
+                        wallpapers.add(wallpaper)
+                        newWallpapersData.postValue(wallpaper)
+                        WallpaperDatabase.getInstance(getApplication())?.wallpaperDao()?.insert(wallpaper)
+                        updateLoadingStatus(wallpapers.size, total)
                     }
                 } catch (e: IllegalStateException) {
                     e.printStackTrace()
@@ -232,13 +194,9 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
                 }
             }
 
-            if (alreadyLoaded?.isEmpty() == true) {
+            if (alreadyLoaded.isNullOrEmpty()) {
                 wallpapers.getSortedList()
-
-                wallpapers.forEach {
-                    it.isSelected = false
-                }
-
+                wallpapers.forEach { it.isSelected = false }
                 wallpapersData.postValue(wallpapers)
             }
 
@@ -246,6 +204,36 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
             loadingStatus.postValue("") // clear loading status
             isLoading = false
         }
+    }
+
+    private fun createWallpaperFromFile(file: DocumentFile): Wallpaper? {
+        val wallpaper = Wallpaper().apply {
+            name = file.name
+            uri = file.uri.toString()
+            dateModified = file.lastModified()
+            size = file.length()
+        }
+
+        getApplication<Application>().contentResolver.openInputStream(file.uri)?.use { inputStream ->
+            val options = BitmapFactory.Options().apply { inJustDecodeBounds = false }
+            val bitmap = BitmapFactory.decodeStream(inputStream, null, options)
+            wallpaper.width = options.outWidth
+            wallpaper.height = options.outHeight
+            wallpaper.prominentColor = bitmap?.generatePalette()?.vibrantSwatch?.rgb ?: 0
+            bitmap?.recycle()
+        }
+
+        getApplication<Application>().contentResolver.openInputStream(file.uri)?.use { inputStream ->
+            wallpaper.md5 = inputStream.generateMD5()
+            Log.i(TAG, "loadWallpaperImages: ${wallpaper.name} - ${wallpaper.md5}")
+        }
+
+        return if (wallpaper.isNull()) null else wallpaper
+    }
+
+    private fun updateLoadingStatus(count: Int, total: Int) {
+        val progress = (count / total.toFloat() * 100).toInt()
+        loadingStatus.postValue("$count : $progress%")
     }
 
     private fun initDatabase() {
@@ -279,14 +267,6 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
         if (failedURIs.isNotEmpty()) {
             failedURIsData.postValue(failedURIs)
         }
-    }
-
-    private fun ArrayList<Wallpaper>.toHashMap(): HashMap<Long, Wallpaper> {
-        val hashMap = HashMap<Long, Wallpaper>()
-        this.forEach {
-            hashMap[it.dateModified] = it
-        }
-        return hashMap
     }
 
     private fun getCurrentSystemWallpaper(): ArrayList<Wallpaper> {
