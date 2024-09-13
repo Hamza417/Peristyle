@@ -96,7 +96,8 @@ fun Tags(navController: NavController? = null) {
             TopHeader(
                     title = stringResource(R.string.tags),
                     modifier = Modifier.padding(COMMON_PADDING),
-                    count = tags.size)
+                    count = tags.size,
+                    navController = navController)
         }
         if (tags.isEmpty()) {
             item(span = StaggeredGridItemSpan.FullLine) {
