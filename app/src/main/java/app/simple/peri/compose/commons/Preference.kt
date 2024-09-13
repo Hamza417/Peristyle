@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.sp
 
 val PREFERENCE_TITLE_SIZE = 18.sp
 val PREFERENCE_DESCRIPTION_SIZE = 14.sp
+val PREF_HORIZONTAL_PADDING = 16.dp
 
 @Composable
 fun SwitchPreference(title: String, description: String = "", checked: Boolean, onCheckedChange: (Boolean) -> Unit) {
@@ -34,7 +35,7 @@ fun SwitchPreference(title: String, description: String = "", checked: Boolean, 
     Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 32.dp, end = 32.dp, top = 24.dp),
+                .padding(start = PREF_HORIZONTAL_PADDING, end = PREF_HORIZONTAL_PADDING, top = 24.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
     ) {
@@ -73,7 +74,7 @@ fun ClickablePreference(title: String, description: String = "", onClick: () -> 
     Card(
             modifier = Modifier
                 .fillMaxWidth(),
-            shape = RoundedCornerShape(32.dp),
+            shape = RoundedCornerShape(PREF_HORIZONTAL_PADDING),
             colors = CardDefaults.cardColors(
                     containerColor = Color.Transparent,
             ),
@@ -83,14 +84,14 @@ fun ClickablePreference(title: String, description: String = "", onClick: () -> 
                 text = title,
                 fontWeight = FontWeight.Bold,
                 fontSize = PREFERENCE_TITLE_SIZE,
-                modifier = Modifier.padding(start = 32.dp, end = 32.dp, top = verticalPadding),
+                modifier = Modifier.padding(start = PREF_HORIZONTAL_PADDING, end = PREF_HORIZONTAL_PADDING, top = verticalPadding),
         )
         if (description.isNotEmpty()) {
             Text(
                     text = description,
                     fontWeight = FontWeight.Normal,
                     fontSize = PREFERENCE_DESCRIPTION_SIZE,
-                    modifier = Modifier.padding(start = 32.dp, end = 32.dp, top = 8.dp, bottom = verticalPadding),
+                    modifier = Modifier.padding(start = PREF_HORIZONTAL_PADDING, end = PREF_HORIZONTAL_PADDING, top = 8.dp, bottom = verticalPadding),
             )
         }
     }
@@ -101,7 +102,7 @@ fun SecondaryHeader(title: String) {
     Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 32.dp, end = 32.dp, top = 24.dp),
+                .padding(start = PREF_HORIZONTAL_PADDING, end = PREF_HORIZONTAL_PADDING, top = 24.dp),
             verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
@@ -120,14 +121,14 @@ fun OtherApps(title: String, description: String, iconResId: Int, onClick: () ->
     Card(
             modifier = Modifier
                 .fillMaxWidth(),
-            shape = RoundedCornerShape(32.dp),
+            shape = RoundedCornerShape(PREF_HORIZONTAL_PADDING),
             colors = CardDefaults.cardColors(
                     containerColor = Color.Transparent,
             ),
             onClick = onClick
     ) {
         Row(
-                modifier = Modifier.padding(start = 32.dp, end = 32.dp, top = verticalPadding, bottom = verticalPadding),
+                modifier = Modifier.padding(start = PREF_HORIZONTAL_PADDING, end = PREF_HORIZONTAL_PADDING, top = verticalPadding, bottom = verticalPadding),
                 verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(

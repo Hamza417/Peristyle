@@ -55,24 +55,18 @@ fun Settings(navController: NavController? = null) {
     val navigationBarHeightPx = navigationBarHeight
     val navigationBarHeightDp = with(LocalDensity.current) { navigationBarHeightPx.toDp() }
 
-    val topPadding = 8.dp + statusBarHeightDp
+    val topPadding = COMMON_PADDING + statusBarHeightDp
     val bottomPadding = 8.dp + navigationBarHeightDp
 
     LazyColumn(
             contentPadding = PaddingValues(
-                    start = COMMON_PADDING,
-                    end = COMMON_PADDING,
+                    start = 8.dp,
+                    end = 8.dp,
                     top = topPadding,
                     bottom = bottomPadding)
     ) {
         item { // Header
             TopHeader(title = stringResource(R.string.settings), modifier = Modifier.padding(COMMON_PADDING), isSettings = true)
-
-            HorizontalDivider(
-                    modifier = Modifier
-                        .padding(horizontal = COMMON_PADDING)
-                        .fillMaxWidth()
-            )
         }
         item { // Interface
             val numberSelectionDialog = remember { mutableStateOf(false) }
