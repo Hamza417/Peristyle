@@ -1,0 +1,7 @@
+- Fix blur not applying
+- Added header in lists with count
+- Fix interface overlapping status and navigation bar
+- Add more menus for Tags an Wallpapers
+- Fix loading indicators not showing
+- Tags thumbnails now shows according to the device aspect ratio
+- Various fixes and interface improvements
