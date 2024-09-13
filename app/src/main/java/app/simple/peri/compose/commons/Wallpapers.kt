@@ -1,6 +1,7 @@
 package app.simple.peri.compose.commons
 
 import android.app.Application
+import android.content.Intent
 import android.graphics.drawable.Drawable
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
@@ -404,6 +405,31 @@ fun WallpaperMenu(setShowDialog: (Boolean) -> Unit,
                     ) {
                         Text(
                                 text = context.getString(R.string.add_tag),
+                                color = Color.Black,
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.SemiBold
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(5.dp))
+
+                    Button(
+                            onClick = {
+                                val intent = Intent(Intent.ACTION_EDIT)
+                                intent.setDataAndType(wallpaper.uri.toUri(), "image/*")
+                                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                context.startActivity(Intent.createChooser(intent, context.getString(R.string.edit)))
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color.White,
+                            ),
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(50.dp),
+                    ) {
+                        Text(
+                                text = context.getString(R.string.edit),
                                 color = Color.Black,
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.SemiBold
