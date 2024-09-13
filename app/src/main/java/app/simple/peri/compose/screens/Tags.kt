@@ -92,19 +92,19 @@ fun Tags(navController: NavController? = null) {
                     end = 8.dp,
                     bottom = 8.dp),
     ) {
-        if (tags.isEmpty()) {
-            item {
-                Text(
-                        text = stringResource(id = R.string.tags_summary),
-                        modifier = Modifier.padding(COMMON_PADDING)
-                )
-            }
-        }
         item(span = StaggeredGridItemSpan.FullLine) {
             TopHeader(
                     title = stringResource(R.string.tags),
                     modifier = Modifier.padding(COMMON_PADDING),
                     count = tags.size)
+        }
+        if (tags.isEmpty()) {
+            item(span = StaggeredGridItemSpan.FullLine) {
+                Text(
+                        text = stringResource(id = R.string.tags_summary),
+                        modifier = Modifier.padding(COMMON_PADDING)
+                )
+            }
         }
         items(tags.size) { index ->
             TagItem(tag = tags[index],

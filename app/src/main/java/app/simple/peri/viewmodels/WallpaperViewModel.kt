@@ -152,8 +152,6 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
                 wallpaperList[i].isSelected = false
             }
 
-            println("Wallpaper list size is ${wallpaperList.size}")
-
             @Suppress("UNCHECKED_CAST")
             wallpapersData.postValue(wallpaperList.clone() as ArrayList<Wallpaper>)
 
@@ -181,7 +179,10 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
                 return@launch
             }
 
-            loadingStatus.postValue("0 : 0%")
+            if (wallpapersData.value.isNullOrEmpty()) {
+                loadingStatus.postValue("0 : 0%")
+            }
+
             files.parallelStream().forEach { file ->
                 try {
                     val wallpaper = Wallpaper()

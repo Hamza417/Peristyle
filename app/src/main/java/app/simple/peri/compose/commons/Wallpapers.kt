@@ -122,7 +122,20 @@ fun Wallpapers(list: List<Wallpaper>, navController: NavController? = null, load
     ) {
         item(span = { GridItemSpan(maxLineSpan) }) {
             TopHeader(title = "Wallpapers", count = wallpapers.size,
-                      modifier = Modifier.padding(COMMON_PADDING))
+                      modifier = Modifier.padding(COMMON_PADDING),
+                      navController = navController)
+        }
+        if (wallpapers.isEmpty()) {
+            item(span = { GridItemSpan(maxLineSpan) }) {
+                Text(
+                        text = loadingState,
+                        style = TextStyle(
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 20.sp,
+                        ),
+                        modifier = Modifier.padding(COMMON_PADDING)
+                )
+            }
         }
         items(wallpapers.size) { index ->
             WallpaperItem(wallpapers[index], navController) { deletedWallpaper ->
