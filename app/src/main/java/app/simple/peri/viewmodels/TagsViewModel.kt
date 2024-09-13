@@ -103,4 +103,23 @@ class TagsViewModel(application: Application, private val md5: String? = null, p
             loadTags()
         }
     }
+
+    private fun createRandomTagsForTesting() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val database = TagsDatabase.getInstance(getApplication())
+            val tagsDao = database?.tagsDao()
+            val wallpapers = WallpaperDatabase.getInstance(getApplication())?.wallpaperDao()?.getWallpapers()
+
+            val randomTags = listOf("Red", "Grey", "Blue", "Black", "White")
+            val random = java.util.Random()
+
+            randomTags.forEach { tagName ->
+                val randomWallpapers = wallpapers?.shuffled()?.take(random.nextInt(10) + 6) ?: emptyList()
+                val tag = Tag(tagName, randomWallpapers.map { it.md5 }.toHashSet())
+                tagsDao?.insertTag(tag)
+            }
+
+            loadTags()
+        }
+    }
 }

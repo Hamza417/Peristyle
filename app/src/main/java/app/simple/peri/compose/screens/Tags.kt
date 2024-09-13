@@ -56,10 +56,13 @@ import app.simple.peri.compose.commons.COMMON_PADDING
 import app.simple.peri.compose.commons.TopHeader
 import app.simple.peri.compose.nav.Routes
 import app.simple.peri.factories.TagsViewModelFactory
+import app.simple.peri.models.DisplayDimension
 import app.simple.peri.models.Tag
 import app.simple.peri.viewmodels.TagsViewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+
+val displayDimension = DisplayDimension(1080, 1920)
 
 @Composable
 fun Tags(navController: NavController? = null) {
@@ -73,6 +76,9 @@ fun Tags(navController: NavController? = null) {
 
     statusBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
             LocalView.current.rootWindowInsets).getInsets(WindowInsetsCompat.Type.statusBars()).top
+    displayDimension.width = LocalView.current.width
+    displayDimension.height = LocalView.current.height
+
     val statusBarHeightPx = statusBarHeight
     val statusBarHeightDp = with(LocalDensity.current) { statusBarHeightPx.toDp() }
     val topPadding = 8.dp + statusBarHeightDp
@@ -147,7 +153,7 @@ fun TagItem(tag: Tag, navController: NavController? = null, onDelete: (Tag) -> U
                         }),
     ) {
         GlideImage(
-                model = app.simple.peri.glide.tags.Tag(tag, LocalContext.current),
+                model = app.simple.peri.glide.tags.Tag(tag, LocalContext.current, displayDimension),
                 contentDescription = null,
         )
 
