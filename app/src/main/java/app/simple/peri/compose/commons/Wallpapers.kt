@@ -93,13 +93,21 @@ import kotlinx.coroutines.withContext
 fun Wallpapers(list: List<Wallpaper>, navController: NavController? = null) {
     var wallpapers by remember { mutableStateOf(emptyList<Wallpaper>()) }
     var statusBarHeight by remember { mutableIntStateOf(0) }
+    var navigationBarHeight by remember { mutableIntStateOf(0) }
 
     wallpapers = list
     statusBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
             LocalView.current.rootWindowInsets).getInsets(WindowInsetsCompat.Type.statusBars()).top
+    navigationBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
+            LocalView.current.rootWindowInsets).getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
+
     val statusBarHeightPx = statusBarHeight
     val statusBarHeightDp = with(LocalDensity.current) { statusBarHeightPx.toDp() }
+    val navigationBarHeightPx = navigationBarHeight
+    val navigationBarHeightDp = with(LocalDensity.current) { navigationBarHeightPx.toDp() }
+
     val topPadding = 8.dp + statusBarHeightDp
+    val bottomPadding = 8.dp + navigationBarHeightDp
 
     Box(
             modifier = Modifier.fillMaxSize(),
@@ -113,7 +121,7 @@ fun Wallpapers(list: List<Wallpaper>, navController: NavController? = null) {
                         top = topPadding,
                         start = 8.dp,
                         end = 8.dp,
-                        bottom = 8.dp)
+                        bottom = bottomPadding)
         ) {
             item(span = { GridItemSpan(maxLineSpan) }) {
                 TopHeader(title = "Wallpapers", count = wallpapers.size,
