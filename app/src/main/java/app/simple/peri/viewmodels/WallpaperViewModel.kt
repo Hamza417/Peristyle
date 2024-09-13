@@ -169,7 +169,9 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
 
             val uri = MainPreferences.getStorageUri()?.toUri()!!
             val pickedDirectory = DocumentFile.fromTreeUri(getApplication(), uri)
-            loadingStatus.postValue(getApplication<Application>().getString(app.simple.peri.R.string.preparing))
+            if (wallpapersData.value.isNullOrEmpty()) {
+                loadingStatus.postValue(getApplication<Application>().getString(app.simple.peri.R.string.preparing))
+            }
             val files = pickedDirectory?.getFiles()?.dotFilter()
             var count = 0
             val total = files?.size ?: 0
@@ -240,7 +242,7 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
             }
 
             initDatabase()
-            loadingStatus.postValue("Done")
+            loadingStatus.postValue("") // clear loading status
             isLoading = false
         }
     }

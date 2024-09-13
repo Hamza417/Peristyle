@@ -91,7 +91,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @Composable
-fun Wallpapers(list: List<Wallpaper>, navController: NavController? = null) {
+fun Wallpapers(list: List<Wallpaper>, navController: NavController? = null, loadingState: String = "") {
     var wallpapers by remember { mutableStateOf(emptyList<Wallpaper>()) }
     var statusBarHeight by remember { mutableIntStateOf(0) }
     var navigationBarHeight by remember { mutableIntStateOf(0) }
@@ -110,28 +110,23 @@ fun Wallpapers(list: List<Wallpaper>, navController: NavController? = null) {
     val topPadding = 8.dp + statusBarHeightDp
     val bottomPadding = 8.dp + navigationBarHeightDp
 
-    Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.TopCenter
+    LazyVerticalGrid(
+            columns = GridCells.Fixed(MainComposePreferences.getGridSpanCount()),
+            modifier = Modifier
+                .fillMaxSize(),
+            contentPadding = PaddingValues(
+                    top = topPadding,
+                    start = 8.dp,
+                    end = 8.dp,
+                    bottom = bottomPadding)
     ) {
-        LazyVerticalGrid(
-                columns = GridCells.Fixed(MainComposePreferences.getGridSpanCount()),
-                modifier = Modifier
-                    .fillMaxSize(),
-                contentPadding = PaddingValues(
-                        top = topPadding,
-                        start = 8.dp,
-                        end = 8.dp,
-                        bottom = bottomPadding)
-        ) {
-            item(span = { GridItemSpan(maxLineSpan) }) {
-                TopHeader(title = "Wallpapers", count = wallpapers.size,
-                          modifier = Modifier.padding(COMMON_PADDING))
-            }
-            items(wallpapers.size) { index ->
-                WallpaperItem(wallpapers[index], navController) { deletedWallpaper ->
-                    wallpapers = wallpapers.filter { it != deletedWallpaper }
-                }
+        item(span = { GridItemSpan(maxLineSpan) }) {
+            TopHeader(title = "Wallpapers", count = wallpapers.size,
+                      modifier = Modifier.padding(COMMON_PADDING))
+        }
+        items(wallpapers.size) { index ->
+            WallpaperItem(wallpapers[index], navController) { deletedWallpaper ->
+                wallpapers = wallpapers.filter { it != deletedWallpaper }
             }
         }
     }
