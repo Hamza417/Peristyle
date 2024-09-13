@@ -9,19 +9,24 @@ import android.content.ComponentName
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.NavController
 import app.simple.peri.R
 import app.simple.peri.activities.LegacyActivity
@@ -37,11 +42,24 @@ import app.simple.peri.utils.ConditionUtils.invert
 @Composable
 fun Settings(navController: NavController? = null) {
     val context = LocalContext.current
+    var statusBarHeight by remember { mutableIntStateOf(0) }
+    var navigationBarHeight by remember { mutableIntStateOf(0) }
+
+    statusBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
+            LocalView.current.rootWindowInsets).getInsets(WindowInsetsCompat.Type.statusBars()).top
+    navigationBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
+            LocalView.current.rootWindowInsets).getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
+
+    val statusBarHeightPx = statusBarHeight
+    val statusBarHeightDp = with(LocalDensity.current) { statusBarHeightPx.toDp() }
+    val navigationBarHeightPx = navigationBarHeight
+    val navigationBarHeightDp = with(LocalDensity.current) { navigationBarHeightPx.toDp() }
+
+    val topPadding = 8.dp + statusBarHeightDp
+    val bottomPadding = 8.dp + navigationBarHeightDp
 
     LazyColumn(
-            modifier = Modifier
-                .padding(start = COMMON_PADDING, end = COMMON_PADDING)
-                .windowInsetsPadding(WindowInsets.safeDrawing)
+            contentPadding = PaddingValues(start = COMMON_PADDING, end = COMMON_PADDING, top = topPadding, bottom = bottomPadding)
     ) {
         item { // Header
             TopHeader(title = stringResource(R.string.settings), modifier = Modifier.padding(COMMON_PADDING))
