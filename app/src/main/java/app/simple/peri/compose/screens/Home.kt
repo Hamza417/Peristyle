@@ -331,7 +331,7 @@ fun BottomMenu(modifier: Modifier = Modifier, navController: NavController? = nu
                     verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                        text = stringResource(id = R.string.wallpapers),
+                        text = stringResource(id = R.string.folder),
                         textAlign = TextAlign.Center,
                         fontSize = 20.sp, // Set the font size
                         modifier = Modifier.weight(1f), // Set the weight
