@@ -166,8 +166,8 @@ fun FolderItem(folder: Folder, navController: NavController? = null, onDelete: (
 
             Column(
                     modifier = Modifier
-                        .wrapContentHeight()
                         .fillMaxWidth()
+                        .wrapContentHeight()
                         .hazeChild(
                                 state = hazeState,
                                 style = HazeDefaults.style(backgroundColor = Color(0x50000000), blurRadius = 5.dp))
@@ -176,7 +176,7 @@ fun FolderItem(folder: Folder, navController: NavController? = null, onDelete: (
                 Text(
                         text = folder.name ?: "",
                         modifier = Modifier
-                            .padding(16.dp),
+                            .padding(start = 16.dp, top = 16.dp, end = 16.dp),
                         textAlign = TextAlign.Start,
                         fontSize = 18.sp, // Set the font size
                         fontWeight = FontWeight.Bold, // Make the text bold
@@ -184,6 +184,15 @@ fun FolderItem(folder: Folder, navController: NavController? = null, onDelete: (
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         softWrap = false,
+                )
+
+                Text(
+                        text = stringResource(id = R.string.tag_count, folder.count),
+                        textAlign = TextAlign.Start,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Light,
+                        color = Color.White,
+                        modifier = Modifier.padding(start = 16.dp, bottom = 16.dp),
                 )
             }
         }

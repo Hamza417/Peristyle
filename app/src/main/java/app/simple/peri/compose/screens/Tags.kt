@@ -185,7 +185,7 @@ fun TagItem(tag: Tag, navController: NavController? = null, onDelete: (Tag) -> U
                         fontWeight = FontWeight.Bold,
                         fontSize = 20.sp,
                         color = Color.White,
-                        modifier = Modifier.padding(start = 8.dp, end = 8.dp, top = 8.dp)
+                        modifier = Modifier.padding(start = COMMON_PADDING, end = COMMON_PADDING, top = COMMON_PADDING)
                 )
 
                 Text(
@@ -193,7 +193,7 @@ fun TagItem(tag: Tag, navController: NavController? = null, onDelete: (Tag) -> U
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Light,
                         color = Color.White,
-                        modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
+                        modifier = Modifier.padding(start = COMMON_PADDING, end = COMMON_PADDING, bottom = COMMON_PADDING)
                 )
             }
         }
