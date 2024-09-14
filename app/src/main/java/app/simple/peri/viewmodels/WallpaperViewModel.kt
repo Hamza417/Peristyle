@@ -153,13 +153,15 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
     private fun loadFolders() {
         viewModelScope.launch(Dispatchers.IO) {
             val folders = ArrayList<Folder>()
+            val wallpaperDatabase = WallpaperDatabase.getInstance(getApplication())
+            val wallpaperDao = wallpaperDatabase?.wallpaperDao()
             getApplication<Application>().contentResolver.persistedUriPermissions.forEach { uri ->
                 val pickedDirectory = DocumentFile.fromTreeUri(getApplication(), uri.uri)
                 if (pickedDirectory?.exists() == true) {
                     val folder = Folder().apply {
                         name = pickedDirectory.name
                         this.uri = uri.uri.toString()
-                        count = pickedDirectory.getFiles().size
+                        count = wallpaperDao?.getWallpapersByUriHashcode(uri.uri?.hashCode() ?: 0)?.size ?: 0
                     }
 
                     folders.add(folder)
@@ -214,6 +216,7 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
                             val wallpaper = createWallpaperFromFile(file)
                             if (wallpaper != null && alreadyLoaded?.containsKey(file.uri.toString()) == false) {
                                 wallpapers.add(wallpaper)
+                                wallpaper.uriHashcode = uri.uri.hashCode()
                                 newWallpapersData.postValue(wallpaper)
                                 WallpaperDatabase.getInstance(getApplication())?.wallpaperDao()?.insert(wallpaper)
                                 updateLoadingStatus(wallpapers.size, total)
