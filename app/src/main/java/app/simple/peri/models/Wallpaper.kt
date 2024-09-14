@@ -49,18 +49,22 @@ class Wallpaper() : Comparable<Wallpaper>, Serializable, Parcelable {
     @ColumnInfo(name = "size")
     var size: Long = 0
 
+    @ColumnInfo(name = "uri_hashcode")
+    var uriHashcode: Int = 0
+
     @ColumnInfo
     var isSelected: Boolean = false
 
     constructor(parcel: Parcel) : this() {
         name = parcel.readString()
-        uri = parcel.readString()!!
-        md5 = parcel.readString()!!
+        uri = parcel.readString().toString()
+        md5 = parcel.readString().toString()
         prominentColor = parcel.readInt()
         width = parcel.readValue(Int::class.java.classLoader) as? Int
         height = parcel.readValue(Int::class.java.classLoader) as? Int
         dateModified = parcel.readLong()
         size = parcel.readLong()
+        uriHashcode = parcel.readInt()
         isSelected = parcel.readByte() != 0.toByte()
     }
 
@@ -95,6 +99,8 @@ class Wallpaper() : Comparable<Wallpaper>, Serializable, Parcelable {
         result = 31 * result + size.hashCode()
         result = 31 * result + isSelected.hashCode()
         result = 31 * result + md5.hashCode()
+        result = 31 * result + prominentColor
+        result = 31 * result + uriHashcode
         return result
     }
 
@@ -102,6 +108,15 @@ class Wallpaper() : Comparable<Wallpaper>, Serializable, Parcelable {
         return name == null || uri.isEmpty() || width == null || height == null
     }
 
+    /**
+     * Use this method to create a Wallpaper object from a URI only for files
+     * that doesn't exist in the database and are not required to be associated
+     * with a specific folder.
+     *
+     * [uriHashcode] will return null
+     *
+     * @param uri The URI of the file
+     */
     fun createFromUri(uri: String, context: Context): Wallpaper {
         val wallpaper = Wallpaper()
         wallpaper.uri = uri
@@ -134,6 +149,7 @@ class Wallpaper() : Comparable<Wallpaper>, Serializable, Parcelable {
         parcel.writeValue(height)
         parcel.writeLong(dateModified)
         parcel.writeLong(size)
+        parcel.writeInt(uriHashcode)
         parcel.writeByte(if (isSelected) 1 else 0)
     }
 

@@ -1,7 +1,6 @@
 package app.simple.peri.compose.screens
 
 import android.graphics.drawable.Drawable
-import android.icu.text.CaseMap.Fold
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
@@ -33,12 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.BlurredEdgeTreatment
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.blur
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
@@ -52,12 +46,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import app.simple.peri.compose.commons.COMMON_PADDING
 import app.simple.peri.compose.commons.TopHeader
-import app.simple.peri.compose.commons.WallpaperDimensionsText
-import app.simple.peri.compose.commons.WallpaperMenu
-import app.simple.peri.compose.nav.Routes
 import app.simple.peri.models.Folder
-import app.simple.peri.models.Wallpaper
-import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.utils.FileUtils.toUri
 import app.simple.peri.viewmodels.WallpaperViewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
@@ -120,7 +109,10 @@ fun Folders(navController: NavController? = null) {
         }
         item {
             ElevatedCard(
-                    modifier = Modifier.fillMaxWidth().aspectRatio(1f),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(COMMON_PADDING)
+                        .aspectRatio(1f),
                     shape = RoundedCornerShape(16.dp),
                     elevation = CardDefaults.cardElevation(
                             defaultElevation = 16.dp,
@@ -130,7 +122,9 @@ fun Folders(navController: NavController? = null) {
                     }
             ) {
                 Box(
-                        modifier = Modifier.padding(COMMON_PADDING).fillMaxSize(),
+                        modifier = Modifier
+                            .padding(COMMON_PADDING)
+                            .fillMaxSize(),
                         contentAlignment = Alignment.Center
                 ) {
                     Icon(
@@ -161,41 +155,13 @@ fun FolderItem(folder: Folder, navController: NavController? = null, onDelete: (
     }
 
     Box {
-        val imageShadow = remember { MainComposePreferences.getShowImageShadow() }
-
-        if (imageShadow) {
-            GlideImage(
-                    model = folder.uri.toUri(),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentHeight()
-                        .padding(16.dp)
-                        .blur(30.dp, edgeTreatment = BlurredEdgeTreatment.Unbounded)
-                        .alpha(0.5f)
-                        .graphicsLayer {
-                            clip = false
-                        }
-                        .align(Alignment.BottomCenter),
-                    alignment = Alignment.BottomCenter,
-            ) {
-                it.override(512, 512)
-                    .transition(withCrossFade())
-                    .disallowHardwareConfig()
-                    .centerCrop()
-            }
-        }
-
         ElevatedCard(
                 elevation = CardDefaults.cardElevation(
                         defaultElevation = 16.dp,
                 ),
                 modifier = Modifier
                     .aspectRatio(aspectRatio)
-                    .padding(start = 8.dp,
-                             bottom = if (imageShadow) 35.dp else 8.dp,
-                             end = 8.dp,
-                             top = 8.dp)
+                    .padding(COMMON_PADDING)
                     .combinedClickable(
                             onClick = {
 
@@ -253,7 +219,7 @@ fun FolderItem(folder: Folder, navController: NavController? = null, onDelete: (
                     Text(
                             text = folder.name ?: "",
                             modifier = Modifier
-                                .padding(start = 16.dp, top = 16.dp, end = 16.dp),
+                                .padding(16.dp),
                             textAlign = TextAlign.Start,
                             fontSize = 18.sp, // Set the font size
                             fontWeight = FontWeight.Bold, // Make the text bold

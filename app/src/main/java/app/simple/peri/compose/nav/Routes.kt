@@ -10,6 +10,7 @@ object Routes {
     const val AUTO_WALLPAPER = "auto_wallpaper"
     const val TAGS = "tags"
     const val TAGGED_WALLPAPERS = "tagged_wallpapers"
+    const val FOLDERS = "folders"
 
     const val WALLPAPER_ARG = "wallpaper_arg"
 }
