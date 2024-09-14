@@ -16,19 +16,12 @@ import app.simple.peri.compose.theme.PeristyleTheme
 import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.preferences.SharedPreferences
 import app.simple.peri.services.AutoWallpaperService
-import com.bumptech.glide.Glide
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 
 class MainComposeActivity : ComponentActivity(), OnSharedPreferenceChangeListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         SharedPreferences.init(applicationContext)
-
-        GlobalScope.launch {
-            Glide.get(applicationContext).clearDiskCache()
-        }
 
         setContent {
             PeristyleTheme {

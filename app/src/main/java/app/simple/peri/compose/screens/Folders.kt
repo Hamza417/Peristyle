@@ -69,8 +69,6 @@ fun Folders(navController: NavController? = null) {
     navigationBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
             LocalView.current.rootWindowInsets).getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
     count = LocalContext.current.contentResolver.persistedUriPermissions.size
-    displayDimension.width = LocalView.current.width
-    displayDimension.height = LocalView.current.height
 
     wallpaperViewModel.getFoldersLiveData().observeAsState().value?.let {
         folders = it
@@ -133,6 +131,8 @@ fun Folders(navController: NavController? = null) {
 @Composable
 fun FolderItem(folder: Folder, navController: NavController? = null, onDelete: (Folder) -> Unit) {
     val hazeState = remember { HazeState() }
+    displayDimension.width = LocalView.current.width
+    displayDimension.height = LocalView.current.height
 
     ElevatedCard(
             elevation = CardDefaults.cardElevation(
