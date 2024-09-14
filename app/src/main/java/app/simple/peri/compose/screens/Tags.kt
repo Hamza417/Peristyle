@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
@@ -61,6 +62,10 @@ import app.simple.peri.models.Tag
 import app.simple.peri.viewmodels.TagsViewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import dev.chrisbanes.haze.HazeDefaults
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.haze
+import dev.chrisbanes.haze.hazeChild
 
 val displayDimension = DisplayDimension(1080, 1920)
 
@@ -73,15 +78,21 @@ fun Tags(navController: NavController? = null) {
     )
     var tags = remember { mutableListOf<Tag>() }
     var statusBarHeight by remember { mutableIntStateOf(0) }
+    var navigationBarHeight by remember { mutableIntStateOf(0) }
 
     statusBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
             LocalView.current.rootWindowInsets).getInsets(WindowInsetsCompat.Type.statusBars()).top
+    navigationBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
+            LocalView.current.rootWindowInsets).getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
     displayDimension.width = LocalView.current.width
     displayDimension.height = LocalView.current.height
 
     val statusBarHeightPx = statusBarHeight
     val statusBarHeightDp = with(LocalDensity.current) { statusBarHeightPx.toDp() }
+    val navigationBarHeightPx = navigationBarHeight
+    val navigationBarHeightDp = with(LocalDensity.current) { navigationBarHeightPx.toDp() }
     val topPadding = 8.dp + statusBarHeightDp
+    val bottomPadding = 8.dp + navigationBarHeightDp
 
     tagsViewModel.getTags().observeAsState().value?.let {
         tags.clear()
@@ -96,7 +107,7 @@ fun Tags(navController: NavController? = null) {
                     top = topPadding,
                     start = 8.dp,
                     end = 8.dp,
-                    bottom = 8.dp),
+                    bottom = bottomPadding),
     ) {
         item(span = StaggeredGridItemSpan.FullLine) {
             TopHeader(
@@ -126,6 +137,7 @@ fun Tags(navController: NavController? = null) {
 @Composable
 fun TagItem(tag: Tag, navController: NavController? = null, onDelete: (Tag) -> Unit) {
     var showDialog by remember { mutableStateOf(false) }
+    val hazeState = remember { HazeState() }
 
     if (showDialog) {
         TagsMenu(
@@ -152,24 +164,39 @@ fun TagItem(tag: Tag, navController: NavController? = null, onDelete: (Tag) -> U
                             showDialog = true
                         }),
     ) {
-        GlideImage(
-                model = app.simple.peri.glide.tags.Tag(tag, LocalContext.current),
-                contentDescription = null,
-        )
+        Box {
+            GlideImage(
+                    model = app.simple.peri.glide.tags.Tag(tag, LocalContext.current),
+                    contentDescription = null,
+                    modifier = Modifier.haze(hazeState),
+            )
 
-        Text(
-                text = tag.name,
-                fontWeight = FontWeight.Bold,
-                fontSize = 20.sp,
-                modifier = Modifier.padding(start = 8.dp, end = 8.dp, top = 8.dp)
-        )
+            Column(
+                    modifier = Modifier
+                        .wrapContentHeight()
+                        .fillMaxWidth()
+                        .hazeChild(
+                                state = hazeState,
+                                style = HazeDefaults.style(backgroundColor = Color(0x50000000), blurRadius = 5.dp))
+                        .align(Alignment.BottomCenter)
+            ) {
+                Text(
+                        text = tag.name,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp,
+                        color = Color.White,
+                        modifier = Modifier.padding(start = 8.dp, end = 8.dp, top = 8.dp)
+                )
 
-        Text(
-                text = stringResource(id = R.string.tag_count, tag.sum.count()),
-                fontWeight = FontWeight.Normal,
-                fontSize = 16.sp,
-                modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
-        )
+                Text(
+                        text = stringResource(id = R.string.tag_count, tag.sum.count()),
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Light,
+                        color = Color.White,
+                        modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
+                )
+            }
+        }
     }
 }
 
