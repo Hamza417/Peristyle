@@ -45,7 +45,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -324,7 +323,7 @@ fun BottomMenu(modifier: Modifier = Modifier, navController: NavController? = nu
                         containerColor = MaterialTheme.colorScheme.primary,
                 ),
                 onClick = {
-                    navController?.navigate(Routes.WALLPAPERS)
+                    navController?.navigate(Routes.FOLDERS)
                 }
         ) {
             Row(
@@ -352,8 +351,6 @@ fun BottomMenu(modifier: Modifier = Modifier, navController: NavController? = nu
 
 @Composable
 fun BottomMenuItem(modifier: Modifier = Modifier, title: String = "", drawableID: Int = 0, navController: NavController? = null, onClick: () -> Unit = {}) {
-    val context = LocalContext.current
-
     Column(
             modifier = modifier,
             horizontalAlignment = Alignment.CenterHorizontally

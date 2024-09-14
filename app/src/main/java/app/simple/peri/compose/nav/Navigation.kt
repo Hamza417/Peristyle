@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import app.simple.peri.compose.screens.AutoWallpaper
+import app.simple.peri.compose.screens.Folders
 import app.simple.peri.compose.screens.Home
 import app.simple.peri.compose.screens.List
 import app.simple.peri.compose.screens.Settings
@@ -56,6 +57,10 @@ fun PeristyleNavigation(context: Context) {
 
         composable(route = Routes.TAGS) {
             Tags(navController)
+        }
+
+        composable(route = Routes.FOLDERS) {
+            Folders(navController)
         }
 
         composable(route = "${Routes.TAGGED_WALLPAPERS}/{tag}") { backStackEntry ->
