@@ -1,6 +1,7 @@
 package app.simple.peri.compose.screens
 
 import android.graphics.drawable.Drawable
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -59,6 +60,7 @@ import app.simple.peri.compose.nav.Routes
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.utils.FileUtils.toUri
 import app.simple.peri.viewmodels.HomeScreenViewModel
+import app.simple.peri.viewmodels.WallpaperViewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.load.DataSource
@@ -74,6 +76,8 @@ import kotlin.math.absoluteValue
 
 @Composable
 fun Home(navController: NavController? = null) {
+    initWallpaperViewModel()
+
     val pagerState = rememberPagerState(pageCount = {
         2
     })
@@ -395,4 +399,13 @@ fun ShowTagDialog(title: String, onDismiss: () -> Unit) {
                 }
             }
     )
+}
+
+@Composable
+fun initWallpaperViewModel() {
+    val wallpaperViewModel: WallpaperViewModel = viewModel()
+
+    wallpaperViewModel.getWallpapersLiveData().observeAsState().value?.let {
+        Log.d("Home", "Wallpapers: ${it.size}")
+    }
 }

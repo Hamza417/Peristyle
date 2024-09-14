@@ -162,6 +162,7 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
                         name = pickedDirectory.name
                         this.uri = uri.uri.toString()
                         count = wallpaperDao?.getWallpapersByUriHashcode(uri.uri?.hashCode() ?: 0)?.size ?: 0
+                        hashcode = uri.uri.hashCode()
                     }
 
                     folders.add(folder)
@@ -213,10 +214,10 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
 
                     files.parallelStream().forEach { file ->
                         try {
-                            val wallpaper = createWallpaperFromFile(file)
-                            if (wallpaper != null && alreadyLoaded?.containsKey(file.uri.toString()) == false) {
-                                wallpapers.add(wallpaper)
+                            if (alreadyLoaded?.containsKey(file.uri.toString()) == false) {
+                                val wallpaper = createWallpaperFromFile(file)
                                 wallpaper.uriHashcode = uri.uri.hashCode()
+                                wallpapers.add(wallpaper)
                                 newWallpapersData.postValue(wallpaper)
                                 WallpaperDatabase.getInstance(getApplication())?.wallpaperDao()?.insert(wallpaper)
                                 updateLoadingStatus(wallpapers.size, total)
@@ -241,7 +242,7 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
         }
     }
 
-    private fun createWallpaperFromFile(file: DocumentFile): Wallpaper? {
+    private fun createWallpaperFromFile(file: DocumentFile): Wallpaper {
         val wallpaper = Wallpaper().apply {
             name = file.name
             uri = file.uri.toString()
@@ -263,7 +264,7 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
             Log.i(TAG, "loadWallpaperImages: ${wallpaper.name} - ${wallpaper.md5}")
         }
 
-        return if (wallpaper.isNull()) null else wallpaper
+        return wallpaper
     }
 
     private fun updateLoadingStatus(count: Int, total: Int) {
@@ -278,7 +279,7 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
         wallpaperDao?.getWallpapers()?.forEach {
             try {
                 getApplication<Application>().contentResolver.openInputStream(Uri.parse(it.uri))?.use { _ ->
-                    Log.d(TAG, "initDatabase: ${it.name} exists")
+                    // Log.d(TAG, "initDatabase: ${it.name} exists")
                 }
             } catch (e: Exception) {
                 // Log.d(TAG, "initDatabase: ${it.name} doesn't exist")
@@ -292,8 +293,7 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
                 wallpaperDao?.insert(it)
             }
         } catch (e: ConcurrentModificationException) {
-            // rarely occurs
-            Log.e(TAG, "initDatabase: ConcurrentModificationException occurred while inserting wallpapers into database - ${e.message}")
+            // rarely occurs but occurs :)))))))))))
         }
 
         isDatabaseLoaded.postValue(true)

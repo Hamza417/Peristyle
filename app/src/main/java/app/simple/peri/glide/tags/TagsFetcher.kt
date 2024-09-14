@@ -3,7 +3,6 @@ package app.simple.peri.glide.tags
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
-import android.util.Log
 import app.simple.peri.compose.screens.displayDimension
 import app.simple.peri.database.instances.WallpaperDatabase
 import app.simple.peri.models.Wallpaper
@@ -22,7 +21,6 @@ class TagsFetcher(private val tag: Tag) : DataFetcher<Bitmap> {
 
         tag.tag?.sum?.forEach {
             wallpaperList.add(wallpaperDatabase.wallpaperDao().getWallpaperByMD5(it)!!)
-            Log.d(TAG, it)
         }
 
         // Fetch top 6 wallpapers
