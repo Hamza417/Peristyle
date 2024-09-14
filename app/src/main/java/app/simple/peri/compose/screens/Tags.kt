@@ -153,7 +153,7 @@ fun TagItem(tag: Tag, navController: NavController? = null, onDelete: (Tag) -> U
                         }),
     ) {
         GlideImage(
-                model = app.simple.peri.glide.tags.Tag(tag, LocalContext.current, displayDimension),
+                model = app.simple.peri.glide.tags.Tag(tag, LocalContext.current),
                 contentDescription = null,
         )
 

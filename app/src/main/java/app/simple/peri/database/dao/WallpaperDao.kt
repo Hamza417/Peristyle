@@ -38,6 +38,13 @@ interface WallpaperDao {
     fun getWallpapersByMD5s(md5s: Set<String>): List<Wallpaper>
 
     /**
+     * Get wallpapers by the matching the [Wallpaper.uriHashcode]
+     * with the specified [uriHashcode]
+     */
+    @Query("SELECT * FROM wallpapers WHERE uri_hashcode = :uriHashcode")
+    fun getWallpapersByUriHashcode(uriHashcode: Int): List<Wallpaper>
+
+    /**
      * Clean any entry that doesn't have any of the
      * specified extension
      *
