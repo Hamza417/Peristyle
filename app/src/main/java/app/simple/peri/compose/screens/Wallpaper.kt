@@ -1,6 +1,5 @@
 package app.simple.peri.compose.screens
 
-import android.app.Application
 import android.app.WallpaperManager
 import android.content.Context
 import android.graphics.Bitmap
@@ -99,7 +98,7 @@ fun Wallpaper(context: Context, navController: NavHostController) {
     val coroutineScope = rememberCoroutineScope()
     val graphicsLayer = rememberGraphicsLayer()
     val tagsViewModel: TagsViewModel = viewModel(
-            factory = TagsViewModelFactory(context.applicationContext as Application, wallpaper?.md5 ?: "")
+            factory = TagsViewModelFactory(wallpaper?.md5 ?: "")
     )
     var displayWidth by remember { mutableIntStateOf(0) }
     var displayHeight by remember { mutableIntStateOf(0) }

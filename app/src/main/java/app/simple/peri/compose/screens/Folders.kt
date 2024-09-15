@@ -47,6 +47,7 @@ import app.simple.peri.R
 import app.simple.peri.compose.commons.COMMON_PADDING
 import app.simple.peri.compose.commons.RequestDirectoryPermission
 import app.simple.peri.compose.commons.TopHeader
+import app.simple.peri.compose.nav.Routes
 import app.simple.peri.models.Folder
 import app.simple.peri.viewmodels.WallpaperViewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
@@ -148,7 +149,9 @@ fun FolderItem(folder: Folder, navController: NavController? = null, onDelete: (
                 .padding(8.dp)
                 .combinedClickable(
                         onClick = {
-
+                            navController?.navigate(Routes.WALLPAPERS_LIST) {
+                                navController.currentBackStackEntry?.savedStateHandle?.set(Routes.FOLDER_ARG, folder)
+                            }
                         },
                         onLongClick = {
 

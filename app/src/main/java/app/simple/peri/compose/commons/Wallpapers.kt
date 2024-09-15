@@ -1,6 +1,5 @@
 package app.simple.peri.compose.commons
 
-import android.app.Application
 import android.content.Intent
 import android.graphics.drawable.Drawable
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -91,7 +90,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @Composable
-fun Wallpapers(list: List<Wallpaper>, navController: NavController? = null, loadingState: String = "") {
+fun Wallpapers(list: List<Wallpaper>, navController: NavController? = null, title: String = "") {
     var wallpapers by remember { mutableStateOf(emptyList<Wallpaper>()) }
     var statusBarHeight by remember { mutableIntStateOf(0) }
     var navigationBarHeight by remember { mutableIntStateOf(0) }
@@ -121,21 +120,9 @@ fun Wallpapers(list: List<Wallpaper>, navController: NavController? = null, load
                     bottom = bottomPadding)
     ) {
         item(span = { GridItemSpan(maxLineSpan) }) {
-            TopHeader(title = "Wallpapers", count = wallpapers.size,
+            TopHeader(title = title, count = wallpapers.size,
                       modifier = Modifier.padding(COMMON_PADDING),
                       navController = navController)
-        }
-        if (wallpapers.isEmpty()) {
-            item(span = { GridItemSpan(maxLineSpan) }) {
-                Text(
-                        text = loadingState,
-                        style = TextStyle(
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 20.sp,
-                        ),
-                        modifier = Modifier.padding(COMMON_PADDING)
-                )
-            }
         }
         items(wallpapers.size) { index ->
             WallpaperItem(wallpapers[index], navController) { deletedWallpaper ->
@@ -289,14 +276,14 @@ fun WallpaperItem(wallpaper: Wallpaper, navController: NavController? = null, on
 @Composable
 fun WallpaperMenu(setShowDialog: (Boolean) -> Unit,
                   wallpaper: Wallpaper,
-                  onDelete: (Wallpaper) -> Unit,
-                  wallpaperViewModel: WallpaperViewModel = viewModel()) {
+                  onDelete: (Wallpaper) -> Unit) {
 
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val tagsViewModel: TagsViewModel = viewModel(
-            factory = TagsViewModelFactory(context.applicationContext as Application)
+            factory = TagsViewModelFactory()
     )
+    val wallpaperViewModel: WallpaperViewModel = viewModel()
     val showTagDialog = remember { mutableStateOf(false) }
 
     if (showTagDialog.value) {

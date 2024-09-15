@@ -76,7 +76,7 @@ import kotlin.math.absoluteValue
 
 @Composable
 fun Home(navController: NavController? = null) {
-    initWallpaperViewModel()
+    InitWallpaperViewModel()
 
     val pagerState = rememberPagerState(pageCount = {
         2
@@ -402,7 +402,7 @@ fun ShowTagDialog(title: String, onDismiss: () -> Unit) {
 }
 
 @Composable
-fun initWallpaperViewModel() {
+fun InitWallpaperViewModel() {
     val wallpaperViewModel: WallpaperViewModel = viewModel()
 
     wallpaperViewModel.getWallpapersLiveData().observeAsState().value?.let {
