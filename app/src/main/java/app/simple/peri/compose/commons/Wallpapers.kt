@@ -29,6 +29,7 @@ import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
@@ -125,8 +126,12 @@ fun Wallpapers(list: List<Wallpaper>, navController: NavController? = null, titl
                       navController = navController)
         }
         items(wallpapers.size) { index ->
-            WallpaperItem(wallpapers[index], navController) { deletedWallpaper ->
+            WallpaperItem(wallpapers[index], navController, { deletedWallpaper ->
                 wallpapers = wallpapers.filter { it != deletedWallpaper }
+            }) { selectedWallpaper ->
+                wallpapers = wallpapers.map {
+                    if (it.md5 == selectedWallpaper.md5) selectedWallpaper else it
+                }
             }
         }
     }
@@ -134,7 +139,12 @@ fun Wallpapers(list: List<Wallpaper>, navController: NavController? = null, titl
 
 @OptIn(ExperimentalGlideComposeApi::class, ExperimentalFoundationApi::class)
 @Composable
-fun WallpaperItem(wallpaper: Wallpaper, navController: NavController? = null, onDelete: (Wallpaper) -> Unit) {
+fun WallpaperItem(
+        wallpaper: Wallpaper,
+        navController: NavController? = null,
+        onDelete: (Wallpaper) -> Unit,
+        onSelect: (Wallpaper) -> Unit // Add this parameter
+) {
     val hazeState = remember { HazeState() }
     var showDialog by remember { mutableStateOf(false) }
 
@@ -268,6 +278,15 @@ fun WallpaperItem(wallpaper: Wallpaper, navController: NavController? = null, on
 
                     WallpaperDimensionsText(wallpaper, displayWidth, displayHeight)
                 }
+
+                Checkbox(
+                        checked = wallpaper.isSelected,
+                        onCheckedChange = {
+                            wallpaper.isSelected = it
+                            onSelect(wallpaper)
+                        },
+                        modifier = Modifier.align(Alignment.TopEnd)
+                )
             }
         }
     }
