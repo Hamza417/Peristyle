@@ -26,7 +26,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,7 +33,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -42,10 +40,10 @@ import androidx.navigation.NavController
 import app.simple.peri.BuildConfig
 import app.simple.peri.R
 import app.simple.peri.compose.commons.COMMON_PADDING
+import app.simple.peri.compose.commons.RequestDirectoryPermission
 import app.simple.peri.compose.commons.TopHeader
 import app.simple.peri.compose.dialogs.ShowWarningDialog
 import app.simple.peri.compose.nav.Routes
-import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.utils.PermissionUtils
 import app.simple.peri.utils.PermissionUtils.isBatteryOptimizationDisabled
 import app.simple.peri.utils.PermissionUtils.requestIgnoreBatteryOptimizations
@@ -314,29 +312,6 @@ fun RequestStoragePermissions() {
                     Manifest.permission.WRITE_EXTERNAL_STORAGE
             )
     )
-}
-
-@Composable
-fun RequestDirectoryPermission() {
-    val context = LocalContext.current
-
-    val storageResult = rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        val uri: Uri? = result.data?.data
-        if (uri != null) {
-            val modeFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-            context.contentResolver.takePersistableUriPermission(uri, modeFlags)
-            MainPreferences.setStorageUri(uri.toString())
-            Log.d("Setup", "Storage Uri: $uri")
-        }
-    }
-
-    // Launch the directory selection intent
-    LaunchedEffect(Unit) {
-        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
-        storageResult.launch(intent)
-    }
 }
 
 fun isSetupComplete(context: Context): Boolean {

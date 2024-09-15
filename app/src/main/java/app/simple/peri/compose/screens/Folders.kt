@@ -45,6 +45,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import app.simple.peri.R
 import app.simple.peri.compose.commons.COMMON_PADDING
+import app.simple.peri.compose.commons.RequestDirectoryPermission
 import app.simple.peri.compose.commons.TopHeader
 import app.simple.peri.models.Folder
 import app.simple.peri.viewmodels.WallpaperViewModel
@@ -62,6 +63,7 @@ fun Folders(navController: NavController? = null) {
     var navigationBarHeight by remember { mutableIntStateOf(0) }
     var count by remember { mutableIntStateOf(0) }
     val wallpaperViewModel: WallpaperViewModel = viewModel()
+    var requestPermission by remember { mutableStateOf(false) }
     var folders by remember { mutableStateOf(emptyList<Folder>()) }
 
     statusBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
@@ -81,6 +83,10 @@ fun Folders(navController: NavController? = null) {
 
     val topPadding = 8.dp + statusBarHeightDp
     val bottomPadding = 8.dp + navigationBarHeightDp
+
+    if (requestPermission) {
+        RequestDirectoryPermission()
+    }
 
     LazyVerticalStaggeredGrid(
             columns = StaggeredGridCells.Fixed(2),
@@ -113,7 +119,7 @@ fun Folders(navController: NavController? = null) {
                             defaultElevation = 8.dp,
                     ),
                     onClick = {
-                        // TODO add folder
+                        requestPermission = true
                     }
             ) {
                 Icon(
