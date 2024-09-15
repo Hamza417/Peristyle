@@ -22,9 +22,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -60,26 +60,33 @@ import dev.chrisbanes.haze.hazeChild
 
 @Composable
 fun Folders(navController: NavController? = null) {
-    var statusBarHeight by remember { mutableIntStateOf(0) }
-    var navigationBarHeight by remember { mutableIntStateOf(0) }
-    var count by remember { mutableIntStateOf(0) }
+    val context = LocalContext.current
+    val view = LocalView.current
     val wallpaperViewModel: WallpaperViewModel = viewModel()
+    val folders = remember { mutableListOf<Folder>() }
+
     var requestPermission by remember { mutableStateOf(false) }
-    var folders by remember { mutableStateOf(emptyList<Folder>()) }
-
-    statusBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
-            LocalView.current.rootWindowInsets).getInsets(WindowInsetsCompat.Type.statusBars()).top
-    navigationBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
-            LocalView.current.rootWindowInsets).getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
-    count = LocalContext.current.contentResolver.persistedUriPermissions.size
-
     wallpaperViewModel.getFoldersLiveData().observeAsState().value?.let {
-        folders = it
+        folders.clear()
+        folders.addAll(it)
     }
 
-    val statusBarHeightPx = statusBarHeight
+    val count by remember {
+        derivedStateOf {
+            context.contentResolver.persistedUriPermissions.size
+        }
+    }
+
+    val statusBarHeightPx = remember {
+        WindowInsetsCompat.toWindowInsetsCompat(view.rootWindowInsets)
+            .getInsets(WindowInsetsCompat.Type.statusBars()).top
+    }
+    val navigationBarHeightPx = remember {
+        WindowInsetsCompat.toWindowInsetsCompat(view.rootWindowInsets)
+            .getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
+    }
+
     val statusBarHeightDp = with(LocalDensity.current) { statusBarHeightPx.toDp() }
-    val navigationBarHeightPx = navigationBarHeight
     val navigationBarHeightDp = with(LocalDensity.current) { navigationBarHeightPx.toDp() }
 
     val topPadding = 8.dp + statusBarHeightDp
@@ -91,23 +98,24 @@ fun Folders(navController: NavController? = null) {
 
     LazyVerticalStaggeredGrid(
             columns = StaggeredGridCells.Fixed(2),
-            modifier = Modifier
-                .fillMaxSize(),
+            modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(
                     top = topPadding,
                     start = 8.dp,
                     end = 8.dp,
-                    bottom = bottomPadding)
+                    bottom = bottomPadding
+            )
     ) {
         item(span = StaggeredGridItemSpan.FullLine) {
-            TopHeader(title = stringResource(R.string.folder), count = count,
-                      modifier = Modifier.padding(COMMON_PADDING),
-                      navController = navController)
+            TopHeader(
+                    title = stringResource(R.string.folder),
+                    count = count,
+                    modifier = Modifier.padding(COMMON_PADDING),
+                    navController = navController
+            )
         }
         items(folders.size) { index ->
-            FolderItem(folder = folders[index], navController = navController) {
-
-            }
+            FolderItem(folder = folders[index], navController = navController) {}
         }
         item {
             ElevatedCard(
@@ -116,12 +124,8 @@ fun Folders(navController: NavController? = null) {
                         .padding(8.dp)
                         .aspectRatio(displayDimension.getAspectRatio()),
                     shape = RoundedCornerShape(16.dp),
-                    elevation = CardDefaults.cardElevation(
-                            defaultElevation = 8.dp,
-                    ),
-                    onClick = {
-                        requestPermission = true
-                    }
+                    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+                    onClick = { requestPermission = true }
             ) {
                 Icon(
                         imageVector = Icons.Rounded.Add,
