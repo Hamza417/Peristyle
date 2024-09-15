@@ -27,8 +27,10 @@ import androidx.navigation.NavController
 import app.simple.peri.R
 import app.simple.peri.compose.commons.COMMON_PADDING
 import app.simple.peri.compose.commons.TopHeader
+import app.simple.peri.compose.dialogs.OrderDialog
 import app.simple.peri.compose.dialogs.ShowInureAppManagerDialog
 import app.simple.peri.compose.dialogs.ShowPositionalDialog
+import app.simple.peri.compose.dialogs.SortDialog
 import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.utils.ConditionUtils.invert
@@ -99,6 +101,40 @@ fun Settings(navController: NavController? = null) {
                     checked = MainComposePreferences.getShowImageShadow()
             ) {
                 MainComposePreferences.setShowImageShadow(it)
+            }
+        }
+        item { // Data
+            val showSortDialog = remember { mutableStateOf(false) }
+            val showOrderDialog = remember { mutableStateOf(false) }
+
+            if (showSortDialog.value) {
+                SortDialog {
+                    showSortDialog.value = false
+                }
+            }
+
+            if (showOrderDialog.value) {
+                OrderDialog {
+                    showOrderDialog.value = false
+                }
+            }
+
+            SecondaryHeader(title = context.getString(R.string.data))
+
+            // Sort
+            ClickablePreference(
+                    title = context.getString(R.string.sort),
+                    description = context.getString(R.string.sort_summary)
+            ) {
+                showSortDialog.value = true
+            }
+
+            // Order
+            ClickablePreference(
+                    title = context.getString(R.string.order),
+                    description = context.getString(R.string.order_summary)
+            ) {
+                showOrderDialog.value = true
             }
         }
         item { // Accessibility
