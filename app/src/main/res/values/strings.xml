@@ -168,4 +168,6 @@
     <string name="image_shadow_summary">Add a direct image based blurred shadow behind the wallpapers in wallpapers list.\n\nDisable it if you encounter performance issues.</string>
     <string name="github_summary">Open app\'s repository</string>
     <string name="tags_summary">Tags assigned on wallpapers will appear here.</string>
+    <string name="sort_summary">Sorting style for wallpaper list.</string>
+    <string name="order_summary">Acsending or descending order for the list.</string>
 </resources>
