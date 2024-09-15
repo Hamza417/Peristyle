@@ -8,7 +8,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import app.simple.peri.compose.commons.Wallpapers
+import app.simple.peri.compose.commons.WallpapersList
 import app.simple.peri.compose.nav.Routes
 import app.simple.peri.factories.FolderViewModelFactory
 import app.simple.peri.models.Folder
@@ -30,6 +30,6 @@ fun FolderList(navController: NavController? = null) {
             wallpapers = newWallpapers
         }
 
-        Wallpapers(wallpapers, navController, title = it.name)
+        WallpapersList(wallpapers, navController, title = it.name)
     }
 }

@@ -24,20 +24,23 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -91,10 +94,12 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @Composable
-fun Wallpapers(list: List<Wallpaper>, navController: NavController? = null, title: String = "") {
+fun WallpapersList(list: List<Wallpaper>, navController: NavController? = null, title: String = "") {
     var wallpapers by remember { mutableStateOf(emptyList<Wallpaper>()) }
     var statusBarHeight by remember { mutableIntStateOf(0) }
     var navigationBarHeight by remember { mutableIntStateOf(0) }
+    val wallpaperViewModel: WallpaperViewModel = viewModel()
+    val isSelectionMode by wallpaperViewModel.isSelectionMode.collectAsState()
 
     wallpapers = list
     statusBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
@@ -126,13 +131,15 @@ fun Wallpapers(list: List<Wallpaper>, navController: NavController? = null, titl
                       navController = navController)
         }
         items(wallpapers.size) { index ->
-            WallpaperItem(wallpapers[index], navController, { deletedWallpaper ->
-                wallpapers = wallpapers.filter { it != deletedWallpaper }
-            }) { selectedWallpaper ->
-                wallpapers = wallpapers.map {
-                    if (it.md5 == selectedWallpaper.md5) selectedWallpaper else it
-                }
-            }
+            WallpaperItem(wallpaper = wallpapers[index],
+                          navController = navController,
+                          onDelete = { deletedWallpaper ->
+                              wallpapers = wallpapers.filter {
+                                  it != deletedWallpaper
+                              }
+                          },
+                          isSelectionMode = isSelectionMode,
+                          wallpaperViewModel = wallpaperViewModel)
         }
     }
 }
@@ -143,10 +150,12 @@ fun WallpaperItem(
         wallpaper: Wallpaper,
         navController: NavController? = null,
         onDelete: (Wallpaper) -> Unit,
-        onSelect: (Wallpaper) -> Unit // Add this parameter
+        isSelectionMode: Boolean,
+        wallpaperViewModel: WallpaperViewModel
 ) {
     val hazeState = remember { HazeState() }
     var showDialog by remember { mutableStateOf(false) }
+    var selectRecompose by remember { mutableLongStateOf(0L) }
 
     var displayWidth by remember { mutableIntStateOf(0) }
     var displayHeight by remember { mutableIntStateOf(0) }
@@ -161,7 +170,13 @@ fun WallpaperItem(
     if (showDialog) {
         WallpaperMenu({
                           showDialog = it
-                      }, wallpaper, onDelete)
+                      }, wallpaper,
+                      onDelete = onDelete,
+                      onSelect = {
+                          wallpaper.isSelected = wallpaper.isSelected.not()
+                          selectRecompose = System.currentTimeMillis()
+                          wallpaperViewModel.setSelectionMode(true)
+                      })
     }
 
     Box {
@@ -208,9 +223,15 @@ fun WallpaperItem(
                             ambientColor = Color(wallpaper.prominentColor))
                     .combinedClickable(
                             onClick = {
-                                navController?.navigate(Routes.WALLPAPER) {
-                                    navController.currentBackStackEntry
-                                        ?.savedStateHandle?.set(Routes.WALLPAPER_ARG, wallpaper)
+                                if (isSelectionMode) {
+                                    wallpaper.isSelected = wallpaper.isSelected.not()
+                                    selectRecompose = System.currentTimeMillis()
+                                    wallpaperViewModel.setSelectionMode(true)
+                                } else {
+                                    navController?.navigate(Routes.WALLPAPER) {
+                                        navController.currentBackStackEntry
+                                            ?.savedStateHandle?.set(Routes.WALLPAPER_ARG, wallpaper)
+                                    }
                                 }
                             },
                             onLongClick = {
@@ -278,15 +299,6 @@ fun WallpaperItem(
 
                     WallpaperDimensionsText(wallpaper, displayWidth, displayHeight)
                 }
-
-                Checkbox(
-                        checked = wallpaper.isSelected,
-                        onCheckedChange = {
-                            wallpaper.isSelected = it
-                            onSelect(wallpaper)
-                        },
-                        modifier = Modifier.align(Alignment.TopEnd)
-                )
             }
         }
     }
@@ -295,7 +307,8 @@ fun WallpaperItem(
 @Composable
 fun WallpaperMenu(setShowDialog: (Boolean) -> Unit,
                   wallpaper: Wallpaper,
-                  onDelete: (Wallpaper) -> Unit) {
+                  onDelete: (Wallpaper) -> Unit,
+                  onSelect: () -> Unit = {}) {
 
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -367,7 +380,7 @@ fun WallpaperMenu(setShowDialog: (Boolean) -> Unit,
                     ) {
                         Text(
                                 text = context.getString(R.string.send),
-                                color = Color.Black,
+                                color = MaterialTheme.colorScheme.onSurface,
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.SemiBold
                         )
@@ -397,7 +410,7 @@ fun WallpaperMenu(setShowDialog: (Boolean) -> Unit,
                     ) {
                         Text(
                                 text = context.getString(R.string.delete),
-                                color = Color.Black,
+                                color = MaterialTheme.colorScheme.onSurface,
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.SemiBold
                         )
@@ -408,6 +421,7 @@ fun WallpaperMenu(setShowDialog: (Boolean) -> Unit,
                     Button(
                             onClick = {
                                 showTagDialog.value = true
+                                setShowDialog(false)
                             },
                             colors = ButtonDefaults.buttonColors(
                                     containerColor = Color.White,
@@ -419,7 +433,7 @@ fun WallpaperMenu(setShowDialog: (Boolean) -> Unit,
                     ) {
                         Text(
                                 text = context.getString(R.string.add_tag),
-                                color = Color.Black,
+                                color = MaterialTheme.colorScheme.onSurface,
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.SemiBold
                         )
@@ -433,6 +447,7 @@ fun WallpaperMenu(setShowDialog: (Boolean) -> Unit,
                                 intent.setDataAndType(wallpaper.uri.toUri(), "image/*")
                                 intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                                 context.startActivity(Intent.createChooser(intent, context.getString(R.string.edit)))
+                                setShowDialog(false)
                             },
                             colors = ButtonDefaults.buttonColors(
                                     containerColor = Color.White,
@@ -444,9 +459,32 @@ fun WallpaperMenu(setShowDialog: (Boolean) -> Unit,
                     ) {
                         Text(
                                 text = context.getString(R.string.edit),
-                                color = Color.Black,
+                                color = MaterialTheme.colorScheme.onSurface,
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.SemiBold
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(5.dp))
+
+                    Button(
+                            onClick = {
+                                onSelect()
+                                setShowDialog(false)
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color.White,
+                            ),
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(50.dp),
+                    ) {
+                        Text(
+                                text = context.getString(R.string.select),
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 }
@@ -477,7 +515,7 @@ fun WallpaperDimensionsText(wallpaper: Wallpaper, displayWidth: Int, displayHeig
             when {
                 (wallpaper.width ?: 0) > displayWidth || (wallpaper.height ?: 0) > displayHeight -> {
                     Icon(
-                            imageVector = Icons.Rounded.Warning, // Use an appropriate icon
+                            imageVector = Icons.Rounded.Warning,
                             contentDescription = null,
                             tint = Color.LightGray,
                             modifier = Modifier.size(16.dp)
@@ -486,7 +524,7 @@ fun WallpaperDimensionsText(wallpaper: Wallpaper, displayWidth: Int, displayHeig
 
                 (wallpaper.width ?: 0) < displayWidth || (wallpaper.height ?: 0) < displayHeight -> {
                     Icon(
-                            imageVector = Icons.Rounded.Warning, // Use an appropriate icon
+                            imageVector = Icons.Rounded.Warning,
                             contentDescription = null,
                             tint = Color.Red,
                             modifier = Modifier.size(16.dp)
@@ -497,6 +535,18 @@ fun WallpaperDimensionsText(wallpaper: Wallpaper, displayWidth: Int, displayHeig
 
                 }
             }
+        }
+
+        if (wallpaper.isSelected) {
+            Spacer(modifier = Modifier.width(8.dp))
+
+            Icon(
+                    imageVector = Icons.Rounded.Check,
+                    contentDescription = null,
+                    tint = Color.LightGray,
+                    modifier = Modifier
+                        .size(16.dp),
+            )
         }
     }
 }

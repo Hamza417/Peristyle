@@ -32,6 +32,8 @@ import app.simple.peri.utils.FileUtils.listOnlyFirstLevelFiles
 import app.simple.peri.utils.PermissionUtils
 import app.simple.peri.utils.WallpaperSort.getSortedList
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -112,6 +114,13 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
                 }
             }
         }
+    }
+
+    private val _isSelectionMode = MutableStateFlow(false)
+    val isSelectionMode: StateFlow<Boolean> get() = _isSelectionMode
+
+    fun setSelectionMode(isSelectionMode: Boolean) {
+        _isSelectionMode.value = isSelectionMode
     }
 
     fun getWallpapersLiveData(): MutableLiveData<ArrayList<Wallpaper>> {
