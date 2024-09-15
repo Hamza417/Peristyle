@@ -460,6 +460,14 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
         }
     }
 
+    fun refresh() {
+        Log.i(TAG, "refresh: refreshing wallpapers")
+        loadFolders()
+        if (isLoading.invert()) {
+            loadWallpaperImages()
+        }
+    }
+
     companion object {
         private const val TAG = "WallpaperViewModel"
         private const val SYSTEM_WALLPAPER = "system_wallpaper_$.png"
