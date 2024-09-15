@@ -1,6 +1,5 @@
 package app.simple.peri.compose.screens
 
-import android.app.Application
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
@@ -72,9 +71,7 @@ val displayDimension = DisplayDimension(1080, 1920)
 @Composable
 fun Tags(navController: NavController? = null) {
     val tagsViewModel: TagsViewModel = viewModel(
-            factory = TagsViewModelFactory(
-                    application = requireNotNull(LocalContext.current.applicationContext as Application),
-            )
+            factory = TagsViewModelFactory()
     )
     var tags = remember { mutableListOf<Tag>() }
     var statusBarHeight by remember { mutableIntStateOf(0) }
@@ -207,7 +204,7 @@ fun TagsMenu(setShowDialog: (Boolean) -> Unit,
 
     val context = LocalContext.current
     val tagsViewModel: TagsViewModel = viewModel(
-            factory = TagsViewModelFactory(context.applicationContext as Application)
+            factory = TagsViewModelFactory()
     )
 
     Dialog(onDismissRequest = { setShowDialog(false) }) {

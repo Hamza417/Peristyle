@@ -1,8 +1,9 @@
 package app.simple.peri.models;
 
-import android.net.Uri;
+import android.os.Parcel;
+import android.os.Parcelable;
 
-public class Folder {
+public class Folder implements Parcelable {
     private int hashcode;
     private String name;
     private String uri;
@@ -17,6 +18,38 @@ public class Folder {
     
     public Folder() {
     }
+    
+    protected Folder(Parcel in) {
+        hashcode = in.readInt();
+        name = in.readString();
+        uri = in.readString();
+        count = in.readInt();
+    }
+    
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(hashcode);
+        dest.writeString(name);
+        dest.writeString(uri);
+        dest.writeInt(count);
+    }
+    
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+    
+    public static final Creator <Folder> CREATOR = new Creator <Folder>() {
+        @Override
+        public Folder createFromParcel(Parcel in) {
+            return new Folder(in);
+        }
+        
+        @Override
+        public Folder[] newArray(int size) {
+            return new Folder[size];
+        }
+    };
     
     public int getHashcode() {
         return hashcode;
