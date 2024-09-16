@@ -134,9 +134,9 @@ fun SecondaryClickablePreference(@SuppressLint("ModifierParameter") modifier: Mo
     ) {
         Text(
                 text = title,
-                fontWeight = FontWeight.Bold,
+                fontWeight = FontWeight.SemiBold,
                 fontSize = PREFERENCE_TITLE_SIZE,
-                color = MaterialTheme.colorScheme.secondary,
+                color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier
                     .padding(start = PREF_HORIZONTAL_PADDING,
                              end = PREF_HORIZONTAL_PADDING,

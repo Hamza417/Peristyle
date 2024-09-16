@@ -46,10 +46,13 @@ import androidx.navigation.NavController
 import app.simple.peri.R
 import app.simple.peri.compose.commons.COMMON_PADDING
 import app.simple.peri.compose.commons.TopHeader
+import app.simple.peri.factories.TagsViewModelFactory
+import app.simple.peri.models.Folder
 import app.simple.peri.models.Tag
 import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.viewmodels.TagsViewModel
+import app.simple.peri.viewmodels.WallpaperViewModel
 
 @Composable
 fun AutoWallpaper(navController: NavController? = null) {
@@ -126,8 +129,14 @@ fun AutoWallpaper(navController: NavController? = null) {
             val isHomeScreenRow = remember { mutableStateOf(MainComposePreferences.getIsHomeSourceSet()) }
             val lockTagID = remember { mutableStateOf(MainComposePreferences.getLockTagId()) }
             val homeTagID = remember { mutableStateOf(MainComposePreferences.getHomeTagId()) }
-            val lockFolderID = remember { mutableStateOf(MainComposePreferences.getLockFolderId()) }
-            val homeFolderID = remember { mutableStateOf(MainComposePreferences.getHomeFolderId()) }
+            val lockFolderID = remember { mutableIntStateOf(MainComposePreferences.getLockFolderId()) }
+            val homeFolderID = remember { mutableIntStateOf(MainComposePreferences.getHomeFolderId()) }
+            val lockFolderName = remember { mutableStateOf(MainComposePreferences.getLockFolderName()) }
+            val homeFolderName = remember { mutableStateOf(MainComposePreferences.getHomeFolderName()) }
+            val showLockTagDialog = remember { mutableStateOf(false) }
+            val showHomeTagDialog = remember { mutableStateOf(false) }
+            val showLockFolderDialog = remember { mutableStateOf(false) }
+            val showHomeFolderDialog = remember { mutableStateOf(false) }
 
             SecondaryHeader(title = context.getString(R.string.source))
 
@@ -165,7 +174,7 @@ fun AutoWallpaper(navController: NavController? = null) {
                         SecondaryClickablePreference(
                                 title = context.getString(R.string.tags),
                                 onClick = {
-
+                                    showLockTagDialog.value = true
                                 },
                                 modifier = Modifier
                                     .wrapContentHeight()
@@ -199,14 +208,14 @@ fun AutoWallpaper(navController: NavController? = null) {
                         SecondaryClickablePreference(
                                 title = context.getString(R.string.folder),
                                 onClick = {
-
+                                    showLockFolderDialog.value = true
                                 },
                                 modifier = Modifier
                                     .wrapContentHeight()
                                     .weight(1f)
                         )
                         Text(
-                                text = lockFolderID.value ?: stringResource(R.string.unknown),
+                                text = lockFolderName.value ?: stringResource(R.string.unknown),
                                 color = MaterialTheme.colorScheme.onSurface,
                                 fontWeight = FontWeight.Light,
                                 fontSize = 14.sp,
@@ -249,7 +258,7 @@ fun AutoWallpaper(navController: NavController? = null) {
                         SecondaryClickablePreference(
                                 title = context.getString(R.string.tags),
                                 onClick = {
-
+                                    showHomeTagDialog.value = true
                                 },
                                 modifier = Modifier
                                     .wrapContentHeight()
@@ -283,14 +292,14 @@ fun AutoWallpaper(navController: NavController? = null) {
                         SecondaryClickablePreference(
                                 title = context.getString(R.string.folder),
                                 onClick = {
-
+                                    showHomeFolderDialog.value = true
                                 },
                                 modifier = Modifier
                                     .wrapContentHeight()
                                     .weight(1f)
                         )
                         Text(
-                                text = homeFolderID.value ?: stringResource(R.string.unknown),
+                                text = homeFolderName.value ?: stringResource(R.string.unknown),
                                 color = MaterialTheme.colorScheme.onSurface,
                                 fontWeight = FontWeight.Light,
                                 fontSize = 14.sp,
@@ -300,6 +309,54 @@ fun AutoWallpaper(navController: NavController? = null) {
                         )
                     }
                 }
+            }
+
+            if (showLockTagDialog.value) {
+                TagsDialog(
+                        selected = lockTagID.value ?: "",
+                        setShowing = { showLockTagDialog.value = it },
+                        onTag = {
+                            lockTagID.value = it.name
+                            showLockTagDialog.value = false
+                            MainComposePreferences.setLockTagId(it.name)
+                        })
+            }
+
+            if (showHomeTagDialog.value) {
+                TagsDialog(
+                        selected = homeTagID.value ?: "",
+                        setShowing = { showHomeTagDialog.value = it },
+                        onTag = {
+                            homeTagID.value = it.name
+                            showHomeTagDialog.value = false
+                            MainComposePreferences.setHomeTagId(it.name)
+                        })
+            }
+
+            if (showLockFolderDialog.value) {
+                FoldersDialog(
+                        selected = lockFolderID.intValue,
+                        setShowing = { showLockFolderDialog.value = it },
+                        onFolder = {
+                            lockFolderID.intValue = it.hashcode
+                            lockFolderName.value = it.name
+                            showLockFolderDialog.value = false
+                            MainComposePreferences.setLockFolderId(it.hashcode.toString())
+                            MainComposePreferences.setLockFolderName(it.name)
+                        })
+            }
+
+            if (showHomeFolderDialog.value) {
+                FoldersDialog(
+                        selected = homeFolderID.intValue,
+                        setShowing = { showHomeFolderDialog.value = it },
+                        onFolder = {
+                            homeFolderID.intValue = it.hashcode
+                            homeFolderName.value = it.name
+                            showHomeFolderDialog.value = false
+                            MainComposePreferences.setHomeFolderId(it.hashcode.toString())
+                            MainComposePreferences.setHomeFolderName(it.name)
+                        })
             }
         }
         item {
@@ -320,9 +377,6 @@ fun AutoWallpaper(navController: NavController? = null) {
             ) {
                 MainPreferences.setLinearAutoWallpaper(it)
             }
-        }
-        item {
-
         }
     }
 }
@@ -461,8 +515,8 @@ fun TimeSelectionDialog(onDismiss: () -> Unit, onOptionSelected: (Pair<String, L
 }
 
 @Composable
-fun TagsDialog(onTag: (Tag) -> Unit) {
-    val tagsViewModel: TagsViewModel = viewModel()
+fun TagsDialog(selected: String, setShowing: (Boolean) -> Unit, onTag: (Tag) -> Unit) {
+    val tagsViewModel: TagsViewModel = viewModel(factory = TagsViewModelFactory())
     val tags = remember { mutableStateOf(emptyList<Tag>()) }
 
     tagsViewModel.getTags().observeAsState().value?.let {
@@ -474,29 +528,102 @@ fun TagsDialog(onTag: (Tag) -> Unit) {
             title = { Text(text = stringResource(R.string.tags)) },
             text = {
                 Column {
-                    tags.value.forEach { tag ->
-                        Button(
-                                onClick = {
-                                    onTag(tag)
+                    tags.value.chunked(3).forEach { rowTags ->
+                        Row(modifier = Modifier.fillMaxWidth()) {
+                            rowTags.forEach { tag ->
+                                Button(
+                                        onClick = { onTag(tag) },
+                                        colors = if (tag.name == selected) {
+                                            ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                                        } else {
+                                            ButtonDefaults.buttonColors(containerColor = Color.Transparent)
                                 },
-                                colors = ButtonDefaults.buttonColors(
-                                        containerColor = Color.Transparent,
-                                ),
-                                modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Text(
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .padding(4.dp)
+                                ) {
+                                    Text(
                                     text = tag.name,
-                                    color = MaterialTheme.colorScheme.onSurface,
-                                    modifier = Modifier.fillMaxWidth()
-                            )
+                                    color = if (tag.name == selected) {
+                                        MaterialTheme.colorScheme.onPrimary
+                                    } else {
+                                        MaterialTheme.colorScheme.onSurface
+                                    }
+                                    )
+                                }
+                            }
                         }
                     }
                 }
             },
             confirmButton = {
                 Button(
-                        onClick = {
-                        },
+                        onClick = { setShowing(false) },
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onSurfaceVariant)
+                ) {
+                    Text(text = stringResource(R.string.close))
+                }
+            },
+            properties = DialogProperties(dismissOnClickOutside = true)
+    )
+}
+
+@Composable
+fun FoldersDialog(selected: Int, setShowing: (Boolean) -> Unit, onFolder: (Folder) -> Unit) {
+    val wallpaperViewModel: WallpaperViewModel = viewModel()
+    val folders = remember { mutableStateOf(emptyList<Folder>()) }
+
+    wallpaperViewModel.getFoldersLiveData().observeAsState().value?.let {
+        folders.value = it
+    }
+
+    AlertDialog(
+            onDismissRequest = { },
+            title = { Text(text = stringResource(R.string.folder)) },
+            text = {
+                Column {
+                    folders.value.chunked(1).forEach { rowFolders ->
+                        Row(modifier = Modifier.fillMaxWidth()) {
+                            rowFolders.forEach { folder ->
+                                Button(
+                                        onClick = { onFolder(folder) },
+                                        colors = if (folder.hashcode == selected) {
+                                            ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                                        } else {
+                                            ButtonDefaults.buttonColors(containerColor = Color.Transparent)
+                                        },
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .padding(4.dp)
+                                ) {
+                                    Text(
+                                            text = folder.name,
+                                            fontWeight = FontWeight.Bold,
+                                            color = if (folder.hashcode == selected) {
+                                                MaterialTheme.colorScheme.onPrimary
+                                            } else {
+                                                MaterialTheme.colorScheme.onSurface
+                                            }
+                                    )
+                                    Text(
+                                            text = stringResource(id = R.string.tag_count, folder.count),
+                                            fontWeight = FontWeight.Light,
+                                            color = if (folder.hashcode == selected) {
+                                                MaterialTheme.colorScheme.onPrimary
+                                            } else {
+                                                MaterialTheme.colorScheme.onSurface
+                                            },
+                                            modifier = Modifier.padding(start = 8.dp)
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                Button(
+                        onClick = { setShowing(false) },
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onSurfaceVariant)
                 ) {
                     Text(text = stringResource(R.string.close))
