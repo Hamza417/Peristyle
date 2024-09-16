@@ -2,7 +2,6 @@ package app.simple.peri.compose.commons
 
 import android.content.Intent
 import android.graphics.drawable.Drawable
-import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
@@ -62,6 +61,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -77,12 +77,14 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import app.simple.peri.R
 import app.simple.peri.compose.dialogs.AddTagDialog
+import app.simple.peri.compose.dialogs.SureDialog
 import app.simple.peri.compose.nav.Routes
 import app.simple.peri.factories.TagsViewModelFactory
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.utils.FileUtils.toUri
 import app.simple.peri.viewmodels.TagsViewModel
+import app.simple.peri.viewmodels.WallpaperListViewModel
 import app.simple.peri.viewmodels.WallpaperViewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
@@ -105,10 +107,12 @@ fun WallpapersList(list: List<Wallpaper>, navController: NavController? = null, 
     var statusBarHeight by remember { mutableIntStateOf(0) }
     var navigationBarHeight by remember { mutableIntStateOf(0) }
     val hazeState = remember { HazeState() }
-    val wallpaperViewModel: WallpaperViewModel = viewModel() // We should use a dedicated ViewModel for this
-    val isSelectionMode by wallpaperViewModel.isSelectionMode.collectAsState()
+    val wallpaperListViewModel: WallpaperListViewModel = viewModel() // We should use a dedicated ViewModel for this
+    val isSelectionMode by wallpaperListViewModel.isSelectionMode.collectAsState()
+    val selectionCount by wallpaperListViewModel.selectedWallpapers.collectAsState()
 
     wallpapers = list
+    wallpapers = wallpaperListViewModel.wallpapers.collectAsState().value.ifEmpty { list }
     statusBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
             LocalView.current.rootWindowInsets).getInsets(WindowInsetsCompat.Type.statusBars()).top
     navigationBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
@@ -150,13 +154,17 @@ fun WallpapersList(list: List<Wallpaper>, navController: NavController? = null, 
                                   }
                               },
                               isSelectionMode = isSelectionMode,
-                              wallpaperViewModel = wallpaperViewModel,
+                              wallpaperListViewModel = wallpaperListViewModel,
                               list = wallpapers)
             }
         }
 
         if (isSelectionMode) {
-            SelectionMenu(isSelectionMode, modifier = Modifier.align(Alignment.BottomCenter), hazeState = hazeState)
+            SelectionMenu(list = wallpapers,
+                          count = selectionCount,
+                          modifier = Modifier.align(Alignment.BottomCenter),
+                          hazeState = hazeState,
+                          wallpaperListViewModel = wallpaperListViewModel)
         }
     }
 }
@@ -168,12 +176,12 @@ fun WallpaperItem(
         navController: NavController? = null,
         onDelete: (Wallpaper) -> Unit,
         isSelectionMode: Boolean,
-        wallpaperViewModel: WallpaperViewModel,
+        wallpaperListViewModel: WallpaperListViewModel,
         list: List<Wallpaper>
 ) {
     val hazeState = remember { HazeState() }
     var showDialog by remember { mutableStateOf(false) }
-    var isSelected by remember { mutableStateOf(false) }
+    var isSelected by remember { mutableStateOf(wallpaper.isSelected) }
 
     var displayWidth by remember { mutableIntStateOf(0) }
     var displayHeight by remember { mutableIntStateOf(0) }
@@ -193,7 +201,8 @@ fun WallpaperItem(
                       onSelect = {
                           wallpaper.isSelected = wallpaper.isSelected.not()
                           isSelected = wallpaper.isSelected
-                          wallpaperViewModel.setSelectionMode(list.any { it.isSelected })
+                          wallpaperListViewModel.setSelectionMode(list.any { it.isSelected })
+                          wallpaperListViewModel.setSelectedWallpapers(list.count { it.isSelected })
                       })
     }
 
@@ -244,7 +253,8 @@ fun WallpaperItem(
                                 if (isSelectionMode) {
                                     wallpaper.isSelected = wallpaper.isSelected.not()
                                     isSelected = wallpaper.isSelected
-                                    wallpaperViewModel.setSelectionMode(list.any { it.isSelected })
+                                    wallpaperListViewModel.setSelectionMode(list.any { it.isSelected })
+                                    wallpaperListViewModel.setSelectedWallpapers(list.count { it.isSelected })
                                 } else {
                                     navController?.navigate(Routes.WALLPAPER) {
                                         navController.currentBackStackEntry
@@ -315,7 +325,7 @@ fun WallpaperItem(
                             softWrap = false,
                     )
 
-                    WallpaperDimensionsText(wallpaper, displayWidth, displayHeight, isSelected)
+                    WallpaperDimensionsText(wallpaper, displayWidth, displayHeight, isSelected, list)
                 }
             }
         }
@@ -323,7 +333,8 @@ fun WallpaperItem(
 }
 
 @Composable
-fun WallpaperDimensionsText(wallpaper: Wallpaper, displayWidth: Int, displayHeight: Int, isSelected: Boolean) {
+fun WallpaperDimensionsText(wallpaper: Wallpaper, displayWidth: Int, displayHeight: Int, isSelected: Boolean, list: List<Wallpaper>) {
+    list // We need to use the list to update the selection count
     val showWarningIndicator = remember { MainComposePreferences.getShowWarningIndicator() }
 
     Row(
@@ -381,10 +392,29 @@ fun WallpaperDimensionsText(wallpaper: Wallpaper, displayWidth: Int, displayHeig
 }
 
 @Composable
-fun SelectionMenu(isSelectionMode: Boolean, modifier: Modifier = Modifier, hazeState: HazeState) {
-    Log.d("SelectionMenu", "isSelectionMode: $isSelectionMode") // Eat this log
+fun SelectionMenu(modifier: Modifier = Modifier,
+                  list: List<Wallpaper>,
+                  count: Int = list.count { it.isSelected },
+                  hazeState: HazeState,
+                  wallpaperListViewModel: WallpaperListViewModel) {
+
+    val context = LocalContext.current
     val iconSize = 72.dp
-    val iconPadding = 4.dp
+    var showDeleteSureDialog by remember { mutableStateOf(false) }
+
+    if (showDeleteSureDialog) {
+        SureDialog(title = stringResource(R.string.delete),
+                   text = stringResource(R.string.delete_message, list.count { it.isSelected }),
+                   onConfirm = {
+                       // Delete the selected wallpapers
+                       showDeleteSureDialog = false
+                       wallpaperListViewModel.deleteSelectedWallpapers(list.toMutableList())
+                   },
+                   onDismiss = {
+                       showDeleteSureDialog = false
+                   }
+        )
+    }
 
     Card(
             elevation = CardDefaults.cardElevation(
@@ -405,11 +435,10 @@ fun SelectionMenu(isSelectionMode: Boolean, modifier: Modifier = Modifier, hazeS
         Row {
             IconButton(
                     onClick = {
-
+                        showDeleteSureDialog = true
                     },
                     modifier = Modifier
                         .size(iconSize)
-                        .padding(iconPadding)
             ) {
                 Icon(
                         imageVector = Icons.Rounded.Delete,
@@ -419,11 +448,14 @@ fun SelectionMenu(isSelectionMode: Boolean, modifier: Modifier = Modifier, hazeS
             }
             IconButton(
                     onClick = {
-
+                        val filesUri = list.filter { it.isSelected }.map { it.uri.toUri() }
+                        val intent = Intent(Intent.ACTION_SEND_MULTIPLE)
+                        intent.type = "image/*"
+                        intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, ArrayList(filesUri))
+                        context.startActivity(Intent.createChooser(intent, "Share Wallpapers"))
                     },
                     modifier = Modifier
                         .size(iconSize)
-                        .padding(iconPadding)
             ) {
                 Icon(
                         imageVector = Icons.Rounded.Share,
@@ -434,17 +466,28 @@ fun SelectionMenu(isSelectionMode: Boolean, modifier: Modifier = Modifier, hazeS
             VerticalDivider(
                     modifier = Modifier
                         .width(1.dp)
-                        .height(iconSize)
-                        .padding(iconPadding),
+                        .height(iconSize),
                     color = Color.White
+            )
+            Text(
+                    text = count.toString(),
+                    color = Color.White,
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .padding(start = 24.dp)
+                        .align(Alignment.CenterVertically)
             )
             IconButton(
                     onClick = {
-
+                        list.forEach {
+                            it.isSelected = false
+                        }
+                        wallpaperListViewModel.setSelectionMode(false)
+                        wallpaperListViewModel.setSelectedWallpapers(0)
                     },
                     modifier = Modifier
                         .size(iconSize)
-                        .padding(iconPadding)
             ) {
                 Icon(
                         imageVector = Icons.Rounded.Close,
