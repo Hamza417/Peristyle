@@ -2,6 +2,7 @@ package app.simple.peri.compose.commons
 
 import android.content.Intent
 import android.graphics.drawable.Drawable
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
@@ -26,21 +27,25 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -50,6 +55,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.BlurredEdgeTreatment
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.blur
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
@@ -98,7 +104,8 @@ fun WallpapersList(list: List<Wallpaper>, navController: NavController? = null, 
     var wallpapers by remember { mutableStateOf(emptyList<Wallpaper>()) }
     var statusBarHeight by remember { mutableIntStateOf(0) }
     var navigationBarHeight by remember { mutableIntStateOf(0) }
-    val wallpaperViewModel: WallpaperViewModel = viewModel()
+    val hazeState = remember { HazeState() }
+    val wallpaperViewModel: WallpaperViewModel = viewModel() // We should use a dedicated ViewModel for this
     val isSelectionMode by wallpaperViewModel.isSelectionMode.collectAsState()
 
     wallpapers = list
@@ -115,31 +122,41 @@ fun WallpapersList(list: List<Wallpaper>, navController: NavController? = null, 
     val topPadding = 8.dp + statusBarHeightDp
     val bottomPadding = 8.dp + navigationBarHeightDp
 
-    LazyVerticalGrid(
-            columns = GridCells.Fixed(MainComposePreferences.getGridSpanCount()),
-            modifier = Modifier
-                .fillMaxSize(),
-            contentPadding = PaddingValues(
-                    top = topPadding,
-                    start = 8.dp,
-                    end = 8.dp,
-                    bottom = bottomPadding)
+    Box(
+            modifier = Modifier.fillMaxSize()
     ) {
-        item(span = { GridItemSpan(maxLineSpan) }) {
-            TopHeader(title = title, count = wallpapers.size,
-                      modifier = Modifier.padding(COMMON_PADDING),
-                      navController = navController)
+        LazyVerticalGrid(
+                columns = GridCells.Fixed(MainComposePreferences.getGridSpanCount()),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .haze(state = hazeState),
+                contentPadding = PaddingValues(
+                        top = topPadding,
+                        start = 8.dp,
+                        end = 8.dp,
+                        bottom = bottomPadding)
+        ) {
+            item(span = { GridItemSpan(maxLineSpan) }) {
+                TopHeader(title = title, count = wallpapers.size,
+                          modifier = Modifier.padding(COMMON_PADDING),
+                          navController = navController)
+            }
+            items(wallpapers.size) { index ->
+                WallpaperItem(wallpaper = wallpapers[index],
+                              navController = navController,
+                              onDelete = { deletedWallpaper ->
+                                  wallpapers = wallpapers.filter {
+                                      it != deletedWallpaper
+                                  }
+                              },
+                              isSelectionMode = isSelectionMode,
+                              wallpaperViewModel = wallpaperViewModel,
+                              list = wallpapers)
+            }
         }
-        items(wallpapers.size) { index ->
-            WallpaperItem(wallpaper = wallpapers[index],
-                          navController = navController,
-                          onDelete = { deletedWallpaper ->
-                              wallpapers = wallpapers.filter {
-                                  it != deletedWallpaper
-                              }
-                          },
-                          isSelectionMode = isSelectionMode,
-                          wallpaperViewModel = wallpaperViewModel)
+
+        if (isSelectionMode) {
+            SelectionMenu(isSelectionMode, modifier = Modifier.align(Alignment.BottomCenter), hazeState = hazeState)
         }
     }
 }
@@ -151,11 +168,12 @@ fun WallpaperItem(
         navController: NavController? = null,
         onDelete: (Wallpaper) -> Unit,
         isSelectionMode: Boolean,
-        wallpaperViewModel: WallpaperViewModel
+        wallpaperViewModel: WallpaperViewModel,
+        list: List<Wallpaper>
 ) {
     val hazeState = remember { HazeState() }
     var showDialog by remember { mutableStateOf(false) }
-    var selectRecompose by remember { mutableLongStateOf(0L) }
+    var isSelected by remember { mutableStateOf(false) }
 
     var displayWidth by remember { mutableIntStateOf(0) }
     var displayHeight by remember { mutableIntStateOf(0) }
@@ -174,8 +192,8 @@ fun WallpaperItem(
                       onDelete = onDelete,
                       onSelect = {
                           wallpaper.isSelected = wallpaper.isSelected.not()
-                          selectRecompose = System.currentTimeMillis()
-                          wallpaperViewModel.setSelectionMode(true)
+                          isSelected = wallpaper.isSelected
+                          wallpaperViewModel.setSelectionMode(list.any { it.isSelected })
                       })
     }
 
@@ -225,8 +243,8 @@ fun WallpaperItem(
                             onClick = {
                                 if (isSelectionMode) {
                                     wallpaper.isSelected = wallpaper.isSelected.not()
-                                    selectRecompose = System.currentTimeMillis()
-                                    wallpaperViewModel.setSelectionMode(true)
+                                    isSelected = wallpaper.isSelected
+                                    wallpaperViewModel.setSelectionMode(list.any { it.isSelected })
                                 } else {
                                     navController?.navigate(Routes.WALLPAPER) {
                                         navController.currentBackStackEntry
@@ -297,8 +315,142 @@ fun WallpaperItem(
                             softWrap = false,
                     )
 
-                    WallpaperDimensionsText(wallpaper, displayWidth, displayHeight)
+                    WallpaperDimensionsText(wallpaper, displayWidth, displayHeight, isSelected)
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun WallpaperDimensionsText(wallpaper: Wallpaper, displayWidth: Int, displayHeight: Int, isSelected: Boolean) {
+    val showWarningIndicator = remember { MainComposePreferences.getShowWarningIndicator() }
+
+    Row(
+            modifier = Modifier
+                .padding(start = 16.dp, top = 4.dp, bottom = 16.dp, end = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+                text = "${wallpaper.width ?: 0}x${wallpaper.height ?: 0}",
+                textAlign = TextAlign.Start,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Light,
+                color = Color.White,
+                modifier = Modifier.weight(1f)
+        )
+
+        if (showWarningIndicator) {
+            when {
+                (wallpaper.width ?: 0) > displayWidth || (wallpaper.height ?: 0) > displayHeight -> {
+                    Icon(
+                            imageVector = Icons.Rounded.Warning,
+                            contentDescription = null,
+                            tint = Color.LightGray,
+                            modifier = Modifier.size(16.dp)
+                    )
+                }
+
+                (wallpaper.width ?: 0) < displayWidth || (wallpaper.height ?: 0) < displayHeight -> {
+                    Icon(
+                            imageVector = Icons.Rounded.Warning,
+                            contentDescription = null,
+                            tint = Color.Red,
+                            modifier = Modifier.size(16.dp)
+                    )
+                }
+
+                else -> {
+
+                }
+            }
+        }
+
+        if (isSelected) {
+            Spacer(modifier = Modifier.width(8.dp))
+
+            Icon(
+                    imageVector = Icons.Rounded.Check,
+                    contentDescription = null,
+                    tint = Color.White,
+                    modifier = Modifier
+                        .size(16.dp),
+            )
+        }
+    }
+}
+
+@Composable
+fun SelectionMenu(isSelectionMode: Boolean, modifier: Modifier = Modifier, hazeState: HazeState) {
+    Log.d("SelectionMenu", "isSelectionMode: $isSelectionMode") // Eat this log
+    val iconSize = 72.dp
+    val iconPadding = 4.dp
+
+    Card(
+            elevation = CardDefaults.cardElevation(
+                    defaultElevation = 0.dp,
+            ),
+            modifier = modifier
+                .wrapContentHeight()
+                .padding(32.dp)
+                .clip(RoundedCornerShape(32.dp))
+                .hazeChild(
+                        state = hazeState,
+                        style = HazeDefaults.style(backgroundColor = Color(0x65000000), blurRadius = 15.dp)),
+            colors = CardDefaults.cardColors(
+                    containerColor = Color.Transparent,
+            ),
+            shape = RoundedCornerShape(48.dp),
+    ) {
+        Row {
+            IconButton(
+                    onClick = {
+
+                    },
+                    modifier = Modifier
+                        .size(iconSize)
+                        .padding(iconPadding)
+            ) {
+                Icon(
+                        imageVector = Icons.Rounded.Delete,
+                        contentDescription = null,
+                        tint = Color.White
+                )
+            }
+            IconButton(
+                    onClick = {
+
+                    },
+                    modifier = Modifier
+                        .size(iconSize)
+                        .padding(iconPadding)
+            ) {
+                Icon(
+                        imageVector = Icons.Rounded.Share,
+                        contentDescription = null,
+                        tint = Color.White
+                )
+            }
+            VerticalDivider(
+                    modifier = Modifier
+                        .width(1.dp)
+                        .height(iconSize)
+                        .padding(iconPadding),
+                    color = Color.White
+            )
+            IconButton(
+                    onClick = {
+
+                    },
+                    modifier = Modifier
+                        .size(iconSize)
+                        .padding(iconPadding)
+            ) {
+                Icon(
+                        imageVector = Icons.Rounded.Close,
+                        contentDescription = null,
+                        tint = Color.White
+                )
             }
         }
     }
@@ -489,64 +641,6 @@ fun WallpaperMenu(setShowDialog: (Boolean) -> Unit,
                     }
                 }
             }
-        }
-    }
-}
-
-@Composable
-fun WallpaperDimensionsText(wallpaper: Wallpaper, displayWidth: Int, displayHeight: Int) {
-    val showWarningIndicator = remember { MainComposePreferences.getShowWarningIndicator() }
-
-    Row(
-            modifier = Modifier
-                .padding(start = 16.dp, top = 4.dp, bottom = 16.dp, end = 16.dp),
-            verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-                text = "${wallpaper.width ?: 0}x${wallpaper.height ?: 0}",
-                textAlign = TextAlign.Start,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Light,
-                color = Color.White,
-                modifier = Modifier.weight(1f)
-        )
-
-        if (showWarningIndicator) {
-            when {
-                (wallpaper.width ?: 0) > displayWidth || (wallpaper.height ?: 0) > displayHeight -> {
-                    Icon(
-                            imageVector = Icons.Rounded.Warning,
-                            contentDescription = null,
-                            tint = Color.LightGray,
-                            modifier = Modifier.size(16.dp)
-                    )
-                }
-
-                (wallpaper.width ?: 0) < displayWidth || (wallpaper.height ?: 0) < displayHeight -> {
-                    Icon(
-                            imageVector = Icons.Rounded.Warning,
-                            contentDescription = null,
-                            tint = Color.Red,
-                            modifier = Modifier.size(16.dp)
-                    )
-                }
-
-                else -> {
-
-                }
-            }
-        }
-
-        if (wallpaper.isSelected) {
-            Spacer(modifier = Modifier.width(8.dp))
-
-            Icon(
-                    imageVector = Icons.Rounded.Check,
-                    contentDescription = null,
-                    tint = Color.LightGray,
-                    modifier = Modifier
-                        .size(16.dp),
-            )
         }
     }
 }
