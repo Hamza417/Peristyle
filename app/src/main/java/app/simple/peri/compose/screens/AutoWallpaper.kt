@@ -2,37 +2,54 @@ package app.simple.peri.compose.screens
 
 import ClickablePreference
 import DescriptionPreference
+import SecondaryClickablePreference
+import SecondaryHeader
 import SwitchPreference
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.FiberManualRecord
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import app.simple.peri.R
 import app.simple.peri.compose.commons.COMMON_PADDING
 import app.simple.peri.compose.commons.TopHeader
+import app.simple.peri.models.Tag
+import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.preferences.MainPreferences
+import app.simple.peri.viewmodels.TagsViewModel
 
 @Composable
 fun AutoWallpaper(navController: NavController? = null) {
@@ -71,6 +88,21 @@ fun AutoWallpaper(navController: NavController? = null) {
             val screenSelectionDialog = remember { mutableStateOf(false) }
             val autoWallpaperDialog = remember { mutableStateOf(false) }
 
+            ClickablePreference(
+                    title = context.getString(R.string.duration),
+                    onClick = {
+                        autoWallpaperDialog.value = true
+                    }
+            )
+
+            ClickablePreference(
+                    title = context.getString(R.string.auto_wallpaper_set_for),
+                    description = context.getString(R.string.auto_wallpaper_set_for_summary),
+                    onClick = {
+                        screenSelectionDialog.value = true
+                    }
+            )
+
             if (screenSelectionDialog.value) {
                 ScreenSelectionDialog(
                         onDismiss = { screenSelectionDialog.value = false },
@@ -88,21 +120,190 @@ fun AutoWallpaper(navController: NavController? = null) {
                         }
                 )
             }
+        }
+        item {
+            val isLockScreenRow = remember { mutableStateOf(MainComposePreferences.getIsLockSourceSet()) }
+            val isHomeScreenRow = remember { mutableStateOf(MainComposePreferences.getIsHomeSourceSet()) }
+            val lockTagID = remember { mutableStateOf(MainComposePreferences.getLockTagId()) }
+            val homeTagID = remember { mutableStateOf(MainComposePreferences.getHomeTagId()) }
+            val lockFolderID = remember { mutableStateOf(MainComposePreferences.getLockFolderId()) }
+            val homeFolderID = remember { mutableStateOf(MainComposePreferences.getHomeFolderId()) }
 
-            ClickablePreference(
-                    title = context.getString(R.string.duration),
-                    onClick = {
-                        autoWallpaperDialog.value = true
-                    }
-            )
+            SecondaryHeader(title = context.getString(R.string.source))
 
-            ClickablePreference(
-                    title = context.getString(R.string.auto_wallpaper_set_for),
-                    description = context.getString(R.string.auto_wallpaper_set_for_summary),
-                    onClick = {
-                        screenSelectionDialog.value = true
+            DescriptionPreference(stringResource(R.string.source_summary))
+
+            SwitchPreference(
+                    title = stringResource(R.string.lock_screen),
+                    description = stringResource(R.string.different_wallpaper_for_lock_screen),
+                    checked = MainComposePreferences.getIsLockSourceSet(),
+                    topPadding = 4.dp
+            ) {
+                MainComposePreferences.setIsLockSourceSet(it)
+                isLockScreenRow.value = it
+            }
+
+            if (isLockScreenRow.value) {
+                Column(
+                        modifier = Modifier.wrapContentHeight(),
+                        verticalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .wrapContentHeight()
+                    ) {
+                        Icon(
+                                imageVector = Icons.Rounded.FiberManualRecord,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier
+                                    .padding(end = 8.dp, start = 16.dp)
+                                    .height(12.dp)
+                                    .align(Alignment.CenterVertically)
+                        )
+                        SecondaryClickablePreference(
+                                title = context.getString(R.string.tags),
+                                onClick = {
+
+                                },
+                                modifier = Modifier
+                                    .wrapContentHeight()
+                                    .weight(1f)
+                        )
+                        Text(
+                                text = lockTagID.value ?: stringResource(R.string.unknown),
+                                color = MaterialTheme.colorScheme.onSurface,
+                                fontWeight = FontWeight.Light,
+                                fontSize = 14.sp,
+                                modifier = Modifier
+                                    .padding(end = 24.dp)
+                                    .align(Alignment.CenterVertically)
+                        )
                     }
-            )
+
+                    Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .wrapContentHeight()
+                    ) {
+                        Icon(
+                                imageVector = Icons.Rounded.FiberManualRecord,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier
+                                    .padding(end = 8.dp, start = 16.dp)
+                                    .height(12.dp)
+                                    .align(Alignment.CenterVertically)
+                        )
+                        SecondaryClickablePreference(
+                                title = context.getString(R.string.folder),
+                                onClick = {
+
+                                },
+                                modifier = Modifier
+                                    .wrapContentHeight()
+                                    .weight(1f)
+                        )
+                        Text(
+                                text = lockFolderID.value ?: stringResource(R.string.unknown),
+                                color = MaterialTheme.colorScheme.onSurface,
+                                fontWeight = FontWeight.Light,
+                                fontSize = 14.sp,
+                                modifier = Modifier
+                                    .padding(end = 24.dp)
+                                    .align(Alignment.CenterVertically)
+                        )
+                    }
+                }
+            }
+
+            SwitchPreference(
+                    title = stringResource(R.string.home_screen),
+                    description = stringResource(R.string.different_wallpaper_for_home_screen),
+                    checked = MainComposePreferences.getIsHomeSourceSet()
+            ) {
+                MainComposePreferences.setIsHomeSourceSet(it)
+                isHomeScreenRow.value = it
+            }
+
+            if (isHomeScreenRow.value) {
+                Column(
+                        modifier = Modifier.wrapContentHeight(),
+                        verticalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .wrapContentHeight()
+                    ) {
+                        Icon(
+                                imageVector = Icons.Rounded.FiberManualRecord,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier
+                                    .padding(end = 8.dp, start = 16.dp)
+                                    .height(12.dp)
+                                    .align(Alignment.CenterVertically)
+                        )
+                        SecondaryClickablePreference(
+                                title = context.getString(R.string.tags),
+                                onClick = {
+
+                                },
+                                modifier = Modifier
+                                    .wrapContentHeight()
+                                    .weight(1f)
+                        )
+                        Text(
+                                text = homeTagID.value ?: stringResource(R.string.unknown),
+                                color = MaterialTheme.colorScheme.onSurface,
+                                fontWeight = FontWeight.Light,
+                                fontSize = 14.sp,
+                                modifier = Modifier
+                                    .padding(end = 24.dp)
+                                    .align(Alignment.CenterVertically)
+                        )
+                    }
+
+                    Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .wrapContentHeight()
+                    ) {
+                        Icon(
+                                imageVector = Icons.Rounded.FiberManualRecord,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier
+                                    .padding(end = 8.dp, start = 16.dp)
+                                    .height(12.dp)
+                                    .align(Alignment.CenterVertically)
+                        )
+                        SecondaryClickablePreference(
+                                title = context.getString(R.string.folder),
+                                onClick = {
+
+                                },
+                                modifier = Modifier
+                                    .wrapContentHeight()
+                                    .weight(1f)
+                        )
+                        Text(
+                                text = homeFolderID.value ?: stringResource(R.string.unknown),
+                                color = MaterialTheme.colorScheme.onSurface,
+                                fontWeight = FontWeight.Light,
+                                fontSize = 14.sp,
+                                modifier = Modifier
+                                    .padding(end = 24.dp)
+                                    .align(Alignment.CenterVertically)
+                        )
+                    }
+                }
+            }
+        }
+        item {
+            SecondaryHeader(title = context.getString(R.string.settings))
 
             SwitchPreference(
                     title = context.getString(R.string.crop_wallpaper),
@@ -114,27 +315,14 @@ fun AutoWallpaper(navController: NavController? = null) {
             )
 
             SwitchPreference(
-                    title = context.getString(R.string.different_wallpaper_for_lock_screen),
-                    checked = MainPreferences.isDifferentWallpaperForLockScreen(),
-                    onCheckedChange = {
-                        MainPreferences.setDifferentWallpaperForLockScreen(it)
-                    }
-            )
-
-            SwitchPreference(
-                    title = context.getString(R.string.change_wallpaper_when_sleeping),
-                    checked = MainPreferences.isWallpaperWhenSleeping(),
-                    onCheckedChange = {
-                        MainPreferences.setWallpaperWhenSleeping(it)
-                    }
-            )
-
-            SwitchPreference(
                     title = context.getString(R.string.linear_auto_wallpaper),
                     checked = MainPreferences.isLinearAutoWallpaper()
             ) {
                 MainPreferences.setLinearAutoWallpaper(it)
             }
+        }
+        item {
+
         }
     }
 }
@@ -262,6 +450,52 @@ fun TimeSelectionDialog(onDismiss: () -> Unit, onOptionSelected: (Pair<String, L
                 Button(
                         onClick = {
                             onDismiss()
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onSurfaceVariant)
+                ) {
+                    Text(text = stringResource(R.string.close))
+                }
+            },
+            properties = DialogProperties(dismissOnClickOutside = true)
+    )
+}
+
+@Composable
+fun TagsDialog(onTag: (Tag) -> Unit) {
+    val tagsViewModel: TagsViewModel = viewModel()
+    val tags = remember { mutableStateOf(emptyList<Tag>()) }
+
+    tagsViewModel.getTags().observeAsState().value?.let {
+        tags.value = it
+    }
+
+    AlertDialog(
+            onDismissRequest = { },
+            title = { Text(text = stringResource(R.string.tags)) },
+            text = {
+                Column {
+                    tags.value.forEach { tag ->
+                        Button(
+                                onClick = {
+                                    onTag(tag)
+                                },
+                                colors = ButtonDefaults.buttonColors(
+                                        containerColor = Color.Transparent,
+                                ),
+                                modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                    text = tag.name,
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                Button(
+                        onClick = {
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onSurfaceVariant)
                 ) {

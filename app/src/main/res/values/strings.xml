@@ -101,6 +101,7 @@
     <string name="crop_wallpaper_summary">Crop wallpaper to screen dimensions, disables wallpaper scroll.</string>
     <string name="crop_wallpaper">Crop Wallpaper</string>
     <string name="different_wallpaper_for_lock_screen">Separate Wallpaper For Lock Screen</string>
+    <string name="different_wallpaper_for_home_screen">Separate Wallpaper For Home Screen</string>
     <string name="no">No</string>
     <string name="main_menu">Main Menu</string>
     <string name="back">Back</string>
@@ -136,7 +137,7 @@
     <string name="tweaks_summary">Change some default behavior of the app to fit your needs.</string>
     <string name="ignore_dot_files">Ignore .dot files</string>
     <string name="ignore_subdirectories">Ignore subdirectories</string>
-    <string name="linear_auto_wallpaper">Pick wallpaper linearly in auto wallpaper</string>
+    <string name="linear_auto_wallpaper">Pick in Linear Order</string>
     <string name="telegram_group">Telegram Group</string>
     <string name="telegram_summary">Join app\'s Telegram group for app related discussions and submitting bug reports.</string>
     <string name="copy">Copy</string>
@@ -171,4 +172,6 @@
     <string name="sort_summary">Sorting style for wallpaper list.</string>
     <string name="order_summary">Acsending or descending order for the list.</string>
     <string name="duration">Duration</string>
+    <string name="source">Source</string>
+    <string name="source_summary">Assign a specific tag or folder to set wallpaper for each screen. If no tag or folder or an empty ones is assigned, a random wallpaper will be picked from the collection.</string>
 </resources>
