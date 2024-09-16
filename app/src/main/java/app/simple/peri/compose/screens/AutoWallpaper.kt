@@ -1,28 +1,33 @@
 package app.simple.peri.compose.screens
 
 import ClickablePreference
+import DescriptionPreference
 import SwitchPreference
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
+import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.NavController
 import app.simple.peri.R
 import app.simple.peri.compose.commons.COMMON_PADDING
@@ -32,20 +37,35 @@ import app.simple.peri.preferences.MainPreferences
 @Composable
 fun AutoWallpaper(navController: NavController? = null) {
     val context = LocalContext.current
+    var statusBarHeight by remember { mutableIntStateOf(0) }
+    var navigationBarHeight by remember { mutableIntStateOf(0) }
+
+    statusBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
+            LocalView.current.rootWindowInsets).getInsets(WindowInsetsCompat.Type.statusBars()).top
+    navigationBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
+            LocalView.current.rootWindowInsets).getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
+
+    val statusBarHeightPx = statusBarHeight
+    val statusBarHeightDp = with(LocalDensity.current) { statusBarHeightPx.toDp() }
+    val navigationBarHeightPx = navigationBarHeight
+    val navigationBarHeightDp = with(LocalDensity.current) { navigationBarHeightPx.toDp() }
+
+    val topPadding = 8.dp + statusBarHeightDp
+    val bottomPadding = 8.dp + navigationBarHeightDp
 
     LazyColumn(
-            modifier = Modifier
-                .padding(start = COMMON_PADDING, end = COMMON_PADDING)
-                .windowInsetsPadding(WindowInsets.safeDrawing)
+            contentPadding = PaddingValues(
+                    start = 8.dp,
+                    end = 8.dp,
+                    top = topPadding,
+                    bottom = bottomPadding)
     ) {
         item { // Header
-            TopHeader(title = stringResource(R.string.auto_wallpaper), modifier = Modifier.padding(COMMON_PADDING))
+            TopHeader(title = stringResource(R.string.auto_wallpaper),
+                      modifier = Modifier.padding(COMMON_PADDING),
+                      navController = navController)
 
-            HorizontalDivider(
-                    modifier = Modifier
-                        .padding(horizontal = COMMON_PADDING)
-                        .fillMaxWidth()
-            )
+            DescriptionPreference(stringResource(R.string.auto_wallpaper_summary))
         }
         item {
             val screenSelectionDialog = remember { mutableStateOf(false) }
@@ -70,8 +90,7 @@ fun AutoWallpaper(navController: NavController? = null) {
             }
 
             ClickablePreference(
-                    title = context.getString(R.string.auto_wallpaper),
-                    description = context.getString(R.string.auto_wallpaper_summary),
+                    title = context.getString(R.string.duration),
                     onClick = {
                         autoWallpaperDialog.value = true
                     }

@@ -84,14 +84,22 @@ fun ClickablePreference(title: String, description: String = "", onClick: () -> 
                 text = title,
                 fontWeight = FontWeight.Bold,
                 fontSize = PREFERENCE_TITLE_SIZE,
-                modifier = Modifier.padding(start = PREF_HORIZONTAL_PADDING, end = PREF_HORIZONTAL_PADDING, top = verticalPadding),
+                modifier = Modifier
+                    .padding(start = PREF_HORIZONTAL_PADDING,
+                             end = PREF_HORIZONTAL_PADDING,
+                             top = verticalPadding,
+                             bottom = if (description.isNotEmpty()) 0.dp else verticalPadding),
         )
         if (description.isNotEmpty()) {
             Text(
                     text = description,
                     fontWeight = FontWeight.Normal,
                     fontSize = PREFERENCE_DESCRIPTION_SIZE,
-                    modifier = Modifier.padding(start = PREF_HORIZONTAL_PADDING, end = PREF_HORIZONTAL_PADDING, top = 8.dp, bottom = verticalPadding),
+                    modifier = Modifier
+                        .padding(start = PREF_HORIZONTAL_PADDING,
+                                 end = PREF_HORIZONTAL_PADDING,
+                                 top = 4.dp,
+                                 bottom = verticalPadding),
             )
         }
     }
@@ -156,5 +164,25 @@ fun OtherApps(title: String, description: String, iconResId: Int, onClick: () ->
                 )
             }
         }
+    }
+}
+
+@Composable
+fun DescriptionPreference(description: String) {
+    val verticalPadding = 16.dp
+
+    Column(
+            modifier = Modifier
+                .padding(start = PREF_HORIZONTAL_PADDING,
+                         end = PREF_HORIZONTAL_PADDING,
+                         top = verticalPadding,
+                         bottom = verticalPadding)
+    ) {
+        Text(
+                text = description,
+                fontWeight = FontWeight.Normal,
+                fontSize = PREFERENCE_DESCRIPTION_SIZE,
+                modifier = Modifier.padding(bottom = 8.dp)
+        )
     }
 }

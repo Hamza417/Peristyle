@@ -37,4 +37,5 @@ object MainComposePreferences {
     fun setShowImageShadow(value: Boolean) {
         getSharedPreferences().edit().putBoolean(IMAGE_SHADOW, value).apply()
     }
+
 }
