@@ -8,7 +8,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import app.simple.peri.compose.commons.Wallpapers
+import app.simple.peri.compose.commons.WallpapersList
 import app.simple.peri.factories.TagsViewModelFactory
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.viewmodels.TagsViewModel
@@ -26,5 +26,5 @@ fun TaggedWallpapers(navController: NavController? = null, tag: String?) {
         wallpapers = it
     }
 
-    Wallpapers(list = wallpapers, navController = navController)
+    WallpapersList(list = wallpapers, navController = navController)
 }

@@ -24,16 +24,24 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
@@ -46,12 +54,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.BlurredEdgeTreatment
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.blur
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -67,12 +77,14 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import app.simple.peri.R
 import app.simple.peri.compose.dialogs.AddTagDialog
+import app.simple.peri.compose.dialogs.SureDialog
 import app.simple.peri.compose.nav.Routes
 import app.simple.peri.factories.TagsViewModelFactory
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.utils.FileUtils.toUri
 import app.simple.peri.viewmodels.TagsViewModel
+import app.simple.peri.viewmodels.WallpaperListViewModel
 import app.simple.peri.viewmodels.WallpaperViewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
@@ -90,12 +102,17 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @Composable
-fun Wallpapers(list: List<Wallpaper>, navController: NavController? = null, title: String = "") {
+fun WallpapersList(list: List<Wallpaper>, navController: NavController? = null, title: String = "") {
     var wallpapers by remember { mutableStateOf(emptyList<Wallpaper>()) }
     var statusBarHeight by remember { mutableIntStateOf(0) }
     var navigationBarHeight by remember { mutableIntStateOf(0) }
+    val hazeState = remember { HazeState() }
+    val wallpaperListViewModel: WallpaperListViewModel = viewModel() // We should use a dedicated ViewModel for this
+    val isSelectionMode by wallpaperListViewModel.isSelectionMode.collectAsState()
+    val selectionCount by wallpaperListViewModel.selectedWallpapers.collectAsState()
 
     wallpapers = list
+    wallpapers = wallpaperListViewModel.wallpapers.collectAsState().value.ifEmpty { list }
     statusBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
             LocalView.current.rootWindowInsets).getInsets(WindowInsetsCompat.Type.statusBars()).top
     navigationBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
@@ -109,34 +126,62 @@ fun Wallpapers(list: List<Wallpaper>, navController: NavController? = null, titl
     val topPadding = 8.dp + statusBarHeightDp
     val bottomPadding = 8.dp + navigationBarHeightDp
 
-    LazyVerticalGrid(
-            columns = GridCells.Fixed(MainComposePreferences.getGridSpanCount()),
-            modifier = Modifier
-                .fillMaxSize(),
-            contentPadding = PaddingValues(
-                    top = topPadding,
-                    start = 8.dp,
-                    end = 8.dp,
-                    bottom = bottomPadding)
+    Box(
+            modifier = Modifier.fillMaxSize()
     ) {
-        item(span = { GridItemSpan(maxLineSpan) }) {
-            TopHeader(title = title, count = wallpapers.size,
-                      modifier = Modifier.padding(COMMON_PADDING),
-                      navController = navController)
-        }
-        items(wallpapers.size) { index ->
-            WallpaperItem(wallpapers[index], navController) { deletedWallpaper ->
-                wallpapers = wallpapers.filter { it != deletedWallpaper }
+        LazyVerticalGrid(
+                columns = GridCells.Fixed(MainComposePreferences.getGridSpanCount()),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .haze(state = hazeState),
+                contentPadding = PaddingValues(
+                        top = topPadding,
+                        start = 8.dp,
+                        end = 8.dp,
+                        bottom = bottomPadding)
+        ) {
+            item(span = { GridItemSpan(maxLineSpan) }) {
+                TopHeader(title = title, count = wallpapers.size,
+                          modifier = Modifier.padding(COMMON_PADDING),
+                          navController = navController)
             }
+            items(wallpapers.size) { index ->
+                WallpaperItem(wallpaper = wallpapers[index],
+                              navController = navController,
+                              onDelete = { deletedWallpaper ->
+                                  wallpapers = wallpapers.filter {
+                                      it != deletedWallpaper
+                                  }
+                              },
+                              isSelectionMode = isSelectionMode,
+                              wallpaperListViewModel = wallpaperListViewModel,
+                              list = wallpapers)
+            }
+        }
+
+        if (isSelectionMode) {
+            SelectionMenu(list = wallpapers,
+                          count = selectionCount,
+                          modifier = Modifier.align(Alignment.BottomCenter),
+                          hazeState = hazeState,
+                          wallpaperListViewModel = wallpaperListViewModel)
         }
     }
 }
 
 @OptIn(ExperimentalGlideComposeApi::class, ExperimentalFoundationApi::class)
 @Composable
-fun WallpaperItem(wallpaper: Wallpaper, navController: NavController? = null, onDelete: (Wallpaper) -> Unit) {
+fun WallpaperItem(
+        wallpaper: Wallpaper,
+        navController: NavController? = null,
+        onDelete: (Wallpaper) -> Unit,
+        isSelectionMode: Boolean,
+        wallpaperListViewModel: WallpaperListViewModel,
+        list: List<Wallpaper>
+) {
     val hazeState = remember { HazeState() }
     var showDialog by remember { mutableStateOf(false) }
+    var isSelected by remember { mutableStateOf(wallpaper.isSelected) }
 
     var displayWidth by remember { mutableIntStateOf(0) }
     var displayHeight by remember { mutableIntStateOf(0) }
@@ -151,7 +196,14 @@ fun WallpaperItem(wallpaper: Wallpaper, navController: NavController? = null, on
     if (showDialog) {
         WallpaperMenu({
                           showDialog = it
-                      }, wallpaper, onDelete)
+                      }, wallpaper,
+                      onDelete = onDelete,
+                      onSelect = {
+                          wallpaper.isSelected = wallpaper.isSelected.not()
+                          isSelected = wallpaper.isSelected
+                          wallpaperListViewModel.setSelectionMode(list.any { it.isSelected })
+                          wallpaperListViewModel.setSelectedWallpapers(list.count { it.isSelected })
+                      })
     }
 
     Box {
@@ -198,9 +250,16 @@ fun WallpaperItem(wallpaper: Wallpaper, navController: NavController? = null, on
                             ambientColor = Color(wallpaper.prominentColor))
                     .combinedClickable(
                             onClick = {
-                                navController?.navigate(Routes.WALLPAPER) {
-                                    navController.currentBackStackEntry
-                                        ?.savedStateHandle?.set(Routes.WALLPAPER_ARG, wallpaper)
+                                if (isSelectionMode) {
+                                    wallpaper.isSelected = wallpaper.isSelected.not()
+                                    isSelected = wallpaper.isSelected
+                                    wallpaperListViewModel.setSelectionMode(list.any { it.isSelected })
+                                    wallpaperListViewModel.setSelectedWallpapers(list.count { it.isSelected })
+                                } else {
+                                    navController?.navigate(Routes.WALLPAPER) {
+                                        navController.currentBackStackEntry
+                                            ?.savedStateHandle?.set(Routes.WALLPAPER_ARG, wallpaper)
+                                    }
                                 }
                             },
                             onLongClick = {
@@ -266,8 +325,175 @@ fun WallpaperItem(wallpaper: Wallpaper, navController: NavController? = null, on
                             softWrap = false,
                     )
 
-                    WallpaperDimensionsText(wallpaper, displayWidth, displayHeight)
+                    WallpaperDimensionsText(wallpaper, displayWidth, displayHeight, isSelected, list)
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun WallpaperDimensionsText(wallpaper: Wallpaper, displayWidth: Int, displayHeight: Int, isSelected: Boolean, list: List<Wallpaper>) {
+    list // We need to use the list to update the selection count
+    val showWarningIndicator = remember { MainComposePreferences.getShowWarningIndicator() }
+
+    Row(
+            modifier = Modifier
+                .padding(start = 16.dp, top = 4.dp, bottom = 16.dp, end = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+                text = "${wallpaper.width ?: 0}x${wallpaper.height ?: 0}",
+                textAlign = TextAlign.Start,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Light,
+                color = Color.White,
+                modifier = Modifier.weight(1f)
+        )
+
+        if (showWarningIndicator) {
+            when {
+                (wallpaper.width ?: 0) > displayWidth || (wallpaper.height ?: 0) > displayHeight -> {
+                    Icon(
+                            imageVector = Icons.Rounded.Warning,
+                            contentDescription = null,
+                            tint = Color.LightGray,
+                            modifier = Modifier.size(16.dp)
+                    )
+                }
+
+                (wallpaper.width ?: 0) < displayWidth || (wallpaper.height ?: 0) < displayHeight -> {
+                    Icon(
+                            imageVector = Icons.Rounded.Warning,
+                            contentDescription = null,
+                            tint = Color.Red,
+                            modifier = Modifier.size(16.dp)
+                    )
+                }
+
+                else -> {
+
+                }
+            }
+        }
+
+        if (isSelected) {
+            Spacer(modifier = Modifier.width(8.dp))
+
+            Icon(
+                    imageVector = Icons.Rounded.Check,
+                    contentDescription = null,
+                    tint = Color.White,
+                    modifier = Modifier
+                        .size(16.dp),
+            )
+        }
+    }
+}
+
+@Composable
+fun SelectionMenu(modifier: Modifier = Modifier,
+                  list: List<Wallpaper>,
+                  count: Int = list.count { it.isSelected },
+                  hazeState: HazeState,
+                  wallpaperListViewModel: WallpaperListViewModel) {
+
+    val context = LocalContext.current
+    val iconSize = 72.dp
+    var showDeleteSureDialog by remember { mutableStateOf(false) }
+
+    if (showDeleteSureDialog) {
+        SureDialog(title = stringResource(R.string.delete),
+                   text = stringResource(R.string.delete_message, list.count { it.isSelected }),
+                   onConfirm = {
+                       // Delete the selected wallpapers
+                       showDeleteSureDialog = false
+                       wallpaperListViewModel.deleteSelectedWallpapers(list.toMutableList())
+                   },
+                   onDismiss = {
+                       showDeleteSureDialog = false
+                   }
+        )
+    }
+
+    Card(
+            elevation = CardDefaults.cardElevation(
+                    defaultElevation = 0.dp,
+            ),
+            modifier = modifier
+                .wrapContentHeight()
+                .padding(32.dp)
+                .clip(RoundedCornerShape(32.dp))
+                .hazeChild(
+                        state = hazeState,
+                        style = HazeDefaults.style(backgroundColor = Color(0x65000000), blurRadius = 15.dp)),
+            colors = CardDefaults.cardColors(
+                    containerColor = Color.Transparent,
+            ),
+            shape = RoundedCornerShape(48.dp),
+    ) {
+        Row {
+            IconButton(
+                    onClick = {
+                        showDeleteSureDialog = true
+                    },
+                    modifier = Modifier
+                        .size(iconSize)
+            ) {
+                Icon(
+                        imageVector = Icons.Rounded.Delete,
+                        contentDescription = null,
+                        tint = Color.White
+                )
+            }
+            IconButton(
+                    onClick = {
+                        val filesUri = list.filter { it.isSelected }.map { it.uri.toUri() }
+                        val intent = Intent(Intent.ACTION_SEND_MULTIPLE)
+                        intent.type = "image/*"
+                        intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, ArrayList(filesUri))
+                        context.startActivity(Intent.createChooser(intent, "Share Wallpapers"))
+                    },
+                    modifier = Modifier
+                        .size(iconSize)
+            ) {
+                Icon(
+                        imageVector = Icons.Rounded.Share,
+                        contentDescription = null,
+                        tint = Color.White
+                )
+            }
+            VerticalDivider(
+                    modifier = Modifier
+                        .width(1.dp)
+                        .height(iconSize),
+                    color = Color.White
+            )
+            Text(
+                    text = count.toString(),
+                    color = Color.White,
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .padding(start = 24.dp)
+                        .align(Alignment.CenterVertically)
+            )
+            IconButton(
+                    onClick = {
+                        list.forEach {
+                            it.isSelected = false
+                        }
+                        wallpaperListViewModel.setSelectionMode(false)
+                        wallpaperListViewModel.setSelectedWallpapers(0)
+                    },
+                    modifier = Modifier
+                        .size(iconSize)
+            ) {
+                Icon(
+                        imageVector = Icons.Rounded.Close,
+                        contentDescription = null,
+                        tint = Color.White
+                )
             }
         }
     }
@@ -276,7 +502,8 @@ fun WallpaperItem(wallpaper: Wallpaper, navController: NavController? = null, on
 @Composable
 fun WallpaperMenu(setShowDialog: (Boolean) -> Unit,
                   wallpaper: Wallpaper,
-                  onDelete: (Wallpaper) -> Unit) {
+                  onDelete: (Wallpaper) -> Unit,
+                  onSelect: () -> Unit = {}) {
 
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -348,7 +575,7 @@ fun WallpaperMenu(setShowDialog: (Boolean) -> Unit,
                     ) {
                         Text(
                                 text = context.getString(R.string.send),
-                                color = Color.Black,
+                                color = MaterialTheme.colorScheme.onSurface,
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.SemiBold
                         )
@@ -378,7 +605,7 @@ fun WallpaperMenu(setShowDialog: (Boolean) -> Unit,
                     ) {
                         Text(
                                 text = context.getString(R.string.delete),
-                                color = Color.Black,
+                                color = MaterialTheme.colorScheme.onSurface,
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.SemiBold
                         )
@@ -389,6 +616,7 @@ fun WallpaperMenu(setShowDialog: (Boolean) -> Unit,
                     Button(
                             onClick = {
                                 showTagDialog.value = true
+                                setShowDialog(false)
                             },
                             colors = ButtonDefaults.buttonColors(
                                     containerColor = Color.White,
@@ -400,7 +628,7 @@ fun WallpaperMenu(setShowDialog: (Boolean) -> Unit,
                     ) {
                         Text(
                                 text = context.getString(R.string.add_tag),
-                                color = Color.Black,
+                                color = MaterialTheme.colorScheme.onSurface,
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.SemiBold
                         )
@@ -414,6 +642,7 @@ fun WallpaperMenu(setShowDialog: (Boolean) -> Unit,
                                 intent.setDataAndType(wallpaper.uri.toUri(), "image/*")
                                 intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                                 context.startActivity(Intent.createChooser(intent, context.getString(R.string.edit)))
+                                setShowDialog(false)
                             },
                             colors = ButtonDefaults.buttonColors(
                                     containerColor = Color.White,
@@ -425,57 +654,34 @@ fun WallpaperMenu(setShowDialog: (Boolean) -> Unit,
                     ) {
                         Text(
                                 text = context.getString(R.string.edit),
-                                color = Color.Black,
+                                color = MaterialTheme.colorScheme.onSurface,
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.SemiBold
                         )
                     }
-                }
-            }
-        }
-    }
-}
 
-@Composable
-fun WallpaperDimensionsText(wallpaper: Wallpaper, displayWidth: Int, displayHeight: Int) {
-    val showWarningIndicator = remember { MainComposePreferences.getShowWarningIndicator() }
+                    Spacer(modifier = Modifier.height(5.dp))
 
-    Row(
-            modifier = Modifier
-                .padding(start = 16.dp, top = 4.dp, bottom = 16.dp, end = 16.dp),
-            verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-                text = "${wallpaper.width ?: 0}x${wallpaper.height ?: 0}",
-                textAlign = TextAlign.Start,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Light,
-                color = Color.White,
-                modifier = Modifier.weight(1f)
-        )
-
-        if (showWarningIndicator) {
-            when {
-                (wallpaper.width ?: 0) > displayWidth || (wallpaper.height ?: 0) > displayHeight -> {
-                    Icon(
-                            imageVector = Icons.Rounded.Warning, // Use an appropriate icon
-                            contentDescription = null,
-                            tint = Color.LightGray,
-                            modifier = Modifier.size(16.dp)
-                    )
-                }
-
-                (wallpaper.width ?: 0) < displayWidth || (wallpaper.height ?: 0) < displayHeight -> {
-                    Icon(
-                            imageVector = Icons.Rounded.Warning, // Use an appropriate icon
-                            contentDescription = null,
-                            tint = Color.Red,
-                            modifier = Modifier.size(16.dp)
-                    )
-                }
-
-                else -> {
-
+                    Button(
+                            onClick = {
+                                onSelect()
+                                setShowDialog(false)
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color.White,
+                            ),
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(50.dp),
+                    ) {
+                        Text(
+                                text = context.getString(R.string.select),
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
                 }
             }
         }
