@@ -174,4 +174,5 @@
     <string name="duration">Duration</string>
     <string name="source">Source</string>
     <string name="source_summary">Assign a specific tag or folder to set wallpaper for each screen. If no tag or folder or an empty ones is assigned, a random wallpaper will be picked from the collection.</string>
+    <string name="not_set">Not Set</string>
 </resources>

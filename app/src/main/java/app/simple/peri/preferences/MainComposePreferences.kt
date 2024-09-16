@@ -10,11 +10,11 @@ object MainComposePreferences {
     private const val IS_LOCK_SOURCE_SET = "is_lock_source_set"
     private const val IS_HOME_SOURCE_SET = "is_home_source_set"
     private const val LOCK_TAG_ID = "lock_tag_id"
-    private const val LOCK_FOLDER_ID = "lock_folder_id_"
-    private const val LOCK_FOLDER_NAME = "lock_folder_name_"
+    private const val LOCK_FOLDER_ID = "lock_folder_id__"
+    private const val LOCK_FOLDER_NAME = "lock_folder_name__"
     private const val HOME_TAG_ID = "home_tag_id"
-    private const val HOME_FOLDER_ID = "home_folder_id_"
-    private const val HOME_FOLDER_NAME = "home_folder_name_"
+    private const val HOME_FOLDER_ID = "home_folder_id__"
+    private const val HOME_FOLDER_NAME = "home_folder_name__"
 
     // ----------------------------------------------------------------------------------------------------- //
 
@@ -72,7 +72,7 @@ object MainComposePreferences {
         return getSharedPreferences().getString(LOCK_TAG_ID, null)
     }
 
-    fun setLockTagId(value: String) {
+    fun setLockTagId(value: String?) {
         getSharedPreferences().edit().putString(LOCK_TAG_ID, value).apply()
     }
 
@@ -82,8 +82,8 @@ object MainComposePreferences {
         return getSharedPreferences().getInt(LOCK_FOLDER_ID, 0)
     }
 
-    fun setLockFolderId(value: String) {
-        getSharedPreferences().edit().putString(LOCK_FOLDER_ID, value).apply()
+    fun setLockFolderId(value: Int) {
+        getSharedPreferences().edit().putInt(LOCK_FOLDER_ID, value).apply()
     }
 
     // ----------------------------------------------------------------------------------------------------- //
@@ -92,7 +92,7 @@ object MainComposePreferences {
         return getSharedPreferences().getString(LOCK_FOLDER_NAME, null)
     }
 
-    fun setLockFolderName(value: String) {
+    fun setLockFolderName(value: String?) {
         getSharedPreferences().edit().putString(LOCK_FOLDER_NAME, value).apply()
     }
 
@@ -102,7 +102,7 @@ object MainComposePreferences {
         return getSharedPreferences().getString(HOME_TAG_ID, null)
     }
 
-    fun setHomeTagId(value: String) {
+    fun setHomeTagId(value: String?) {
         getSharedPreferences().edit().putString(HOME_TAG_ID, value).apply()
     }
 
@@ -112,8 +112,8 @@ object MainComposePreferences {
         return getSharedPreferences().getInt(HOME_FOLDER_ID, 0)
     }
 
-    fun setHomeFolderId(value: String) {
-        getSharedPreferences().edit().putString(HOME_FOLDER_ID, value).apply()
+    fun setHomeFolderId(value: Int) {
+        getSharedPreferences().edit().putInt(HOME_FOLDER_ID, value).apply()
     }
 
     // ----------------------------------------------------------------------------------------------------- //
@@ -122,7 +122,7 @@ object MainComposePreferences {
         return getSharedPreferences().getString(HOME_FOLDER_NAME, null)
     }
 
-    fun setHomeFolderName(value: String) {
+    fun setHomeFolderName(value: String?) {
         getSharedPreferences().edit().putString(HOME_FOLDER_NAME, value).apply()
     }
 }

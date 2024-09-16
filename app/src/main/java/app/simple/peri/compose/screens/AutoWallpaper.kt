@@ -181,7 +181,7 @@ fun AutoWallpaper(navController: NavController? = null) {
                                     .weight(1f)
                         )
                         Text(
-                                text = lockTagID.value ?: stringResource(R.string.unknown),
+                                text = lockTagID.value ?: stringResource(R.string.not_set),
                                 color = MaterialTheme.colorScheme.onSurface,
                                 fontWeight = FontWeight.Light,
                                 fontSize = 14.sp,
@@ -215,7 +215,7 @@ fun AutoWallpaper(navController: NavController? = null) {
                                     .weight(1f)
                         )
                         Text(
-                                text = lockFolderName.value ?: stringResource(R.string.unknown),
+                                text = lockFolderName.value ?: stringResource(R.string.not_set),
                                 color = MaterialTheme.colorScheme.onSurface,
                                 fontWeight = FontWeight.Light,
                                 fontSize = 14.sp,
@@ -265,7 +265,7 @@ fun AutoWallpaper(navController: NavController? = null) {
                                     .weight(1f)
                         )
                         Text(
-                                text = homeTagID.value ?: stringResource(R.string.unknown),
+                                text = homeTagID.value ?: stringResource(R.string.not_set),
                                 color = MaterialTheme.colorScheme.onSurface,
                                 fontWeight = FontWeight.Light,
                                 fontSize = 14.sp,
@@ -299,7 +299,7 @@ fun AutoWallpaper(navController: NavController? = null) {
                                     .weight(1f)
                         )
                         Text(
-                                text = homeFolderName.value ?: stringResource(R.string.unknown),
+                                text = homeFolderName.value ?: stringResource(R.string.not_set),
                                 color = MaterialTheme.colorScheme.onSurface,
                                 fontWeight = FontWeight.Light,
                                 fontSize = 14.sp,
@@ -319,6 +319,11 @@ fun AutoWallpaper(navController: NavController? = null) {
                             lockTagID.value = it.name
                             showLockTagDialog.value = false
                             MainComposePreferences.setLockTagId(it.name)
+
+                            lockFolderID.intValue = 0
+                            lockFolderName.value = ""
+                            MainComposePreferences.setLockFolderId(0)
+                            MainComposePreferences.setLockFolderName(null)
                         })
             }
 
@@ -330,6 +335,11 @@ fun AutoWallpaper(navController: NavController? = null) {
                             homeTagID.value = it.name
                             showHomeTagDialog.value = false
                             MainComposePreferences.setHomeTagId(it.name)
+
+                            homeFolderName.value = ""
+                            homeFolderID.intValue = 0
+                            MainComposePreferences.setHomeFolderId(0)
+                            MainComposePreferences.setHomeFolderName(null)
                         })
             }
 
@@ -341,8 +351,11 @@ fun AutoWallpaper(navController: NavController? = null) {
                             lockFolderID.intValue = it.hashcode
                             lockFolderName.value = it.name
                             showLockFolderDialog.value = false
-                            MainComposePreferences.setLockFolderId(it.hashcode.toString())
+                            MainComposePreferences.setLockFolderId(it.hashcode)
                             MainComposePreferences.setLockFolderName(it.name)
+
+                            lockTagID.value = null
+                            MainComposePreferences.setLockTagId(null)
                         })
             }
 
@@ -354,8 +367,11 @@ fun AutoWallpaper(navController: NavController? = null) {
                             homeFolderID.intValue = it.hashcode
                             homeFolderName.value = it.name
                             showHomeFolderDialog.value = false
-                            MainComposePreferences.setHomeFolderId(it.hashcode.toString())
+                            MainComposePreferences.setHomeFolderId(it.hashcode)
                             MainComposePreferences.setHomeFolderName(it.name)
+
+                            homeTagID.value = null
+                            MainComposePreferences.setHomeTagId(null)
                         })
             }
         }

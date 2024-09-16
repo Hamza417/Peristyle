@@ -5,7 +5,9 @@ import NumberSelectionDialog
 import OtherApps
 import SecondaryHeader
 import SwitchPreference
+import android.content.ComponentName
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
@@ -25,6 +27,8 @@ import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.NavController
 import app.simple.peri.R
+import app.simple.peri.activities.LegacyActivity
+import app.simple.peri.activities.MainComposeActivity
 import app.simple.peri.compose.commons.COMMON_PADDING
 import app.simple.peri.compose.commons.TopHeader
 import app.simple.peri.compose.dialogs.OrderDialog
@@ -152,6 +156,29 @@ fun Settings(navController: NavController? = null) {
                     checked = MainPreferences.isIgnoreSubDirs()
             ) {
                 MainPreferences.setIgnoreSubDirs(it)
+            }
+
+            SwitchPreference(
+                    title = context.getString(R.string.go_back_to_legacy_interface),
+                    description = context.getString(R.string.go_back_to_legacy_interface_summary),
+                    checked = context.packageManager.getComponentEnabledSetting(ComponentName(context, LegacyActivity::class.java))
+                            == PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+            ) {
+                val newState = when {
+                    it -> PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+                    else -> PackageManager.COMPONENT_ENABLED_STATE_DISABLED
+                }
+
+                val composeState = when {
+                    it -> PackageManager.COMPONENT_ENABLED_STATE_DISABLED
+                    else -> PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+                }
+
+                context.packageManager.setComponentEnabledSetting(
+                        ComponentName(context, LegacyActivity::class.java), newState, PackageManager.DONT_KILL_APP)
+
+                context.packageManager.setComponentEnabledSetting(
+                        ComponentName(context, MainComposeActivity::class.java), composeState, PackageManager.DONT_KILL_APP)
             }
         }
         item {
