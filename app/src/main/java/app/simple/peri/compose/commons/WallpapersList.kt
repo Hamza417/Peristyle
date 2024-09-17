@@ -76,8 +76,8 @@ import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import app.simple.peri.R
-import app.simple.peri.compose.dialogs.AddTagDialog
-import app.simple.peri.compose.dialogs.SureDialog
+import app.simple.peri.compose.dialogs.common.AddTagDialog
+import app.simple.peri.compose.dialogs.settings.SureDialog
 import app.simple.peri.compose.nav.Routes
 import app.simple.peri.factories.TagsViewModelFactory
 import app.simple.peri.models.Wallpaper

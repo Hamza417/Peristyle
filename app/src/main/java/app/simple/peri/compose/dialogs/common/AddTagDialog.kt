@@ -1,4 +1,4 @@
-package app.simple.peri.compose.dialogs
+package app.simple.peri.compose.dialogs.common
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding

@@ -31,10 +31,11 @@ import app.simple.peri.activities.LegacyActivity
 import app.simple.peri.activities.MainComposeActivity
 import app.simple.peri.compose.commons.COMMON_PADDING
 import app.simple.peri.compose.commons.TopHeader
-import app.simple.peri.compose.dialogs.OrderDialog
-import app.simple.peri.compose.dialogs.ShowInureAppManagerDialog
-import app.simple.peri.compose.dialogs.ShowPositionalDialog
-import app.simple.peri.compose.dialogs.SortDialog
+import app.simple.peri.compose.dialogs.settings.DeveloperProfileDialog
+import app.simple.peri.compose.dialogs.settings.OrderDialog
+import app.simple.peri.compose.dialogs.settings.ShowInureAppManagerDialog
+import app.simple.peri.compose.dialogs.settings.ShowPositionalDialog
+import app.simple.peri.compose.dialogs.settings.SortDialog
 import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.utils.ConditionUtils.invert
@@ -182,6 +183,14 @@ fun Settings(navController: NavController? = null) {
             }
         }
         item {
+            val showDeveloperProfileDialog = remember { mutableStateOf(false) }
+
+            if (showDeveloperProfileDialog.value) {
+                DeveloperProfileDialog {
+                    showDeveloperProfileDialog.value = false
+                }
+            }
+
             SecondaryHeader(title = context.getString(R.string.about))
 
             ClickablePreference(
@@ -200,6 +209,12 @@ fun Settings(navController: NavController? = null) {
                 val intent = Intent(Intent.ACTION_VIEW)
                 intent.data = Uri.parse("https://github.com/Hamza417/Peristyle")
                 context.startActivity(intent)
+            }
+
+            ClickablePreference(
+                    title = context.getString(R.string.developer_profile))
+            {
+                showDeveloperProfileDialog.value = true
             }
         }
         item {

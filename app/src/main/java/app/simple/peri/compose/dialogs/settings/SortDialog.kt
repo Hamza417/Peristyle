@@ -1,4 +1,4 @@
-package app.simple.peri.compose.dialogs
+package app.simple.peri.compose.dialogs.settings
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,18 +17,21 @@ import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.utils.WallpaperSort
 
 @Composable
-fun OrderDialog(onDismiss: () -> Unit) {
+fun SortDialog(onDismiss: () -> Unit) {
     val context = LocalContext.current
     val list = listOf(
-            Pair(stringResource(R.string.ascending), WallpaperSort.ASC),
-            Pair(stringResource(R.string.descending), WallpaperSort.DESC)
+            Pair(stringResource(R.string.name), WallpaperSort.NAME),
+            Pair(stringResource(R.string.date), WallpaperSort.DATE),
+            Pair(stringResource(R.string.size), WallpaperSort.SIZE),
+            Pair(stringResource(R.string.width), WallpaperSort.WIDTH),
+            Pair(stringResource(R.string.height), WallpaperSort.HEIGHT)
     )
 
     AlertDialog(
             onDismissRequest = {
                 onDismiss()
             },
-            title = { Text(text = stringResource(id = R.string.order)) },
+            title = { Text(text = stringResource(id = R.string.sort)) },
             text = {
                 Column(
                         modifier = androidx.compose.ui.Modifier.fillMaxWidth(),
@@ -38,17 +41,17 @@ fun OrderDialog(onDismiss: () -> Unit) {
                         Button(
                                 modifier = androidx.compose.ui.Modifier.fillMaxWidth(),
                                 onClick = {
-                                    MainPreferences.setOrder(item.second)
+                                    MainPreferences.setSort(item.second)
                                     onDismiss()
                                 },
-                                colors = if (MainPreferences.getOrder() == item.second) {
+                                colors = if (MainPreferences.getSort() == item.second) {
                                     ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                                 } else {
                                     ButtonDefaults.buttonColors(containerColor = Color.Transparent)
                                 }
                         ) {
                             Text(text = item.first,
-                                 color = if (MainPreferences.getOrder() == item.second) {
+                                 color = if (MainPreferences.getSort() == item.second) {
                                      MaterialTheme.colorScheme.onPrimary
                                  } else {
                                      MaterialTheme.colorScheme.onSurface
@@ -57,7 +60,15 @@ fun OrderDialog(onDismiss: () -> Unit) {
                     }
                 }
             },
-            confirmButton = {},
+            confirmButton = {
+                Button(
+                        onClick = {
+                            onDismiss()
+                        }
+                ) {
+                    Text(text = stringResource(id = R.string.close))
+                }
+            },
             properties = DialogProperties(dismissOnClickOutside = true)
     )
 }

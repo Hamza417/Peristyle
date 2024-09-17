@@ -16,15 +16,11 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.FiberManualRecord
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,20 +35,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.DialogProperties
 import androidx.core.view.WindowInsetsCompat
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import app.simple.peri.R
 import app.simple.peri.compose.commons.COMMON_PADDING
 import app.simple.peri.compose.commons.TopHeader
-import app.simple.peri.factories.TagsViewModelFactory
-import app.simple.peri.models.Folder
-import app.simple.peri.models.Tag
+import app.simple.peri.compose.dialogs.autowallpaper.FoldersDialog
+import app.simple.peri.compose.dialogs.autowallpaper.ScreenSelectionDialog
+import app.simple.peri.compose.dialogs.autowallpaper.TagsDialog
+import app.simple.peri.compose.dialogs.autowallpaper.TimeSelectionDialog
 import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.preferences.MainPreferences
-import app.simple.peri.viewmodels.TagsViewModel
-import app.simple.peri.viewmodels.WallpaperViewModel
 
 @Composable
 fun AutoWallpaper(navController: NavController? = null) {
@@ -416,256 +409,4 @@ fun AutoWallpaper(navController: NavController? = null) {
             }
         }
     }
-}
-
-@Composable
-fun ScreenSelectionDialog(onDismiss: () -> Unit, onOptionSelected: (String) -> Unit) {
-    val options = listOf(
-            stringResource(R.string.lock_screen) to MainPreferences.LOCK,
-            stringResource(R.string.home_screen) to MainPreferences.HOME,
-            stringResource(R.string.both) to MainPreferences.BOTH
-    )
-
-    val storedOption = MainPreferences.getWallpaperSetFor()
-    val selectedOption = remember { mutableStateOf(options.find { it.second == storedOption }) }
-
-    AlertDialog(
-            onDismissRequest = { onDismiss() },
-            title = { Text(text = stringResource(R.string.auto_wallpaper_set_for_summary)) },
-            text = {
-                Column {
-                    options.forEach { option ->
-                        Button(
-                                onClick = {
-                                    selectedOption.value = option
-                                    onOptionSelected(option.second)
-                                    onDismiss()
-                                },
-                                colors = when (selectedOption.value) {
-                                    option -> {
-                                        ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-                                    }
-
-                                    else -> {
-                                        ButtonDefaults.buttonColors(
-                                                containerColor = Color.Transparent,
-                                        )
-                                    }
-                                },
-                                modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Text(
-                                    text = option.first,
-                                    color = when (selectedOption.value) {
-                                        option -> MaterialTheme.colorScheme.onPrimary
-                                        else -> MaterialTheme.colorScheme.onSurface
-                                    },
-                                    modifier = Modifier.fillMaxWidth()
-                            )
-                        }
-                    }
-                }
-            },
-            confirmButton = {
-                Button(
-                        onClick = {
-                            onDismiss()
-                        },
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onSurfaceVariant)
-                ) {
-                    Text(text = stringResource(R.string.close))
-                }
-            },
-            properties = DialogProperties(dismissOnClickOutside = true)
-    )
-}
-
-@Composable
-fun TimeSelectionDialog(onDismiss: () -> Unit, onOptionSelected: (Pair<String, Long>) -> Unit) {
-    val options = listOf(
-            stringResource(R.string.off) to 0L,
-            stringResource(R.string.every_minute) to 60_000L,
-            stringResource(R.string.every_5_minutes) to 300_000L,
-            stringResource(R.string.every_15_minutes) to 900_000L,
-            stringResource(R.string.every_30_minutes) to 1_800_000L,
-            stringResource(R.string.every_1_hour) to 3_600_000L,
-            stringResource(R.string.every_3_hours) to 10_800_000L,
-            stringResource(R.string.every_6_hours) to 21_600_000L,
-            stringResource(R.string.every_12_hours) to 43_200_000L,
-            stringResource(R.string.every_24_hours) to 86_400_000L,
-            stringResource(R.string.every_3_days) to 259_200_000L,
-            stringResource(R.string.every_7_days) to 604_800_000L
-    )
-
-    val storedInterval = MainPreferences.getAutoWallpaperInterval().toLong()
-    val selectedOption = remember { mutableStateOf(options.find { it.second == storedInterval }) }
-
-    AlertDialog(
-            onDismissRequest = { onDismiss() },
-            title = { Text(text = stringResource(R.string.auto_wallpaper)) },
-            text = {
-                Column {
-                    options.forEach { option ->
-                        Button(
-                                onClick = {
-                                    selectedOption.value = option
-                                    onOptionSelected(option)
-                                    onDismiss()
-                                },
-                                colors = when (selectedOption.value) {
-                                    option -> {
-                                        ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-                                    }
-
-                                    else -> {
-                                        ButtonDefaults.buttonColors(
-                                                containerColor = Color.Transparent,
-                                        )
-                                    }
-                                },
-                                modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Text(
-                                    text = option.first,
-                                    color = when (selectedOption.value) {
-                                        option -> MaterialTheme.colorScheme.onPrimary
-                                        else -> MaterialTheme.colorScheme.onSurface
-                                    },
-                                    modifier = Modifier.fillMaxWidth()
-                            )
-                        }
-                    }
-                }
-            },
-            confirmButton = {
-                Button(
-                        onClick = {
-                            onDismiss()
-                        },
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onSurfaceVariant)
-                ) {
-                    Text(text = stringResource(R.string.close))
-                }
-            },
-            properties = DialogProperties(dismissOnClickOutside = true)
-    )
-}
-
-@Composable
-fun TagsDialog(selected: String, setShowing: (Boolean) -> Unit, onTag: (Tag) -> Unit) {
-    val tagsViewModel: TagsViewModel = viewModel(factory = TagsViewModelFactory())
-    val tags = remember { mutableStateOf(emptyList<Tag>()) }
-
-    tagsViewModel.getTags().observeAsState().value?.let {
-        tags.value = it
-    }
-
-    AlertDialog(
-            onDismissRequest = { },
-            title = { Text(text = stringResource(R.string.tags)) },
-            text = {
-                Column {
-                    tags.value.chunked(3).forEach { rowTags ->
-                        Row(modifier = Modifier.fillMaxWidth()) {
-                            rowTags.forEach { tag ->
-                                Button(
-                                        onClick = { onTag(tag) },
-                                        colors = if (tag.name == selected) {
-                                            ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-                                        } else {
-                                            ButtonDefaults.buttonColors(containerColor = Color.Transparent)
-                                },
-                                        modifier = Modifier
-                                            .weight(1f)
-                                            .padding(4.dp)
-                                ) {
-                                    Text(
-                                    text = tag.name,
-                                    color = if (tag.name == selected) {
-                                        MaterialTheme.colorScheme.onPrimary
-                                    } else {
-                                        MaterialTheme.colorScheme.onSurface
-                                    }
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            confirmButton = {
-                Button(
-                        onClick = { setShowing(false) },
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onSurfaceVariant)
-                ) {
-                    Text(text = stringResource(R.string.close))
-                }
-            },
-            properties = DialogProperties(dismissOnClickOutside = true)
-    )
-}
-
-@Composable
-fun FoldersDialog(selected: Int, setShowing: (Boolean) -> Unit, onFolder: (Folder) -> Unit) {
-    val wallpaperViewModel: WallpaperViewModel = viewModel()
-    val folders = remember { mutableStateOf(emptyList<Folder>()) }
-
-    wallpaperViewModel.getFoldersLiveData().observeAsState().value?.let {
-        folders.value = it
-    }
-
-    AlertDialog(
-            onDismissRequest = { },
-            title = { Text(text = stringResource(R.string.folder)) },
-            text = {
-                Column {
-                    folders.value.chunked(1).forEach { rowFolders ->
-                        Row(modifier = Modifier.fillMaxWidth()) {
-                            rowFolders.forEach { folder ->
-                                Button(
-                                        onClick = { onFolder(folder) },
-                                        colors = if (folder.hashcode == selected) {
-                                            ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-                                        } else {
-                                            ButtonDefaults.buttonColors(containerColor = Color.Transparent)
-                                        },
-                                        modifier = Modifier
-                                            .weight(1f)
-                                            .padding(4.dp)
-                                ) {
-                                    Text(
-                                            text = folder.name,
-                                            fontWeight = FontWeight.Bold,
-                                            color = if (folder.hashcode == selected) {
-                                                MaterialTheme.colorScheme.onPrimary
-                                            } else {
-                                                MaterialTheme.colorScheme.onSurface
-                                            }
-                                    )
-                                    Text(
-                                            text = stringResource(id = R.string.tag_count, folder.count),
-                                            fontWeight = FontWeight.Light,
-                                            color = if (folder.hashcode == selected) {
-                                                MaterialTheme.colorScheme.onPrimary
-                                            } else {
-                                                MaterialTheme.colorScheme.onSurface
-                                            },
-                                            modifier = Modifier.padding(start = 8.dp)
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            confirmButton = {
-                Button(
-                        onClick = { setShowing(false) },
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onSurfaceVariant)
-                ) {
-                    Text(text = stringResource(R.string.close))
-                }
-            },
-            properties = DialogProperties(dismissOnClickOutside = true)
-    )
 }

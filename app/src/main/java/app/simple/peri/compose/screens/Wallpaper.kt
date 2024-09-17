@@ -66,7 +66,7 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import app.simple.peri.R
-import app.simple.peri.compose.dialogs.EffectsDialog
+import app.simple.peri.compose.dialogs.wallpaper.EffectsDialog
 import app.simple.peri.compose.nav.Routes
 import app.simple.peri.factories.TagsViewModelFactory
 import app.simple.peri.models.Wallpaper

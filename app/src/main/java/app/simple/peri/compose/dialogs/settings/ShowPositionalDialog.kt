@@ -1,4 +1,4 @@
-package app.simple.peri.compose.dialogs
+package app.simple.peri.compose.dialogs.settings
 
 import android.content.Intent
 import android.net.Uri
@@ -47,7 +47,15 @@ fun ShowPositionalDialog(onDismiss: () -> Unit) {
                     }
                 }
             },
-            confirmButton = {},
+            confirmButton = {
+                Button(
+                        onClick = {
+                            onDismiss()
+                        }
+                ) {
+                    Text(text = stringResource(id = R.string.close))
+                }
+            },
             properties = DialogProperties(dismissOnClickOutside = true)
     )
 }

@@ -1,4 +1,4 @@
-package app.simple.peri.compose.dialogs
+package app.simple.peri.compose.dialogs.settings
 
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button

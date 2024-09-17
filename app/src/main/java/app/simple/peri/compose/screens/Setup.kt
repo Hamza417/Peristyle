@@ -49,7 +49,7 @@ import app.simple.peri.R
 import app.simple.peri.compose.commons.COMMON_PADDING
 import app.simple.peri.compose.commons.RequestDirectoryPermission
 import app.simple.peri.compose.commons.TopHeader
-import app.simple.peri.compose.dialogs.ShowWarningDialog
+import app.simple.peri.compose.dialogs.settings.ShowWarningDialog
 import app.simple.peri.compose.nav.Routes
 import app.simple.peri.utils.PermissionUtils
 import app.simple.peri.utils.PermissionUtils.isBatteryOptimizationDisabled
