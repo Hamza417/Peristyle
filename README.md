@@ -15,13 +15,19 @@ from there? then Peristyle is for you :)
 
 ## Features
 
+Features:
+
 - Simple architecture, browse wallpapers and use system wallpaper manager to set them as wallpaper.
+- Multiple folders support
+- Ability to assign Tags to any wallpaper
 - Can scan .nomedia directories, useful if you want to keep your wallpapers away from gallery.
-- Apply blur and color filters dynamically on any wallpaper (Android 12 and up only).
-- Auto wallpaper changer.
-- Simple yet pretty animations with proper optimizations.
-- Biometric lock support.
-- Fully Material You design with Edge to Edge interface.
+- Apply blur and color filters dynamically on any wallpaper before applying.
+- Simple yet pretty animations with proper optimizations
+- No ads, no tracking, no analytics, no internet permissions, no unnecessary permissions
+- Auto wallpaper change support with dedicated folders and tags for each screens
+- Dark mode support
+- Fully Material You design
+- Compose UI
 
 ## Stats
 
@@ -57,18 +63,18 @@ so [here on Crowdin](https://crowdin.com/project/peristyle).
 
 ### Translation Contributors
 
-| Language              | Translators                                                                                            |
-|-----------------------|--------------------------------------------------------------------------------------------------------|
-| Chinese Simplified    | [@shanzhaxiaok](https://crowdin.com/profile/shanzhaxiaok)                                              |
-| Chinese Traditional   | [@aaypkzixad](https://crowdin.com/profile/aaypkzixad), [@hugoalh](https://crowdin.com/profile/hugoalh) |
-| French                | [@ppp987](https://crowdin.com/profile/ppp987)                                                          |
-| Polish                | [@Tama10](https://crowdin.com/profile/tama10)                                                          |
-| Portuguese, Brazilian | [@teogabriel](https://crowdin.com/profile/teogabriel)                                                  |
-| Spanish               | [@esneiderfjaimes](https://crowdin.com/profile/esneiderfjaimes)                                        |
-| Turkish               | [@mikropsoft](https://crowdin.com/profile/mikropsoft)                                                  |
-| Vietnamese            | [@xeus0000](https://crowdin.com/profile/xeus0000)                                                      |
+| Language              | Translators                                                                                                                                                  |
+|-----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Chinese Simplified    | [@shanzhaxiaok](https://crowdin.com/profile/shanzhaxiaok)                                                                                                    |
+| Chinese Traditional   | [@aaypkzixad](https://crowdin.com/profile/aaypkzixad), [@hugoalh](https://crowdin.com/profile/hugoalh), [aaypkzixad](https://crowdin.com/profile/aaypkzixad) |
+| French                | [@ppp987](https://crowdin.com/profile/ppp987)                                                                                                                |
+| Polish                | [@Tama10](https://crowdin.com/profile/tama10)                                                                                                                |
+| Portuguese, Brazilian | [@teogabriel](https://crowdin.com/profile/teogabriel)                                                                                                        |
+| Spanish               | [@esneiderfjaimes](https://crowdin.com/profile/esneiderfjaimes)                                                                                              |
+| Turkish               | [@mikropsoft](https://crowdin.com/profile/mikropsoft)                                                                                                        |
+| Vietnamese            | [@xeus0000](https://crowdin.com/profile/xeus0000)                                                                                                            |
 
-Last updated: 9 Sept, 2024
+Last updated: 17 Sept, 2024
 
 ## License
 
