@@ -168,4 +168,7 @@
     <string name="image_shadow_title">Sombra de imagen</string>
     <string name="image_shadow_summary">Añade una sombra directa basada en la imagen difuminada detrás de los fondos de pantalla en la lista de fondos de pantalla.\n\nDesactívala si encuentras problemas de rendimiento.</string>
     <string name="github_summary">Abrir repositorio de aplicaciones</string>
+    <string name="tags_summary">Las etiquetas asignadas en los fondos de pantalla aparecerán aquí.</string>
+    <string name="sort_summary">Estilo de ordenamiento para la lista de fondos de pantalla.</string>
+    <string name="order_summary">Orden ascendente o descendente para la lista.</string>
 </resources>
