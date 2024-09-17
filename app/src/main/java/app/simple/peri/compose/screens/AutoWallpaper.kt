@@ -166,7 +166,11 @@ fun AutoWallpaper(navController: NavController? = null) {
                         Icon(
                                 imageVector = Icons.Rounded.FiberManualRecord,
                                 contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                tint = if (lockTagID.value != null) {
+                                    MaterialTheme.colorScheme.onSurfaceVariant
+                                } else {
+                                    Color.Transparent
+                                },
                                 modifier = Modifier
                                     .padding(end = 8.dp, start = 16.dp)
                                     .height(12.dp)
@@ -200,7 +204,11 @@ fun AutoWallpaper(navController: NavController? = null) {
                         Icon(
                                 imageVector = Icons.Rounded.FiberManualRecord,
                                 contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                tint = if (lockFolderName.value != null) {
+                                    MaterialTheme.colorScheme.onSurfaceVariant
+                                } else {
+                                    Color.Transparent
+                                },
                                 modifier = Modifier
                                     .padding(end = 8.dp, start = 16.dp)
                                     .height(12.dp)
@@ -250,7 +258,11 @@ fun AutoWallpaper(navController: NavController? = null) {
                         Icon(
                                 imageVector = Icons.Rounded.FiberManualRecord,
                                 contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                tint = if (homeTagID.value != null) {
+                                    MaterialTheme.colorScheme.onSurfaceVariant
+                                } else {
+                                    Color.Transparent
+                                },
                                 modifier = Modifier
                                     .padding(end = 8.dp, start = 16.dp)
                                     .height(12.dp)
@@ -284,7 +296,11 @@ fun AutoWallpaper(navController: NavController? = null) {
                         Icon(
                                 imageVector = Icons.Rounded.FiberManualRecord,
                                 contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                tint = if (homeFolderName.value != null) {
+                                    MaterialTheme.colorScheme.onSurfaceVariant
+                                } else {
+                                    Color.Transparent
+                                },
                                 modifier = Modifier
                                     .padding(end = 8.dp, start = 16.dp)
                                     .height(12.dp)
@@ -322,7 +338,7 @@ fun AutoWallpaper(navController: NavController? = null) {
                             MainComposePreferences.setLockTagId(it.name)
 
                             lockFolderID.intValue = 0
-                            lockFolderName.value = ""
+                            lockFolderName.value = null
                             MainComposePreferences.setLockFolderId(0)
                             MainComposePreferences.setLockFolderName(null)
                             MainComposePreferences.setLastLockWallpaperPosition(0)
@@ -338,7 +354,7 @@ fun AutoWallpaper(navController: NavController? = null) {
                             showHomeTagDialog.value = false
                             MainComposePreferences.setHomeTagId(it.name)
 
-                            homeFolderName.value = ""
+                            homeFolderName.value = null
                             homeFolderID.intValue = 0
                             MainComposePreferences.setHomeFolderId(0)
                             MainComposePreferences.setHomeFolderName(null)
