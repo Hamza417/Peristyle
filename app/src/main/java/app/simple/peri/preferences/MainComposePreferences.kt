@@ -15,6 +15,8 @@ object MainComposePreferences {
     private const val HOME_TAG_ID = "home_tag_id"
     private const val HOME_FOLDER_ID = "home_folder_id__"
     private const val HOME_FOLDER_NAME = "home_folder_name__"
+    private const val LAST_LOCK_WALLPAPER_POSITION = "last_lock_wallpaper_position"
+    private const val LAST_HOME_WALLPAPER_POSITION = "last_home_wallpaper_position"
 
     // ----------------------------------------------------------------------------------------------------- //
 
@@ -48,7 +50,7 @@ object MainComposePreferences {
 
     // ----------------------------------------------------------------------------------------------------- //
 
-    fun getIsLockSourceSet(): Boolean {
+    fun isLockSourceSet(): Boolean {
         return getSharedPreferences().getBoolean(IS_LOCK_SOURCE_SET, false)
     }
 
@@ -58,7 +60,7 @@ object MainComposePreferences {
 
     // ----------------------------------------------------------------------------------------------------- //
 
-    fun getIsHomeSourceSet(): Boolean {
+    fun isHomeSourceSet(): Boolean {
         return getSharedPreferences().getBoolean(IS_HOME_SOURCE_SET, false)
     }
 
@@ -124,5 +126,25 @@ object MainComposePreferences {
 
     fun setHomeFolderName(value: String?) {
         getSharedPreferences().edit().putString(HOME_FOLDER_NAME, value).apply()
+    }
+
+    // ----------------------------------------------------------------------------------------------------- //
+
+    fun getLastLockWallpaperPosition(): Int {
+        return getSharedPreferences().getInt(LAST_LOCK_WALLPAPER_POSITION, 0)
+    }
+
+    fun setLastLockWallpaperPosition(value: Int) {
+        getSharedPreferences().edit().putInt(LAST_LOCK_WALLPAPER_POSITION, value).apply()
+    }
+
+    // ----------------------------------------------------------------------------------------------------- //
+
+    fun getLastHomeWallpaperPosition(): Int {
+        return getSharedPreferences().getInt(LAST_HOME_WALLPAPER_POSITION, 0)
+    }
+
+    fun setLastHomeWallpaperPosition(value: Int) {
+        getSharedPreferences().edit().putInt(LAST_HOME_WALLPAPER_POSITION, value).apply()
     }
 }

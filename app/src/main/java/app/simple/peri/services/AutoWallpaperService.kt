@@ -2,7 +2,9 @@ package app.simple.peri.services
 
 import android.app.Service
 import android.app.WallpaperManager
+import android.content.ComponentName
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Rect
@@ -13,12 +15,17 @@ import android.util.Log
 import android.widget.Toast
 import androidx.core.net.toUri
 import app.simple.peri.R
+import app.simple.peri.activities.LegacyActivity
+import app.simple.peri.database.instances.TagsDatabase
 import app.simple.peri.database.instances.WallpaperDatabase
 import app.simple.peri.models.Wallpaper
+import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.preferences.SharedPreferences
 import app.simple.peri.utils.BitmapUtils
 import app.simple.peri.utils.BitmapUtils.cropBitmap
+import app.simple.peri.utils.ConditionUtils.isNotNull
+import app.simple.peri.utils.ConditionUtils.isNull
 import app.simple.peri.utils.ScreenUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -77,15 +84,20 @@ class AutoWallpaperService : Service() {
     private fun init() {
         SharedPreferences.init(this)
 
-        if (MainPreferences.isWallpaperWhenSleeping()) {
-            setWallpaper()
-            Log.d(TAG, "Wallpaper set when the user is sleeping")
-        } else {
-            if (ScreenUtils.isDeviceSleeping(applicationContext)) {
-                Log.d(TAG, "Device is sleeping, waiting for next alarm to set wallpaper")
-            } else {
+        if (isLegacyInterface()) {
+            Log.i(TAG, "Legacy interface detected, switching to old approach")
+            if (MainPreferences.isWallpaperWhenSleeping()) {
                 setWallpaper()
+                Log.d(TAG, "Wallpaper set when the user is sleeping")
+            } else {
+                if (ScreenUtils.isDeviceSleeping(applicationContext)) {
+                    Log.d(TAG, "Device is sleeping, waiting for next alarm to set wallpaper")
+                } else {
+                    setWallpaper()
+                }
             }
+        } else {
+            setWallpaperCompose()
         }
     }
 
@@ -237,6 +249,174 @@ class AutoWallpaperService : Service() {
 
             bitmap.recycle()
         }
+    }
+
+    private fun isLegacyInterface(): Boolean {
+        return applicationContext.packageManager.getComponentEnabledSetting(
+                ComponentName(applicationContext, LegacyActivity::class.java)
+        ) == PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+    }
+
+    // ----------------------------------------- Compose Interface Settings ----------------------------------------- //
+
+    private fun setWallpaperCompose() {
+        CoroutineScope(Dispatchers.IO).launch {
+            runCatching {
+                val wallpaperManager = WallpaperManager.getInstance(applicationContext)
+                var homeWallpaper: Wallpaper? = null
+                var lockWallpaper: Wallpaper? = null
+                var wallpaper: Wallpaper? = null
+
+                if (MainComposePreferences.isHomeSourceSet()) {
+                    homeWallpaper = getHomeScreenWallpaper()
+
+                    getBitmapFromUri(homeWallpaper!!) {
+                        wallpaperManager.setBitmap(it, null, true, WallpaperManager.FLAG_SYSTEM)
+                    }
+                }
+
+                if (MainComposePreferences.isLockSourceSet()) {
+                    lockWallpaper = getLockScreenWallpaper()
+
+                    getBitmapFromUri(lockWallpaper!!) {
+                        wallpaperManager.setBitmap(it, null, true, WallpaperManager.FLAG_LOCK)
+                    }
+                }
+
+                if (lockWallpaper.isNull() && homeWallpaper.isNull()) {
+                    wallpaper = getWallpapersFromDatabase()?.random()
+
+                    getBitmapFromUri(wallpaper!!) {
+                        wallpaperManager.setBitmap(it, null, true, WallpaperManager.FLAG_SYSTEM)
+                        wallpaperManager.setBitmap(it, null, true, WallpaperManager.FLAG_LOCK)
+                    }
+                }
+
+                withContext(Dispatchers.Main) {
+                    stopSelf()
+                }
+            }.getOrElse {
+                Log.e(TAG, "Error setting wallpaper: $it")
+            }
+        }
+    }
+
+    private fun getBitmapFromUri(wallpaper: Wallpaper, setWallpaper: (Bitmap) -> Unit) {
+        contentResolver.openInputStream(wallpaper.uri.toUri())?.use { stream ->
+            val byteArray = stream.readBytes()
+            var bitmap = decodeBitmap(byteArray)
+
+            // Correct orientation of the bitmap if faulty due to EXIF data
+            bitmap = BitmapUtils.correctOrientation(bitmap, ByteArrayInputStream(byteArray))
+
+            val visibleCropHint = calculateVisibleCropHint(bitmap)
+
+            if (MainPreferences.getCropWallpaper()) {
+                bitmap = bitmap.cropBitmap(visibleCropHint)
+            }
+
+            setWallpaper(bitmap)
+
+            bitmap.recycle()
+        }
+    }
+
+    private fun getHomeScreenWallpaper(): Wallpaper? {
+        val wallpaperDatabase = WallpaperDatabase.getInstance(applicationContext)
+        val wallpaperDao = wallpaperDatabase?.wallpaperDao()
+        var wallpaper: Wallpaper? = null
+
+        if (MainComposePreferences.isHomeSourceSet()) {
+            if (MainComposePreferences.getHomeTagId().isNotNull()) {
+                val tagsDatabase = TagsDatabase.getInstance(applicationContext)
+                val tagsDao = tagsDatabase?.tagsDao()
+                val tag = tagsDao?.getTagById(MainComposePreferences.getHomeTagId()!!)
+                if (MainPreferences.isLinearAutoWallpaper()) {
+                    val wallpapers = wallpaperDao?.getWallpapersByMD5s(tag?.sum!!)
+                    try {
+                        wallpaper = wallpapers?.get(MainComposePreferences.getLastHomeWallpaperPosition().plus(1))
+                        MainComposePreferences.setLastHomeWallpaperPosition(MainComposePreferences.getLastHomeWallpaperPosition().plus(1))
+                    } catch (e: IndexOutOfBoundsException) {
+                        MainComposePreferences.setLastHomeWallpaperPosition(0)
+                        wallpapers?.get(0)
+                    }
+                } else {
+                    val wallpapers = wallpaperDao?.getWallpapersByMD5s(tag?.sum!!)
+                    wallpaper = wallpapers?.random()
+                }
+
+                return wallpaper
+            } else {
+                if (MainComposePreferences.getHomeFolderName().isNotNull()) {
+                    val wallpapers = wallpaperDao?.getWallpapersByUriHashcode(MainComposePreferences.getHomeFolderId())
+
+                    if (MainPreferences.isLinearAutoWallpaper()) {
+                        try {
+                            wallpaper = wallpapers?.get(MainComposePreferences.getLastHomeWallpaperPosition().plus(1))
+                            MainComposePreferences.setLastHomeWallpaperPosition(MainComposePreferences.getLastHomeWallpaperPosition().plus(1))
+                        } catch (e: IndexOutOfBoundsException) {
+                            MainComposePreferences.setLastHomeWallpaperPosition(0)
+                            wallpapers?.get(0)
+                        }
+                    } else {
+                        wallpaper = wallpapers?.random()
+                    }
+                }
+            }
+        } else {
+            wallpaper = wallpaperDao?.getWallpapers()?.random()
+        }
+
+        return wallpaper
+    }
+
+    private fun getLockScreenWallpaper(): Wallpaper? {
+        val wallpaperDatabase = WallpaperDatabase.getInstance(applicationContext)
+        val wallpaperDao = wallpaperDatabase?.wallpaperDao()
+        var wallpaper: Wallpaper? = null
+
+        if (MainComposePreferences.isHomeSourceSet()) {
+            if (MainComposePreferences.getHomeTagId().isNotNull()) {
+                val tagsDatabase = TagsDatabase.getInstance(applicationContext)
+                val tagsDao = tagsDatabase?.tagsDao()
+                val tag = tagsDao?.getTagById(MainComposePreferences.getHomeTagId()!!)
+                if (MainPreferences.isLinearAutoWallpaper()) {
+                    val wallpapers = wallpaperDao?.getWallpapersByMD5s(tag?.sum!!)
+                    try {
+                        wallpaper = wallpapers?.get(MainComposePreferences.getLastHomeWallpaperPosition().plus(1))
+                        MainComposePreferences.setLastHomeWallpaperPosition(MainComposePreferences.getLastHomeWallpaperPosition().plus(1))
+                    } catch (e: IndexOutOfBoundsException) {
+                        MainComposePreferences.setLastHomeWallpaperPosition(0)
+                        wallpapers?.get(0)
+                    }
+                } else {
+                    val wallpapers = wallpaperDao?.getWallpapersByMD5s(tag?.sum!!)
+                    wallpaper = wallpapers?.random()
+                }
+
+                return wallpaper
+            } else {
+                if (MainComposePreferences.getHomeFolderName().isNotNull()) {
+                    val wallpapers = wallpaperDao?.getWallpapersByUriHashcode(MainComposePreferences.getHomeFolderId())
+
+                    if (MainPreferences.isLinearAutoWallpaper()) {
+                        try {
+                            wallpaper = wallpapers?.get(MainComposePreferences.getLastHomeWallpaperPosition().plus(1))
+                            MainComposePreferences.setLastHomeWallpaperPosition(MainComposePreferences.getLastHomeWallpaperPosition().plus(1))
+                        } catch (e: IndexOutOfBoundsException) {
+                            MainComposePreferences.setLastHomeWallpaperPosition(0)
+                            wallpapers?.get(0)
+                        }
+                    } else {
+                        wallpaper = wallpapers?.random()
+                    }
+                }
+            }
+        } else {
+            wallpaper = wallpaperDao?.getWallpapers()?.random()
+        }
+
+        return wallpaper
     }
 
     companion object {

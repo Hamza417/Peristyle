@@ -126,8 +126,8 @@ fun AutoWallpaper(navController: NavController? = null) {
             }
         }
         item {
-            val isLockScreenRow = remember { mutableStateOf(MainComposePreferences.getIsLockSourceSet()) }
-            val isHomeScreenRow = remember { mutableStateOf(MainComposePreferences.getIsHomeSourceSet()) }
+            val isLockScreenRow = remember { mutableStateOf(MainComposePreferences.isLockSourceSet()) }
+            val isHomeScreenRow = remember { mutableStateOf(MainComposePreferences.isHomeSourceSet()) }
             val lockTagID = remember { mutableStateOf(MainComposePreferences.getLockTagId()) }
             val homeTagID = remember { mutableStateOf(MainComposePreferences.getHomeTagId()) }
             val lockFolderID = remember { mutableIntStateOf(MainComposePreferences.getLockFolderId()) }
@@ -146,7 +146,7 @@ fun AutoWallpaper(navController: NavController? = null) {
             SwitchPreference(
                     title = stringResource(R.string.lock_screen),
                     description = stringResource(R.string.different_wallpaper_for_lock_screen),
-                    checked = MainComposePreferences.getIsLockSourceSet(),
+                    checked = MainComposePreferences.isLockSourceSet(),
                     topPadding = 4.dp
             ) {
                 MainComposePreferences.setIsLockSourceSet(it)
@@ -231,7 +231,7 @@ fun AutoWallpaper(navController: NavController? = null) {
             SwitchPreference(
                     title = stringResource(R.string.home_screen),
                     description = stringResource(R.string.different_wallpaper_for_home_screen),
-                    checked = MainComposePreferences.getIsHomeSourceSet()
+                    checked = MainComposePreferences.isHomeSourceSet()
             ) {
                 MainComposePreferences.setIsHomeSourceSet(it)
                 isHomeScreenRow.value = it
@@ -325,6 +325,7 @@ fun AutoWallpaper(navController: NavController? = null) {
                             lockFolderName.value = ""
                             MainComposePreferences.setLockFolderId(0)
                             MainComposePreferences.setLockFolderName(null)
+                            MainComposePreferences.setLastLockWallpaperPosition(0)
                         })
             }
 
@@ -341,6 +342,7 @@ fun AutoWallpaper(navController: NavController? = null) {
                             homeFolderID.intValue = 0
                             MainComposePreferences.setHomeFolderId(0)
                             MainComposePreferences.setHomeFolderName(null)
+                            MainComposePreferences.setLastHomeWallpaperPosition(0)
                         })
             }
 
@@ -357,6 +359,7 @@ fun AutoWallpaper(navController: NavController? = null) {
 
                             lockTagID.value = null
                             MainComposePreferences.setLockTagId(null)
+                            MainComposePreferences.setLastLockWallpaperPosition(0)
                         })
             }
 
@@ -373,6 +376,7 @@ fun AutoWallpaper(navController: NavController? = null) {
 
                             homeTagID.value = null
                             MainComposePreferences.setHomeTagId(null)
+                            MainComposePreferences.setLastHomeWallpaperPosition(0)
                         })
             }
         }
