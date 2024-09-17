@@ -76,13 +76,13 @@ import app.simple.peri.utils.FileUtils.toSize
 import app.simple.peri.utils.FileUtils.toUri
 import app.simple.peri.viewmodels.TagsViewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
-import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
 import dev.chrisbanes.haze.HazeDefaults
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.hazeChild
 import kotlinx.coroutines.launch
+import me.saket.telephoto.zoomable.glide.ZoomableGlideImage
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
@@ -127,13 +127,10 @@ fun Wallpaper(context: Context, navController: NavHostController) {
                 0f, 0f, 0f, 1f, 0f
         )
 
-        GlideImage(
-                model = wallpaper?.uri?.toUri(),
-                contentDescription = null,
+        Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .haze(state = hazeState)
-                    .blur(blurValue.dp)
                     .drawWithContent {
                         // call record to capture the content in the graphics layer
                         graphicsLayer.record {
@@ -143,14 +140,22 @@ fun Wallpaper(context: Context, navController: NavHostController) {
                         // draw the graphics layer on the visible canvas
                         drawLayer(graphicsLayer)
                     },
-                alignment = Alignment.Center,
-                contentScale = currentScale.value,
-                colorFilter = ColorFilter.colorMatrix(ColorMatrix(colorMatrix)),
-        )
-        {
-            it.transition(withCrossFade())
-                .disallowHardwareConfig()
-                .fitCenter()
+        ) {
+            ZoomableGlideImage(
+                    model = wallpaper?.uri?.toUri(),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .blur(blurValue.dp),
+                    alignment = Alignment.Center,
+                    contentScale = currentScale.value,
+                    colorFilter = ColorFilter.colorMatrix(ColorMatrix(colorMatrix)),
+            )
+            {
+                it.transition(withCrossFade())
+                    .disallowHardwareConfig()
+                    .fitCenter()
+            }
         }
 
 
