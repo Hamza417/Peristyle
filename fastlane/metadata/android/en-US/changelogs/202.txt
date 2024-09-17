@@ -1,0 +1,6 @@
+- Added multi folder support
+- Added tags and folder assignment for each screen auto wallpaper
+- Added sort and order in the Settings
+- Added selection in the main list
+- Various interface changes
+- Add Spanish and Chinese Traditional translations

@@ -1,1 +1,1 @@
-Simple wallpaper manager app with auto wallpaper support.
+Simple wallpaper manager app with Auto Wallpaper and Multi Folder support.

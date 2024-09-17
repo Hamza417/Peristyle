@@ -20,7 +20,7 @@ android {
         minSdk 24
         targetSdk 34
         versionCode 202
-        versionName "2.02_alpha"
+        versionName "2.02_beta"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
