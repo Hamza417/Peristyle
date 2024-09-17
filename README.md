@@ -66,7 +66,7 @@ so [here on Crowdin](https://crowdin.com/project/peristyle).
 | Language              | Translators                                                                                                                                                  |
 |-----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Chinese Simplified    | [@shanzhaxiaok](https://crowdin.com/profile/shanzhaxiaok)                                                                                                    |
-| Chinese Traditional   | [@aaypkzixad](https://crowdin.com/profile/aaypkzixad), [@hugoalh](https://crowdin.com/profile/hugoalh), [aaypkzixad](https://crowdin.com/profile/aaypkzixad) |
+| Chinese Traditional   | [@aaypkzixad](https://crowdin.com/profile/aaypkzixad), [@hugoalh](https://crowdin.com/profile/hugoalh)                                                       |
 | French                | [@ppp987](https://crowdin.com/profile/ppp987)                                                                                                                |
 | Polish                | [@Tama10](https://crowdin.com/profile/tama10)                                                                                                                |
 | Portuguese, Brazilian | [@teogabriel](https://crowdin.com/profile/teogabriel)                                                                                                        |
