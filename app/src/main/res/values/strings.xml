@@ -176,4 +176,5 @@
     <string name="source_summary">Assign a specific tag or folder to set wallpaper for each screen. If no tag or folder or an empty ones is assigned, a random wallpaper will be picked from the collection.</string>
     <string name="not_set">Not Set</string>
     <string name="duration_summary">Set delay between each trigger or turn auto wallpaper off.</string>
+    <string name="select_folder_info">You can add more folder later in the app.</string>
 </resources>

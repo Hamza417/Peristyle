@@ -1,5 +1,6 @@
 package app.simple.peri.compose.screens
 
+import DescriptionPreference
 import android.Manifest
 import android.content.ActivityNotFoundException
 import android.content.Context
@@ -13,17 +14,23 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -265,6 +272,20 @@ fun Folder(modifier: Modifier, context: Context, navController: NavController? =
                         .fillMaxWidth(),
                     fontWeight = FontWeight.Normal
             )
+        }
+
+        Row(
+                verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(
+                    imageVector = Icons.Rounded.Info,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.surfaceTint,
+                    modifier = Modifier
+                        .padding(start = COMMON_PADDING, bottom = 8.dp)
+                        .size(16.dp)
+            )
+            DescriptionPreference(description = context.getString(R.string.select_folder_info))
         }
     }
 }
