@@ -27,7 +27,7 @@ Features:
 - Auto wallpaper change support with dedicated folders and tags for each screens
 - Dark mode support
 - Fully Material You design
-- Compose UI
+- Glassmorphic UI based on realtime blur effects and caustic shadows
 
 ## Stats
 
