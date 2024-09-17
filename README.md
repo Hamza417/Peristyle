@@ -48,6 +48,13 @@ Features:
 | ![04](./fastlane/metadata/android/en-US/images/phoneScreenshots/04.png) | ![05](./fastlane/metadata/android/en-US/images/phoneScreenshots/05.png) | ![06](./fastlane/metadata/android/en-US/images/phoneScreenshots/06.png) |
 | ![07](./fastlane/metadata/android/en-US/images/phoneScreenshots/07.png) | ![08](./fastlane/metadata/android/en-US/images/phoneScreenshots/08.png) | ![09](./fastlane/metadata/android/en-US/images/phoneScreenshots/09.png) |
 
+### Peristyle also has a totally different UI based on Material You
+It can be toggled from the app settings.
+
+| ![001](./screenshots/01.png) | ![002](./screenshots/02.png) | ![003](./screenshots/03.png) |
+|:----------------------------:|:----------------------------:|:----------------------------:|
+| ![004](./screenshots/04.png) | ![005](./screenshots/05.png) | ![006](./screenshots/06.gif) |
+
 ## Triggering AutoWallpaperService from Other Apps
 
 Peristyle supports triggering the AutoWallpaperService from other apps using the following
