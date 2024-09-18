@@ -80,7 +80,7 @@ fun Setup(context: Context, navController: NavController? = null) {
             horizontalAlignment = Alignment.CenterHorizontally
     ) {
         TopHeader(context.getString(R.string.setup),
-                  modifier = Modifier.padding(COMMON_PADDING))
+                  modifier = Modifier.padding(COMMON_PADDING), isSettings = true)
 
         Permissions(context = context, navController = navController, modifier = Modifier
             .padding(COMMON_PADDING)
