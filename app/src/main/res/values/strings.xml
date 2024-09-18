@@ -170,7 +170,7 @@
     <string name="github_summary">Open app\'s repository</string>
     <string name="tags_summary">Tags assigned on wallpapers will appear here.</string>
     <string name="sort_summary">Sorting style for wallpaper list.</string>
-    <string name="order_summary">Acsending or descending order for the list.</string>
+    <string name="order_summary">Ascending or descending order for the list.</string>
     <string name="duration">Duration</string>
     <string name="source">Source</string>
     <string name="source_summary">Assign a specific tag or folder to set wallpaper for each screen. If no tag or folder or an empty ones is assigned, a random wallpaper will be picked from the collection.</string>
@@ -180,4 +180,5 @@
     <string name="developer_profile">Developer Profile</string>
     <string name="allow_media_access">Allow Media Access</string>
     <string name="allow_media_access_info">It\'s not possible to manually grant the access to system wallpapers, selecting Allow All will allow the app to automatically access the files.</string>
+    <string name="lock_screen_wallpaper_info">Lock Screen wallpaper is not available below Android 14</string>
 </resources>

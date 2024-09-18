@@ -1,6 +1,7 @@
 package app.simple.peri.compose.screens
 
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -240,11 +241,37 @@ fun WallpaperItem(title: String, onClick: () -> Unit, modifier: Modifier = Modif
                         color = Color.White, // Set the text color
                 )
 
+                val info = when (title) {
+                    stringResource(id = R.string.lock_screen) -> {
+                        when {
+                            Build.VERSION.SDK_INT > Build.VERSION_CODES.TIRAMISU -> {
+                                buildString {
+                                    append((wallpaper?.width ?: 0).toString())
+                                    append("x")
+                                    append((wallpaper?.height ?: 0).toString())
+                                }
+                            }
+
+                            else -> {
+                                stringResource(id = R.string.lock_screen_wallpaper_info)
+                            }
+                        }
+                    }
+
+                    else -> {
+                        buildString {
+                            append((wallpaper?.width ?: 0).toString())
+                            append("x")
+                            append((wallpaper?.height ?: 0).toString())
+                        }
+                    }
+                }
+
                 Text(
-                        text = (wallpaper?.width ?: 0).toString() + "x" + (wallpaper?.height ?: 0).toString(),
+                        text = info,
                         modifier = Modifier
-                            .padding(start = 16.dp, top = 4.dp, bottom = 16.dp),
-                        textAlign = TextAlign.End,
+                            .padding(start = 16.dp, top = 4.dp, bottom = 16.dp, end = 16.dp),
+                        textAlign = TextAlign.Start,
                         fontSize = 16.sp, // Set the font size
                         fontWeight = FontWeight.Light, // Make the text bold
                         color = Color.White, // Set the text color
@@ -295,21 +322,19 @@ fun BottomMenu(modifier: Modifier = Modifier, navController: NavController? = nu
             verticalAlignment = Alignment.CenterVertically
     ) {
         BottomMenuItem(
-                title = stringResource(id = R.string.tags),
-                drawableID = R.drawable.ic_label,
                 modifier = Modifier
                     .weight(0.2F)
-                    .height(height) // Set a smaller height
+                    .height(height),
+                drawableID = R.drawable.ic_label // Set a smaller height
         ) {
             navController?.navigate(Routes.TAGS)
         }
 
         BottomMenuItem(
-                title = stringResource(id = R.string.auto_wallpaper),
-                drawableID = R.drawable.ic_schedule,
                 modifier = Modifier
                     .weight(0.2F)
-                    .height(height) // Set a smaller height
+                    .height(height),
+                drawableID = R.drawable.ic_schedule // Set a smaller height
         ) {
             navController?.navigate(Routes.AUTO_WALLPAPER)
         }
@@ -354,7 +379,7 @@ fun BottomMenu(modifier: Modifier = Modifier, navController: NavController? = nu
 }
 
 @Composable
-fun BottomMenuItem(modifier: Modifier = Modifier, title: String = "", drawableID: Int = 0, navController: NavController? = null, onClick: () -> Unit = {}) {
+fun BottomMenuItem(modifier: Modifier = Modifier, drawableID: Int = 0, onClick: () -> Unit = {}) {
     Column(
             modifier = modifier,
             horizontalAlignment = Alignment.CenterHorizontally
