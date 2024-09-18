@@ -16,6 +16,7 @@ import android.widget.Toast
 import androidx.core.net.toUri
 import app.simple.peri.R
 import app.simple.peri.activities.LegacyActivity
+import app.simple.peri.activities.MainComposeActivity
 import app.simple.peri.database.instances.TagsDatabase
 import app.simple.peri.database.instances.WallpaperDatabase
 import app.simple.peri.models.Wallpaper
@@ -24,6 +25,7 @@ import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.preferences.SharedPreferences
 import app.simple.peri.utils.BitmapUtils
 import app.simple.peri.utils.BitmapUtils.cropBitmap
+import app.simple.peri.utils.ConditionUtils.invert
 import app.simple.peri.utils.ConditionUtils.isNotNull
 import app.simple.peri.utils.ConditionUtils.isNull
 import app.simple.peri.utils.ScreenUtils
@@ -97,6 +99,7 @@ class AutoWallpaperService : Service() {
                 }
             }
         } else {
+            Log.i(TAG, "Compose interface detected, switching to new approach")
             setWallpaperCompose()
         }
     }
@@ -254,7 +257,9 @@ class AutoWallpaperService : Service() {
     private fun isLegacyInterface(): Boolean {
         return applicationContext.packageManager.getComponentEnabledSetting(
                 ComponentName(applicationContext, LegacyActivity::class.java)
-        ) == PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+        ) == PackageManager.COMPONENT_ENABLED_STATE_ENABLED && applicationContext.packageManager.getComponentEnabledSetting(
+                ComponentName(applicationContext, MainComposeActivity::class.java)
+        ) == PackageManager.COMPONENT_ENABLED_STATE_DISABLED
     }
 
     // ----------------------------------------- Compose Interface Settings ----------------------------------------- //
@@ -263,32 +268,47 @@ class AutoWallpaperService : Service() {
         CoroutineScope(Dispatchers.IO).launch {
             runCatching {
                 val wallpaperManager = WallpaperManager.getInstance(applicationContext)
-                var homeWallpaper: Wallpaper? = null
-                var lockWallpaper: Wallpaper? = null
-                var wallpaper: Wallpaper? = null
+                val wallpaper: Wallpaper?
+                val homeWallpaper: Wallpaper? = getHomeScreenWallpaper()
+                val lockWallpaper: Wallpaper? = getLockScreenWallpaper()
 
-                if (MainComposePreferences.isHomeSourceSet()) {
-                    homeWallpaper = getHomeScreenWallpaper()
-
+                if (homeWallpaper.isNotNull()) {
+                    Log.d(TAG, "Home wallpaper found: ${homeWallpaper?.uri}")
                     getBitmapFromUri(homeWallpaper!!) {
                         wallpaperManager.setBitmap(it, null, true, WallpaperManager.FLAG_SYSTEM)
                     }
                 }
 
-                if (MainComposePreferences.isLockSourceSet()) {
-                    lockWallpaper = getLockScreenWallpaper()
-
+                if (lockWallpaper.isNotNull()) {
+                    Log.d(TAG, "Lock wallpaper found: ${lockWallpaper?.uri}")
                     getBitmapFromUri(lockWallpaper!!) {
                         wallpaperManager.setBitmap(it, null, true, WallpaperManager.FLAG_LOCK)
                     }
                 }
 
-                if (lockWallpaper.isNull() && homeWallpaper.isNull()) {
-                    wallpaper = getWallpapersFromDatabase()?.random()
+                when {
+                    lockWallpaper.isNull() && homeWallpaper.isNull() -> {
+                        Log.d(TAG, "No wallpapers found, setting random wallpaper")
+                        wallpaper = getWallpapersFromDatabase()?.random()
 
-                    getBitmapFromUri(wallpaper!!) {
-                        wallpaperManager.setBitmap(it, null, true, WallpaperManager.FLAG_SYSTEM)
-                        wallpaperManager.setBitmap(it, null, true, WallpaperManager.FLAG_LOCK)
+                        getBitmapFromUri(wallpaper!!) {
+                            wallpaperManager.setBitmap(it, null, true, WallpaperManager.FLAG_SYSTEM)
+                            wallpaperManager.setBitmap(it, null, true, WallpaperManager.FLAG_LOCK)
+                        }
+                    }
+
+                    lockWallpaper.isNull() -> {
+                        Log.d(TAG, "No lock wallpaper found, setting random wallpaper")
+                        getBitmapFromUri(getWallpapersFromDatabase()?.random()!!) {
+                            wallpaperManager.setBitmap(it, null, true, WallpaperManager.FLAG_LOCK)
+                        }
+                    }
+
+                    homeWallpaper.isNull() -> {
+                        Log.d(TAG, "No home wallpaper found, setting random wallpaper")
+                        getBitmapFromUri(getWallpapersFromDatabase()?.random()!!) {
+                            wallpaperManager.setBitmap(it, null, true, WallpaperManager.FLAG_SYSTEM)
+                        }
                     }
                 }
 
@@ -296,14 +316,16 @@ class AutoWallpaperService : Service() {
                     stopSelf()
                 }
             }.getOrElse {
+                it.printStackTrace()
                 Log.e(TAG, "Error setting wallpaper: $it")
             }
         }
     }
 
-    private fun getBitmapFromUri(wallpaper: Wallpaper, setWallpaper: (Bitmap) -> Unit) {
+    private fun getBitmapFromUri(wallpaper: Wallpaper, onBitmap: (Bitmap) -> Unit) {
         contentResolver.openInputStream(wallpaper.uri.toUri())?.use { stream ->
             val byteArray = stream.readBytes()
+            Log.i(TAG, "Compose Wallpaper URI Decoding: ${wallpaper.uri}")
             var bitmap = decodeBitmap(byteArray)
 
             // Correct orientation of the bitmap if faulty due to EXIF data
@@ -315,7 +337,7 @@ class AutoWallpaperService : Service() {
                 bitmap = bitmap.cropBitmap(visibleCropHint)
             }
 
-            setWallpaper(bitmap)
+            onBitmap(bitmap)
 
             bitmap.recycle()
         }
@@ -326,8 +348,12 @@ class AutoWallpaperService : Service() {
         val wallpaperDao = wallpaperDatabase?.wallpaperDao()
         var wallpaper: Wallpaper? = null
 
-        if (MainComposePreferences.isHomeSourceSet()) {
-            if (MainComposePreferences.getHomeTagId().isNotNull()) {
+        if (MainComposePreferences.isHomeSourceSet().invert()) {
+            return null
+        }
+
+        when {
+            MainComposePreferences.getHomeTagId().isNotNull() -> {
                 val tagsDatabase = TagsDatabase.getInstance(applicationContext)
                 val tagsDao = tagsDatabase?.tagsDao()
                 val tag = tagsDao?.getTagById(MainComposePreferences.getHomeTagId()!!)
@@ -335,7 +361,8 @@ class AutoWallpaperService : Service() {
                     val wallpapers = wallpaperDao?.getWallpapersByMD5s(tag?.sum!!)
                     try {
                         wallpaper = wallpapers?.get(MainComposePreferences.getLastHomeWallpaperPosition().plus(1))
-                        MainComposePreferences.setLastHomeWallpaperPosition(MainComposePreferences.getLastHomeWallpaperPosition().plus(1))
+                        MainComposePreferences.setLastHomeWallpaperPosition(
+                                MainComposePreferences.getLastHomeWallpaperPosition().plus(1))
                     } catch (e: IndexOutOfBoundsException) {
                         MainComposePreferences.setLastHomeWallpaperPosition(0)
                         wallpapers?.get(0)
@@ -346,77 +373,88 @@ class AutoWallpaperService : Service() {
                 }
 
                 return wallpaper
-            } else {
-                if (MainComposePreferences.getHomeFolderName().isNotNull()) {
-                    val wallpapers = wallpaperDao?.getWallpapersByUriHashcode(MainComposePreferences.getHomeFolderId())
-
-                    if (MainPreferences.isLinearAutoWallpaper()) {
-                        try {
-                            wallpaper = wallpapers?.get(MainComposePreferences.getLastHomeWallpaperPosition().plus(1))
-                            MainComposePreferences.setLastHomeWallpaperPosition(MainComposePreferences.getLastHomeWallpaperPosition().plus(1))
-                        } catch (e: IndexOutOfBoundsException) {
-                            MainComposePreferences.setLastHomeWallpaperPosition(0)
-                            wallpapers?.get(0)
-                        }
-                    } else {
-                        wallpaper = wallpapers?.random()
-                    }
-                }
             }
-        } else {
-            wallpaper = wallpaperDao?.getWallpapers()?.random()
-        }
 
-        return wallpaper
+            MainComposePreferences.getHomeFolderName().isNotNull() -> {
+                val wallpapers = wallpaperDao?.getWallpapersByUriHashcode(MainComposePreferences.getHomeFolderId())
+
+                if (MainPreferences.isLinearAutoWallpaper()) {
+                    try {
+                        wallpaper = wallpapers?.get(MainComposePreferences.getLastHomeWallpaperPosition().plus(1))
+                        MainComposePreferences.setLastHomeWallpaperPosition(
+                                MainComposePreferences.getLastHomeWallpaperPosition().plus(1))
+                    } catch (e: IndexOutOfBoundsException) {
+                        MainComposePreferences.setLastHomeWallpaperPosition(0)
+                        wallpapers?.get(0)
+                    }
+                } else {
+                    wallpaper = wallpapers?.random()
+                }
+
+                return wallpaper
+            }
+
+            else -> {
+                return null
+            }
+        }
     }
 
     private fun getLockScreenWallpaper(): Wallpaper? {
         val wallpaperDatabase = WallpaperDatabase.getInstance(applicationContext)
         val wallpaperDao = wallpaperDatabase?.wallpaperDao()
-        var wallpaper: Wallpaper? = null
+        val wallpaper: Wallpaper?
 
-        if (MainComposePreferences.isHomeSourceSet()) {
-            if (MainComposePreferences.getHomeTagId().isNotNull()) {
+        if (MainComposePreferences.isLockSourceSet().invert()) {
+            return null
+        }
+
+        when {
+            MainComposePreferences.getLockTagId().isNotNull() -> {
                 val tagsDatabase = TagsDatabase.getInstance(applicationContext)
                 val tagsDao = tagsDatabase?.tagsDao()
-                val tag = tagsDao?.getTagById(MainComposePreferences.getHomeTagId()!!)
-                if (MainPreferences.isLinearAutoWallpaper()) {
-                    val wallpapers = wallpaperDao?.getWallpapersByMD5s(tag?.sum!!)
+                val tag = tagsDao?.getTagById(MainComposePreferences.getLockTagId()!!)
+                val wallpapers = wallpaperDao?.getWallpapersByMD5s(tag?.sum!!)
+                wallpaper = if (MainPreferences.isLinearAutoWallpaper()) {
                     try {
-                        wallpaper = wallpapers?.get(MainComposePreferences.getLastHomeWallpaperPosition().plus(1))
-                        MainComposePreferences.setLastHomeWallpaperPosition(MainComposePreferences.getLastHomeWallpaperPosition().plus(1))
+                        wallpapers?.get(MainComposePreferences.getLastLockWallpaperPosition().plus(1)).also {
+                            MainComposePreferences.setLastLockWallpaperPosition(
+                                    MainComposePreferences.getLastLockWallpaperPosition().plus(1))
+                        }
                     } catch (e: IndexOutOfBoundsException) {
-                        MainComposePreferences.setLastHomeWallpaperPosition(0)
+                        MainComposePreferences.setLastLockWallpaperPosition(0)
                         wallpapers?.get(0)
                     }
                 } else {
-                    val wallpapers = wallpaperDao?.getWallpapersByMD5s(tag?.sum!!)
-                    wallpaper = wallpapers?.random()
+                    wallpapers?.random()
                 }
 
                 return wallpaper
-            } else {
-                if (MainComposePreferences.getHomeFolderName().isNotNull()) {
-                    val wallpapers = wallpaperDao?.getWallpapersByUriHashcode(MainComposePreferences.getHomeFolderId())
-
-                    if (MainPreferences.isLinearAutoWallpaper()) {
-                        try {
-                            wallpaper = wallpapers?.get(MainComposePreferences.getLastHomeWallpaperPosition().plus(1))
-                            MainComposePreferences.setLastHomeWallpaperPosition(MainComposePreferences.getLastHomeWallpaperPosition().plus(1))
-                        } catch (e: IndexOutOfBoundsException) {
-                            MainComposePreferences.setLastHomeWallpaperPosition(0)
-                            wallpapers?.get(0)
-                        }
-                    } else {
-                        wallpaper = wallpapers?.random()
-                    }
-                }
             }
-        } else {
-            wallpaper = wallpaperDao?.getWallpapers()?.random()
-        }
 
-        return wallpaper
+            MainComposePreferences.getLockFolderName().isNotNull() -> {
+                val wallpapers = wallpaperDao?.getWallpapersByUriHashcode(MainComposePreferences.getLockFolderId())
+                wallpaper = if (MainPreferences.isLinearAutoWallpaper()) {
+                    try {
+                        wallpapers?.get(MainComposePreferences.getLastLockWallpaperPosition().plus(1)).also {
+                            MainComposePreferences.setLastLockWallpaperPosition(
+                                    MainComposePreferences.getLastLockWallpaperPosition().plus(1))
+                        }
+                    } catch (e: IndexOutOfBoundsException) {
+                        MainComposePreferences.setLastLockWallpaperPosition(0)
+                        wallpapers?.get(0)
+                    }
+                } else {
+                    wallpapers?.random()
+                }
+
+                return wallpaper
+            }
+
+            else -> {
+                return null
+            }
+        }
     }
 
     companion object {
