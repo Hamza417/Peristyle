@@ -10,6 +10,7 @@ import android.os.Build
 import android.os.Environment
 import android.os.PowerManager
 import android.provider.Settings
+import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 
 object PermissionUtils {
@@ -39,5 +40,10 @@ object PermissionUtils {
         } else {
             ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
         }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    fun checkMediaImagesPermission(context: Context): Boolean {
+        return ContextCompat.checkSelfPermission(context, Manifest.permission.READ_MEDIA_IMAGES) == PackageManager.PERMISSION_GRANTED
     }
 }

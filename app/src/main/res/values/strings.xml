@@ -178,4 +178,6 @@
     <string name="duration_summary">Set delay between each trigger or turn auto wallpaper off.</string>
     <string name="select_folder_info">You can add more folder later in the app.</string>
     <string name="developer_profile">Developer Profile</string>
+    <string name="allow_media_access">Allow Media Access</string>
+    <string name="allow_media_access_info">It\'s not possible to manually grant the access to system wallpapers, selecting Allow All will allow the app to automatically access the files.</string>
 </resources>

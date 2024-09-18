@@ -12,6 +12,7 @@ import android.provider.Settings
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,6 +24,7 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material3.Button
@@ -41,6 +43,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -71,7 +74,7 @@ fun Setup(context: Context, navController: NavController? = null) {
         )
     }
 
-    Column(
+    LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(COMMON_PADDING)
@@ -79,33 +82,34 @@ fun Setup(context: Context, navController: NavController? = null) {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        TopHeader(context.getString(R.string.setup),
-                  modifier = Modifier.padding(COMMON_PADDING), isSettings = true)
+        item {
+            TopHeader(context.getString(R.string.setup),
+                      modifier = Modifier.padding(COMMON_PADDING), isSettings = true)
 
-        Permissions(context = context, navController = navController, modifier = Modifier
-            .padding(COMMON_PADDING)
-            .wrapContentHeight())
+            Permissions(context = context, navController = navController, modifier = Modifier
+                .padding(COMMON_PADDING)
+                .wrapContentHeight())
 
-        Folder(context = context, navController = navController, modifier = Modifier
-            .padding(COMMON_PADDING)
-            .weight(1F))
+            Folder(context = context, navController = navController, modifier = Modifier
+                .padding(COMMON_PADDING))
 
-        Button(
-                onClick = {
-                    if (isSetupComplete(context)) {
-                        navController?.navigate(Routes.HOME)
-                    } else {
-                        showSetupIncompleteDialog = true
-                    }
-                },
-                modifier = Modifier
-                    .padding(COMMON_PADDING)
-                    .fillMaxWidth(),
-        ) {
-            Text(text = context.getString(R.string.continue_button),
-                 fontWeight = FontWeight.Bold,
-                 fontSize = 18.sp,
-                 modifier = Modifier.padding(12.dp))
+            Button(
+                    onClick = {
+                        if (isSetupComplete(context)) {
+                            navController?.navigate(Routes.HOME)
+                        } else {
+                            showSetupIncompleteDialog = true
+                        }
+                    },
+                    modifier = Modifier
+                        .padding(COMMON_PADDING)
+                        .fillMaxWidth(),
+            ) {
+                Text(text = context.getString(R.string.continue_button),
+                     fontWeight = FontWeight.Bold,
+                     fontSize = 18.sp,
+                     modifier = Modifier.padding(12.dp))
+            }
         }
     }
 }
@@ -115,6 +119,7 @@ fun Permissions(modifier: Modifier, context: Context, navController: NavControll
     var showExternalPermissionDialog by remember { mutableStateOf(false) }
     var showBatteryOptimizationDialog by remember { mutableStateOf(false) }
     var requestPermissionLauncher by remember { mutableStateOf(false) }
+    var requestMediaImages by remember { mutableStateOf(false) }
 
     if (showExternalPermissionDialog) {
         ShowWarningDialog(
@@ -142,11 +147,20 @@ fun Permissions(modifier: Modifier, context: Context, navController: NavControll
         RequestStoragePermissions()
     }
 
+    if (requestMediaImages) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            RequestReadMediaImagesPermission {
+                requestMediaImages = false
+                showExternalPermissionDialog = false
+            }
+        }
+    }
+
     Column(
             modifier = modifier
     ) {
         Text(
-                text = "Permissions",
+                text = stringResource(R.string.permissions),
                 fontSize = 24.sp,
                 modifier = Modifier
                     .padding(16.dp)
@@ -158,40 +172,42 @@ fun Permissions(modifier: Modifier, context: Context, navController: NavControll
                 modifier = Modifier.padding(bottom = COMMON_PADDING, start = COMMON_PADDING, end = COMMON_PADDING)
         )
 
-        Card(
-                onClick = {
-                    when {
-                        Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
-                            if (Environment.isExternalStorageManager()) {
-                                showExternalPermissionDialog = true
-                            } else {
-                                try {
-                                    val uri = Uri.parse("package:${BuildConfig.APPLICATION_ID}")
-                                    context.startActivity(Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION, uri))
-                                } catch (ignored: ActivityNotFoundException) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            Card(
+                    onClick = {
+                        when {
+                            Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
+                                if (Environment.isExternalStorageManager()) {
+                                    showExternalPermissionDialog = true
+                                } else {
+                                    try {
+                                        val uri = Uri.parse("package:${BuildConfig.APPLICATION_ID}")
+                                        context.startActivity(Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION, uri))
+                                    } catch (ignored: ActivityNotFoundException) {
 
+                                    }
+                                }
+                            }
+
+                            else -> {
+                                if (PermissionUtils.checkStoragePermission(context)) {
+                                    requestPermissionLauncher = false
+                                    showExternalPermissionDialog = true
+                                } else {
+                                    requestPermissionLauncher = true
+                                    showExternalPermissionDialog = false
                                 }
                             }
                         }
-
-                        else -> {
-                            if (PermissionUtils.checkStoragePermission(context)) {
-                                requestPermissionLauncher = false
-                                showExternalPermissionDialog = true
-                            } else {
-                                requestPermissionLauncher = true
-                                showExternalPermissionDialog = false
-                            }
-                        }
-                    }
-                },
-                colors = CardDefaults.cardColors(
-                        containerColor = Color.Transparent
-                ),
-        ) {
-            PermissionText(
-                    context.getString(R.string.external_storage),
-                    context.getString(R.string.external_storage_summary))
+                    },
+                    colors = CardDefaults.cardColors(
+                            containerColor = Color.Transparent
+                    ),
+            ) {
+                PermissionText(
+                        context.getString(R.string.external_storage),
+                        context.getString(R.string.external_storage_summary))
+            }
         }
 
         Card(
@@ -209,6 +225,36 @@ fun Permissions(modifier: Modifier, context: Context, navController: NavControll
             PermissionText(
                     context.getString(R.string.battery_optimization),
                     context.getString(R.string.battery_optimization_summary))
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            Card(
+                    onClick = {
+                        if (PermissionUtils.checkMediaImagesPermission(context)) {
+                            requestMediaImages = false
+                            showExternalPermissionDialog = true
+                        } else {
+                            requestMediaImages = true
+                            showExternalPermissionDialog = false
+                        }
+                    },
+                    colors = CardDefaults.cardColors(
+                            containerColor = Color.Transparent
+                    ),
+            ) {
+                PermissionText(
+                        context.getString(R.string.allow_media_access),
+                        context.getString(R.string.external_storage_summary))
+
+                Text(
+                        text = context.getString(R.string.allow_media_access_info),
+                        fontSize = 14.sp,
+                        modifier = Modifier
+                            .padding(bottom = COMMON_PADDING, start = COMMON_PADDING, end = COMMON_PADDING)
+                            .fillMaxWidth(),
+                        fontWeight = FontWeight.Normal
+                )
+            }
         }
     }
 }
@@ -338,22 +384,53 @@ fun RequestStoragePermissions() {
     // Ensure the launcher is initialized before launching the permission request
     LaunchedEffect(Unit) {
         requestPermissionLauncher.launch(
-            arrayOf(
-                    Manifest.permission.READ_EXTERNAL_STORAGE,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-            )
+                arrayOf(
+                        Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                )
         )
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
+@Composable
+fun RequestReadMediaImagesPermission(onCancel: () -> Unit) {
+    val requestPermissionLauncher = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        // Handle the result of the permission request
+        if (isGranted) {
+            Log.d("Permission", "READ_EXTERNAL_STORAGE granted")
+        } else {
+            Log.d("Permission", "READ_EXTERNAL_STORAGE denied")
+            onCancel()
+        }
+    }
+
+    // Ensure the launcher is initialized before launching the permission request
+    LaunchedEffect(Unit) {
+        requestPermissionLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES)
+    }
+}
+
 fun isSetupComplete(context: Context): Boolean {
-    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-        context.contentResolver.persistedUriPermissions.isNotEmpty()
-                && Environment.isExternalStorageManager()
-                && context.isBatteryOptimizationDisabled()
-    } else {
-        context.contentResolver.persistedUriPermissions.isNotEmpty()
-                && PermissionUtils.checkStoragePermission(context)
-                && context.isBatteryOptimizationDisabled()
+    return when {
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM -> {
+            context.contentResolver.persistedUriPermissions.isNotEmpty()
+                    && context.isBatteryOptimizationDisabled()
+                    && PermissionUtils.checkMediaImagesPermission(context)
+        }
+
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
+            context.contentResolver.persistedUriPermissions.isNotEmpty()
+                    && Environment.isExternalStorageManager()
+                    && context.isBatteryOptimizationDisabled()
+        }
+
+        else -> {
+            context.contentResolver.persistedUriPermissions.isNotEmpty()
+                    && PermissionUtils.checkStoragePermission(context)
+                    && context.isBatteryOptimizationDisabled()
+        }
     }
 }
