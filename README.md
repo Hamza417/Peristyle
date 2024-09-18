@@ -60,6 +60,14 @@ It can be toggled from the app settings.
 Peristyle supports triggering the AutoWallpaperService from other apps using the following
 intent: `app.peristyle.START_AUTO_WALLPAPER_SERVICE`
 
+## Permission Usage
+Peristyle needs `MANAGE_EXTERNAL_STORAGE` and `READ_MEDIA_IMAGES` to be allowed to show the system wallpapers in the app.
+It has been discussed in the [Issue #72](https://github.com/Hamza417/Peristyle/issues/72#issuecomment-2357558761).
+
+The `REQUEST_IGNORE_BATTERY_OPTIMIZATIONS` is used to run Auto Wallpaper service whenever required.
+
+And an access to all the wallpaper directories whichever the user specifies.
+
 ## Translate
 
 [![Crowdin](https://badges.crowdin.net/peristyle/localized.svg)](https://crowdin.com/project/peristyle)
