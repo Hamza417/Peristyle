@@ -168,7 +168,7 @@ fun SecondaryHeader(title: String) {
     ) {
         Text(
                 text = title,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                color = MaterialTheme.colorScheme.surfaceTint,
                 style = MaterialTheme.typography.titleMedium,
         )
     }

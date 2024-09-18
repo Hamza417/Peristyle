@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import app.simple.peri.BuildConfig;
 import app.simple.peri.preferences.MainPreferences;
+import app.simple.peri.preferences.SharedPreferences;
 import app.simple.peri.services.AutoWallpaperService;
 
 import static android.content.Context.ALARM_SERVICE;
@@ -16,6 +17,8 @@ import static android.content.Context.ALARM_SERVICE;
 public class BootReceiver extends android.content.BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
+        SharedPreferences.INSTANCE.init(context);
+        
         if (intent.getAction() != null) {
             if (intent.getAction().equals("android.intent.action.BOOT_COMPLETED")) {
                 try {
