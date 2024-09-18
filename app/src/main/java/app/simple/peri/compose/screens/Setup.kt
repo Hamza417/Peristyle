@@ -33,6 +33,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -159,23 +160,28 @@ fun Permissions(modifier: Modifier, context: Context, navController: NavControll
 
         Card(
                 onClick = {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                        if (Environment.isExternalStorageManager()) {
-                            showExternalPermissionDialog = true
-                        } else {
-                            try {
-                                val uri = Uri.parse("package:${BuildConfig.APPLICATION_ID}")
-                                context.startActivity(Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION, uri))
-                            } catch (ignored: ActivityNotFoundException) {
+                    when {
+                        Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
+                            if (Environment.isExternalStorageManager()) {
+                                showExternalPermissionDialog = true
+                            } else {
+                                try {
+                                    val uri = Uri.parse("package:${BuildConfig.APPLICATION_ID}")
+                                    context.startActivity(Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION, uri))
+                                } catch (ignored: ActivityNotFoundException) {
 
+                                }
                             }
                         }
-                    } else {
-                        if (PermissionUtils.checkStoragePermission(context)) {
-                            requestPermissionLauncher = false
-                            showExternalPermissionDialog = true
-                        } else {
-                            requestPermissionLauncher = true
+
+                        else -> {
+                            if (PermissionUtils.checkStoragePermission(context)) {
+                                requestPermissionLauncher = false
+                                showExternalPermissionDialog = true
+                            } else {
+                                requestPermissionLauncher = true
+                                showExternalPermissionDialog = false
+                            }
                         }
                     }
                 },
@@ -213,7 +219,10 @@ fun Folder(modifier: Modifier, context: Context, navController: NavController? =
     var showDirectoryPermissionDialog by remember { mutableStateOf(false) }
 
     if (launchDirectoryPermission) {
-        RequestDirectoryPermission()
+        RequestDirectoryPermission {
+            showDirectoryPermissionDialog = false
+            launchDirectoryPermission = false
+        }
     }
 
     if (showDirectoryPermissionDialog) {
@@ -326,13 +335,15 @@ fun RequestStoragePermissions() {
         }
     }
 
-    // Launch the permission request
-    requestPermissionLauncher.launch(
+    // Ensure the launcher is initialized before launching the permission request
+    LaunchedEffect(Unit) {
+        requestPermissionLauncher.launch(
             arrayOf(
                     Manifest.permission.READ_EXTERNAL_STORAGE,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE
             )
-    )
+        )
+    }
 }
 
 fun isSetupComplete(context: Context): Boolean {

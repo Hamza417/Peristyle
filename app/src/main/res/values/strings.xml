@@ -144,7 +144,7 @@
     <string name="restart">Restart</string>
     <string name="permission_granted">Permission Granted</string>
     <string name="permissions">Permissions</string>
-    <string name="external_storage">Allow All Files Access</string>
+    <string name="external_storage">Allow Files Access</string>
     <string name="external_storage_summary">Will be used to show the current system wallpaper in the home screen.</string>
     <string name="battery_optimization">Ignore Battery Optimization</string>
     <string name="battery_optimization_summary">Disable battery optimization to make sure Auto Wallpaper works properly.</string>
