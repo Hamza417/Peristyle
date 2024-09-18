@@ -346,10 +346,25 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
         )
     }
 
-    fun postCurrentSystemWallpaper() {
+    private fun postCurrentSystemWallpaper() {
         viewModelScope.launch(Dispatchers.IO) {
-            if (PermissionUtils.checkStoragePermission(getApplication())) {
-                systemWallpaperData.postValue(getCurrentSystemWallpaper())
+            when {
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
+                    when {
+                        PermissionUtils.checkStoragePermission(getApplication())
+                                && PermissionUtils.checkMediaImagesPermission(getApplication()) -> {
+                            systemWallpaperData.postValue(getCurrentSystemWallpaper())
+                        }
+                    }
+                }
+
+                else -> {
+                    when {
+                        PermissionUtils.checkStoragePermission(getApplication()) -> {
+                            systemWallpaperData.postValue(getCurrentSystemWallpaper())
+                        }
+                    }
+                }
             }
         }
     }

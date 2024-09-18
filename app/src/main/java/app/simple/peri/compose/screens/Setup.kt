@@ -79,7 +79,7 @@ fun Setup(context: Context, navController: NavController? = null) {
     val statusBarHeightDp = with(LocalDensity.current) { statusBarHeightPx.toDp() }
     val navigationBarHeightPx = navigationBarHeight
     val navigationBarHeightDp = with(LocalDensity.current) { navigationBarHeightPx.toDp() }
-    val topPadding = 8.dp + statusBarHeightDp
+    val topPadding = COMMON_PADDING + statusBarHeightDp
     val bottomPadding = 8.dp + navigationBarHeightDp
 
     if (showSetupIncompleteDialog) {
@@ -104,10 +104,10 @@ fun Setup(context: Context, navController: NavController? = null) {
                     .weight(1F),
                 contentPadding = PaddingValues(
                         top = topPadding,
-                        start = 8.dp,
-                        end = 8.dp,
+                        start = COMMON_PADDING,
+                        end = COMMON_PADDING,
                         bottom = bottomPadding),
-                verticalArrangement = Arrangement.Center,
+                verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally
         ) {
             item {
@@ -131,7 +131,7 @@ fun Setup(context: Context, navController: NavController? = null) {
                     }
                 },
                 modifier = Modifier
-                    .padding(COMMON_PADDING)
+                    .padding(COMMON_PADDING + COMMON_PADDING)
                     .fillMaxWidth(),
         ) {
             Text(text = context.getString(R.string.continue_button),
@@ -189,33 +189,31 @@ fun Permissions(modifier: Modifier, context: Context, navController: NavControll
     ) {
         SecondaryHeader(title = stringResource(R.string.permissions))
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-            ClickablePreference(
-                    title = context.getString(R.string.external_storage),
-                    description = context.getString(R.string.external_storage_summary),
-            ) {
-                when {
-                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
-                        if (Environment.isExternalStorageManager()) {
-                            showExternalPermissionDialog = true
-                        } else {
-                            try {
-                                val uri = Uri.parse("package:${BuildConfig.APPLICATION_ID}")
-                                context.startActivity(Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION, uri))
-                            } catch (ignored: ActivityNotFoundException) {
+        ClickablePreference(
+                title = context.getString(R.string.external_storage),
+                description = context.getString(R.string.external_storage_summary),
+        ) {
+            when {
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
+                    if (Environment.isExternalStorageManager()) {
+                        showExternalPermissionDialog = true
+                    } else {
+                        try {
+                            val uri = Uri.parse("package:${BuildConfig.APPLICATION_ID}")
+                            context.startActivity(Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION, uri))
+                        } catch (ignored: ActivityNotFoundException) {
 
-                            }
                         }
                     }
+                }
 
-                    else -> {
-                        if (PermissionUtils.checkStoragePermission(context)) {
-                            requestPermissionLauncher = false
-                            showExternalPermissionDialog = true
-                        } else {
-                            requestPermissionLauncher = true
-                            showExternalPermissionDialog = false
-                        }
+                else -> {
+                    if (PermissionUtils.checkStoragePermission(context)) {
+                        requestPermissionLauncher = false
+                        showExternalPermissionDialog = true
+                    } else {
+                        requestPermissionLauncher = true
+                        showExternalPermissionDialog = false
                     }
                 }
             }
@@ -233,7 +231,7 @@ fun Permissions(modifier: Modifier, context: Context, navController: NavControll
                 }
         )
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             ClickablePreference(
                     title = context.getString(R.string.allow_media_access),
                     description = context.getString(R.string.external_storage_summary),
@@ -410,8 +408,9 @@ fun RequestReadMediaImagesPermission(onCancel: () -> Unit) {
 
 fun isSetupComplete(context: Context): Boolean {
     return when {
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM -> {
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
             context.contentResolver.persistedUriPermissions.isNotEmpty()
+                    && Environment.isExternalStorageManager()
                     && context.isBatteryOptimizationDisabled()
                     && PermissionUtils.checkMediaImagesPermission(context)
         }
