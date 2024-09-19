@@ -26,5 +26,5 @@ fun TaggedWallpapers(navController: NavController? = null, tag: String?) {
         wallpapers = it
     }
 
-    WallpapersList(list = wallpapers, navController = navController)
+    WallpapersList(list = wallpapers, navController = navController, title = tag.orEmpty())
 }
