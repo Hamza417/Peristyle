@@ -1,7 +1,17 @@
 package app.simple.peri.compose.nav
 
 import android.content.Context
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -20,11 +30,7 @@ import app.simple.peri.utils.ConditionUtils.invert
 @Composable
 fun PeristyleNavigation(context: Context) {
     val navController = rememberNavController()
-    val startDestination = if (isSetupComplete(context)) {
-        Routes.HOME
-    } else {
-        Routes.SETUP
-    }
+    val startDestination = if (isSetupComplete(context)) Routes.HOME else Routes.SETUP
 
     NavHost(navController = navController, startDestination = startDestination) {
         composable(Routes.SETUP) {
@@ -35,37 +41,78 @@ fun PeristyleNavigation(context: Context) {
             }
         }
 
-        composable(Routes.HOME) {
+        composableWithTransitions(Routes.HOME) {
             Home(navController)
         }
 
-        composable(route = Routes.WALLPAPER) {
+        composableWithTransitions(Routes.WALLPAPER) {
             Wallpaper(context, navController)
         }
 
-        composable(route = Routes.WALLPAPERS_LIST) {
+        composableWithTransitions(Routes.WALLPAPERS_LIST) {
             FolderList(navController)
         }
 
-        composable(route = Routes.SETTINGS) {
+        composableWithTransitions(Routes.SETTINGS) {
             Settings(navController)
         }
 
-        composable(route = Routes.AUTO_WALLPAPER) {
+        composableWithTransitions(Routes.AUTO_WALLPAPER) {
             AutoWallpaper(navController)
         }
 
-        composable(route = Routes.TAGS) {
+        composableWithTransitions(Routes.TAGS) {
             Tags(navController)
         }
 
-        composable(route = Routes.FOLDERS) {
+        composableWithTransitions(Routes.FOLDERS) {
             Folders(navController)
         }
 
-        composable(route = "${Routes.TAGGED_WALLPAPERS}/{tag}") { backStackEntry ->
+        composableWithTransitions("${Routes.TAGGED_WALLPAPERS}/{tag}") { backStackEntry ->
             val tag = backStackEntry.arguments?.getString("tag")
             TaggedWallpapers(navController, tag)
         }
     }
+}
+
+fun NavGraphBuilder.composableWithTransitions(
+        route: String,
+        content: @Composable AnimatedContentScope.(NavBackStackEntry) -> Unit
+) {
+    composable(
+            route = route,
+            enterTransition = { scaleIntoContainer() },
+            exitTransition = { scaleOutOfContainer(direction = ScaleTransitionDirection.INWARDS) },
+            popEnterTransition = { scaleIntoContainer(direction = ScaleTransitionDirection.OUTWARDS) },
+            popExitTransition = { scaleOutOfContainer() },
+            content = content
+    )
+}
+
+fun scaleIntoContainer(
+        direction: ScaleTransitionDirection = ScaleTransitionDirection.INWARDS,
+        initialScale: Float = if (direction == ScaleTransitionDirection.OUTWARDS) 0.9f else 1.1f
+): EnterTransition {
+    return scaleIn(
+            animationSpec = tween(220, delayMillis = 90),
+            initialScale = initialScale
+    ) + fadeIn(animationSpec = tween(220, delayMillis = 90))
+}
+
+fun scaleOutOfContainer(
+        direction: ScaleTransitionDirection = ScaleTransitionDirection.OUTWARDS,
+        targetScale: Float = if (direction == ScaleTransitionDirection.INWARDS) 0.9f else 1.1f
+): ExitTransition {
+    return scaleOut(
+            animationSpec = tween(
+                    durationMillis = 220,
+                    delayMillis = 90
+            ), targetScale = targetScale
+    ) + fadeOut(tween(delayMillis = 90))
+}
+
+enum class ScaleTransitionDirection {
+    INWARDS,
+    OUTWARDS
 }
