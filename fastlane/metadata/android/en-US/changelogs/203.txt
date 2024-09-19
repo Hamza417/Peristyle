@@ -1,0 +1,7 @@
+- Slide and Zoom on wallpaper screen
+- Fixed the permission flow crashing in Android 9
+- Fixed no READ_MEDIA_IMAGES permission causes crash in Android 15
+- Fixed various issues with setup interface
+- Fixed Auto Wallpaper not changing wallpaper correctly
+- Added no lockscreen wallpaper hint for < Android 13 devices
+- Added basic transition animations
