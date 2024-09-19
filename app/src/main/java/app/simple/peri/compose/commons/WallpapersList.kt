@@ -503,7 +503,8 @@ fun SelectionMenu(modifier: Modifier = Modifier,
 fun WallpaperMenu(setShowDialog: (Boolean) -> Unit,
                   wallpaper: Wallpaper,
                   onDelete: (Wallpaper) -> Unit,
-                  onSelect: () -> Unit = {}) {
+                  onSelect: () -> Unit = {},
+                  onAddTag: () -> Unit = {}) {
 
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -616,7 +617,6 @@ fun WallpaperMenu(setShowDialog: (Boolean) -> Unit,
                     Button(
                             onClick = {
                                 showTagDialog.value = true
-                                setShowDialog(false)
                             },
                             colors = ButtonDefaults.buttonColors(
                                     containerColor = Color.White,

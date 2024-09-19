@@ -16,7 +16,7 @@ import app.simple.peri.models.Wallpaper
 import app.simple.peri.viewmodels.FolderDataViewModel
 
 @Composable
-fun FolderList(navController: NavController? = null) {
+fun WallpaperList(navController: NavController? = null) {
     val folder = navController?.previousBackStackEntry?.savedStateHandle?.get<Folder>(Routes.FOLDER_ARG)
 
     // Ensure folder is not null before proceeding

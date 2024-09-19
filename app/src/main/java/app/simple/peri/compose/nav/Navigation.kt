@@ -16,7 +16,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import app.simple.peri.compose.screens.AutoWallpaper
-import app.simple.peri.compose.screens.FolderList
 import app.simple.peri.compose.screens.Folders
 import app.simple.peri.compose.screens.Home
 import app.simple.peri.compose.screens.Settings
@@ -24,6 +23,7 @@ import app.simple.peri.compose.screens.Setup
 import app.simple.peri.compose.screens.TaggedWallpapers
 import app.simple.peri.compose.screens.Tags
 import app.simple.peri.compose.screens.Wallpaper
+import app.simple.peri.compose.screens.WallpaperList
 import app.simple.peri.compose.screens.isSetupComplete
 import app.simple.peri.utils.ConditionUtils.invert
 
@@ -50,7 +50,7 @@ fun PeristyleNavigation(context: Context) {
         }
 
         composableWithTransitions(Routes.WALLPAPERS_LIST) {
-            FolderList(navController)
+            WallpaperList(navController)
         }
 
         composableWithTransitions(Routes.SETTINGS) {
