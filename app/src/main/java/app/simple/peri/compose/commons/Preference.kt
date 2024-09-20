@@ -59,7 +59,7 @@ fun SwitchPreference(title: String,
                         text = description,
                         fontWeight = FontWeight.Normal,
                         fontSize = PREFERENCE_DESCRIPTION_SIZE,
-                        modifier = Modifier.padding(bottom = 8.dp)
+                        modifier = Modifier.padding(bottom = 8.dp, end = 32.dp)
                 )
             }
         }

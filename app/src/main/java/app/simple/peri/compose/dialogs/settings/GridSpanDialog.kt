@@ -62,9 +62,6 @@ fun NumberSelectionDialog(onDismiss: () -> Unit, onNumberSelected: (Int) -> Unit
             confirmButton = {
                 Button(
                         onClick = { onDismiss() },
-                        colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
                 ) {
                     Text(text = stringResource(R.string.close))
                 }

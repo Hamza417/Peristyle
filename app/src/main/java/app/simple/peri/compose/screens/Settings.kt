@@ -1,6 +1,7 @@
 package app.simple.peri.compose.screens
 
 import ClickablePreference
+import DescriptionPreference
 import NumberSelectionDialog
 import OtherApps
 import SecondaryHeader
@@ -26,6 +27,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.NavController
+import app.simple.peri.BuildConfig
 import app.simple.peri.R
 import app.simple.peri.activities.LegacyActivity
 import app.simple.peri.activities.MainComposeActivity
@@ -141,23 +143,25 @@ fun Settings(navController: NavController? = null) {
             ) {
                 showOrderDialog.value = true
             }
-        }
-        item { // Accessibility
-            SecondaryHeader(title = context.getString(R.string.accessibility))
 
             SwitchPreference(
                     title = context.getString(R.string.ignore_dot_files),
-                    checked = MainPreferences.isIgnoreDotFiles()
+                    checked = MainPreferences.isIgnoreDotFiles(),
+                    topPadding = 8.dp
             ) {
                 MainPreferences.setIgnoreDotFiles(it)
             }
 
             SwitchPreference(
                     title = context.getString(R.string.ignore_subdirectories),
-                    checked = MainPreferences.isIgnoreSubDirs()
+                    checked = MainPreferences.isIgnoreSubDirs(),
+                    topPadding = 8.dp
             ) {
                 MainPreferences.setIgnoreSubDirs(it)
             }
+        }
+        item { // Accessibility
+            SecondaryHeader(title = context.getString(R.string.accessibility))
 
             SwitchPreference(
                     title = context.getString(R.string.go_back_to_legacy_interface),
@@ -192,6 +196,10 @@ fun Settings(navController: NavController? = null) {
             }
 
             SecondaryHeader(title = context.getString(R.string.about))
+
+            DescriptionPreference(
+                    description = BuildConfig.VERSION_NAME,
+            )
 
             ClickablePreference(
                     title = context.getString(R.string.telegram_group),
