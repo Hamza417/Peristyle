@@ -29,6 +29,9 @@ import app.simple.peri.compose.screens.WallpaperList
 import app.simple.peri.compose.screens.isSetupComplete
 import app.simple.peri.utils.ConditionUtils.invert
 
+private const val ANIMATION_DURATION = 750
+private const val DELAY = 250
+
 @Composable
 fun PeristyleNavigation(context: Context) {
     val navController = rememberNavController()
@@ -70,8 +73,8 @@ fun PeristyleNavigation(context: Context) {
         composable(Routes.FOLDERS,
                    enterTransition = { slideIntoContainer() },
                    exitTransition = { slideOutOfContainer(direction = SlideTransitionDirection.RIGHT) },
-                   popEnterTransition = { slideIntoContainer(direction = SlideTransitionDirection.LEFT) },
-                   popExitTransition = { slideOutOfContainer() }) {
+                   popEnterTransition = { slideIntoContainer(direction = SlideTransitionDirection.RIGHT) },
+                   popExitTransition = { slideOutOfContainer(direction = SlideTransitionDirection.RIGHT) }) {
             Folders(navController)
         }
 
@@ -101,9 +104,9 @@ fun scaleIntoContainer(
         initialScale: Float = if (direction == ScaleTransitionDirection.OUTWARDS) 0.9f else 1.1f
 ): EnterTransition {
     return scaleIn(
-            animationSpec = tween(220, delayMillis = 90),
+            animationSpec = tween(ANIMATION_DURATION, delayMillis = DELAY),
             initialScale = initialScale
-    ) + fadeIn(animationSpec = tween(220, delayMillis = 90))
+    ) + fadeIn(animationSpec = tween(ANIMATION_DURATION, delayMillis = DELAY))
 }
 
 fun scaleOutOfContainer(
@@ -112,10 +115,10 @@ fun scaleOutOfContainer(
 ): ExitTransition {
     return scaleOut(
             animationSpec = tween(
-                    durationMillis = 220,
-                    delayMillis = 90
+                    durationMillis = ANIMATION_DURATION,
+                    delayMillis = DELAY
             ), targetScale = targetScale
-    ) + fadeOut(tween(delayMillis = 90))
+    ) + fadeOut(tween(delayMillis = DELAY))
 }
 
 fun slideIntoContainer(
@@ -124,8 +127,8 @@ fun slideIntoContainer(
 ): EnterTransition {
     return slideInHorizontally(
             initialOffsetX = { if (direction == SlideTransitionDirection.LEFT) offset else -offset },
-            animationSpec = tween(220, delayMillis = 90)
-    ) + fadeIn(animationSpec = tween(220, delayMillis = 90))
+            animationSpec = tween(ANIMATION_DURATION, delayMillis = DELAY)
+    ) + fadeIn(animationSpec = tween(ANIMATION_DURATION, delayMillis = DELAY))
 }
 
 fun slideOutOfContainer(
@@ -134,8 +137,8 @@ fun slideOutOfContainer(
 ): ExitTransition {
     return slideOutHorizontally(
             targetOffsetX = { if (direction == SlideTransitionDirection.LEFT) -offset else offset },
-            animationSpec = tween(220, delayMillis = 90)
-    ) + fadeOut(tween(delayMillis = 90))
+            animationSpec = tween(ANIMATION_DURATION, delayMillis = DELAY)
+    ) + fadeOut(tween(delayMillis = DELAY))
 }
 
 enum class ScaleTransitionDirection {
