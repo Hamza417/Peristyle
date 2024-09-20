@@ -1,5 +1,6 @@
 package app.simple.peri.compose.screens
 
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
@@ -22,9 +23,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -60,35 +61,29 @@ import dev.chrisbanes.haze.hazeChild
 
 @Composable
 fun Folders(navController: NavController? = null) {
-    val context = LocalContext.current
-    val view = LocalView.current
     val wallpaperViewModel: WallpaperViewModel = viewModel()
     val folders = remember { mutableListOf<Folder>() }
-
     var requestPermission by remember { mutableStateOf(false) }
+    var statusBarHeight by remember { mutableIntStateOf(0) }
+    var navigationBarHeight by remember { mutableIntStateOf(0) }
+
     wallpaperViewModel.getFoldersLiveData().observeAsState().value?.let {
+        Log.i("Folders", "Folders: $it")
         folders.clear()
         folders.addAll(it)
     }
 
-    val count by remember {
-        derivedStateOf {
-            context.contentResolver.persistedUriPermissions.size
-        }
-    }
+    statusBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
+            LocalView.current.rootWindowInsets).getInsets(WindowInsetsCompat.Type.statusBars()).top
+    navigationBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
+            LocalView.current.rootWindowInsets).getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
+    displayDimension.width = LocalView.current.width
+    displayDimension.height = LocalView.current.height
 
-    val statusBarHeightPx = remember {
-        WindowInsetsCompat.toWindowInsetsCompat(view.rootWindowInsets)
-            .getInsets(WindowInsetsCompat.Type.statusBars()).top
-    }
-    val navigationBarHeightPx = remember {
-        WindowInsetsCompat.toWindowInsetsCompat(view.rootWindowInsets)
-            .getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
-    }
-
+    val statusBarHeightPx = statusBarHeight
     val statusBarHeightDp = with(LocalDensity.current) { statusBarHeightPx.toDp() }
+    val navigationBarHeightPx = navigationBarHeight
     val navigationBarHeightDp = with(LocalDensity.current) { navigationBarHeightPx.toDp() }
-
     val topPadding = 8.dp + statusBarHeightDp
     val bottomPadding = 8.dp + navigationBarHeightDp
 
@@ -100,7 +95,8 @@ fun Folders(navController: NavController? = null) {
 
     LazyVerticalStaggeredGrid(
             columns = StaggeredGridCells.Fixed(2),
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize(),
             contentPadding = PaddingValues(
                     top = topPadding,
                     start = 8.dp,
@@ -111,7 +107,7 @@ fun Folders(navController: NavController? = null) {
         item(span = StaggeredGridItemSpan.FullLine) {
             TopHeader(
                     title = stringResource(R.string.folder),
-                    count = count,
+                    count = folders.size,
                     modifier = Modifier.padding(COMMON_PADDING),
                     navController = navController
             )
@@ -193,7 +189,7 @@ fun FolderItem(folder: Folder, navController: NavController? = null, onDelete: (
                         modifier = Modifier
                             .padding(start = 16.dp, top = 16.dp, end = 16.dp),
                         textAlign = TextAlign.Start,
-                        fontSize = 18.sp, // Set the font size
+                        fontSize = 20.sp, // Set the font size
                         fontWeight = FontWeight.Bold, // Make the text bold
                         color = Color.White, // Set the text color
                         maxLines = 1,
