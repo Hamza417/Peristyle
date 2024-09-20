@@ -9,6 +9,8 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
@@ -65,7 +67,11 @@ fun PeristyleNavigation(context: Context) {
             Tags(navController)
         }
 
-        composableWithTransitions(Routes.FOLDERS) {
+        composable(Routes.FOLDERS,
+                   enterTransition = { slideIntoContainer() },
+                   exitTransition = { slideOutOfContainer(direction = SlideTransitionDirection.RIGHT) },
+                   popEnterTransition = { slideIntoContainer(direction = SlideTransitionDirection.LEFT) },
+                   popExitTransition = { slideOutOfContainer() }) {
             Folders(navController)
         }
 
@@ -112,7 +118,32 @@ fun scaleOutOfContainer(
     ) + fadeOut(tween(delayMillis = 90))
 }
 
+fun slideIntoContainer(
+        direction: SlideTransitionDirection = SlideTransitionDirection.LEFT,
+        offset: Int = 1000
+): EnterTransition {
+    return slideInHorizontally(
+            initialOffsetX = { if (direction == SlideTransitionDirection.LEFT) offset else -offset },
+            animationSpec = tween(220, delayMillis = 90)
+    ) + fadeIn(animationSpec = tween(220, delayMillis = 90))
+}
+
+fun slideOutOfContainer(
+        direction: SlideTransitionDirection = SlideTransitionDirection.LEFT,
+        offset: Int = 1000
+): ExitTransition {
+    return slideOutHorizontally(
+            targetOffsetX = { if (direction == SlideTransitionDirection.LEFT) -offset else offset },
+            animationSpec = tween(220, delayMillis = 90)
+    ) + fadeOut(tween(delayMillis = 90))
+}
+
 enum class ScaleTransitionDirection {
     INWARDS,
     OUTWARDS
+}
+
+enum class SlideTransitionDirection {
+    LEFT,
+    RIGHT
 }
