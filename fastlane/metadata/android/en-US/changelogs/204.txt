@@ -1,0 +1,5 @@
+- Fix auto wallpaper applying wallpapers on both screens
+- Fix Folders screen flickering on every launch
+- Fix various UI issues
+
+Peristyle is stable now
