@@ -162,7 +162,15 @@ object MainPreferences {
     }
 
     fun getWallpaperSetFor(): String {
-        return SharedPreferences.getSharedPreferences().getString(WALLPAPER_SET_FOR, "3")!!
+        return SharedPreferences.getSharedPreferences().getString(WALLPAPER_SET_FOR, BOTH)!!
+    }
+
+    fun isSettingForHomeScreen(): Boolean {
+        return getWallpaperSetFor() == HOME || getWallpaperSetFor() == BOTH
+    }
+
+    fun isSettingForLockScreen(): Boolean {
+        return getWallpaperSetFor() == LOCK || getWallpaperSetFor() == BOTH
     }
 
     fun setWallpaperSetFor(wallpaperSetFor: String) {

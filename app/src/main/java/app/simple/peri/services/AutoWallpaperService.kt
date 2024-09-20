@@ -292,22 +292,35 @@ class AutoWallpaperService : Service() {
                         wallpaper = getWallpapersFromDatabase()?.random()
 
                         getBitmapFromUri(wallpaper!!) {
-                            wallpaperManager.setBitmap(it, null, true, WallpaperManager.FLAG_SYSTEM)
-                            wallpaperManager.setBitmap(it, null, true, WallpaperManager.FLAG_LOCK)
+                            if (MainPreferences.isSettingForHomeScreen()) {
+                                wallpaperManager.setBitmap(it, null, true, WallpaperManager.FLAG_SYSTEM)
+                            } else {
+                                Log.i(TAG, "No home wallpaper, skipping")
+                            }
+
+                            if (MainPreferences.isSettingForLockScreen()) {
+                                wallpaperManager.setBitmap(it, null, true, WallpaperManager.FLAG_LOCK)
+                            } else {
+                                Log.i(TAG, "No lock wallpaper, skipping")
+                            }
                         }
                     }
 
                     lockWallpaper.isNull() -> {
                         Log.d(TAG, "No lock wallpaper found, setting random wallpaper")
-                        getBitmapFromUri(getWallpapersFromDatabase()?.random()!!) {
-                            wallpaperManager.setBitmap(it, null, true, WallpaperManager.FLAG_LOCK)
+                        if (MainPreferences.isSettingForLockScreen()) {
+                            getBitmapFromUri(getWallpapersFromDatabase()?.random()!!) {
+                                wallpaperManager.setBitmap(it, null, true, WallpaperManager.FLAG_LOCK)
+                            }
                         }
                     }
 
                     homeWallpaper.isNull() -> {
                         Log.d(TAG, "No home wallpaper found, setting random wallpaper")
-                        getBitmapFromUri(getWallpapersFromDatabase()?.random()!!) {
-                            wallpaperManager.setBitmap(it, null, true, WallpaperManager.FLAG_SYSTEM)
+                        if (MainPreferences.isSettingForHomeScreen()) {
+                            getBitmapFromUri(getWallpapersFromDatabase()?.random()!!) {
+                                wallpaperManager.setBitmap(it, null, true, WallpaperManager.FLAG_SYSTEM)
+                            }
                         }
                     }
                 }
@@ -344,6 +357,10 @@ class AutoWallpaperService : Service() {
     }
 
     private fun getHomeScreenWallpaper(): Wallpaper? {
+        if (MainPreferences.isSettingForHomeScreen().invert()) {
+            return null
+        }
+
         val wallpaperDatabase = WallpaperDatabase.getInstance(applicationContext)
         val wallpaperDao = wallpaperDatabase?.wallpaperDao()
         var wallpaper: Wallpaper? = null
@@ -401,6 +418,10 @@ class AutoWallpaperService : Service() {
     }
 
     private fun getLockScreenWallpaper(): Wallpaper? {
+        if (MainPreferences.isSettingForLockScreen().invert()) {
+            return null
+        }
+
         val wallpaperDatabase = WallpaperDatabase.getInstance(applicationContext)
         val wallpaperDao = wallpaperDatabase?.wallpaperDao()
         val wallpaper: Wallpaper?

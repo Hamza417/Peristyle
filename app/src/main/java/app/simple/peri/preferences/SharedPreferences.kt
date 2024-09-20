@@ -7,7 +7,7 @@ import app.simple.peri.utils.ConditionUtils.isNull
 
 object SharedPreferences {
 
-    private const val preferences = "Preferences"
+    private const val PREFERENCES = "Preferences"
     private var sharedPreferences: SharedPreferences? = null
 
     fun init(context: Context) {
@@ -68,6 +68,6 @@ object SharedPreferences {
     }
 
     fun getSharedPreferencesPath(context: Context): String {
-        return context.applicationInfo.dataDir + "/shared_prefs/" + preferences + ".xml"
+        return context.applicationInfo.dataDir + "/shared_prefs/" + PREFERENCES + ".xml"
     }
 }
