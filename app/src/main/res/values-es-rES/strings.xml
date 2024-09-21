@@ -96,12 +96,13 @@
     <string name="hue">Tono</string>
     <string name="scheduling">Programación</string>
     <string name="auto_wallpaper">Fondo de pantalla automático</string>
-    <string name="auto_wallpaper_summary">Cambia automáticamente los fondos de pantalla de bloqueo y sistema durante un período especificado.\n\nLa aplicación utilizará su directorio actual de fondos de pantalla.</string>
+    <string name="auto_wallpaper_summary">Cambia automáticamente los fondos de pantalla de sistema y de bloqueo durante un período específico.</string>
     <string name="auto_wallpaper_warning">¿Quieres apagar el fondo de pantalla automático antes de configurar manualmente un fondo de pantalla?</string>
     <string name="cancel">Cancelar</string>
     <string name="crop_wallpaper_summary">Recortar el fondo a las dimensiones de la pantalla, desactiva el desplazamiento de los fondos de pantalla.</string>
     <string name="crop_wallpaper">Recortar fondo de pantalla</string>
     <string name="different_wallpaper_for_lock_screen">Separar fondo de pantalla para la pantalla de bloqueo</string>
+    <string name="different_wallpaper_for_home_screen">Separar fondo de pantalla para la pantalla de inicio</string>
     <string name="no">No</string>
     <string name="main_menu">Menú Principal</string>
     <string name="back">Volver</string>
@@ -137,14 +138,14 @@
     <string name="tweaks_summary">Cambia algunos comportamientos predeterminados de la aplicación para ajustarlos a tus necesidades.</string>
     <string name="ignore_dot_files">Ignorar archivos .dot</string>
     <string name="ignore_subdirectories">Ignorar subdirectorios</string>
-    <string name="linear_auto_wallpaper">Seleccione el fondo de pantalla de forma lineal en el fondo de pantalla automático</string>
+    <string name="linear_auto_wallpaper">Escoger en orden lineal</string>
     <string name="telegram_group">Grupo de Telegram</string>
     <string name="telegram_summary">Únete al grupo Telegram de la aplicación para discusiones relacionadas con la aplicación y enviar informes de errores.</string>
     <string name="copy">Copiar</string>
     <string name="restart">Reiniciar</string>
     <string name="permission_granted">Permiso concedido</string>
     <string name="permissions">Permisos</string>
-    <string name="external_storage">Permitir acceso a todos los archivos</string>
+    <string name="external_storage">Permitir acceso a archivos</string>
     <string name="external_storage_summary">Se utilizará para mostrar el fondo de pantalla del sistema actual en la pantalla de inicio.</string>
     <string name="battery_optimization">Ignorar optimización de la batería</string>
     <string name="battery_optimization_summary">Desactivar la optimización de la batería para asegurarse de que el fondo de pantalla automático funcione correctamente.</string>
@@ -171,4 +172,14 @@
     <string name="tags_summary">Las etiquetas asignadas en los fondos de pantalla aparecerán aquí.</string>
     <string name="sort_summary">Estilo de ordenamiento para la lista de fondos de pantalla.</string>
     <string name="order_summary">Orden ascendente o descendente para la lista.</string>
+    <string name="duration">Duración</string>
+    <string name="source">Fuente</string>
+    <string name="source_summary">Asigne una etiqueta o carpeta específica para configurar el fondo de pantalla para cada pantalla. Si no se asigna ninguna etiqueta o carpeta o está vacío, un fondo de pantalla aleatorio será elegido de la colección.</string>
+    <string name="not_set">No establecido</string>
+    <string name="duration_summary">Define el tiempo de espera entre cada disparador o desactiva el fondo de pantalla automático.</string>
+    <string name="select_folder_info">Puede añadir más carpeta más tarde en la aplicación.</string>
+    <string name="developer_profile">Perfil del desarrollador</string>
+    <string name="allow_media_access">Permitir acceso multimedia</string>
+    <string name="allow_media_access_info">No es posible conceder manualmente el acceso a los fondos de pantalla del sistema, seleccione \"Permitir todos\" permitirá que la aplicación acceda automáticamente a los archivos.</string>
+    <string name="lock_screen_wallpaper_info">Fondo de Pantalla de Bloqueo no está disponible en versiones inferiores a Android 14</string>
 </resources>
