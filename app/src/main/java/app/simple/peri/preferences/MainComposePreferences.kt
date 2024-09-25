@@ -17,6 +17,15 @@ object MainComposePreferences {
     private const val HOME_FOLDER_NAME = "home_folder_name__"
     private const val LAST_LOCK_WALLPAPER_POSITION = "last_lock_wallpaper_position"
     private const val LAST_HOME_WALLPAPER_POSITION = "last_home_wallpaper_position"
+    private const val AUTO_WALLPAPER_BLUR = "auto_wallpaper_blur"
+    private const val AUTO_WALLPAPER_BRIGHTNESS = "auto_wallpaper_brightness"
+    private const val AUTO_WALLPAPER_CONTRAST = "auto_wallpaper_contrast"
+    private const val AUTO_WALLPAPER_HOME_BLUR = "auto_wallpaper_home_blur"
+    private const val AUTO_WALLPAPER_HOME_BRIGHTNESS = "auto_wallpaper_home_brightness"
+    private const val AUTO_WALLPAPER_HOME_CONTRAST = "auto_wallpaper_home_contrast"
+    private const val AUTO_WALLPAPER_LOCK_BLUR = "auto_wallpaper_lock_blur"
+    private const val AUTO_WALLPAPER_LOCK_BRIGHTNESS = "auto_wallpaper_lock_brightness"
+    private const val AUTO_WALLPAPER_LOCK_CONTRAST = "auto_wallpaper_lock_contrast"
 
     // ----------------------------------------------------------------------------------------------------- //
 
@@ -146,5 +155,109 @@ object MainComposePreferences {
 
     fun setLastHomeWallpaperPosition(value: Int) {
         getSharedPreferences().edit().putInt(LAST_HOME_WALLPAPER_POSITION, value).apply()
+    }
+
+    // ----------------------------------------------------------------------------------------------------- //
+
+    fun getAutoWallpaperBlur(): Float {
+        return getSharedPreferences().getFloat(AUTO_WALLPAPER_BLUR, 0f)
+    }
+
+    fun setAutoWallpaperBlur(value: Float) {
+        getSharedPreferences().edit().putFloat(AUTO_WALLPAPER_BLUR, value).apply()
+    }
+
+    // ----------------------------------------------------------------------------------------------------- //
+
+    fun getAutoWallpaperBrightness(): Float {
+        return getSharedPreferences().getFloat(AUTO_WALLPAPER_BRIGHTNESS, 0f)
+    }
+
+    fun setAutoWallpaperBrightness(value: Float) {
+        getSharedPreferences().edit().putFloat(AUTO_WALLPAPER_BRIGHTNESS, value).apply()
+    }
+
+    // ----------------------------------------------------------------------------------------------------- //
+
+    fun getAutoWallpaperContrast(): Float {
+        return getSharedPreferences().getFloat(AUTO_WALLPAPER_CONTRAST, 1f)
+    }
+
+    fun setAutoWallpaperContrast(value: Float) {
+        getSharedPreferences().edit().putFloat(AUTO_WALLPAPER_CONTRAST, value).apply()
+    }
+
+    // ----------------------------------------------------------------------------------------------------- //
+
+    fun getAutoWallpaperHomeBlur(): Float {
+        return getSharedPreferences().getFloat(AUTO_WALLPAPER_HOME_BLUR, 0f)
+    }
+
+    fun setAutoWallpaperHomeBlur(value: Float) {
+        getSharedPreferences().edit().putFloat(AUTO_WALLPAPER_HOME_BLUR, value).apply()
+    }
+
+    // ----------------------------------------------------------------------------------------------------- //
+
+    fun getAutoWallpaperHomeBrightness(): Float {
+        return getSharedPreferences().getFloat(AUTO_WALLPAPER_HOME_BRIGHTNESS, 0f)
+    }
+
+    fun setAutoWallpaperHomeBrightness(value: Float) {
+        getSharedPreferences().edit().putFloat(AUTO_WALLPAPER_HOME_BRIGHTNESS, value).apply()
+    }
+
+    // ----------------------------------------------------------------------------------------------------- //
+
+    fun getAutoWallpaperHomeContrast(): Float {
+        return getSharedPreferences().getFloat(AUTO_WALLPAPER_HOME_CONTRAST, 1f)
+    }
+
+    fun setAutoWallpaperHomeContrast(value: Float) {
+        getSharedPreferences().edit().putFloat(AUTO_WALLPAPER_HOME_CONTRAST, value).apply()
+    }
+
+    // ----------------------------------------------------------------------------------------------------- //
+
+    fun getAutoWallpaperLockBlur(): Float {
+        return getSharedPreferences().getFloat(AUTO_WALLPAPER_LOCK_BLUR, 0f)
+    }
+
+    fun setAutoWallpaperLockBlur(value: Float) {
+        getSharedPreferences().edit().putFloat(AUTO_WALLPAPER_LOCK_BLUR, value).apply()
+    }
+
+    // ----------------------------------------------------------------------------------------------------- //
+
+    fun getAutoWallpaperLockBrightness(): Float {
+        return getSharedPreferences().getFloat(AUTO_WALLPAPER_LOCK_BRIGHTNESS, 0f)
+    }
+
+    fun setAutoWallpaperLockBrightness(value: Float) {
+        getSharedPreferences().edit().putFloat(AUTO_WALLPAPER_LOCK_BRIGHTNESS, value).apply()
+    }
+
+    // ----------------------------------------------------------------------------------------------------- //
+
+    fun getAutoWallpaperLockContrast(): Float {
+        return getSharedPreferences().getFloat(AUTO_WALLPAPER_LOCK_CONTRAST, 1f)
+    }
+
+    fun setAutoWallpaperLockContrast(value: Float) {
+        getSharedPreferences().edit().putFloat(AUTO_WALLPAPER_LOCK_CONTRAST, value).apply()
+    }
+
+    // ----------------------------------------------------------------------------------------------------- //
+
+    fun clearAutoWallpaperValues() {
+        getSharedPreferences().edit().remove(AUTO_WALLPAPER_BLUR).apply()
+        getSharedPreferences().edit().remove(AUTO_WALLPAPER_BRIGHTNESS).apply()
+        getSharedPreferences().edit().remove(AUTO_WALLPAPER_CONTRAST).apply()
+        getSharedPreferences().edit().remove(AUTO_WALLPAPER_HOME_BLUR).apply()
+        getSharedPreferences().edit().remove(AUTO_WALLPAPER_HOME_BRIGHTNESS).apply()
+        getSharedPreferences().edit().remove(AUTO_WALLPAPER_HOME_CONTRAST).apply()
+        getSharedPreferences().edit().remove(AUTO_WALLPAPER_LOCK_BLUR).apply()
+        getSharedPreferences().edit().remove(AUTO_WALLPAPER_LOCK_BRIGHTNESS).apply()
+        getSharedPreferences().edit().remove(AUTO_WALLPAPER_LOCK_CONTRAST).apply()
     }
 }

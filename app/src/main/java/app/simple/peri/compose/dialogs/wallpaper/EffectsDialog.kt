@@ -36,7 +36,7 @@ fun EffectsDialog(
 
         AlertDialog(
                 onDismissRequest = { setShowDialog(false) },
-                title = { Text(text = stringResource(id = R.string.edit)) },
+                title = { Text(text = stringResource(id = R.string.apply_effects_summary)) },
                 text = {
                     Column {
                         Text(text = stringResource(id = R.string.blur))

@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.FiberManualRecord
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -44,6 +45,7 @@ import app.simple.peri.compose.dialogs.autowallpaper.FoldersDialog
 import app.simple.peri.compose.dialogs.autowallpaper.ScreenSelectionDialog
 import app.simple.peri.compose.dialogs.autowallpaper.TagsDialog
 import app.simple.peri.compose.dialogs.autowallpaper.TimeSelectionDialog
+import app.simple.peri.compose.dialogs.wallpaper.EffectsDialog
 import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.preferences.MainPreferences
 
@@ -131,6 +133,8 @@ fun AutoWallpaper(navController: NavController? = null) {
             val showHomeTagDialog = remember { mutableStateOf(false) }
             val showLockFolderDialog = remember { mutableStateOf(false) }
             val showHomeFolderDialog = remember { mutableStateOf(false) }
+            val showLockEffectsDialog = remember { mutableStateOf(false) }
+            val showHomeEffectsDialog = remember { mutableStateOf(false) }
 
             SecondaryHeader(title = context.getString(R.string.source))
 
@@ -226,6 +230,26 @@ fun AutoWallpaper(navController: NavController? = null) {
                                     .align(Alignment.CenterVertically)
                         )
                     }
+
+                    Row {
+                        Icon(
+                                imageVector = Icons.Rounded.Edit,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier
+                                    .padding(end = 8.dp, start = 12.dp)
+                                    .height(16.dp)
+                                    .align(Alignment.CenterVertically)
+                        )
+
+                        SecondaryClickablePreference(
+                                title = context.getString(R.string.effects),
+                                description = context.getString(R.string.apply_effects_summary),
+                                onClick = {
+                                    showLockEffectsDialog.value = true
+                                }
+                        )
+                    }
                 }
             }
 
@@ -318,6 +342,26 @@ fun AutoWallpaper(navController: NavController? = null) {
                                     .align(Alignment.CenterVertically)
                         )
                     }
+
+                    Row {
+                        Icon(
+                                imageVector = Icons.Rounded.Edit,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier
+                                    .padding(end = 8.dp, start = 12.dp)
+                                    .height(16.dp)
+                                    .align(Alignment.CenterVertically)
+                        )
+
+                        SecondaryClickablePreference(
+                                title = context.getString(R.string.effects),
+                                description = context.getString(R.string.apply_effects_summary),
+                                onClick = {
+                                    showHomeEffectsDialog.value = true
+                                }
+                        )
+                    }
                 }
             }
 
@@ -388,9 +432,49 @@ fun AutoWallpaper(navController: NavController? = null) {
                             MainComposePreferences.setLastHomeWallpaperPosition(0)
                         })
             }
+
+            if (showLockEffectsDialog.value) {
+                EffectsDialog(
+                        showDialog = showLockEffectsDialog.value,
+                        setShowDialog = { showLockEffectsDialog.value = it },
+                        initialBlurValue = MainComposePreferences.getAutoWallpaperLockBlur(),
+                        initialBrightnessValue = MainComposePreferences.getAutoWallpaperLockBrightness(),
+                        initialContrastValue = MainComposePreferences.getAutoWallpaperLockContrast(),
+                        onApplyEffects = { blur, brightness, contrast ->
+                            MainComposePreferences.setAutoWallpaperLockBlur(blur)
+                            MainComposePreferences.setAutoWallpaperLockBrightness(brightness)
+                            MainComposePreferences.setAutoWallpaperLockContrast(contrast)
+                        }
+                )
+            }
+
+            if (showHomeEffectsDialog.value) {
+                EffectsDialog(
+                        showDialog = showHomeEffectsDialog.value,
+                        setShowDialog = { showHomeEffectsDialog.value = it },
+                        initialBlurValue = MainComposePreferences.getAutoWallpaperHomeBlur(),
+                        initialBrightnessValue = MainComposePreferences.getAutoWallpaperHomeBrightness(),
+                        initialContrastValue = MainComposePreferences.getAutoWallpaperHomeContrast(),
+                        onApplyEffects = { blur, brightness, contrast ->
+                            MainComposePreferences.setAutoWallpaperHomeBlur(blur)
+                            MainComposePreferences.setAutoWallpaperHomeBrightness(brightness)
+                            MainComposePreferences.setAutoWallpaperHomeContrast(contrast)
+                        }
+                )
+            }
         }
         item {
+            val showEffectsDialog = remember { mutableStateOf(false) }
+
             SecondaryHeader(title = context.getString(R.string.settings))
+
+            ClickablePreference(
+                    title = context.getString(R.string.effects),
+                    description = context.getString(R.string.apply_effects_summary),
+                    onClick = {
+                        showEffectsDialog.value = true
+                    }
+            )
 
             SwitchPreference(
                     title = context.getString(R.string.crop_wallpaper),
@@ -406,6 +490,21 @@ fun AutoWallpaper(navController: NavController? = null) {
                     checked = MainPreferences.isLinearAutoWallpaper()
             ) {
                 MainPreferences.setLinearAutoWallpaper(it)
+            }
+
+            if (showEffectsDialog.value) {
+                EffectsDialog(
+                        showDialog = showEffectsDialog.value,
+                        setShowDialog = { showEffectsDialog.value = it },
+                        initialBlurValue = MainComposePreferences.getAutoWallpaperBlur(),
+                        initialBrightnessValue = MainComposePreferences.getAutoWallpaperBrightness(),
+                        initialContrastValue = MainComposePreferences.getAutoWallpaperContrast(),
+                        onApplyEffects = { blur, brightness, contrast ->
+                            MainComposePreferences.setAutoWallpaperBlur(blur)
+                            MainComposePreferences.setAutoWallpaperBrightness(brightness)
+                            MainComposePreferences.setAutoWallpaperContrast(contrast)
+                        }
+                )
             }
         }
     }

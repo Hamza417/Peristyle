@@ -181,4 +181,6 @@
     <string name="allow_media_access">Allow Media Access</string>
     <string name="allow_media_access_info">It\'s not possible to manually grant the access to system wallpapers, selecting Allow All will allow the app to automatically access the files.</string>
     <string name="lock_screen_wallpaper_info">Lock Screen wallpaper is not available below Android 14</string>
+    <string name="effects">Effects</string>
+    <string name="apply_effects_summary">Apply effects on the wallpapers.</string>
 </resources>
