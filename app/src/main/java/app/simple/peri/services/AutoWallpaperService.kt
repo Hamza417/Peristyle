@@ -24,6 +24,7 @@ import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.preferences.SharedPreferences
 import app.simple.peri.utils.BitmapUtils
+import app.simple.peri.utils.BitmapUtils.applyEffects
 import app.simple.peri.utils.BitmapUtils.cropBitmap
 import app.simple.peri.utils.ConditionUtils.invert
 import app.simple.peri.utils.ConditionUtils.isNotNull
@@ -181,6 +182,8 @@ class AutoWallpaperService : Service() {
                 Bitmap.Config.ARGB_8888
             }
 
+            inMutable = true
+
             Log.d(TAG, "Expected bitmap size: $displayWidth x $displayHeight")
             inSampleSize = BitmapUtils.calculateInSampleSize(bitmapOptions, displayWidth, displayHeight)
             inJustDecodeBounds = false
@@ -275,6 +278,10 @@ class AutoWallpaperService : Service() {
                 if (homeWallpaper.isNotNull()) {
                     Log.d(TAG, "Home wallpaper found: ${homeWallpaper?.uri}")
                     getBitmapFromUri(homeWallpaper!!) {
+                        it.applyEffects(brightness = MainComposePreferences.getAutoWallpaperHomeBrightness(),
+                                        contrast = MainComposePreferences.getAutoWallpaperHomeContrast(),
+                                        blur = MainComposePreferences.getAutoWallpaperHomeBlur())
+
                         wallpaperManager.setBitmap(it, null, true, WallpaperManager.FLAG_SYSTEM)
                     }
                 }
@@ -282,6 +289,10 @@ class AutoWallpaperService : Service() {
                 if (lockWallpaper.isNotNull()) {
                     Log.d(TAG, "Lock wallpaper found: ${lockWallpaper?.uri}")
                     getBitmapFromUri(lockWallpaper!!) {
+                        it.applyEffects(brightness = MainComposePreferences.getAutoWallpaperLockBrightness(),
+                                        contrast = MainComposePreferences.getAutoWallpaperLockContrast(),
+                                        blur = MainComposePreferences.getAutoWallpaperLockBlur())
+
                         wallpaperManager.setBitmap(it, null, true, WallpaperManager.FLAG_LOCK)
                     }
                 }
@@ -292,14 +303,19 @@ class AutoWallpaperService : Service() {
                         wallpaper = getWallpapersFromDatabase()?.random()
 
                         getBitmapFromUri(wallpaper!!) {
+                            val bitmap = it.copy(it.config ?: Bitmap.Config.ARGB_8888, true)
+                            bitmap.applyEffects(brightness = MainComposePreferences.getAutoWallpaperBrightness(),
+                                                contrast = MainComposePreferences.getAutoWallpaperContrast(),
+                                                blur = MainComposePreferences.getAutoWallpaperBlur())
+
                             if (MainPreferences.isSettingForHomeScreen()) {
-                                wallpaperManager.setBitmap(it, null, true, WallpaperManager.FLAG_SYSTEM)
+                                wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_SYSTEM)
                             } else {
                                 Log.i(TAG, "No home wallpaper, skipping")
                             }
 
                             if (MainPreferences.isSettingForLockScreen()) {
-                                wallpaperManager.setBitmap(it, null, true, WallpaperManager.FLAG_LOCK)
+                                wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_LOCK)
                             } else {
                                 Log.i(TAG, "No lock wallpaper, skipping")
                             }
@@ -310,6 +326,11 @@ class AutoWallpaperService : Service() {
                         Log.d(TAG, "No lock wallpaper found, setting random wallpaper")
                         if (MainPreferences.isSettingForLockScreen()) {
                             getBitmapFromUri(getWallpapersFromDatabase()?.random()!!) {
+                                val bitmap = it.copy(it.config ?: Bitmap.Config.ARGB_8888, true)
+                                bitmap.applyEffects(brightness = MainComposePreferences.getAutoWallpaperBrightness(),
+                                                    contrast = MainComposePreferences.getAutoWallpaperContrast(),
+                                                    blur = MainComposePreferences.getAutoWallpaperBlur())
+
                                 wallpaperManager.setBitmap(it, null, true, WallpaperManager.FLAG_LOCK)
                             }
                         }
@@ -319,6 +340,11 @@ class AutoWallpaperService : Service() {
                         Log.d(TAG, "No home wallpaper found, setting random wallpaper")
                         if (MainPreferences.isSettingForHomeScreen()) {
                             getBitmapFromUri(getWallpapersFromDatabase()?.random()!!) {
+                                val bitmap = it.copy(it.config ?: Bitmap.Config.ARGB_8888, true)
+                                bitmap.applyEffects(brightness = MainComposePreferences.getAutoWallpaperBrightness(),
+                                                    contrast = MainComposePreferences.getAutoWallpaperContrast(),
+                                                    blur = MainComposePreferences.getAutoWallpaperBlur())
+
                                 wallpaperManager.setBitmap(it, null, true, WallpaperManager.FLAG_SYSTEM)
                             }
                         }

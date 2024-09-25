@@ -68,6 +68,7 @@ import androidx.navigation.NavHostController
 import app.simple.peri.R
 import app.simple.peri.compose.dialogs.wallpaper.EffectsDialog
 import app.simple.peri.compose.nav.Routes
+import app.simple.peri.constants.Misc
 import app.simple.peri.factories.TagsViewModelFactory
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.tools.StackBlur
@@ -249,7 +250,7 @@ fun Wallpaper(context: Context, navController: NavHostController) {
                             val bitmap = graphicsLayer.toImageBitmap().asAndroidBitmap().copy(Bitmap.Config.ARGB_8888, true)
                             bitmap.applyEffects(brightnessValue, contrastValue)
                             try {
-                                StackBlur().blurRgb(bitmap, blurValue.toInt().times(4))
+                                StackBlur().blurRgb(bitmap, blurValue.toInt().times(Misc.BLUR_TIMES))
                             } catch (e: IllegalArgumentException) {
                                 e.printStackTrace()
                             }
