@@ -29,8 +29,8 @@ import app.simple.peri.compose.screens.WallpaperList
 import app.simple.peri.compose.screens.isSetupComplete
 import app.simple.peri.utils.ConditionUtils.invert
 
-private const val ANIMATION_DURATION = 750
-private const val DELAY = 250
+private const val ANIMATION_DURATION = 400
+private const val DELAY = 100
 
 @Composable
 fun PeristyleNavigation(context: Context) {
