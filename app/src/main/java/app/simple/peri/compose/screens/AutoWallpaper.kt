@@ -469,8 +469,8 @@ fun AutoWallpaper(navController: NavController? = null) {
             SecondaryHeader(title = context.getString(R.string.settings))
 
             ClickablePreference(
-                    title = context.getString(R.string.effects),
-                    description = context.getString(R.string.apply_effects_summary),
+                    title = context.getString(R.string.default_effects),
+                    description = context.getString(R.string.default_effects_summary),
                     onClick = {
                         showEffectsDialog.value = true
                     }
