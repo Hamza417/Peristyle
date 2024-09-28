@@ -182,4 +182,8 @@
     <string name="allow_media_access">Medya Erişimine İzin Ver</string>
     <string name="allow_media_access_info">Sistem duvar kağıtlarına manuel erişim mümkün değildir, \"Hepsine İzin Ver\" seçeneği uygulamanın dosyalara otomatik olarak erişmesini sağlayacaktır.</string>
     <string name="lock_screen_wallpaper_info">Kilit ekranı duvar kağıdı Android 14\'ün altında mevcut değildir.</string>
+    <string name="effects">Efektler</string>
+    <string name="apply_effects_summary">Duvar kağıtlarına efektler uygulayın.</string>
+    <string name="default_effects">Varsayılan Efektler</string>
+    <string name="default_effects_summary">Özel tercihler ayarlanmadığında duvar kağıtları için varsayılan efektler.</string>
 </resources>
