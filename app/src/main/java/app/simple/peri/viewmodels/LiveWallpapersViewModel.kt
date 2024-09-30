@@ -1,6 +1,7 @@
 package app.simple.peri.viewmodels
 
 import android.app.Application
+import android.app.WallpaperInfo
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
@@ -28,12 +29,17 @@ class LiveWallpapersViewModel(application: Application) : AndroidViewModel(appli
             val availableWallpapersList: MutableList<ResolveInfo> = packageManager.queryIntentServices(
                     Intent(WallpaperService.SERVICE_INTERFACE), PackageManager.GET_META_DATA)
 
-            val wallpapers = availableWallpapersList.map {
-                LiveWallpaperInfo(
-                        name = it.loadLabel(packageManager).toString(),
-                        icon = it.loadIcon(packageManager),
-                        resolveInfo = it
-                )
+            val wallpapers = availableWallpapersList.mapNotNull {
+                try {
+                    val wallpaperInfo = WallpaperInfo(getApplication(), it)
+                    LiveWallpaperInfo(
+                            name = wallpaperInfo.loadLabel(packageManager).toString(),
+                            icon = wallpaperInfo.loadThumbnail(packageManager),
+                            resolveInfo = it
+                    )
+                } catch (e: Exception) {
+                    null
+                }
             }
 
             liveWallpapers.postValue(wallpapers)
