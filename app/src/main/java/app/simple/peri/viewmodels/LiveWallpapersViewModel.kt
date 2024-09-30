@@ -42,7 +42,7 @@ class LiveWallpapersViewModel(application: Application) : AndroidViewModel(appli
                 }
             }
 
-            liveWallpapers.postValue(wallpapers)
+            liveWallpapers.postValue(wallpapers.sortedBy { it.name })
         }
     }
 }
