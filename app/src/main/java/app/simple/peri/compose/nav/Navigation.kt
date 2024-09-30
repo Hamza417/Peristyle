@@ -27,7 +27,6 @@ import app.simple.peri.compose.screens.Tags
 import app.simple.peri.compose.screens.Wallpaper
 import app.simple.peri.compose.screens.WallpaperList
 import app.simple.peri.compose.screens.isSetupComplete
-import app.simple.peri.utils.ConditionUtils.invert
 
 private const val ANIMATION_DURATION = 400
 private const val DELAY = 100
@@ -39,11 +38,7 @@ fun PeristyleNavigation(context: Context) {
 
     NavHost(navController = navController, startDestination = startDestination) {
         composable(Routes.SETUP) {
-            if (isSetupComplete(context).invert()) {
-                Setup(context, navController)
-            } else {
-                navController.navigate(Routes.HOME)
-            }
+            Setup(context, navController)
         }
 
         composableWithTransitions(Routes.HOME) {

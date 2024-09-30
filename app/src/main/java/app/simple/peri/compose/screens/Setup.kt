@@ -125,7 +125,11 @@ fun Setup(context: Context, navController: NavController? = null) {
         Button(
                 onClick = {
                     if (isSetupComplete(context)) {
-                        navController?.navigate(Routes.HOME)
+                        navController?.navigate(Routes.HOME) {
+                            popUpTo(Routes.SETUP) {
+                                inclusive = true
+                            }
+                        }
                     } else {
                         showSetupIncompleteDialog = true
                     }

@@ -6,11 +6,13 @@ import android.content.Intent
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.os.Bundle
 import android.util.Log
+import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import app.simple.peri.BuildConfig
 import app.simple.peri.compose.nav.PeristyleNavigation
 import app.simple.peri.compose.theme.PeristyleTheme
 import app.simple.peri.preferences.MainPreferences
@@ -22,6 +24,7 @@ class MainComposeActivity : ComponentActivity(), OnSharedPreferenceChangeListene
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         SharedPreferences.init(applicationContext)
+        keepScreenOn()
 
         setContent {
             PeristyleTheme {
@@ -48,6 +51,12 @@ class MainComposeActivity : ComponentActivity(), OnSharedPreferenceChangeListene
             Log.d("MainActivity", "Auto wallpaper alarm set for every ${MainPreferences.getAutoWallpaperInterval()} ms")
         } else {
             Log.d("MainActivity", "Auto wallpaper alarm cancelled")
+        }
+    }
+
+    private fun keepScreenOn() {
+        if (BuildConfig.DEBUG) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
     }
 

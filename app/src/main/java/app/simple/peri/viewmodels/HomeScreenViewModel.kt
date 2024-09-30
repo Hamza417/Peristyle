@@ -5,6 +5,7 @@ import android.app.WallpaperManager
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
+import android.util.Log
 import androidx.core.content.FileProvider
 import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.AndroidViewModel
@@ -29,11 +30,10 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
     }
 
     private fun postCurrentSystemWallpaper() {
+        Log.i("HomeScreenViewModel", "Posting current system wallpaper")
         viewModelScope.launch(Dispatchers.IO) {
             if (PermissionUtils.checkStoragePermission(getApplication())) {
                 systemWallpaperData.postValue(getCurrentSystemWallpaper())
-            } else {
-                throw SecurityException("Storage permission not granted")
             }
         }
     }
