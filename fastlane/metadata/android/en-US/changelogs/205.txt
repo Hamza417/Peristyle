@@ -1,0 +1,3 @@
+- Fixed the looping home screen after the first setup
+- Added custom effects for each screen in Auto Wallpaper
+- Reduce animation time
