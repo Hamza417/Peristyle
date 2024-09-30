@@ -36,6 +36,7 @@ fun TopHeader(title: String, modifier: Modifier = Modifier, count: Int = 0, navC
                 fontSize = 32.sp, // Set the font size
                 modifier = Modifier.weight(1f), // Set the weight
                 fontWeight = FontWeight.Bold, // Make the text bold
+                lineHeight = 30.sp, // Set the line height
         )
 
         if (count > 0) {

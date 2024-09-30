@@ -24,6 +24,10 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.rounded.Label
+import androidx.compose.material.icons.rounded.Circle
+import androidx.compose.material.icons.rounded.MotionPhotosOn
+import androidx.compose.material.icons.rounded.Schedule
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
@@ -46,8 +50,8 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -325,7 +329,7 @@ fun BottomMenu(modifier: Modifier = Modifier, navController: NavController? = nu
                 modifier = Modifier
                     .weight(0.2F)
                     .height(height),
-                drawableID = R.drawable.ic_label // Set a smaller height
+                imageVector = Icons.AutoMirrored.Rounded.Label
         ) {
             navController?.navigate(Routes.TAGS)
         }
@@ -334,9 +338,18 @@ fun BottomMenu(modifier: Modifier = Modifier, navController: NavController? = nu
                 modifier = Modifier
                     .weight(0.2F)
                     .height(height),
-                drawableID = R.drawable.ic_schedule // Set a smaller height
+                imageVector = Icons.Rounded.Schedule
         ) {
             navController?.navigate(Routes.AUTO_WALLPAPER)
+        }
+
+        BottomMenuItem(
+                modifier = Modifier
+                    .weight(0.2F)
+                    .height(height),
+                imageVector = Icons.Rounded.MotionPhotosOn
+        ) {
+            navController?.navigate(Routes.LIVE_WALLPAPERS)
         }
 
         Card(
@@ -379,7 +392,7 @@ fun BottomMenu(modifier: Modifier = Modifier, navController: NavController? = nu
 }
 
 @Composable
-fun BottomMenuItem(modifier: Modifier = Modifier, drawableID: Int = 0, onClick: () -> Unit = {}) {
+fun BottomMenuItem(modifier: Modifier = Modifier, imageVector: ImageVector = Icons.Rounded.Circle, onClick: () -> Unit = {}) {
     Column(
             modifier = modifier,
             horizontalAlignment = Alignment.CenterHorizontally
@@ -389,18 +402,18 @@ fun BottomMenuItem(modifier: Modifier = Modifier, drawableID: Int = 0, onClick: 
                         defaultElevation = 0.dp
                 ),
                 modifier = modifier
-                    .padding(start = 8.dp, end = 8.dp)
+                    .padding(start = 4.dp, end = 4.dp)
                     .weight(1f),
                 shape = RoundedCornerShape(32.dp),
                 onClick = onClick,
         ) {
             Icon(
-                    painter = painterResource(id = drawableID),
+                    imageVector = imageVector,
                     contentDescription = null,
                     modifier = Modifier
                         .fillMaxHeight()
                         .fillMaxWidth()
-                        .padding(16.dp)
+                        .padding(14.dp)
             )
         }
     }

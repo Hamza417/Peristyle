@@ -185,4 +185,5 @@
     <string name="apply_effects_summary">Apply effects on the wallpapers.</string>
     <string name="default_effects">Default Effects</string>
     <string name="default_effects_summary">Default effects for the wallpapers when no custom preferences are set.</string>
+    <string name="live_wallpapers">Live Wallpapers</string>
 </resources>

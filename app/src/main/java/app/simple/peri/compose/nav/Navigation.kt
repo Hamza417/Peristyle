@@ -20,6 +20,7 @@ import androidx.navigation.compose.rememberNavController
 import app.simple.peri.compose.screens.AutoWallpaper
 import app.simple.peri.compose.screens.Folders
 import app.simple.peri.compose.screens.Home
+import app.simple.peri.compose.screens.LiveWallpapers
 import app.simple.peri.compose.screens.Settings
 import app.simple.peri.compose.screens.Setup
 import app.simple.peri.compose.screens.TaggedWallpapers
@@ -76,6 +77,10 @@ fun PeristyleNavigation(context: Context) {
         composableWithTransitions("${Routes.TAGGED_WALLPAPERS}/{tag}") { backStackEntry ->
             val tag = backStackEntry.arguments?.getString("tag")
             TaggedWallpapers(navController, tag)
+        }
+
+        composableWithTransitions(Routes.LIVE_WALLPAPERS) {
+            LiveWallpapers(navController)
         }
     }
 }
