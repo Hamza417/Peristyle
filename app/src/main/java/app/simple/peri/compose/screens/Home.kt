@@ -3,11 +3,17 @@ package app.simple.peri.compose.screens
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.util.Log
+import android.widget.Toast
+import androidx.annotation.StringRes
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,9 +29,9 @@ import androidx.compose.foundation.pager.PagerSnapDistance
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.automirrored.rounded.Label
 import androidx.compose.material.icons.rounded.Circle
+import androidx.compose.material.icons.rounded.Folder
 import androidx.compose.material.icons.rounded.MotionPhotosOn
 import androidx.compose.material.icons.rounded.Schedule
 import androidx.compose.material.icons.rounded.Settings
@@ -39,6 +45,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -52,6 +59,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -314,10 +322,12 @@ fun Header(title: String, modifier: Modifier = Modifier, navController: NavContr
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun BottomMenu(modifier: Modifier = Modifier, navController: NavController? = null) {
     val height = 60.dp
     val rowPadding = 16.dp
+    val context = LocalContext.current
 
     Row(
             modifier = modifier
@@ -329,7 +339,8 @@ fun BottomMenu(modifier: Modifier = Modifier, navController: NavController? = nu
                 modifier = Modifier
                     .weight(0.2F)
                     .height(height),
-                imageVector = Icons.AutoMirrored.Rounded.Label
+                imageVector = Icons.AutoMirrored.Rounded.Label,
+                title = R.string.tags
         ) {
             navController?.navigate(Routes.TAGS)
         }
@@ -338,7 +349,8 @@ fun BottomMenu(modifier: Modifier = Modifier, navController: NavController? = nu
                 modifier = Modifier
                     .weight(0.2F)
                     .height(height),
-                imageVector = Icons.Rounded.Schedule
+                imageVector = Icons.Rounded.Schedule,
+                title = R.string.auto_wallpaper
         ) {
             navController?.navigate(Routes.AUTO_WALLPAPER)
         }
@@ -347,7 +359,8 @@ fun BottomMenu(modifier: Modifier = Modifier, navController: NavController? = nu
                 modifier = Modifier
                     .weight(0.2F)
                     .height(height),
-                imageVector = Icons.Rounded.MotionPhotosOn
+                imageVector = Icons.Rounded.MotionPhotosOn,
+                title = R.string.live_wallpapers
         ) {
             navController?.navigate(Routes.LIVE_WALLPAPERS)
         }
@@ -358,41 +371,46 @@ fun BottomMenu(modifier: Modifier = Modifier, navController: NavController? = nu
                 ),
                 modifier = Modifier
                     .padding(8.dp)
-                    .weight(0.6f)
-                    .height(height), // Set a smaller height
+                    .weight(0.4f)
+                    .height(height)
+                    .combinedClickable(
+                            onClick = {
+                                navController?.navigate(Routes.FOLDERS)
+                            },
+                            onLongClick = {
+                                Toast
+                                    .makeText(
+                                            context,
+                                            context.getString(R.string.folder),
+                                            Toast.LENGTH_SHORT
+                                    )
+                                    .show()
+                            },
+                            indication = ripple(bounded = true, radius = 32.dp),
+                            interactionSource = remember { MutableInteractionSource() }
+                    ),
                 shape = RoundedCornerShape(32.dp),
                 colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.primary,
                 ),
-                onClick = {
-                    navController?.navigate(Routes.FOLDERS)
-                }
         ) {
-            Row(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                        text = stringResource(id = R.string.folder),
-                        textAlign = TextAlign.Center,
-                        fontSize = 20.sp, // Set the font size
-                        modifier = Modifier.weight(1f), // Set the weight
-                        fontWeight = FontWeight.Bold, // Make the text bold
-                )
-                Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(64.dp)
-                            .padding(16.dp)
-                )
-            }
+            Icon(
+                    imageVector = Icons.Rounded.Folder,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(64.dp)
+                        .padding(16.dp)
+                        .align(Alignment.CenterHorizontally)
+            )
         }
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun BottomMenuItem(modifier: Modifier = Modifier, imageVector: ImageVector = Icons.Rounded.Circle, onClick: () -> Unit = {}) {
+fun BottomMenuItem(modifier: Modifier = Modifier, @StringRes title: Int = 0, imageVector: ImageVector = Icons.Rounded.Circle, onClick: () -> Unit = {}) {
+    val context = LocalContext.current
+
     Column(
             modifier = modifier,
             horizontalAlignment = Alignment.CenterHorizontally
@@ -403,9 +421,22 @@ fun BottomMenuItem(modifier: Modifier = Modifier, imageVector: ImageVector = Ico
                 ),
                 modifier = modifier
                     .padding(start = 4.dp, end = 4.dp)
-                    .weight(1f),
+                    .aspectRatio(1f)
+                    .combinedClickable(
+                            onClick = onClick,
+                            onLongClick = {
+                                Toast
+                                    .makeText(
+                                            context,
+                                            context.getString(title),
+                                            Toast.LENGTH_SHORT
+                                    )
+                                    .show()
+                            },
+                            indication = ripple(bounded = true, radius = 32.dp),
+                            interactionSource = remember { MutableInteractionSource() }
+                    ),
                 shape = RoundedCornerShape(32.dp),
-                onClick = onClick,
         ) {
             Icon(
                     imageVector = imageVector,

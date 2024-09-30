@@ -66,11 +66,7 @@ fun PeristyleNavigation(context: Context) {
             Tags(navController)
         }
 
-        composable(Routes.FOLDERS,
-                   enterTransition = { slideIntoContainer() },
-                   exitTransition = { slideOutOfContainer(direction = SlideTransitionDirection.RIGHT) },
-                   popEnterTransition = { slideIntoContainer(direction = SlideTransitionDirection.RIGHT) },
-                   popExitTransition = { slideOutOfContainer(direction = SlideTransitionDirection.RIGHT) }) {
+        composableWithTransitions(Routes.FOLDERS) {
             Folders(navController)
         }
 
