@@ -76,6 +76,8 @@ import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import app.simple.peri.R
+import app.simple.peri.compose.constants.DIALOG_OPTION_FONT_SIZE
+import app.simple.peri.compose.constants.DIALOG_TITLE_FONT_SIZE
 import app.simple.peri.compose.dialogs.common.AddTagDialog
 import app.simple.peri.compose.dialogs.settings.SureDialog
 import app.simple.peri.compose.nav.Routes
@@ -542,10 +544,13 @@ fun WallpaperMenu(setShowDialog: (Boolean) -> Unit,
                         Text(
                                 text = wallpaper.name ?: "",
                                 style = TextStyle(
-                                        fontSize = 24.sp,
+                                        fontSize = DIALOG_TITLE_FONT_SIZE,
                                         fontFamily = FontFamily.Default,
                                         fontWeight = FontWeight.Bold
-                                )
+                                ),
+                                modifier = Modifier.weight(1f),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                         )
                         Icon(
                                 imageVector = Icons.Rounded.Close,
@@ -578,7 +583,7 @@ fun WallpaperMenu(setShowDialog: (Boolean) -> Unit,
                         Text(
                                 text = context.getString(R.string.send),
                                 color = MaterialTheme.colorScheme.onSurface,
-                                fontSize = 18.sp,
+                                fontSize = DIALOG_OPTION_FONT_SIZE,
                                 fontWeight = FontWeight.SemiBold
                         )
                     }
@@ -608,7 +613,7 @@ fun WallpaperMenu(setShowDialog: (Boolean) -> Unit,
                         Text(
                                 text = context.getString(R.string.delete),
                                 color = MaterialTheme.colorScheme.onSurface,
-                                fontSize = 18.sp,
+                                fontSize = DIALOG_OPTION_FONT_SIZE,
                                 fontWeight = FontWeight.SemiBold
                         )
                     }
@@ -630,7 +635,7 @@ fun WallpaperMenu(setShowDialog: (Boolean) -> Unit,
                         Text(
                                 text = context.getString(R.string.add_tag),
                                 color = MaterialTheme.colorScheme.onSurface,
-                                fontSize = 18.sp,
+                                fontSize = DIALOG_OPTION_FONT_SIZE,
                                 fontWeight = FontWeight.SemiBold
                         )
                     }
@@ -656,7 +661,7 @@ fun WallpaperMenu(setShowDialog: (Boolean) -> Unit,
                         Text(
                                 text = context.getString(R.string.edit),
                                 color = MaterialTheme.colorScheme.onSurface,
-                                fontSize = 18.sp,
+                                fontSize = DIALOG_OPTION_FONT_SIZE,
                                 fontWeight = FontWeight.SemiBold
                         )
                     }
@@ -678,7 +683,7 @@ fun WallpaperMenu(setShowDialog: (Boolean) -> Unit,
                     ) {
                         Text(
                                 text = context.getString(R.string.select),
-                                fontSize = 18.sp,
+                                fontSize = DIALOG_OPTION_FONT_SIZE,
                                 fontWeight = FontWeight.SemiBold,
                                 color = MaterialTheme.colorScheme.onSurface
                         )

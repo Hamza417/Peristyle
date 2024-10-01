@@ -1,15 +1,20 @@
 package app.simple.peri.compose.screens
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
@@ -17,6 +22,7 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -40,6 +46,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -53,6 +61,8 @@ import app.simple.peri.R
 import app.simple.peri.compose.commons.COMMON_PADDING
 import app.simple.peri.compose.commons.RequestDirectoryPermission
 import app.simple.peri.compose.commons.TopHeader
+import app.simple.peri.compose.constants.DIALOG_OPTION_FONT_SIZE
+import app.simple.peri.compose.constants.DIALOG_TITLE_FONT_SIZE
 import app.simple.peri.compose.nav.Routes
 import app.simple.peri.models.Folder
 import app.simple.peri.viewmodels.WallpaperViewModel
@@ -151,6 +161,7 @@ fun FolderItem(folder: Folder, navController: NavController? = null, onDelete: (
 
     if (showFolderMenu) {
         FolderMenu(
+                folder = folder,
                 onDismiss = { showFolderMenu = false },
                 onOptionSelected = {
                     when (it) {
@@ -233,7 +244,7 @@ fun FolderItem(folder: Folder, navController: NavController? = null, onDelete: (
 }
 
 @Composable
-fun FolderMenu(onDismiss: () -> Unit, onOptionSelected: (String) -> Unit) {
+fun FolderMenu(folder: Folder? = null, onDismiss: () -> Unit, onOptionSelected: (String) -> Unit) {
     val options = listOf(
             stringResource(R.string.delete)
     )
@@ -242,6 +253,33 @@ fun FolderMenu(onDismiss: () -> Unit, onOptionSelected: (String) -> Unit) {
             onDismissRequest = { onDismiss() },
             text = {
                 Column {
+                    Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 24.dp, end = 8.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                                text = folder?.name ?: "",
+                                style = TextStyle(
+                                        fontSize = DIALOG_TITLE_FONT_SIZE,
+                                        fontFamily = FontFamily.Default,
+                                        fontWeight = FontWeight.Bold
+                                ),
+                                modifier = Modifier.weight(1f),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                        )
+                        Icon(
+                                imageVector = Icons.Rounded.Close,
+                                contentDescription = "",
+                                modifier = Modifier
+                                    .width(30.dp)
+                                    .height(30.dp)
+                                    .clickable { onDismiss() }
+                        )
+                    }
                     options.forEach { option ->
                         Button(
                                 onClick = {
@@ -259,7 +297,7 @@ fun FolderMenu(onDismiss: () -> Unit, onOptionSelected: (String) -> Unit) {
                                     modifier = Modifier.fillMaxWidth(),
                                     textAlign = TextAlign.Center,
                                     fontWeight = FontWeight.Bold,
-                                    fontSize = 18.sp,
+                                    fontSize = DIALOG_OPTION_FONT_SIZE,
                             )
                         }
                     }
