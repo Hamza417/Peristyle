@@ -3,6 +3,7 @@ package app.simple.peri.compose.screens
 import android.app.WallpaperManager
 import android.content.ComponentName
 import android.content.Intent
+import android.content.res.Configuration
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -29,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
@@ -70,9 +72,6 @@ fun LiveWallpapers(navController: NavHostController) {
     val topPadding = 8.dp + statusBarHeightDp
     val bottomPadding = 8.dp + navigationBarHeightDp
 
-    displayDimension.width = LocalView.current.width
-    displayDimension.height = LocalView.current.height
-
     liveWallpapersViewModel.getLiveWallpapersLiveData().observeAsState().value?.let {
         liveWallpapers.clear()
         liveWallpapers.addAll(it)
@@ -97,11 +96,13 @@ fun LiveWallpapers(navController: NavHostController) {
             val wallpaper = liveWallpapers[index]
             val context = LocalContext.current
 
+            val aspectRatio = if (isLandscape()) 16F / 9F else 9F / 16F
+
             ElevatedCard(
                     modifier = Modifier
                         .padding(8.dp)
                         .fillMaxWidth()
-                        .aspectRatio(displayDimension.getAspectRatio()),
+                        .aspectRatio(aspectRatio),
                     elevation = CardDefaults.cardElevation(
                             defaultElevation = 8.dp,
                             pressedElevation = 16.dp
@@ -157,4 +158,10 @@ fun LiveWallpapers(navController: NavHostController) {
             }
         }
     }
+}
+
+@Composable
+fun isLandscape(): Boolean {
+    val configuration = LocalConfiguration.current
+    return configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 }
