@@ -75,14 +75,14 @@ fun EffectsDialog(
                         Text(text = stringResource(id = R.string.saturation))
                         Slider(
                                 value = saturationValue.floatValue,
-                                onValueChange = {},
+                                onValueChange = { saturationValue.floatValue = it },
                                 valueRange = 0F..2F
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(text = stringResource(id = R.string.hue))
                         Slider(
                                 value = hueValue.floatValue,
-                                onValueChange = {},
+                                onValueChange = { hueValue.floatValue = it },
                                 valueRange = 0F..360F
                         )
                     }

@@ -49,8 +49,8 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
+import androidx.compose.ui.graphics.ColorMatrixColorFilter
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
@@ -71,7 +71,6 @@ import app.simple.peri.compose.nav.Routes
 import app.simple.peri.constants.Misc
 import app.simple.peri.factories.TagsViewModelFactory
 import app.simple.peri.models.Wallpaper
-import app.simple.peri.tools.StackBlur
 import app.simple.peri.utils.BitmapUtils.applyEffects
 import app.simple.peri.utils.FileUtils.toSize
 import app.simple.peri.utils.FileUtils.toUri
@@ -94,7 +93,8 @@ fun Wallpaper(context: Context, navController: NavHostController) {
     var blurValue by remember { mutableFloatStateOf(0f) } // 0F..25F
     var brightnessValue by remember { mutableFloatStateOf(0f) } // -255F..255F
     var contrastValue by remember { mutableFloatStateOf(1f) } // 0F..10F
-    val saturationValue by remember { mutableFloatStateOf(1f) } // 0F..10F
+    var saturationValue by remember { mutableFloatStateOf(1f) } // 0F..2F
+    var hueValue by remember { mutableFloatStateOf(0f) } // 0F..360F
     var tags by remember { mutableStateOf(emptyList<String>()) }
     val coroutineScope = rememberCoroutineScope()
     val graphicsLayer = rememberGraphicsLayer()
@@ -121,12 +121,41 @@ fun Wallpaper(context: Context, navController: NavHostController) {
 
         val hazeState = remember { HazeState() }
 
-        val colorMatrix = floatArrayOf(
-                contrastValue, 0f, 0f, 0f, brightnessValue,
-                0f, contrastValue, 0f, 0f, brightnessValue,
-                0f, 0f, contrastValue, 0f, brightnessValue,
-                0f, 0f, 0f, 1f, 0f
+        // Initialize the main color matrix
+        val colorMatrix = ColorMatrix()
+
+        // Create color matrices for each transformation
+        val rotateRedMatrix = ColorMatrix().apply { setToRotateRed(hueValue) }
+        val rotateGreenMatrix = ColorMatrix().apply { setToRotateGreen(hueValue) }
+        val rotateBlueMatrix = ColorMatrix().apply { setToRotateBlue(hueValue) }
+        val saturationMatrix = ColorMatrix().apply { setToSaturation(saturationValue) }
+        val contrastMatrix = ColorMatrix(
+                floatArrayOf(
+                        contrastValue, 0f, 0f, 0f, brightnessValue,
+                        0f, contrastValue, 0f, 0f, brightnessValue,
+                        0f, 0f, contrastValue, 0f, brightnessValue,
+                        0f, 0f, 0f, 1f, 0f
+                )
         )
+
+        // Manually combine the matrices
+        val combinedMatrix = FloatArray(20) // Array to hold the combined matrix
+        val tempMatrix = FloatArray(20) // Temporary array for intermediate results
+
+        // Multiply the red and green rotation matrices and store the result in tempMatrix
+        multiplyMatrices(rotateRedMatrix.values, rotateGreenMatrix.values, tempMatrix)
+
+        // Multiply the result with the blue rotation matrix and store in combinedMatrix
+        multiplyMatrices(tempMatrix, rotateBlueMatrix.values, combinedMatrix)
+
+        // Multiply the result with the saturation matrix and store in tempMatrix
+        multiplyMatrices(combinedMatrix, saturationMatrix.values, tempMatrix)
+
+        // Multiply the result with the contrast matrix and store in combinedMatrix
+        multiplyMatrices(tempMatrix, contrastMatrix.values, combinedMatrix)
+
+        // Set the combined matrix to the main color matrix
+        colorMatrix.set(ColorMatrix(combinedMatrix))
 
         Box(
                 modifier = Modifier
@@ -150,7 +179,7 @@ fun Wallpaper(context: Context, navController: NavHostController) {
                         .blur(blurValue.dp),
                     alignment = Alignment.Center,
                     contentScale = currentScale.value,
-                    colorFilter = ColorFilter.colorMatrix(ColorMatrix(colorMatrix)),
+                    colorFilter = ColorMatrixColorFilter(colorMatrix),
             )
             {
                 it.transition(withCrossFade())
@@ -236,10 +265,14 @@ fun Wallpaper(context: Context, navController: NavHostController) {
                             initialBlurValue = blurValue,
                             initialBrightnessValue = brightnessValue,
                             initialContrastValue = contrastValue,
-                            onApplyEffects = { blur, brightness, contrast ->
+                            initialSaturationValue = saturationValue,
+                            initialHueValue = hueValue,
+                            onApplyEffects = { blur, brightness, contrast, saturation, hue ->
                                 blurValue = blur
                                 brightnessValue = brightness
                                 contrastValue = contrast
+                                saturationValue = saturation
+                                hueValue = hue
                             }
                     )
                 }
@@ -248,12 +281,13 @@ fun Wallpaper(context: Context, navController: NavHostController) {
                     LaunchedEffect(showLaunchedEffect) {
                         coroutineScope.launch {
                             val bitmap = graphicsLayer.toImageBitmap().asAndroidBitmap().copy(Bitmap.Config.ARGB_8888, true)
-                            bitmap.applyEffects(brightnessValue, contrastValue)
-                            try {
-                                StackBlur().blurRgb(bitmap, blurValue.toInt().times(Misc.BLUR_TIMES))
-                            } catch (e: IllegalArgumentException) {
-                                e.printStackTrace()
-                            }
+                            bitmap.applyEffects(
+                                    blur = blurValue.times(Misc.BLUR_TIMES),
+                                    brightness = brightnessValue,
+                                    contrast = contrastValue,
+                                    saturation = saturationValue,
+                                    hue = hueValue
+                            )
                             drawable = BitmapDrawable(context.resources, bitmap)
                             showDialog = true
                             showLaunchedEffect.value = false
@@ -437,4 +471,24 @@ fun setWallpaper(context: Context, flags: Int, drawable: Drawable) {
     val wallpaperManager = WallpaperManager.getInstance(context)
     wallpaperManager.setWallpaperOffsetSteps(0F, 0F)
     wallpaperManager.setBitmap(drawable.toBitmap(), null, true, flags)
+}
+
+/**
+ * Multiplies two color matrices and stores the result in the provided result array.
+ *
+ * @param m1 The first color matrix as a float array.
+ * @param m2 The second color matrix as a float array.
+ * @param result The array to store the result of the multiplication.
+ */
+fun multiplyMatrices(m1: FloatArray, m2: FloatArray, result: FloatArray) {
+    for (i in 0..19) {
+        val row = i / 5
+        val col = i % 5
+        // Perform the matrix multiplication and store the result
+        result[i] = m1[row * 5] * m2[col] +
+                m1[row * 5 + 1] * m2[col + 5] +
+                m1[row * 5 + 2] * m2[col + 10] +
+                m1[row * 5 + 3] * m2[col + 15] +
+                m1[row * 5 + 4] * m2[col + 4]
+    }
 }
