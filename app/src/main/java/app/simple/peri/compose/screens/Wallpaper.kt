@@ -75,7 +75,6 @@ import app.simple.peri.utils.BitmapUtils.applyEffects
 import app.simple.peri.utils.FileUtils.toSize
 import app.simple.peri.utils.FileUtils.toUri
 import app.simple.peri.viewmodels.TagsViewModel
-import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
 import dev.chrisbanes.haze.HazeDefaults
 import dev.chrisbanes.haze.HazeState
@@ -84,7 +83,6 @@ import dev.chrisbanes.haze.hazeChild
 import kotlinx.coroutines.launch
 import me.saket.telephoto.zoomable.glide.ZoomableGlideImage
 
-@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun Wallpaper(context: Context, navController: NavHostController) {
     val wallpaper = navController.previousBackStackEntry?.savedStateHandle?.get<Wallpaper>(Routes.WALLPAPER_ARG)

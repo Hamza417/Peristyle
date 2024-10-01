@@ -131,6 +131,7 @@ fun WallpapersList(list: List<Wallpaper>, navController: NavController? = null, 
     ) {
         LazyVerticalGrid(
                 columns = GridCells.Fixed(MainComposePreferences.getGridSpanCount()),
+                state = wallpaperListViewModel.lazyGridState,
                 modifier = Modifier
                     .fillMaxSize()
                     .haze(state = hazeState),
