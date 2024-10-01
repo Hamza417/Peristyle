@@ -56,6 +56,7 @@ import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -374,7 +375,7 @@ fun CustomDialog(setShowDialog: (Boolean) -> Unit, context: Context, drawable: D
                             verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                                text = "Set as Wallpaper",
+                                text = stringResource(id = R.string.set_as_wallpaper),
                                 style = TextStyle(
                                         fontSize = 24.sp,
                                         fontFamily = FontFamily.Default,
