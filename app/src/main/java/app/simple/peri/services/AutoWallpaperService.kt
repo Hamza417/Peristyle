@@ -280,7 +280,9 @@ class AutoWallpaperService : Service() {
                     getBitmapFromUri(homeWallpaper!!) {
                         it.applyEffects(brightness = MainComposePreferences.getAutoWallpaperHomeBrightness(),
                                         contrast = MainComposePreferences.getAutoWallpaperHomeContrast(),
-                                        blur = MainComposePreferences.getAutoWallpaperHomeBlur())
+                                        blur = MainComposePreferences.getAutoWallpaperHomeBlur(),
+                                        saturation = MainComposePreferences.getAutoWallpaperHomeSaturation(),
+                                        hue = MainComposePreferences.getAutoWallpaperHomeHue())
 
                         wallpaperManager.setBitmap(it, null, true, WallpaperManager.FLAG_SYSTEM)
                     }
@@ -291,7 +293,9 @@ class AutoWallpaperService : Service() {
                     getBitmapFromUri(lockWallpaper!!) {
                         it.applyEffects(brightness = MainComposePreferences.getAutoWallpaperLockBrightness(),
                                         contrast = MainComposePreferences.getAutoWallpaperLockContrast(),
-                                        blur = MainComposePreferences.getAutoWallpaperLockBlur())
+                                        blur = MainComposePreferences.getAutoWallpaperLockBlur(),
+                                        saturation = MainComposePreferences.getAutoWallpaperLockSaturation(),
+                                        hue = MainComposePreferences.getAutoWallpaperLockHue())
 
                         wallpaperManager.setBitmap(it, null, true, WallpaperManager.FLAG_LOCK)
                     }
@@ -306,7 +310,9 @@ class AutoWallpaperService : Service() {
                             val bitmap = it.copy(it.config ?: Bitmap.Config.ARGB_8888, true)
                             bitmap.applyEffects(brightness = MainComposePreferences.getAutoWallpaperBrightness(),
                                                 contrast = MainComposePreferences.getAutoWallpaperContrast(),
-                                                blur = MainComposePreferences.getAutoWallpaperBlur())
+                                                blur = MainComposePreferences.getAutoWallpaperBlur(),
+                                                saturation = MainComposePreferences.getAutoWallpaperSaturation(),
+                                                hue = MainComposePreferences.getAutoWallpaperHue())
 
                             if (MainPreferences.isSettingForHomeScreen()) {
                                 wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_SYSTEM)
@@ -329,7 +335,9 @@ class AutoWallpaperService : Service() {
                                 val bitmap = it.copy(it.config ?: Bitmap.Config.ARGB_8888, true)
                                 bitmap.applyEffects(brightness = MainComposePreferences.getAutoWallpaperBrightness(),
                                                     contrast = MainComposePreferences.getAutoWallpaperContrast(),
-                                                    blur = MainComposePreferences.getAutoWallpaperBlur())
+                                                    blur = MainComposePreferences.getAutoWallpaperBlur(),
+                                                    saturation = MainComposePreferences.getAutoWallpaperSaturation(),
+                                                    hue = MainComposePreferences.getAutoWallpaperHue())
 
                                 wallpaperManager.setBitmap(it, null, true, WallpaperManager.FLAG_LOCK)
                             }
@@ -343,7 +351,9 @@ class AutoWallpaperService : Service() {
                                 val bitmap = it.copy(it.config ?: Bitmap.Config.ARGB_8888, true)
                                 bitmap.applyEffects(brightness = MainComposePreferences.getAutoWallpaperBrightness(),
                                                     contrast = MainComposePreferences.getAutoWallpaperContrast(),
-                                                    blur = MainComposePreferences.getAutoWallpaperBlur())
+                                                    blur = MainComposePreferences.getAutoWallpaperBlur(),
+                                                    saturation = MainComposePreferences.getAutoWallpaperSaturation(),
+                                                    hue = MainComposePreferences.getAutoWallpaperHue())
 
                                 wallpaperManager.setBitmap(it, null, true, WallpaperManager.FLAG_SYSTEM)
                             }

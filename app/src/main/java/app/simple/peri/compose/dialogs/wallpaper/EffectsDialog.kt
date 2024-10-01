@@ -23,15 +23,27 @@ fun EffectsDialog(
         initialBlurValue: Float = 0f,
         initialBrightnessValue: Float = 1f,
         initialContrastValue: Float = 1f,
-        onApplyEffects: (Float, Float, Float) -> Unit
+        initialSaturationValue: Float = 1f,
+        initialHueValue: Float = 0f,
+        onApplyEffects: (Float, Float, Float, Float, Float) -> Unit
 ) {
     if (showDialog) {
         val blurValue = remember { mutableFloatStateOf(initialBlurValue) }
         val brightnessValue = remember { mutableFloatStateOf(initialBrightnessValue) }
         val contrastValue = remember { mutableFloatStateOf(initialContrastValue) }
+        val saturationValue = remember { mutableFloatStateOf(initialSaturationValue) }
+        val hueValue = remember { mutableFloatStateOf(initialHueValue) }
 
-        LaunchedEffect(blurValue.floatValue, brightnessValue.floatValue, contrastValue.floatValue) {
-            onApplyEffects(blurValue.floatValue, brightnessValue.floatValue, contrastValue.floatValue)
+        LaunchedEffect(blurValue.floatValue,
+                       brightnessValue.floatValue,
+                       contrastValue.floatValue,
+                       saturationValue.floatValue,
+                       hueValue.floatValue) {
+            onApplyEffects(blurValue.floatValue,
+                           brightnessValue.floatValue,
+                           contrastValue.floatValue,
+                           saturationValue.floatValue,
+                           hueValue.floatValue)
         }
 
         AlertDialog(
@@ -58,6 +70,20 @@ fun EffectsDialog(
                                 value = contrastValue.floatValue,
                                 onValueChange = { contrastValue.floatValue = it },
                                 valueRange = 0F..10F
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(text = stringResource(id = R.string.saturation))
+                        Slider(
+                                value = saturationValue.floatValue,
+                                onValueChange = {},
+                                valueRange = 0F..2F
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(text = stringResource(id = R.string.hue))
+                        Slider(
+                                value = hueValue.floatValue,
+                                onValueChange = {},
+                                valueRange = 0F..360F
                         )
                     }
                 },

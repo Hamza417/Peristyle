@@ -440,10 +440,14 @@ fun AutoWallpaper(navController: NavController? = null) {
                         initialBlurValue = MainComposePreferences.getAutoWallpaperLockBlur(),
                         initialBrightnessValue = MainComposePreferences.getAutoWallpaperLockBrightness(),
                         initialContrastValue = MainComposePreferences.getAutoWallpaperLockContrast(),
-                        onApplyEffects = { blur, brightness, contrast ->
+                        initialSaturationValue = MainComposePreferences.getAutoWallpaperLockSaturation(),
+                        initialHueValue = MainComposePreferences.getAutoWallpaperLockHue(),
+                        onApplyEffects = { blur, brightness, contrast, saturation, hue ->
                             MainComposePreferences.setAutoWallpaperLockBlur(blur)
                             MainComposePreferences.setAutoWallpaperLockBrightness(brightness)
                             MainComposePreferences.setAutoWallpaperLockContrast(contrast)
+                            MainComposePreferences.setAutoWallpaperLockSaturation(saturation)
+                            MainComposePreferences.setAutoWallpaperLockHue(hue)
                         }
                 )
             }
@@ -455,10 +459,14 @@ fun AutoWallpaper(navController: NavController? = null) {
                         initialBlurValue = MainComposePreferences.getAutoWallpaperHomeBlur(),
                         initialBrightnessValue = MainComposePreferences.getAutoWallpaperHomeBrightness(),
                         initialContrastValue = MainComposePreferences.getAutoWallpaperHomeContrast(),
-                        onApplyEffects = { blur, brightness, contrast ->
+                        initialHueValue = MainComposePreferences.getAutoWallpaperHomeHue(),
+                        initialSaturationValue = MainComposePreferences.getAutoWallpaperHomeSaturation(),
+                        onApplyEffects = { blur, brightness, contrast, saturation, hue ->
                             MainComposePreferences.setAutoWallpaperHomeBlur(blur)
                             MainComposePreferences.setAutoWallpaperHomeBrightness(brightness)
                             MainComposePreferences.setAutoWallpaperHomeContrast(contrast)
+                            MainComposePreferences.setAutoWallpaperHomeSaturation(saturation)
+                            MainComposePreferences.setAutoWallpaperHomeHue(hue)
                         }
                 )
             }
@@ -499,10 +507,14 @@ fun AutoWallpaper(navController: NavController? = null) {
                         initialBlurValue = MainComposePreferences.getAutoWallpaperBlur(),
                         initialBrightnessValue = MainComposePreferences.getAutoWallpaperBrightness(),
                         initialContrastValue = MainComposePreferences.getAutoWallpaperContrast(),
-                        onApplyEffects = { blur, brightness, contrast ->
+                        initialSaturationValue = MainComposePreferences.getAutoWallpaperSaturation(),
+                        initialHueValue = MainComposePreferences.getAutoWallpaperHue(),
+                        onApplyEffects = { blur, brightness, contrast, saturation, hue ->
                             MainComposePreferences.setAutoWallpaperBlur(blur)
                             MainComposePreferences.setAutoWallpaperBrightness(brightness)
                             MainComposePreferences.setAutoWallpaperContrast(contrast)
+                            MainComposePreferences.setAutoWallpaperSaturation(saturation)
+                            MainComposePreferences.setAutoWallpaperHue(hue)
                         }
                 )
             }

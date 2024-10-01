@@ -68,7 +68,7 @@ object BitmapUtils {
         canvas.drawBitmap(this, 0f, 0f, paint)
     }
 
-    fun Bitmap.applyEffects(brightness: Float, contrast: Float, blur: Float) {
+    fun Bitmap.applyEffects(brightness: Float, contrast: Float, blur: Float, saturation: Float, hue: Float) {
         val colorMatrix = ColorMatrix().apply {
             set(floatArrayOf(
                     contrast, 0f, 0f, 0f, brightness,
@@ -77,6 +77,16 @@ object BitmapUtils {
                     0f, 0f, 0f, 1f, 0f
             ))
         }
+
+        colorMatrix.postConcat(ColorMatrix().apply {
+            setRotate(0, hue)
+            setRotate(1, hue)
+            setRotate(2, hue)
+        })
+
+        colorMatrix.postConcat(ColorMatrix().apply {
+            setSaturation(saturation)
+        })
 
         val paint = Paint()
         paint.colorFilter = ColorMatrixColorFilter(colorMatrix)
