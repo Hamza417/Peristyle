@@ -1,0 +1,8 @@
+- Added hue and saturation in wallpaper
+- Added hue and saturation in auto wallpaper
+- Added live wallpaper picker
+- Ability to uninstall live wallpapers
+- Fixed lost scroll state in wallpaper list
+- Long pressing buttons on home will show context tooltip
+- Updated home UI
+- Added Arabic translations
