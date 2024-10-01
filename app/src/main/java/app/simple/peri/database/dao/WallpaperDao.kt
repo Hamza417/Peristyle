@@ -77,4 +77,11 @@ interface WallpaperDao {
      */
     @Query("DELETE FROM wallpapers")
     fun nukeTable()
+
+    /**
+     * Delete wallpaper by the matching the [Wallpaper.uriHashcode]
+     * with the specified [hashcode]
+     */
+    @Query("DELETE FROM wallpapers WHERE uri_hashcode = :hashcode")
+    fun deleteByUriHashcode(hashcode: Int)
 }

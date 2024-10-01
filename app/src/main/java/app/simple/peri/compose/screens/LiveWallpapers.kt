@@ -256,6 +256,7 @@ fun LiveWallpapersMenu(onDismiss: () -> Unit, onOptionSelected: (String) -> Unit
                                     modifier = Modifier.fillMaxWidth(),
                                     textAlign = TextAlign.Center,
                                     fontWeight = FontWeight.Bold,
+                                    fontSize = 18.sp,
                             )
                         }
                     }

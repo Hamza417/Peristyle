@@ -1,8 +1,8 @@
 package app.simple.peri.compose.screens
 
-import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -17,11 +17,15 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -41,6 +45,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.DialogProperties
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -62,16 +67,10 @@ import dev.chrisbanes.haze.hazeChild
 @Composable
 fun Folders(navController: NavController? = null) {
     val wallpaperViewModel: WallpaperViewModel = viewModel()
-    val folders = remember { mutableListOf<Folder>() }
+    val folders by wallpaperViewModel.getFoldersLiveData().observeAsState(emptyList())
     var requestPermission by remember { mutableStateOf(false) }
     var statusBarHeight by remember { mutableIntStateOf(0) }
     var navigationBarHeight by remember { mutableIntStateOf(0) }
-
-    wallpaperViewModel.getFoldersLiveData().observeAsState().value?.let {
-        Log.i("Folders", "Folders: $it")
-        folders.clear()
-        folders.addAll(it)
-    }
 
     statusBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
             LocalView.current.rootWindowInsets).getInsets(WindowInsetsCompat.Type.statusBars()).top
@@ -113,7 +112,9 @@ fun Folders(navController: NavController? = null) {
             )
         }
         items(folders.size) { index ->
-            FolderItem(folder = folders[index], navController = navController) {}
+            FolderItem(folder = folders[index], navController = navController) {
+                wallpaperViewModel.deleteFolder(it)
+            }
         }
         item {
             ElevatedCard(
@@ -122,7 +123,10 @@ fun Folders(navController: NavController? = null) {
                         .padding(8.dp)
                         .aspectRatio(displayDimension.getAspectRatio()),
                     shape = RoundedCornerShape(16.dp),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+                    elevation = CardDefaults.cardElevation(
+                            defaultElevation = 16.dp,
+                            pressedElevation = 0.dp
+                    ),
                     onClick = { requestPermission = true }
             ) {
                 Icon(
@@ -140,12 +144,28 @@ fun Folders(navController: NavController? = null) {
 @Composable
 fun FolderItem(folder: Folder, navController: NavController? = null, onDelete: (Folder) -> Unit) {
     val hazeState = remember { HazeState() }
+    val context = LocalContext.current
+    var showFolderMenu by remember { mutableStateOf(false) }
     displayDimension.width = LocalView.current.width
     displayDimension.height = LocalView.current.height
+
+    if (showFolderMenu) {
+        FolderMenu(
+                onDismiss = { showFolderMenu = false },
+                onOptionSelected = {
+                    when (it) {
+                        context.getString(R.string.delete) -> {
+                            onDelete(folder)
+                        }
+                    }
+                }
+        )
+    }
 
     ElevatedCard(
             elevation = CardDefaults.cardElevation(
                     defaultElevation = 16.dp,
+                    pressedElevation = 0.dp
             ),
             modifier = Modifier
                 .padding(8.dp)
@@ -156,8 +176,10 @@ fun FolderItem(folder: Folder, navController: NavController? = null, onDelete: (
                             }
                         },
                         onLongClick = {
-
-                        }
+                            showFolderMenu = true
+                        },
+                        indication = ripple(bounded = true),
+                        interactionSource = remember { MutableInteractionSource() }
                 ),
             shape = RoundedCornerShape(16.dp),
     ) {
@@ -208,4 +230,50 @@ fun FolderItem(folder: Folder, navController: NavController? = null, onDelete: (
             }
         }
     }
+}
+
+@Composable
+fun FolderMenu(onDismiss: () -> Unit, onOptionSelected: (String) -> Unit) {
+    val options = listOf(
+            stringResource(R.string.delete)
+    )
+
+    AlertDialog(
+            onDismissRequest = { onDismiss() },
+            text = {
+                Column {
+                    options.forEach { option ->
+                        Button(
+                                onClick = {
+                                    onOptionSelected(option)
+                                    onDismiss()
+                                },
+                                colors = ButtonDefaults.buttonColors(
+                                        containerColor = Color.Transparent,
+                                ),
+                                modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                    text = option,
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    textAlign = TextAlign.Center,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 18.sp,
+                            )
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                Button(
+                        onClick = {
+                            onDismiss()
+                        }
+                ) {
+                    Text(text = stringResource(R.string.close))
+                }
+            },
+            properties = DialogProperties(dismissOnClickOutside = true)
+    )
 }

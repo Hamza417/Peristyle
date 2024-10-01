@@ -483,6 +483,18 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
         }
     }
 
+    fun deleteFolder(it: Folder) {
+        viewModelScope.launch(Dispatchers.IO) {
+            getApplication<Application>().contentResolver.releasePersistableUriPermission(
+                    Uri.parse(it.uri), Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+            val wallpaperDatabase = WallpaperDatabase.getInstance(getApplication())
+            val wallpaperDao = wallpaperDatabase?.wallpaperDao()
+            wallpaperDao?.deleteByUriHashcode(it.hashcode)
+            loadWallpaperDatabase()
+            loadFolders()
+        }
+    }
+
     companion object {
         private const val TAG = "WallpaperViewModel"
         private const val SYSTEM_WALLPAPER = "system_wallpaper_$.png"
