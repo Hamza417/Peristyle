@@ -25,6 +25,7 @@ Features:
 - Simple yet pretty animations with proper optimizations
 - No ads, no tracking, no analytics, no internet permissions, no unnecessary permissions
 - Auto wallpaper change support with dedicated folders and tags for each screens
+- Built-in live wallpaper picker
 - Dark mode support
 - Fully Material You design
 - Glassmorphic UI based on realtime blur effects and caustic shadows
@@ -78,18 +79,19 @@ so [here on Crowdin](https://crowdin.com/project/peristyle).
 
 ### Translation Contributors
 
-| Language              | Translators                                                                                                                                                  |
-|-----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Chinese Simplified    | [@shanzhaxiaok](https://crowdin.com/profile/shanzhaxiaok)                                                                                                    |
-| Chinese Traditional   | [@aaypkzixad](https://crowdin.com/profile/aaypkzixad), [@hugoalh](https://crowdin.com/profile/hugoalh)                                                       |
-| French                | [@ppp987](https://crowdin.com/profile/ppp987)                                                                                                                |
-| Polish                | [@Tama10](https://crowdin.com/profile/tama10)                                                                                                                |
-| Portuguese, Brazilian | [@teogabriel](https://crowdin.com/profile/teogabriel)                                                                                                        |
-| Spanish               | [@esneiderfjaimes](https://crowdin.com/profile/esneiderfjaimes)                                                                                              |
-| Turkish               | [@mikropsoft](https://crowdin.com/profile/mikropsoft)                                                                                                        |
-| Vietnamese            | [@xeus0000](https://crowdin.com/profile/xeus0000)                                                                                                            |
+| Language              | Translators                                                                                            |
+|-----------------------|--------------------------------------------------------------------------------------------------------|
+| Arabic                | [@eyadmahm0ud](https://crowdin.com/profile/eyadmahm0ud)                                                |
+| Chinese Simplified    | [@shanzhaxiaok](https://crowdin.com/profile/shanzhaxiaok)                                              |
+| Chinese Traditional   | [@aaypkzixad](https://crowdin.com/profile/aaypkzixad), [@hugoalh](https://crowdin.com/profile/hugoalh) |
+| French                | [@ppp987](https://crowdin.com/profile/ppp987)                                                          |
+| Polish                | [@Tama10](https://crowdin.com/profile/tama10)                                                          |
+| Portuguese, Brazilian | [@teogabriel](https://crowdin.com/profile/teogabriel)                                                  |
+| Spanish               | [@esneiderfjaimes](https://crowdin.com/profile/esneiderfjaimes)                                        |
+| Turkish               | [@mikropsoft](https://crowdin.com/profile/mikropsoft)                                                  |
+| Vietnamese            | [@xeus0000](https://crowdin.com/profile/xeus0000)                                                      |
 
-Last updated: 17 Sept, 2024
+Last updated: 18 Sept, 2024
 
 ## License
 
