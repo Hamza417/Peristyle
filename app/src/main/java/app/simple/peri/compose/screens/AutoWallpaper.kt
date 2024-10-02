@@ -45,7 +45,7 @@ import app.simple.peri.compose.dialogs.autowallpaper.FoldersDialog
 import app.simple.peri.compose.dialogs.autowallpaper.ScreenSelectionDialog
 import app.simple.peri.compose.dialogs.autowallpaper.TagsDialog
 import app.simple.peri.compose.dialogs.autowallpaper.TimeSelectionDialog
-import app.simple.peri.compose.dialogs.wallpaper.EffectsDialog
+import app.simple.peri.compose.dialogs.wallpaper.AutoWallpaperEffectsDialog
 import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.preferences.MainPreferences
 
@@ -434,7 +434,7 @@ fun AutoWallpaper(navController: NavController? = null) {
             }
 
             if (showLockEffectsDialog.value) {
-                EffectsDialog(
+                AutoWallpaperEffectsDialog(
                         showDialog = showLockEffectsDialog.value,
                         setShowDialog = { showLockEffectsDialog.value = it },
                         initialBlurValue = MainComposePreferences.getAutoWallpaperLockBlur(),
@@ -453,7 +453,7 @@ fun AutoWallpaper(navController: NavController? = null) {
             }
 
             if (showHomeEffectsDialog.value) {
-                EffectsDialog(
+                AutoWallpaperEffectsDialog(
                         showDialog = showHomeEffectsDialog.value,
                         setShowDialog = { showHomeEffectsDialog.value = it },
                         initialBlurValue = MainComposePreferences.getAutoWallpaperHomeBlur(),
@@ -501,7 +501,7 @@ fun AutoWallpaper(navController: NavController? = null) {
             }
 
             if (showEffectsDialog.value) {
-                EffectsDialog(
+                AutoWallpaperEffectsDialog(
                         showDialog = showEffectsDialog.value,
                         setShowDialog = { showEffectsDialog.value = it },
                         initialBlurValue = MainComposePreferences.getAutoWallpaperBlur(),
