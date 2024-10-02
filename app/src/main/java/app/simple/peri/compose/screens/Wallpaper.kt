@@ -202,6 +202,13 @@ fun Wallpaper(context: Context, navController: NavHostController) {
                     alignment = Alignment.Center,
                     contentScale = currentScale.value,
                     colorFilter = ColorMatrixColorFilter(colorMatrix),
+                    onClick = {
+                        showDetailsCard.value = !showDetailsCard.value
+                    },
+                    onLongClick = {
+                        showEditDialog.value = true
+                        showDetailsCard.value = false
+                    },
             )
             {
                 it.transition(withCrossFade())
@@ -209,7 +216,6 @@ fun Wallpaper(context: Context, navController: NavHostController) {
                     .fitCenter()
             }
         }
-
 
         if (showDetailsCard.value) {
             Card(
