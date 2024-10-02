@@ -48,6 +48,14 @@ fun EffectsDialog(
                            hueValue.floatValue)
         }
 
+        fun resetValues() {
+            blurValue.floatValue = 0F
+            brightnessValue.floatValue = 1F
+            contrastValue.floatValue = 1F
+            saturationValue.floatValue = 1F
+            hueValue.floatValue = 0F
+        }
+
         AlertDialog(
                 onDismissRequest = { setShowDialog(false) },
                 title = {
@@ -139,6 +147,11 @@ fun EffectsDialog(
                         Text(stringResource(id = R.string.close))
                     }
                 },
+                dismissButton = {
+                    Button(onClick = { resetValues() }) {
+                        Text(stringResource(id = R.string.reset))
+                    }
+                },
                 containerColor = Color.Black.copy(alpha = 0.25F),
         )
     }
@@ -172,6 +185,14 @@ fun AutoWallpaperEffectsDialog(
                            contrastValue.floatValue,
                            saturationValue.floatValue,
                            hueValue.floatValue)
+        }
+
+        fun resetValues() {
+            blurValue.floatValue = 0F
+            brightnessValue.floatValue = 1F
+            contrastValue.floatValue = 1F
+            saturationValue.floatValue = 1F
+            hueValue.floatValue = 0F
         }
 
         AlertDialog(
@@ -218,6 +239,11 @@ fun AutoWallpaperEffectsDialog(
                 confirmButton = {
                     Button(onClick = { setShowDialog(false) }) {
                         Text(stringResource(id = R.string.close))
+                    }
+                },
+                dismissButton = {
+                    Button(onClick = { resetValues() }) {
+                        Text(stringResource(id = R.string.reset))
                     }
                 },
         )
