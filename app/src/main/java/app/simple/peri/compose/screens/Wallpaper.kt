@@ -102,6 +102,30 @@ fun Wallpaper(context: Context, navController: NavHostController) {
     )
     var displayWidth by remember { mutableIntStateOf(0) }
     var displayHeight by remember { mutableIntStateOf(0) }
+    val showEditDialog = remember { mutableStateOf(false) }
+    val showDetailsCard = remember { mutableStateOf(true) }
+
+    if (showEditDialog.value) {
+        EffectsDialog(
+                showDialog = showEditDialog.value,
+                setShowDialog = {
+                    showEditDialog.value = it
+                    showDetailsCard.value = !it
+                },
+                initialBlurValue = blurValue,
+                initialBrightnessValue = brightnessValue,
+                initialContrastValue = contrastValue,
+                initialSaturationValue = saturationValue,
+                initialHueValue = hueValue,
+                onApplyEffects = { blur, brightness, contrast, saturation, hue ->
+                    blurValue = blur
+                    brightnessValue = brightness
+                    contrastValue = contrast
+                    saturationValue = saturation
+                    hueValue = hue
+                }
+        )
+    }
 
     displayWidth = LocalView.current.width
     displayHeight = LocalView.current.height
@@ -113,7 +137,6 @@ fun Wallpaper(context: Context, navController: NavHostController) {
     Box(
             modifier = Modifier.fillMaxSize(),
     ) {
-
         val currentScale = remember {
             mutableStateOf(ContentScale.Crop)
         }
@@ -188,168 +211,151 @@ fun Wallpaper(context: Context, navController: NavHostController) {
         }
 
 
-        Card(
-                modifier = Modifier
-                    .align(Alignment.BottomStart)
-                    .padding(16.dp)
-                    .fillMaxWidth()
-                    .wrapContentHeight()
-                    .windowInsetsPadding(WindowInsets.safeDrawing)
-                    .clip(RoundedCornerShape(32.dp))
-                    .hazeChild(
-                            state = hazeState,
-                            style = HazeDefaults.style(backgroundColor = Color(0x50000000), blurRadius = 15.dp)),
-                shape = RoundedCornerShape(32.dp),
-                colors = CardDefaults.cardColors(
-                        containerColor = Color.Transparent,
+        if (showDetailsCard.value) {
+            Card(
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .padding(16.dp)
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                        .windowInsetsPadding(WindowInsets.safeDrawing)
+                        .clip(RoundedCornerShape(32.dp))
+                        .hazeChild(
+                                state = hazeState,
+                                style = HazeDefaults.style(backgroundColor = Color(0x50000000), blurRadius = 15.dp)),
+                    shape = RoundedCornerShape(32.dp),
+                    colors = CardDefaults.cardColors(
+                            containerColor = Color.Transparent,
+                    )
+            ) {
+                Text(
+                        text = wallpaper?.name ?: "",
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White,
+                        modifier = Modifier.padding(top = 16.dp, start = 16.dp),
+                        fontSize = 22.sp
                 )
-        ) {
-            Text(
-                    text = wallpaper?.name ?: "",
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White,
-                    modifier = Modifier.padding(top = 16.dp, start = 16.dp),
-                    fontSize = 22.sp
-            )
 
-            Text(
-                    text = buildString {
-                        append(wallpaper?.width ?: 0)
-                        append(" x ")
-                        append(wallpaper?.height ?: 0)
-                        append(", ")
-                        append(wallpaper?.size?.toSize() ?: "")
-                    },
-                    fontWeight = FontWeight.Light,
-                    color = Color.White,
-                    modifier = Modifier.padding(start = 16.dp, top = 4.dp),
-                    fontSize = 18.sp
-            )
+                Text(
+                        text = buildString {
+                            append(wallpaper?.width ?: 0)
+                            append(" x ")
+                            append(wallpaper?.height ?: 0)
+                            append(", ")
+                            append(wallpaper?.size?.toSize() ?: "")
+                        },
+                        fontWeight = FontWeight.Light,
+                        color = Color.White,
+                        modifier = Modifier.padding(start = 16.dp, top = 4.dp),
+                        fontSize = 18.sp
+                )
 
-            if (tags.isNotEmpty()) {
-                Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Start,
-                        verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.Label,
-                            contentDescription = "",
-                            tint = Color.White,
-                            modifier = Modifier
-                                .width(32.dp)
-                                .height(32.dp)
-                                .padding(start = 12.dp, bottom = 16.dp)
-                    )
-                    Text(
-                            text = tags.joinToString(", "),
-                            fontWeight = FontWeight.Light,
-                            color = Color.White,
-                            modifier = Modifier.padding(start = 8.dp, bottom = 16.dp),
-                            fontSize = 18.sp
-                    )
+                if (tags.isNotEmpty()) {
+                    Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Start,
+                            verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                                imageVector = Icons.AutoMirrored.Rounded.Label,
+                                contentDescription = "",
+                                tint = Color.White,
+                                modifier = Modifier
+                                    .width(32.dp)
+                                    .height(32.dp)
+                                    .padding(start = 12.dp, bottom = 16.dp)
+                        )
+                        Text(
+                                text = tags.joinToString(", "),
+                                fontWeight = FontWeight.Light,
+                                color = Color.White,
+                                modifier = Modifier.padding(start = 8.dp, bottom = 16.dp),
+                                fontSize = 18.sp
+                        )
+                    }
+                } else {
+                    Spacer(modifier = Modifier.height(16.dp))
                 }
-            } else {
-                Spacer(modifier = Modifier.height(16.dp))
-            }
 
-            Row {
-                val showEditDialog = remember { mutableStateOf(false) }
-                val showLaunchedEffect = remember { mutableStateOf(false) }
+                Row {
+                    val showLaunchedEffect = remember { mutableStateOf(false) }
 
-                if (showEditDialog.value) {
-                    EffectsDialog(
-                            showDialog = showEditDialog.value,
-                            setShowDialog = { showEditDialog.value = it },
-                            initialBlurValue = blurValue,
-                            initialBrightnessValue = brightnessValue,
-                            initialContrastValue = contrastValue,
-                            initialSaturationValue = saturationValue,
-                            initialHueValue = hueValue,
-                            onApplyEffects = { blur, brightness, contrast, saturation, hue ->
-                                blurValue = blur
-                                brightnessValue = brightness
-                                contrastValue = contrast
-                                saturationValue = saturation
-                                hueValue = hue
+                    if (showLaunchedEffect.value) {
+                        LaunchedEffect(showLaunchedEffect) {
+                            coroutineScope.launch {
+                                val bitmap = graphicsLayer.toImageBitmap().asAndroidBitmap().copy(Bitmap.Config.ARGB_8888, true)
+                                bitmap.applyEffects(
+                                        blur = blurValue.times(Misc.BLUR_TIMES),
+                                        brightness = brightnessValue,
+                                        contrast = contrastValue,
+                                        saturation = saturationValue,
+                                        hue = hueValue
+                                )
+                                drawable = BitmapDrawable(context.resources, bitmap)
+                                showDialog = true
+                                showLaunchedEffect.value = false
                             }
-                    )
-                }
-
-                if (showLaunchedEffect.value) {
-                    LaunchedEffect(showLaunchedEffect) {
-                        coroutineScope.launch {
-                            val bitmap = graphicsLayer.toImageBitmap().asAndroidBitmap().copy(Bitmap.Config.ARGB_8888, true)
-                            bitmap.applyEffects(
-                                    blur = blurValue.times(Misc.BLUR_TIMES),
-                                    brightness = brightnessValue,
-                                    contrast = contrastValue,
-                                    saturation = saturationValue,
-                                    hue = hueValue
-                            )
-                            drawable = BitmapDrawable(context.resources, bitmap)
-                            showDialog = true
-                            showLaunchedEffect.value = false
                         }
                     }
-                }
 
-                Button(
-                        onClick = {
-                            showEditDialog.value = true
-                        },
-                        shape = RoundedCornerShape(20.dp),
-                        modifier = Modifier
-                            .wrapContentWidth()
-                            .padding(start = 16.dp, bottom = 16.dp),
-                        colors = ButtonDefaults.buttonColors(
-                                containerColor = Color.Unspecified,
-                        )
-                ) {
-                    Text(
-                            text = context.getString(R.string.edit),
-                            color = Color.White,
-                            fontSize = 18.sp,
-                            modifier = Modifier.padding(12.dp),
-                            fontWeight = FontWeight.SemiBold
-                    )
-
-                    Icon(
-                            imageVector = Icons.Rounded.Edit,
-                            contentDescription = "",
-                            tint = Color.White,
+                    Button(
+                            onClick = {
+                                showEditDialog.value = true
+                                showDetailsCard.value = false
+                            },
+                            shape = RoundedCornerShape(20.dp),
                             modifier = Modifier
-                                .width(24.dp)
-                                .height(24.dp)
-                                .padding(end = 8.dp)
-                    )
-                }
-
-                Button(
-                        onClick = {
-                            showLaunchedEffect.value = true
-                        },
-                        shape = RoundedCornerShape(20.dp),
-                        modifier = Modifier
-                            .weight(0.5F)
-                            .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
-                        colors = ButtonDefaults.buttonColors(
-                                containerColor = Color.White,
+                                .wrapContentWidth()
+                                .padding(start = 16.dp, bottom = 16.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color.Unspecified,
+                            )
+                    ) {
+                        Text(
+                                text = context.getString(R.string.edit),
+                                color = Color.White,
+                                fontSize = 18.sp,
+                                modifier = Modifier.padding(12.dp),
+                                fontWeight = FontWeight.SemiBold
                         )
-                ) {
-                    Text(
-                            text = context.getString(R.string.set_as_wallpaper),
-                            color = Color.Black,
-                            fontSize = 18.sp,
-                            modifier = Modifier.padding(12.dp),
-                            fontWeight = FontWeight.SemiBold
-                    )
+
+                        Icon(
+                                imageVector = Icons.Rounded.Edit,
+                                contentDescription = "",
+                                tint = Color.White,
+                                modifier = Modifier
+                                    .width(24.dp)
+                                    .height(24.dp)
+                                    .padding(end = 8.dp)
+                        )
+                    }
+
+                    Button(
+                            onClick = {
+                                showLaunchedEffect.value = true
+                            },
+                            shape = RoundedCornerShape(20.dp),
+                            modifier = Modifier
+                                .weight(0.5F)
+                                .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color.White,
+                            )
+                    ) {
+                        Text(
+                                text = context.getString(R.string.set_as_wallpaper),
+                                color = Color.Black,
+                                fontSize = 18.sp,
+                                modifier = Modifier.padding(12.dp),
+                                fontWeight = FontWeight.SemiBold
+                        )
+                    }
                 }
             }
         }
 
         if (showDialog) {
-            CustomDialog(
+            ScreenSelectionDialog(
                     setShowDialog = { showDialog = it },
                     context = context,
                     drawable = drawable
@@ -359,7 +365,7 @@ fun Wallpaper(context: Context, navController: NavHostController) {
 }
 
 @Composable
-fun CustomDialog(setShowDialog: (Boolean) -> Unit, context: Context, drawable: Drawable?) {
+fun ScreenSelectionDialog(setShowDialog: (Boolean) -> Unit, context: Context, drawable: Drawable?) {
     Dialog(onDismissRequest = { setShowDialog(false) }) {
         Surface(
                 shape = RoundedCornerShape(16.dp),
