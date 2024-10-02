@@ -86,7 +86,6 @@ fun Setup(context: Context, navController: NavController? = null) {
         ShowWarningDialog(
                 title = context.getString(R.string.setup),
                 warning = context.getString(R.string.setup_incomplete),
-                context = context,
                 onDismiss = {
                     showSetupIncompleteDialog = false
                 }
@@ -157,7 +156,6 @@ fun Permissions(modifier: Modifier, context: Context, navController: NavControll
         ShowWarningDialog(
                 title = context.getString(R.string.external_storage),
                 warning = context.getString(R.string.permission_granted),
-                context = context,
                 onDismiss = {
                     showExternalPermissionDialog = false
                 }
@@ -168,7 +166,6 @@ fun Permissions(modifier: Modifier, context: Context, navController: NavControll
         ShowWarningDialog(
                 title = context.getString(R.string.battery_optimization),
                 warning = context.getString(R.string.permission_granted),
-                context = context,
                 onDismiss = {
                     showBatteryOptimizationDialog = false
                 }
@@ -283,7 +280,6 @@ fun Folder(modifier: Modifier, context: Context, navController: NavController? =
         ShowWarningDialog(
                 title = context.getString(R.string.folder),
                 warning = context.contentResolver.persistedUriPermissions.first().uri.toString(),
-                context = context,
                 onDismiss = {
                     showDirectoryPermissionDialog = false
                 }

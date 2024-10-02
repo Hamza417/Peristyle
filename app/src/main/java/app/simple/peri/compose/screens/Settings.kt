@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -33,14 +34,22 @@ import app.simple.peri.activities.LegacyActivity
 import app.simple.peri.activities.MainComposeActivity
 import app.simple.peri.compose.commons.COMMON_PADDING
 import app.simple.peri.compose.commons.TopHeader
+import app.simple.peri.compose.dialogs.common.ShowWarningDialog
 import app.simple.peri.compose.dialogs.settings.DeveloperProfileDialog
 import app.simple.peri.compose.dialogs.settings.OrderDialog
 import app.simple.peri.compose.dialogs.settings.ShowInureAppManagerDialog
 import app.simple.peri.compose.dialogs.settings.ShowPositionalDialog
 import app.simple.peri.compose.dialogs.settings.SortDialog
+import app.simple.peri.glide.modules.GlideApp
 import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.utils.ConditionUtils.invert
+import app.simple.peri.utils.FileUtils.toSize
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.File
 
 @Composable
 fun Settings(navController: NavController? = null) {
@@ -113,6 +122,8 @@ fun Settings(navController: NavController? = null) {
         item { // Data
             val showSortDialog = remember { mutableStateOf(false) }
             val showOrderDialog = remember { mutableStateOf(false) }
+            val showClearCacheDialog = remember { mutableStateOf(false) }
+            var totalCache = remember { mutableLongStateOf(0L) }
 
             if (showSortDialog.value) {
                 SortDialog {
@@ -124,6 +135,15 @@ fun Settings(navController: NavController? = null) {
                 OrderDialog {
                     showOrderDialog.value = false
                 }
+            }
+
+            if (showClearCacheDialog.value) {
+                ShowWarningDialog(
+                        title = context.getString(R.string.clear_cache),
+                        warning = context.getString(R.string.clear_cache_message, totalCache.longValue.toSize()),
+                        onDismiss = {
+                            showClearCacheDialog.value = false
+                        })
             }
 
             SecondaryHeader(title = context.getString(R.string.data))
@@ -158,6 +178,20 @@ fun Settings(navController: NavController? = null) {
                     topPadding = 8.dp
             ) {
                 MainPreferences.setIgnoreSubDirs(it)
+            }
+
+            ClickablePreference(
+                    title = context.getString(R.string.clear_cache),
+                    description = context.getString(R.string.clear_cache_summary)
+            ) {
+                CoroutineScope(Dispatchers.IO).launch {
+                    val imagesCachePath = File("${context.cacheDir}/image_manager_disk_cache/")
+                    totalCache.longValue = imagesCachePath.walkTopDown().sumOf { it.length() }
+                    GlideApp.get(context).clearDiskCache()
+                    withContext(Dispatchers.Main) {
+                        showClearCacheDialog.value = true
+                    }
+                }
             }
         }
         item { // Accessibility
