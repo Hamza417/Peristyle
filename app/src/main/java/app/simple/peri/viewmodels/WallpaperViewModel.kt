@@ -495,6 +495,25 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
         }
     }
 
+    fun addNoMediaFile(folder: Folder, onSuccess: () -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val pickedDirectory = DocumentFile.fromTreeUri(getApplication(), Uri.parse(folder.uri))
+
+            if (pickedDirectory?.exists() == true) {
+                if (pickedDirectory.findFile(".nomedia") == null) {
+                    pickedDirectory.createFile("*/*", ".nomedia")
+                }
+
+                if (pickedDirectory.findFile(".nomedia")?.exists() == true) {
+                    isNomediaDirectory.postValue(false)
+                    withContext(Dispatchers.Main) {
+                        onSuccess()
+                    }
+                }
+            }
+        }
+    }
+
     companion object {
         private const val TAG = "WallpaperViewModel"
         private const val SYSTEM_WALLPAPER = "system_wallpaper_$.png"

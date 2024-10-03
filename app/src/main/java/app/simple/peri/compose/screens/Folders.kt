@@ -1,5 +1,6 @@
 package app.simple.peri.compose.screens
 
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
@@ -63,6 +64,7 @@ import app.simple.peri.compose.commons.RequestDirectoryPermission
 import app.simple.peri.compose.commons.TopHeader
 import app.simple.peri.compose.constants.DIALOG_OPTION_FONT_SIZE
 import app.simple.peri.compose.constants.DIALOG_TITLE_FONT_SIZE
+import app.simple.peri.compose.dialogs.common.ShowWarningDialog
 import app.simple.peri.compose.nav.Routes
 import app.simple.peri.models.Folder
 import app.simple.peri.viewmodels.WallpaperViewModel
@@ -122,7 +124,9 @@ fun Folders(navController: NavController? = null) {
             )
         }
         items(folders.size) { index ->
-            FolderItem(folder = folders[index], navController = navController) {
+            FolderItem(folder = folders[index],
+                       navController = navController,
+                       wallpaperViewModel = wallpaperViewModel) {
                 wallpaperViewModel.deleteFolder(it)
             }
         }
@@ -152,10 +156,11 @@ fun Folders(navController: NavController? = null) {
 
 @OptIn(ExperimentalGlideComposeApi::class, ExperimentalFoundationApi::class)
 @Composable
-fun FolderItem(folder: Folder, navController: NavController? = null, onDelete: (Folder) -> Unit) {
+fun FolderItem(folder: Folder, navController: NavController? = null, wallpaperViewModel: WallpaperViewModel, onDelete: (Folder) -> Unit) {
     val hazeState = remember { HazeState() }
     val context = LocalContext.current
     var showFolderMenu by remember { mutableStateOf(false) }
+    var showNomediaSuccess by remember { mutableStateOf(false) }
     displayDimension.width = LocalView.current.width
     displayDimension.height = LocalView.current.height
 
@@ -168,8 +173,24 @@ fun FolderItem(folder: Folder, navController: NavController? = null, onDelete: (
                         context.getString(R.string.delete) -> {
                             onDelete(folder)
                         }
+
+                        context.getString(R.string.add_nomedia) -> {
+                            Log.d("FolderItem", "Add .nomedia file to ${folder.name}")
+                            wallpaperViewModel.addNoMediaFile(folder) {
+                                Log.d("FolderItem", "Add .nomedia file to ${folder.name} success")
+                                showNomediaSuccess = true
+                            }
+                        }
                     }
                 }
+        )
+    }
+
+    if (showNomediaSuccess) {
+        ShowWarningDialog(
+                title = stringResource(R.string.nomedia),
+                warning = stringResource(R.string.nomedia_success),
+                onDismiss = { showNomediaSuccess = false }
         )
     }
 
@@ -246,7 +267,8 @@ fun FolderItem(folder: Folder, navController: NavController? = null, onDelete: (
 @Composable
 fun FolderMenu(folder: Folder? = null, onDismiss: () -> Unit, onOptionSelected: (String) -> Unit) {
     val options = listOf(
-            stringResource(R.string.delete)
+            stringResource(R.string.delete),
+            stringResource(R.string.add_nomedia),
     )
 
     AlertDialog(
