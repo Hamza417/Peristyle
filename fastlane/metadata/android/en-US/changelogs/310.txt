@@ -1,0 +1,8 @@
+- Add option to add or remove nomedia from folders
+- Add folder visibility indicator
+- Hide card when click on wallpaper
+- Hide details card when edit dialog is opened
+- Added reset button in effects dialog
+- Main effects dialog is now semi transparent
+- Added option to clear image cache
+- Added option to remove a folder
