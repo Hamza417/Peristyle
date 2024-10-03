@@ -163,6 +163,7 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
                         this.uri = uri.uri.toString()
                         count = wallpaperDao?.getWallpapersByUriHashcode(uri.uri?.hashCode() ?: 0)?.size ?: 0
                         hashcode = uri.uri.hashCode()
+                        isNomedia = pickedDirectory.findFile(".nomedia")?.exists() == true
                     }
 
                     folders.add(folder)
@@ -508,6 +509,26 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
                     isNomediaDirectory.postValue(false)
                     withContext(Dispatchers.Main) {
                         onSuccess()
+                        loadFolders()
+                    }
+                }
+            }
+        }
+    }
+
+    fun removeNoMediaFile(folder: Folder, onSuccess: () -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val pickedDirectory = DocumentFile.fromTreeUri(getApplication(), Uri.parse(folder.uri))!!
+
+            if (pickedDirectory.exists()) {
+                pickedDirectory.findFile(".nomedia")?.delete()
+
+                if (pickedDirectory.findFile(".nomedia") == null
+                    || pickedDirectory.findFile(".nomedia")?.exists() == false) {
+                    isNomediaDirectory.postValue(true)
+                    withContext(Dispatchers.Main) {
+                        onSuccess()
+                        loadFolders()
                     }
                 }
             }

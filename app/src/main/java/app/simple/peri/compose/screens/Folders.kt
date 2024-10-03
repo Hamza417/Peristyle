@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
@@ -24,6 +25,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Visibility
+import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -67,6 +70,7 @@ import app.simple.peri.compose.constants.DIALOG_TITLE_FONT_SIZE
 import app.simple.peri.compose.dialogs.common.ShowWarningDialog
 import app.simple.peri.compose.nav.Routes
 import app.simple.peri.models.Folder
+import app.simple.peri.utils.ConditionUtils.invert
 import app.simple.peri.viewmodels.WallpaperViewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
@@ -161,6 +165,7 @@ fun FolderItem(folder: Folder, navController: NavController? = null, wallpaperVi
     val context = LocalContext.current
     var showFolderMenu by remember { mutableStateOf(false) }
     var showNomediaSuccess by remember { mutableStateOf(false) }
+    var showNomediaRemoveSuccess by remember { mutableStateOf(false) }
     displayDimension.width = LocalView.current.width
     displayDimension.height = LocalView.current.height
 
@@ -175,10 +180,16 @@ fun FolderItem(folder: Folder, navController: NavController? = null, wallpaperVi
                         }
 
                         context.getString(R.string.add_nomedia) -> {
-                            Log.d("FolderItem", "Add .nomedia file to ${folder.name}")
                             wallpaperViewModel.addNoMediaFile(folder) {
-                                Log.d("FolderItem", "Add .nomedia file to ${folder.name} success")
                                 showNomediaSuccess = true
+                            }
+                        }
+
+                        context.getString(R.string.remove_nomedia) -> {
+                            Log.d("FolderItem", "Remove nomedia")
+                            wallpaperViewModel.removeNoMediaFile(folder) {
+                                Log.d("FolderItem", "Remove nomedia success")
+                                showNomediaRemoveSuccess = true
                             }
                         }
                     }
@@ -191,6 +202,14 @@ fun FolderItem(folder: Folder, navController: NavController? = null, wallpaperVi
                 title = stringResource(R.string.nomedia),
                 warning = stringResource(R.string.nomedia_success),
                 onDismiss = { showNomediaSuccess = false }
+        )
+    }
+
+    if (showNomediaRemoveSuccess) {
+        ShowWarningDialog(
+                title = stringResource(R.string.nomedia),
+                warning = stringResource(R.string.nomedia_remove_success),
+                onDismiss = { showNomediaRemoveSuccess = false }
         )
     }
 
@@ -238,18 +257,31 @@ fun FolderItem(folder: Folder, navController: NavController? = null, wallpaperVi
                                 style = HazeDefaults.style(backgroundColor = Color(0x50000000), blurRadius = 5.dp))
                         .align(Alignment.BottomCenter)
             ) {
-                Text(
-                        text = folder.name ?: "",
-                        modifier = Modifier
-                            .padding(start = 16.dp, top = 16.dp, end = 16.dp),
-                        textAlign = TextAlign.Start,
-                        fontSize = 20.sp, // Set the font size
-                        fontWeight = FontWeight.Bold, // Make the text bold
-                        color = Color.White, // Set the text color
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        softWrap = false,
-                )
+                Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                            text = folder.name ?: "",
+                            modifier = Modifier
+                                .padding(start = 16.dp, top = 16.dp, end = 16.dp)
+                                .weight(1f),
+                            textAlign = TextAlign.Start,
+                            fontSize = 20.sp, // Set the font size
+                            fontWeight = FontWeight.Bold, // Make the text bold
+                            color = Color.White, // Set the text color
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            softWrap = false,
+                    )
+                    Icon(
+                            imageVector = if (folder.isNomedia) Icons.Rounded.VisibilityOff else Icons.Rounded.Visibility,
+                            contentDescription = "No media",
+                            modifier = Modifier
+                                .padding(start = 8.dp, top = 16.dp, end = 16.dp)
+                                .size(14.dp),
+                            tint = Color.White
+                    )
+                }
 
                 Text(
                         text = stringResource(id = R.string.tag_count, folder.count),
@@ -268,7 +300,10 @@ fun FolderItem(folder: Folder, navController: NavController? = null, wallpaperVi
 fun FolderMenu(folder: Folder? = null, onDismiss: () -> Unit, onOptionSelected: (String) -> Unit) {
     val options = listOf(
             stringResource(R.string.delete),
-            stringResource(R.string.add_nomedia),
+            when (folder?.isNomedia?.invert()) {
+                true -> stringResource(R.string.add_nomedia)
+                else -> stringResource(R.string.remove_nomedia)
+            },
     )
 
     AlertDialog(

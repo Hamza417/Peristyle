@@ -188,4 +188,6 @@
     <string name="live_wallpapers">Live Wallpapers</string>
     <string name="reset">Reset</string>
     <string name="add_nomedia">Add .nomedia</string>
+    <string name="remove_nomedia">Remove .nomedia</string>
+    <string name="nomedia_remove_success">.nomedia has been removed. The folder will be visible again.</string>
 </resources>

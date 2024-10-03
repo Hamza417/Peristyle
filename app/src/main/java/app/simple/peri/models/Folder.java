@@ -8,12 +8,14 @@ public class Folder implements Parcelable {
     private String name;
     private String uri;
     private int count;
+    private boolean isNomedia;
     
-    public Folder(int hashcode, String name, String uri, int count) {
+    public Folder(int hashcode, String name, String uri, int count, boolean isNomedia) {
         this.hashcode = hashcode;
         this.name = name;
         this.uri = uri;
         this.count = count;
+        this.isNomedia = isNomedia;
     }
     
     public Folder() {
@@ -24,6 +26,7 @@ public class Folder implements Parcelable {
         name = in.readString();
         uri = in.readString();
         count = in.readInt();
+        isNomedia = in.readByte() != 0;
     }
     
     @Override
@@ -32,6 +35,7 @@ public class Folder implements Parcelable {
         dest.writeString(name);
         dest.writeString(uri);
         dest.writeInt(count);
+        dest.writeByte((byte) (isNomedia ? 1 : 0));
     }
     
     @Override
@@ -81,5 +85,13 @@ public class Folder implements Parcelable {
     
     public void setCount(int count) {
         this.count = count;
+    }
+    
+    public boolean isNomedia() {
+        return isNomedia;
+    }
+    
+    public void setNomedia(boolean nomedia) {
+        isNomedia = nomedia;
     }
 }
