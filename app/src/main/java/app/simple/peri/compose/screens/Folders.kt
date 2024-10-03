@@ -1,5 +1,8 @@
 package app.simple.peri.compose.screens
 
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
@@ -74,8 +77,12 @@ import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.hazeChild
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun Folders(navController: NavController? = null) {
+fun Folders(navController: NavController? = null,
+            sharedTransitionScope: SharedTransitionScope,
+            animatedContentScope: AnimatedContentScope) {
+
     val wallpaperViewModel: WallpaperViewModel = viewModel()
     val folders by wallpaperViewModel.getFoldersLiveData().observeAsState(emptyList())
     var requestPermission by remember { mutableStateOf(false) }
@@ -102,57 +109,68 @@ fun Folders(navController: NavController? = null) {
         }
     }
 
-    LazyVerticalStaggeredGrid(
-            columns = StaggeredGridCells.Fixed(2),
-            modifier = Modifier
-                .fillMaxSize(),
-            contentPadding = PaddingValues(
-                    top = topPadding,
-                    start = 8.dp,
-                    end = 8.dp,
-                    bottom = bottomPadding
-            )
-    ) {
-        item(span = StaggeredGridItemSpan.FullLine) {
-            TopHeader(
-                    title = stringResource(R.string.folder),
-                    count = folders.size,
-                    modifier = Modifier.padding(COMMON_PADDING),
-                    navController = navController
-            )
-        }
-        items(folders.size) { index ->
-            FolderItem(folder = folders[index], navController = navController) {
-                wallpaperViewModel.deleteFolder(it)
-            }
-        }
-        item {
-            ElevatedCard(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp)
-                        .aspectRatio(displayDimension.getAspectRatio()),
-                    shape = RoundedCornerShape(16.dp),
-                    elevation = CardDefaults.cardElevation(
-                            defaultElevation = 16.dp,
-                            pressedElevation = 0.dp
-                    ),
-                    onClick = { requestPermission = true }
-            ) {
-                Icon(
-                        imageVector = Icons.Rounded.Add,
-                        contentDescription = "Add folder",
-                        modifier = Modifier.fillMaxSize(),
-                        tint = MaterialTheme.colorScheme.surfaceDim
+    with(sharedTransitionScope) {
+        LazyVerticalStaggeredGrid(
+                columns = StaggeredGridCells.Fixed(2),
+                modifier = Modifier
+                    .fillMaxSize(),
+                contentPadding = PaddingValues(
+                        top = topPadding,
+                        start = 8.dp,
+                        end = 8.dp,
+                        bottom = bottomPadding
                 )
+        ) {
+            item(span = StaggeredGridItemSpan.FullLine) {
+                TopHeader(
+                        title = stringResource(R.string.folder),
+                        count = folders.size,
+                        modifier = Modifier.padding(COMMON_PADDING),
+                        navController = navController
+                )
+            }
+            items(folders.size) { index ->
+                FolderItem(folder = folders[index],
+                           navController = navController,
+                           modifier = Modifier.sharedElement(
+                                   sharedTransitionScope.rememberSharedContentState(folders[index].hashcode),
+                                   animatedVisibilityScope = animatedContentScope
+                           )
+                ) {
+                    wallpaperViewModel.deleteFolder(it)
+                }
+            }
+            item {
+                ElevatedCard(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp)
+                            .aspectRatio(displayDimension.getAspectRatio()),
+                        shape = RoundedCornerShape(16.dp),
+                        elevation = CardDefaults.cardElevation(
+                                defaultElevation = 16.dp,
+                                pressedElevation = 0.dp
+                        ),
+                        onClick = { requestPermission = true }
+                ) {
+                    Icon(
+                            imageVector = Icons.Rounded.Add,
+                            contentDescription = "Add folder",
+                            modifier = Modifier.fillMaxSize(),
+                            tint = MaterialTheme.colorScheme.surfaceDim
+                    )
+                }
             }
         }
     }
 }
 
-@OptIn(ExperimentalGlideComposeApi::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalGlideComposeApi::class, ExperimentalFoundationApi::class, ExperimentalSharedTransitionApi::class)
 @Composable
-fun FolderItem(folder: Folder, navController: NavController? = null, onDelete: (Folder) -> Unit) {
+fun FolderItem(folder: Folder,
+               navController: NavController? = null,
+               modifier: Modifier = Modifier,
+               onDelete: (Folder) -> Unit) {
     val hazeState = remember { HazeState() }
     val context = LocalContext.current
     var showFolderMenu by remember { mutableStateOf(false) }
@@ -178,7 +196,7 @@ fun FolderItem(folder: Folder, navController: NavController? = null, onDelete: (
                     defaultElevation = 16.dp,
                     pressedElevation = 0.dp
             ),
-            modifier = Modifier
+            modifier = modifier
                 .padding(8.dp)
                 .combinedClickable(
                         onClick = {

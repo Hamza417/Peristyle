@@ -2,6 +2,9 @@ package app.simple.peri.compose.commons
 
 import android.content.Intent
 import android.graphics.drawable.Drawable
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
@@ -82,6 +85,7 @@ import app.simple.peri.compose.dialogs.common.AddTagDialog
 import app.simple.peri.compose.dialogs.settings.SureDialog
 import app.simple.peri.compose.nav.Routes
 import app.simple.peri.factories.TagsViewModelFactory
+import app.simple.peri.models.Folder
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.utils.FileUtils.toUri
@@ -103,8 +107,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun WallpapersList(list: List<Wallpaper>, navController: NavController? = null, title: String = "") {
+fun WallpapersList(list: List<Wallpaper>,
+                   navController: NavController? = null,
+                   title: String = "",
+                   folder: Folder = Folder(),
+                   sharedTransitionScope: SharedTransitionScope,
+                   animatedContentScope: AnimatedContentScope) {
+
     var wallpapers by remember { mutableStateOf(emptyList<Wallpaper>()) }
     var statusBarHeight by remember { mutableIntStateOf(0) }
     var navigationBarHeight by remember { mutableIntStateOf(0) }
@@ -128,51 +139,63 @@ fun WallpapersList(list: List<Wallpaper>, navController: NavController? = null, 
     val topPadding = 8.dp + statusBarHeightDp
     val bottomPadding = 8.dp + navigationBarHeightDp
 
-    Box(
-            modifier = Modifier.fillMaxSize()
-    ) {
-        LazyVerticalGrid(
-                columns = GridCells.Fixed(MainComposePreferences.getGridSpanCount()),
-                state = wallpaperListViewModel.lazyGridState,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .haze(state = hazeState),
-                contentPadding = PaddingValues(
-                        top = topPadding,
-                        start = 8.dp,
-                        end = 8.dp,
-                        bottom = bottomPadding)
+    with(sharedTransitionScope) {
+        Box(
+                modifier = Modifier.fillMaxSize()
         ) {
-            item(span = { GridItemSpan(maxLineSpan) }) {
-                TopHeader(title = title, count = wallpapers.size,
-                          modifier = Modifier.padding(COMMON_PADDING),
-                          navController = navController)
+            LazyVerticalGrid(
+                    columns = GridCells.Fixed(MainComposePreferences.getGridSpanCount()),
+                    state = wallpaperListViewModel.lazyGridState,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .sharedElement(
+                                sharedTransitionScope.rememberSharedContentState(key = folder.hashcode),
+                                animatedVisibilityScope = animatedContentScope
+                        )
+                        .haze(state = hazeState),
+                    contentPadding = PaddingValues(
+                            top = topPadding,
+                            start = 8.dp,
+                            end = 8.dp,
+                            bottom = bottomPadding)
+            ) {
+                item(span = { GridItemSpan(maxLineSpan) }) {
+                    TopHeader(title = title, count = wallpapers.size,
+                              modifier = Modifier.padding(COMMON_PADDING),
+                              navController = navController)
+                }
+                items(wallpapers.size) { index ->
+                    with(sharedTransitionScope) {
+                        WallpaperItem(wallpaper = wallpapers[index],
+                                      navController = navController,
+                                      onDelete = { deletedWallpaper ->
+                                          wallpapers = wallpapers.filter {
+                                              it != deletedWallpaper
+                                          }
+                                      },
+                                      isSelectionMode = isSelectionMode,
+                                      wallpaperListViewModel = wallpaperListViewModel,
+                                      list = wallpapers,
+                                      modifier = Modifier.sharedElement(
+                                              sharedTransitionScope.rememberSharedContentState(key = wallpapers[index].uri),
+                                              animatedVisibilityScope = animatedContentScope
+                                      ))
+                    }
+                }
             }
-            items(wallpapers.size) { index ->
-                WallpaperItem(wallpaper = wallpapers[index],
-                              navController = navController,
-                              onDelete = { deletedWallpaper ->
-                                  wallpapers = wallpapers.filter {
-                                      it != deletedWallpaper
-                                  }
-                              },
-                              isSelectionMode = isSelectionMode,
-                              wallpaperListViewModel = wallpaperListViewModel,
-                              list = wallpapers)
-            }
-        }
 
-        if (isSelectionMode) {
-            SelectionMenu(list = wallpapers,
-                          count = selectionCount,
-                          modifier = Modifier.align(Alignment.BottomCenter),
-                          hazeState = hazeState,
-                          wallpaperListViewModel = wallpaperListViewModel)
+            if (isSelectionMode) {
+                SelectionMenu(list = wallpapers,
+                              count = selectionCount,
+                              modifier = Modifier.align(Alignment.BottomCenter),
+                              hazeState = hazeState,
+                              wallpaperListViewModel = wallpaperListViewModel)
+            }
         }
     }
 }
 
-@OptIn(ExperimentalGlideComposeApi::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalGlideComposeApi::class, ExperimentalFoundationApi::class, ExperimentalSharedTransitionApi::class)
 @Composable
 fun WallpaperItem(
         wallpaper: Wallpaper,
@@ -180,8 +203,10 @@ fun WallpaperItem(
         onDelete: (Wallpaper) -> Unit,
         isSelectionMode: Boolean,
         wallpaperListViewModel: WallpaperListViewModel,
-        list: List<Wallpaper>
+        list: List<Wallpaper>,
+        modifier: Modifier = Modifier
 ) {
+
     val hazeState = remember { HazeState() }
     var showDialog by remember { mutableStateOf(false) }
     var isSelected by remember { mutableStateOf(wallpaper.isSelected) }

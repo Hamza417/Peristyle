@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -32,51 +34,54 @@ import app.simple.peri.compose.screens.isSetupComplete
 private const val ANIMATION_DURATION = 400
 private const val DELAY = 100
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun PeristyleNavigation(context: Context) {
     val navController = rememberNavController()
     val startDestination = if (isSetupComplete(context)) Routes.HOME else Routes.SETUP
 
-    NavHost(navController = navController, startDestination = startDestination) {
-        composable(Routes.SETUP) {
-            Setup(context, navController)
-        }
+    SharedTransitionLayout {
+        NavHost(navController = navController, startDestination = startDestination) {
+            composable(Routes.SETUP) {
+                Setup(context, navController)
+            }
 
-        composableWithTransitions(Routes.HOME) {
-            Home(navController)
-        }
+            composableWithTransitions(Routes.HOME) {
+                Home(navController, this@SharedTransitionLayout, this)
+            }
 
-        composableWithTransitions(Routes.WALLPAPER) {
-            Wallpaper(context, navController)
-        }
+            composableWithTransitions(Routes.WALLPAPER) {
+                Wallpaper(context, navController, this@SharedTransitionLayout, this)
+            }
 
-        composableWithTransitions(Routes.WALLPAPERS_LIST) {
-            WallpaperList(navController)
-        }
+            composableWithTransitions(Routes.WALLPAPERS_LIST) {
+                WallpaperList(navController, this@SharedTransitionLayout, this)
+            }
 
-        composableWithTransitions(Routes.SETTINGS) {
-            Settings(navController)
-        }
+            composableWithTransitions(Routes.SETTINGS) {
+                Settings(navController)
+            }
 
-        composableWithTransitions(Routes.AUTO_WALLPAPER) {
-            AutoWallpaper(navController)
-        }
+            composableWithTransitions(Routes.AUTO_WALLPAPER) {
+                AutoWallpaper(navController)
+            }
 
-        composableWithTransitions(Routes.TAGS) {
-            Tags(navController)
-        }
+            composableWithTransitions(Routes.TAGS) {
+                Tags(navController)
+            }
 
-        composableWithTransitions(Routes.FOLDERS) {
-            Folders(navController)
-        }
+            composableWithTransitions(Routes.FOLDERS) {
+                Folders(navController, sharedTransitionScope = this@SharedTransitionLayout, animatedContentScope = this)
+            }
 
-        composableWithTransitions("${Routes.TAGGED_WALLPAPERS}/{tag}") { backStackEntry ->
-            val tag = backStackEntry.arguments?.getString("tag")
-            TaggedWallpapers(navController, tag)
-        }
+            composableWithTransitions("${Routes.TAGGED_WALLPAPERS}/{tag}") { backStackEntry ->
+                val tag = backStackEntry.arguments?.getString("tag")
+                TaggedWallpapers(navController, tag, this@SharedTransitionLayout, this)
+            }
 
-        composableWithTransitions(Routes.LIVE_WALLPAPERS) {
-            LiveWallpapers(navController)
+            composableWithTransitions(Routes.LIVE_WALLPAPERS) {
+                LiveWallpapers(navController)
+            }
         }
     }
 }

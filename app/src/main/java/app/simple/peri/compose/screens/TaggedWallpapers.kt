@@ -1,5 +1,8 @@
 package app.simple.peri.compose.screens
 
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -13,8 +16,13 @@ import app.simple.peri.factories.TagsViewModelFactory
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.viewmodels.TagsViewModel
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun TaggedWallpapers(navController: NavController? = null, tag: String?) {
+fun TaggedWallpapers(navController: NavController? = null,
+                     tag: String?,
+                     sharedTransitionScope: SharedTransitionScope,
+                     animatedContentScope: AnimatedContentScope) {
+
     var wallpapers by remember { mutableStateOf(emptyList<Wallpaper>()) }
     val tagsViewModel: TagsViewModel = viewModel(
             factory = TagsViewModelFactory(
@@ -26,5 +34,5 @@ fun TaggedWallpapers(navController: NavController? = null, tag: String?) {
         wallpapers = it
     }
 
-    WallpapersList(list = wallpapers, navController = navController, title = tag.orEmpty())
+    WallpapersList(list = wallpapers, navController = navController, title = tag.orEmpty(), sharedTransitionScope = sharedTransitionScope, animatedContentScope = animatedContentScope)
 }

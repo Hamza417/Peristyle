@@ -5,6 +5,10 @@ import android.os.Build
 import android.util.Log
 import android.widget.Toast
 import androidx.annotation.StringRes
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -87,8 +91,12 @@ import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.hazeChild
 import kotlin.math.absoluteValue
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun Home(navController: NavController? = null) {
+fun Home(navController: NavController? = null,
+         sharedTransitionScope: SharedTransitionScope,
+         animatedContentScope: AnimatedContentScope) {
+
     InitWallpaperViewModel()
 
     val pagerState = rememberPagerState(pageCount = {
@@ -117,59 +125,67 @@ fun Home(navController: NavController? = null) {
                     navController = navController
             )
 
-            HorizontalPager(
-                    state = pagerState,
-                    contentPadding = PaddingValues(horizontal = 48.dp),
-                    flingBehavior = fling,
-                    modifier = Modifier
-                        .weight(1f)
-            ) { page ->
-                val wallpaper = systemWallpapers.getOrNull(page)
-
-                WallpaperItem(
-                        title = when (page) {
-                            0 -> stringResource(id = R.string.home_screen)
-                            else -> stringResource(id = R.string.lock_screen)
-                        },
-                        onClick = {
-                            if (wallpaper != null) {
-                                navController?.navigate(Routes.WALLPAPER) {
-                                    navController.currentBackStackEntry?.savedStateHandle?.set(Routes.WALLPAPER_ARG, wallpaper)
-                                }
-                            }
-                        },
+            with(sharedTransitionScope) {
+                HorizontalPager(
+                        state = pagerState,
+                        contentPadding = PaddingValues(horizontal = 48.dp),
+                        flingBehavior = fling,
                         modifier = Modifier
                             .weight(1f)
-                            .graphicsLayer {
-                                // Calculate the absolute offset for the current page from the
-                                // scroll position. We use the absolute value which allows us to mirror
-                                // any effects for both directions
-                                val pageOffset = ((pagerState.currentPage - page) + pagerState.currentPageOffsetFraction).absoluteValue
-                                val startScale = 0.95f
+                ) { page ->
+                    val wallpaper = systemWallpapers.getOrNull(page)
 
-                                // We animate the alpha, between 50% and 100%
-                                // alpha = lerp(
-                                //        start = 0.75f,
-                                //        stop = 1f,
-                                //        fraction = 1f - pageOffset.coerceIn(0f, 1f),
-                                //)
-
-                                scaleX = lerp(
-                                        start = startScale,
-                                        stop = 1f,
-                                        fraction = 1f - pageOffset.coerceIn(0f, 1f),
+                    WallpaperItem(
+                            title = when (page) {
+                                0 -> stringResource(id = R.string.home_screen)
+                                else -> stringResource(id = R.string.lock_screen)
+                            },
+                            sharedTransitionScope = sharedTransitionScope,
+                            animatedContentScope = animatedContentScope,
+                            onClick = {
+                                if (wallpaper != null) {
+                                    navController?.navigate(Routes.WALLPAPER) {
+                                        navController.currentBackStackEntry?.savedStateHandle?.set(Routes.WALLPAPER_ARG, wallpaper)
+                                    }
+                                }
+                            },
+                            modifier = Modifier
+                                .weight(1f)
+                                .sharedElement(
+                                        sharedTransitionScope.rememberSharedContentState(wallpaper?.uri ?: ""),
+                                        animatedVisibilityScope = animatedContentScope,
                                 )
+                                .graphicsLayer {
+                                    // Calculate the absolute offset for the current page from the
+                                    // scroll position. We use the absolute value which allows us to mirror
+                                    // any effects for both directions
+                                    val pageOffset = ((pagerState.currentPage - page) + pagerState.currentPageOffsetFraction).absoluteValue
+                                    val startScale = 0.95f
 
-                                scaleY = lerp(
-                                        start = startScale,
-                                        stop = 1f,
-                                        fraction = 1f - pageOffset.coerceIn(0f, 1f),
-                                )
-                            }
-                            .padding(8.dp), // Add padding to create space between the cards
-                        wallpaper = wallpaper
+                                    // We animate the alpha, between 50% and 100%
+                                    // alpha = lerp(
+                                    //        start = 0.75f,
+                                    //        stop = 1f,
+                                    //        fraction = 1f - pageOffset.coerceIn(0f, 1f),
+                                    //)
 
-                )
+                                    scaleX = lerp(
+                                            start = startScale,
+                                            stop = 1f,
+                                            fraction = 1f - pageOffset.coerceIn(0f, 1f),
+                                    )
+
+                                    scaleY = lerp(
+                                            start = startScale,
+                                            stop = 1f,
+                                            fraction = 1f - pageOffset.coerceIn(0f, 1f),
+                                    )
+                                }
+                                .padding(8.dp), // Add padding to create space between the cards
+                            wallpaper = wallpaper
+
+                    )
+                }
             }
 
             BottomMenu(
@@ -182,9 +198,14 @@ fun Home(navController: NavController? = null) {
     }
 }
 
-@OptIn(ExperimentalGlideComposeApi::class)
+@OptIn(ExperimentalGlideComposeApi::class, ExperimentalSharedTransitionApi::class)
 @Composable
-fun WallpaperItem(title: String, onClick: () -> Unit, modifier: Modifier = Modifier, wallpaper: Wallpaper?) {
+fun WallpaperItem(title: String,
+                  onClick: () -> Unit,
+                  modifier: Modifier = Modifier,
+                  wallpaper: Wallpaper?,
+                  sharedTransitionScope: SharedTransitionScope,
+                  animatedContentScope: AnimatedContentScope) {
     val currentScale = remember {
         mutableStateOf(ContentScale.Crop)
     }

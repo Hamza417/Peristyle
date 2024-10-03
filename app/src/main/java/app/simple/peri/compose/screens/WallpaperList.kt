@@ -1,5 +1,8 @@
 package app.simple.peri.compose.screens
 
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -15,8 +18,12 @@ import app.simple.peri.models.Folder
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.viewmodels.FolderDataViewModel
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun WallpaperList(navController: NavController? = null) {
+fun WallpaperList(navController: NavController? = null,
+                  sharedTransitionScope: SharedTransitionScope,
+                  animatedContentScope: AnimatedContentScope) {
+
     val folder = navController?.previousBackStackEntry?.savedStateHandle?.get<Folder>(Routes.FOLDER_ARG)
 
     // Ensure folder is not null before proceeding
@@ -30,6 +37,11 @@ fun WallpaperList(navController: NavController? = null) {
             wallpapers = newWallpapers
         }
 
-        WallpapersList(wallpapers, navController, title = it.name)
+        WallpapersList(wallpapers,
+                       navController,
+                       title = it.name,
+                       folder = it,
+                       sharedTransitionScope = sharedTransitionScope,
+                       animatedContentScope = animatedContentScope)
     }
 }
