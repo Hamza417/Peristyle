@@ -37,6 +37,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
@@ -87,6 +89,7 @@ fun Folders(navController: NavController? = null) {
     var requestPermission by remember { mutableStateOf(false) }
     var statusBarHeight by remember { mutableIntStateOf(0) }
     var navigationBarHeight by remember { mutableIntStateOf(0) }
+    val currentLoadingImage by wallpaperViewModel.getLoadingImage().collectAsState()
 
     statusBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
             LocalView.current.rootWindowInsets).getInsets(WindowInsetsCompat.Type.statusBars()).top
@@ -109,6 +112,10 @@ fun Folders(navController: NavController? = null) {
         )
     }
 
+    LaunchedEffect(currentLoadingImage) {
+        Log.d("FoldersScreen", "Current loading image: $currentLoadingImage")
+    }
+
     LazyVerticalStaggeredGrid(
             columns = StaggeredGridCells.Fixed(2),
             modifier = Modifier
@@ -127,6 +134,22 @@ fun Folders(navController: NavController? = null) {
                     modifier = Modifier.padding(COMMON_PADDING),
                     navController = navController
             )
+        }
+        if (currentLoadingImage.isBlank().invert()) {
+            item(span = StaggeredGridItemSpan.FullLine) {
+                Text(
+                        text = currentLoadingImage,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 16.dp, bottom = 16.dp, end = 16.dp),
+                        textAlign = TextAlign.Start,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                )
+            }
         }
         items(folders.size) { index ->
             FolderItem(folder = folders[index],

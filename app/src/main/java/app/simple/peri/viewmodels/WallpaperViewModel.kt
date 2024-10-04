@@ -33,6 +33,7 @@ import app.simple.peri.utils.PermissionUtils
 import app.simple.peri.utils.WallpaperSort.getSortedList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -52,6 +53,8 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
 
     private var isDatabaseLoaded: MutableLiveData<Boolean> = MutableLiveData(false)
 
+    var _loadingImage = MutableStateFlow("")
+
     init {
         broadcastReceiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
@@ -65,6 +68,14 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
         }
 
         LocalBroadcastManager.getInstance(application).registerReceiver(broadcastReceiver!!, intentFilter)
+    }
+
+    fun getLoadingImage(): MutableStateFlow<String> {
+        return _loadingImage
+    }
+
+    fun setLoadingImage(loadingImage: String) {
+        _loadingImage.value = loadingImage
     }
 
     private val wallpapersData: MutableLiveData<ArrayList<Wallpaper>> by lazy {
@@ -222,6 +233,7 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
                                 newWallpapersData.postValue(wallpaper)
                                 WallpaperDatabase.getInstance(getApplication())?.wallpaperDao()?.insert(wallpaper)
                                 updateLoadingStatus(wallpapers.size, total)
+                                setLoadingImage("${wallpapers.size} / $total")
                             }
                         } catch (e: IllegalStateException) {
                             e.printStackTrace()
@@ -236,10 +248,11 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
                     }
 
                     initDatabase()
-                    loadingStatus.postValue("") // clear loading status
+                    loadingStatus.postValue("") // clear loading statu
                 }
             }
 
+            setLoadingImage("")
             loadFolders()
         }
     }
