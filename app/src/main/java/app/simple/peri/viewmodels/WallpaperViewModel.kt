@@ -32,12 +32,15 @@ import app.simple.peri.utils.FileUtils.listOnlyFirstLevelFiles
 import app.simple.peri.utils.PermissionUtils
 import app.simple.peri.utils.WallpaperSort.getSortedList
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 
 class WallpaperViewModel(application: Application) : AndroidViewModel(application) {
 
+    private var loadDatabaseJob: Job? = null
+    private var loadWallpaperJob: Job? = null
     private var broadcastReceiver: BroadcastReceiver? = null
     private val intentFilter = IntentFilter().apply {
         addAction(BundleConstants.INTENT_RECREATE_DATABASE)
@@ -48,8 +51,6 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
     private var alreadyLoaded: Map<String, Wallpaper>? = null
 
     private var isDatabaseLoaded: MutableLiveData<Boolean> = MutableLiveData(false)
-
-    private var isLoading = false
 
     init {
         broadcastReceiver = object : BroadcastReceiver() {
@@ -104,11 +105,11 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
         MutableLiveData<Boolean>().also {
             if (MainPreferences.getShowNomediaDialog()) {
                 viewModelScope.launch(Dispatchers.Default) {
-                    //                    val storageUri = MainPreferences.getStorageUri()
-                    //                    val pickedDirectory = DocumentFile.fromTreeUri(getApplication(), Uri.parse(storageUri))
-                    //                    it.postValue(
-                    //                            pickedDirectory?.findFile(".nomedia")?.exists()?.invert()
-                    //                                    ?: false.invert() || pickedDirectory?.name?.startsWith(".") ?: false.invert())
+                    val storageUri = MainPreferences.getStorageUri()
+                    val pickedDirectory = DocumentFile.fromTreeUri(getApplication(), Uri.parse(storageUri))
+                    it.postValue(
+                            pickedDirectory?.findFile(".nomedia")?.exists()?.invert()
+                                    ?: false.invert() || pickedDirectory?.name?.startsWith(".") ?: false.invert())
                 }
             }
         }
@@ -174,7 +175,7 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     private fun loadWallpaperDatabase() {
-        viewModelScope.launch(Dispatchers.IO) {
+        loadDatabaseJob = viewModelScope.launch(Dispatchers.IO) {
             val wallpaperDatabase = WallpaperDatabase.getInstance(getApplication())
             val wallpaperDao = wallpaperDatabase?.wallpaperDao()
             wallpaperDao?.sanitizeEntries() // Sanitize the database
@@ -194,8 +195,7 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     private fun loadWallpaperImages() {
-        viewModelScope.launch(Dispatchers.IO) {
-            isLoading = true
+        loadWallpaperJob = viewModelScope.launch(Dispatchers.IO) {
             isDatabaseLoaded.postValue(false)
 
             getApplication<Application>().contentResolver.persistedUriPermissions.forEach { uri ->
@@ -237,9 +237,10 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
 
                     initDatabase()
                     loadingStatus.postValue("") // clear loading status
-                    isLoading = false
                 }
             }
+
+            loadFolders()
         }
     }
 
@@ -402,7 +403,7 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
         viewModelScope.launch(Dispatchers.IO) {
             Log.d(TAG, "recreateDatabase: recreating database")
 
-            if (isLoading.invert()) {
+            if (isWallpaperJobActive()) {
                 isDatabaseLoaded.postValue(false)
                 wallpapers.clear()
                 wallpapersData.postValue(wallpapers)
@@ -427,6 +428,10 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
             Log.d(TAG, "refreshWallpapers: database not loaded")
             func()
         }
+    }
+
+    private fun isWallpaperJobActive(): Boolean {
+        return loadWallpaperJob?.isActive == true || loadWallpaperJob?.isCompleted == false
     }
 
     override fun onCleared() {
@@ -479,9 +484,11 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
     fun refresh() {
         Log.i(TAG, "refresh: refreshing wallpapers")
         loadFolders()
-        if (isLoading.invert()) {
-            loadWallpaperImages()
+        if (isWallpaperJobActive()) {
+            loadWallpaperJob?.cancel()
+            Log.i(TAG, "refresh: wallpaper job cancelled")
         }
+        loadWallpaperImages()
     }
 
     fun deleteFolder(it: Folder) {

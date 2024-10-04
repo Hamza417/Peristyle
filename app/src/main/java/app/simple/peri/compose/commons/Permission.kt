@@ -13,7 +13,7 @@ import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.viewmodels.WallpaperViewModel
 
 @Composable
-fun RequestDirectoryPermission(onCancel: () -> Unit) {
+fun RequestDirectoryPermission(onCancel: () -> Unit, onStorageGranted: () -> Unit) {
     val context = LocalContext.current
     val wallpaperViewModel: WallpaperViewModel = viewModel()
 
@@ -29,6 +29,10 @@ fun RequestDirectoryPermission(onCancel: () -> Unit) {
                 MainPreferences.setStorageUri(uri.toString())
                 wallpaperViewModel.refresh()
                 Log.d("Setup", "Storage Uri: $uri")
+                onStorageGranted()
+            } else {
+                Log.d("Setup", "Storage Uri: null")
+                onCancel()
             }
         } else {
             Log.d("Setup", "Storage Uri: null")

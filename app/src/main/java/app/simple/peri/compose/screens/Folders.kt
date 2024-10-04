@@ -103,9 +103,10 @@ fun Folders(navController: NavController? = null) {
     val bottomPadding = 8.dp + navigationBarHeightDp
 
     if (requestPermission) {
-        RequestDirectoryPermission {
-            requestPermission = false
-        }
+        RequestDirectoryPermission(
+                onCancel = { requestPermission = false },
+                onStorageGranted = { requestPermission = false }
+        )
     }
 
     LazyVerticalStaggeredGrid(

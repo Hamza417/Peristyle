@@ -270,10 +270,15 @@ fun Folder(modifier: Modifier, context: Context, navController: NavController? =
     var showDirectoryPermissionDialog by remember { mutableStateOf(false) }
 
     if (launchDirectoryPermission) {
-        RequestDirectoryPermission {
-            showDirectoryPermissionDialog = false
-            launchDirectoryPermission = false
-        }
+        RequestDirectoryPermission(
+                onCancel = {
+                    launchDirectoryPermission = false
+                },
+                onStorageGranted = {
+                    launchDirectoryPermission = false
+                    showDirectoryPermissionDialog = true
+                }
+        )
     }
 
     if (showDirectoryPermissionDialog) {
