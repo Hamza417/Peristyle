@@ -177,7 +177,7 @@
     <string name="source_summary">تعيين وسم أو مجلد معين لتعيين خلفية كل شاشة. إذا لم يتم تعيين أي وسم أو مجلد أو تم تعيين الفارغ منها، سيتم اختيار خلفية عشوائية من المجموعة.</string>
     <string name="not_set">غير معينة</string>
     <string name="duration_summary">تعيين التأخير بين كل مشغل أو إيقاف تشغيل أتمتة الخلفيات.</string>
-    <string name="select_folder_info">يمكنك إضافة مجلد آخر في التطبيق لاحقًا.</string>
+    <string name="select_folder_info">يمكنك إضافة المزيد من المجلدات في التطبيق لاحقًا.</string>
     <string name="developer_profile">ملف المطور الشخصي</string>
     <string name="allow_media_access">السماح بالوصول إلى الوسائط</string>
     <string name="allow_media_access_info">من غير الممكن للسماح بالوصول إلى خلفيات النظام يدويًا، تحديد السماح للكل سيسمح للتطبيق للوصول إلى الملفات تلقائيًا.</string>
@@ -186,4 +186,9 @@
     <string name="apply_effects_summary">تطبيق التأثيرات على الخلفيات.</string>
     <string name="default_effects">التأثيرات الافتراضية</string>
     <string name="default_effects_summary">التأثيرات الافتراضية للخلفيات عند عدم تعيين تفضيلات مخصصة.</string>
+    <string name="live_wallpapers">الخلفيات الحية</string>
+    <string name="reset">إعادة التعيين</string>
+    <string name="add_nomedia">إضافة .nomedia</string>
+    <string name="remove_nomedia">إزالة .nomedia</string>
+    <string name="nomedia_remove_success">تمت إزالة .nomedia. سيكون المجلد ظاهرًا مجددًا.</string>
 </resources>
