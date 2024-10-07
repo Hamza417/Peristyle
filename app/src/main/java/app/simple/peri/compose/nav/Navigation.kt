@@ -23,11 +23,11 @@ import app.simple.peri.compose.screens.Home
 import app.simple.peri.compose.screens.LiveWallpapers
 import app.simple.peri.compose.screens.Settings
 import app.simple.peri.compose.screens.Setup
-import app.simple.peri.compose.screens.TaggedWallpapers
 import app.simple.peri.compose.screens.Tags
 import app.simple.peri.compose.screens.Wallpaper
-import app.simple.peri.compose.screens.WallpaperList
 import app.simple.peri.compose.screens.isSetupComplete
+import app.simple.peri.compose.subscreens.TaggedWallpapers
+import app.simple.peri.compose.subscreens.WallpaperList
 
 private const val ANIMATION_DURATION = 400
 private const val DELAY = 100
