@@ -1,6 +1,7 @@
 package app.simple.peri.viewmodels
 
 import android.app.Application
+import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -9,6 +10,7 @@ import app.simple.peri.database.instances.TagsDatabase
 import app.simple.peri.database.instances.WallpaperDatabase
 import app.simple.peri.models.Tag
 import app.simple.peri.models.Wallpaper
+import app.simple.peri.utils.FileUtils.toUri
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -53,7 +55,9 @@ class TagsViewModel(application: Application, private val md5: String? = null, p
             val database = TagsDatabase.getInstance(getApplication())
             val tagsDao = database?.tagsDao()
             val tags = tagsDao?.getAllTags()
-            this@TagsViewModel.tags.postValue(tags)
+            this@TagsViewModel.tags.postValue(tags?.sortedBy {
+                it.name
+            })
         }
     }
 
@@ -120,6 +124,28 @@ class TagsViewModel(application: Application, private val md5: String? = null, p
             }
 
             loadTags()
+        }
+    }
+
+    fun deleteWallpaper(deletedWallpaper: Wallpaper) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val database = TagsDatabase.getInstance(getApplication())
+            val tagsDao = database?.tagsDao()
+            val tags = tagsDao?.getAllTags()
+
+            tags?.forEach { tag ->
+                if (tag.sum.contains(deletedWallpaper.md5)) {
+                    tag.sum.remove(deletedWallpaper.md5)
+                    tagsDao.insertTag(tag)
+                }
+            }
+
+            DocumentFile.fromSingleUri(getApplication(), deletedWallpaper.uri.toUri())?.delete()
+
+            if (tag != null) {
+                loadWallpapers(tag)
+                loadTags()
+            }
         }
     }
 }

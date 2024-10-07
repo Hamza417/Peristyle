@@ -70,9 +70,8 @@ fun PeristyleNavigation(context: Context) {
             Folders(navController)
         }
 
-        composableWithTransitions("${Routes.TAGGED_WALLPAPERS}/{tag}") { backStackEntry ->
-            val tag = backStackEntry.arguments?.getString("tag")
-            TaggedWallpapers(navController, tag)
+        composableWithTransitions(Routes.TAGGED_WALLPAPERS) { backStackEntry ->
+            TaggedWallpapers(navController)
         }
 
         composableWithTransitions(Routes.LIVE_WALLPAPERS) {

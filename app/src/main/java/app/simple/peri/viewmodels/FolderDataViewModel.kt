@@ -69,4 +69,13 @@ class FolderDataViewModel(application: Application, private val folder: Folder) 
         super.onCleared()
         this.unregisterSharedPreferenceChangeListener()
     }
+
+    fun deleteWallpaper(deletedWallpaper: Wallpaper) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val wallpaperDatabase = WallpaperDatabase.getInstance(getApplication())
+            val wallpaperDao = wallpaperDatabase?.wallpaperDao()
+            wallpaperDao?.delete(deletedWallpaper)
+            loadWallpaperDatabase()
+        }
+    }
 }

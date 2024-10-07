@@ -409,6 +409,9 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
             val wallpaperDatabase = WallpaperDatabase.getInstance(getApplication())
             val wallpaperDao = wallpaperDatabase?.wallpaperDao()
             wallpaperDao?.delete(wallpaper)
+            DocumentFile.fromSingleUri(getApplication(), Uri.parse(wallpaper.uri))?.delete()
+            wallpapers.remove(wallpaper)
+            wallpapersData.postValue(wallpapers)
         }
     }
 

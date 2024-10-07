@@ -1,5 +1,8 @@
 package app.simple.peri.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.HashSet;
 import java.util.Objects;
 
@@ -11,7 +14,7 @@ import androidx.room.TypeConverters;
 import app.simple.peri.database.converters.MD5ListConverter;
 
 @Entity (tableName = "tags")
-public class Tag {
+public class Tag implements Parcelable {
     @PrimaryKey
     @NonNull
     @ColumnInfo (name = "name")
@@ -25,6 +28,32 @@ public class Tag {
         this.name = name;
         this.sum = sum != null ? new HashSet <>(sum) : new HashSet <>();
     }
+    
+    protected Tag(Parcel in) {
+        name = in.readString();
+    }
+    
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(name);
+    }
+    
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+    
+    public static final Creator <Tag> CREATOR = new Creator <Tag>() {
+        @Override
+        public Tag createFromParcel(Parcel in) {
+            return new Tag(in);
+        }
+        
+        @Override
+        public Tag[] newArray(int size) {
+            return new Tag[size];
+        }
+    };
     
     @NonNull
     public String getName() {

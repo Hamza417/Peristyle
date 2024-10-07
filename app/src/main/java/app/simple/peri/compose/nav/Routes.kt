@@ -15,4 +15,5 @@ object Routes {
 
     const val WALLPAPER_ARG = "wallpaper_arg"
     const val FOLDER_ARG = "folder_arg"
+    const val TAG_ARG = "tag_arg"
 }

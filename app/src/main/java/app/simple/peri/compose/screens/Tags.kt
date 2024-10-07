@@ -155,7 +155,9 @@ fun TagItem(tag: Tag, navController: NavController? = null, onDelete: (Tag) -> U
                 .padding(8.dp)
                 .combinedClickable(
                         onClick = {
-                            navController?.navigate("${Routes.TAGGED_WALLPAPERS}/${tag.name}")
+                            navController?.navigate(Routes.TAGGED_WALLPAPERS) {
+                                navController.currentBackStackEntry?.savedStateHandle?.set(Routes.TAG_ARG, tag)
+                            }
                         },
                         onLongClick = {
                             showDialog = true

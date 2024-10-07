@@ -8,7 +8,6 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -19,9 +18,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Check
@@ -41,7 +37,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
@@ -59,7 +54,6 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -71,7 +65,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.core.app.ShareCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -103,75 +96,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-@Composable
-fun WallpapersList(list: List<Wallpaper>, navController: NavController? = null, title: String = "") {
-    var wallpapers by remember { mutableStateOf(emptyList<Wallpaper>()) }
-    var statusBarHeight by remember { mutableIntStateOf(0) }
-    var navigationBarHeight by remember { mutableIntStateOf(0) }
-    val hazeState = remember { HazeState() }
-    val wallpaperListViewModel: WallpaperListViewModel = viewModel() // We should use a dedicated ViewModel for this
-    val isSelectionMode by wallpaperListViewModel.isSelectionMode.collectAsState()
-    val selectionCount by wallpaperListViewModel.selectedWallpapers.collectAsState()
-
-    wallpapers = list
-    wallpapers = wallpaperListViewModel.wallpapers.collectAsState().value.ifEmpty { list }
-    statusBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
-            LocalView.current.rootWindowInsets).getInsets(WindowInsetsCompat.Type.statusBars()).top
-    navigationBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
-            LocalView.current.rootWindowInsets).getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
-
-    val statusBarHeightPx = statusBarHeight
-    val statusBarHeightDp = with(LocalDensity.current) { statusBarHeightPx.toDp() }
-    val navigationBarHeightPx = navigationBarHeight
-    val navigationBarHeightDp = with(LocalDensity.current) { navigationBarHeightPx.toDp() }
-
-    val topPadding = 8.dp + statusBarHeightDp
-    val bottomPadding = 8.dp + navigationBarHeightDp
-
-    Box(
-            modifier = Modifier.fillMaxSize()
-    ) {
-        LazyVerticalGrid(
-                columns = GridCells.Fixed(MainComposePreferences.getGridSpanCount()),
-                state = wallpaperListViewModel.lazyGridState,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .haze(state = hazeState),
-                contentPadding = PaddingValues(
-                        top = topPadding,
-                        start = 8.dp,
-                        end = 8.dp,
-                        bottom = bottomPadding)
-        ) {
-            item(span = { GridItemSpan(maxLineSpan) }) {
-                TopHeader(title = title, count = wallpapers.size,
-                          modifier = Modifier.padding(COMMON_PADDING),
-                          navController = navController)
-            }
-            items(wallpapers.size) { index ->
-                WallpaperItem(wallpaper = wallpapers[index],
-                              navController = navController,
-                              onDelete = { deletedWallpaper ->
-                                  wallpapers = wallpapers.filter {
-                                      it != deletedWallpaper
-                                  }
-                              },
-                              isSelectionMode = isSelectionMode,
-                              wallpaperListViewModel = wallpaperListViewModel,
-                              list = wallpapers)
-            }
-        }
-
-        if (isSelectionMode) {
-            SelectionMenu(list = wallpapers,
-                          count = selectionCount,
-                          modifier = Modifier.align(Alignment.BottomCenter),
-                          hazeState = hazeState,
-                          wallpaperListViewModel = wallpaperListViewModel)
-        }
-    }
-}
-
 @OptIn(ExperimentalGlideComposeApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun WallpaperItem(
@@ -193,7 +117,11 @@ fun WallpaperItem(
     displayHeight = LocalView.current.height
 
     val aspectRatio by remember {
-        mutableFloatStateOf(displayWidth.toFloat() / displayHeight.toFloat())
+        mutableFloatStateOf(if (!(displayWidth.toFloat() / displayHeight.toFloat()).isNaN()) {
+            displayWidth.toFloat() / displayHeight.toFloat()
+        } else {
+            16f / 9f
+        })
     }
 
     if (showDialog) {
@@ -328,7 +256,7 @@ fun WallpaperItem(
                             softWrap = false,
                     )
 
-                    WallpaperDimensionsText(wallpaper, displayWidth, displayHeight, isSelected, list)
+                    WallpaperDimensionsText(wallpaper, displayWidth, displayHeight, isSelected)
                 }
             }
         }
@@ -336,8 +264,7 @@ fun WallpaperItem(
 }
 
 @Composable
-fun WallpaperDimensionsText(wallpaper: Wallpaper, displayWidth: Int, displayHeight: Int, isSelected: Boolean, list: List<Wallpaper>) {
-    list // We need to use the list to update the selection count
+fun WallpaperDimensionsText(wallpaper: Wallpaper, displayWidth: Int, displayHeight: Int, isSelected: Boolean) {
     val showWarningIndicator = remember { MainComposePreferences.getShowWarningIndicator() }
 
     Row(
