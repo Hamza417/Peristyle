@@ -3,9 +3,7 @@ package app.simple.peri.compose.commons
 import android.content.Intent
 import android.graphics.drawable.Drawable
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,15 +23,16 @@ import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material.icons.rounded.Warning
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
@@ -63,7 +62,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
 import androidx.core.app.ShareCompat
 import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -429,6 +427,7 @@ fun SelectionMenu(modifier: Modifier = Modifier,
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WallpaperMenu(setShowDialog: (Boolean) -> Unit,
                   wallpaper: Wallpaper,
@@ -454,169 +453,143 @@ fun WallpaperMenu(setShowDialog: (Boolean) -> Unit,
         )
     }
 
-    Dialog(onDismissRequest = { setShowDialog(false) }) {
-        Surface(
-                shape = RoundedCornerShape(16.dp),
-                color = Color.White
-        ) {
-            Box(
-                    contentAlignment = Alignment.Center
-            ) {
-                Column(modifier = Modifier.padding(20.dp)) {
-                    Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                                text = wallpaper.name ?: "",
-                                style = TextStyle(
-                                        fontSize = DIALOG_TITLE_FONT_SIZE,
-                                        fontFamily = FontFamily.Default,
-                                        fontWeight = FontWeight.Bold
-                                ),
-                                modifier = Modifier.weight(1f),
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
+    AlertDialog(
+            onDismissRequest = { setShowDialog(false) },
+            title = {
+                Text(
+                        text = wallpaper.name ?: "",
+                        style = TextStyle(
+                                fontFamily = FontFamily.SansSerif,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = DIALOG_TITLE_FONT_SIZE
                         )
-                        Icon(
-                                imageVector = Icons.Rounded.Close,
-                                contentDescription = "",
+                )
+            },
+            text = {
+                Box(
+                        contentAlignment = Alignment.Center
+                ) {
+                    Column {
+                        Button(
+                                onClick = {
+                                    ShareCompat.IntentBuilder(context)
+                                        .setType("image/*")
+                                        .setChooserTitle("Share Wallpaper")
+                                        .setStream(wallpaper.uri.toUri())
+                                        .startChooser()
+                                },
+                                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                                shape = RoundedCornerShape(12.dp),
                                 modifier = Modifier
-                                    .width(30.dp)
-                                    .height(30.dp)
-                                    .clickable { setShowDialog(false) }
-                        )
-                    }
+                                    .fillMaxWidth()
+                        ) {
+                            Text(
+                                    text = context.getString(R.string.send),
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    fontSize = DIALOG_OPTION_FONT_SIZE,
+                                    fontWeight = FontWeight.SemiBold
+                            )
+                        }
 
-                    Spacer(modifier = Modifier.height(20.dp))
+                        Spacer(modifier = Modifier.height(5.dp))
 
-                    Button(
-                            onClick = {
-                                ShareCompat.IntentBuilder(context)
-                                    .setType("image/*")
-                                    .setChooserTitle("Share Wallpaper")
-                                    .setStream(wallpaper.uri.toUri())
-                                    .startChooser()
-                            },
-                            colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color.White,
-                            ),
-                            shape = RoundedCornerShape(12.dp),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(50.dp),
-                    ) {
-                        Text(
-                                text = context.getString(R.string.send),
-                                color = MaterialTheme.colorScheme.onSurface,
-                                fontSize = DIALOG_OPTION_FONT_SIZE,
-                                fontWeight = FontWeight.SemiBold
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(5.dp))
-
-                    Button(
-                            onClick = {
-                                coroutineScope.launch(Dispatchers.IO) {
-                                    if (DocumentFile.fromSingleUri(context, wallpaper.uri.toUri())?.delete() == true) {
-                                        withContext(Dispatchers.Main) {
-                                            wallpaperViewModel.removeWallpaper(wallpaper)
-                                            onDelete(wallpaper)
-                                            setShowDialog(false)
+                        Button(
+                                onClick = {
+                                    coroutineScope.launch(Dispatchers.IO) {
+                                        if (DocumentFile.fromSingleUri(context, wallpaper.uri.toUri())?.delete() == true) {
+                                            withContext(Dispatchers.Main) {
+                                                wallpaperViewModel.removeWallpaper(wallpaper)
+                                                onDelete(wallpaper)
+                                                setShowDialog(false)
+                                            }
                                         }
                                     }
-                                }
-                            },
-                            colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color.White,
-                            ),
-                            shape = RoundedCornerShape(12.dp),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(50.dp),
-                    ) {
-                        Text(
-                                text = context.getString(R.string.delete),
-                                color = MaterialTheme.colorScheme.onSurface,
-                                fontSize = DIALOG_OPTION_FONT_SIZE,
-                                fontWeight = FontWeight.SemiBold
-                        )
-                    }
+                                },
+                                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                                shape = RoundedCornerShape(12.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                        ) {
+                            Text(
+                                    text = context.getString(R.string.delete),
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    fontSize = DIALOG_OPTION_FONT_SIZE,
+                                    fontWeight = FontWeight.SemiBold
+                            )
+                        }
 
-                    Spacer(modifier = Modifier.height(5.dp))
+                        Spacer(modifier = Modifier.height(5.dp))
 
-                    Button(
-                            onClick = {
-                                showTagDialog.value = true
-                            },
-                            colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color.White,
-                            ),
-                            shape = RoundedCornerShape(12.dp),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(50.dp),
-                    ) {
-                        Text(
-                                text = context.getString(R.string.add_tag),
-                                color = MaterialTheme.colorScheme.onSurface,
-                                fontSize = DIALOG_OPTION_FONT_SIZE,
-                                fontWeight = FontWeight.SemiBold
-                        )
-                    }
+                        Button(
+                                onClick = {
+                                    showTagDialog.value = true
+                                },
+                                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                                shape = RoundedCornerShape(12.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                        ) {
+                            Text(
+                                    text = context.getString(R.string.add_tag),
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    fontSize = DIALOG_OPTION_FONT_SIZE,
+                                    fontWeight = FontWeight.SemiBold
+                            )
+                        }
 
-                    Spacer(modifier = Modifier.height(5.dp))
+                        Spacer(modifier = Modifier.height(5.dp))
 
-                    Button(
-                            onClick = {
-                                val intent = Intent(Intent.ACTION_EDIT)
-                                intent.setDataAndType(wallpaper.uri.toUri(), "image/*")
-                                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                                context.startActivity(Intent.createChooser(intent, context.getString(R.string.edit)))
-                                setShowDialog(false)
-                            },
-                            colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color.White,
-                            ),
-                            shape = RoundedCornerShape(12.dp),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(50.dp),
-                    ) {
-                        Text(
-                                text = context.getString(R.string.edit),
-                                color = MaterialTheme.colorScheme.onSurface,
-                                fontSize = DIALOG_OPTION_FONT_SIZE,
-                                fontWeight = FontWeight.SemiBold
-                        )
-                    }
+                        Button(
+                                onClick = {
+                                    val intent = Intent(Intent.ACTION_EDIT)
+                                    intent.setDataAndType(wallpaper.uri.toUri(), "image/*")
+                                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                    context.startActivity(Intent.createChooser(intent, context.getString(R.string.edit)))
+                                    setShowDialog(false)
+                                },
+                                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                                shape = RoundedCornerShape(12.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                        ) {
+                            Text(
+                                    text = context.getString(R.string.edit),
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    fontSize = DIALOG_OPTION_FONT_SIZE,
+                                    fontWeight = FontWeight.SemiBold
+                            )
+                        }
 
-                    Spacer(modifier = Modifier.height(5.dp))
+                        Spacer(modifier = Modifier.height(5.dp))
 
-                    Button(
-                            onClick = {
-                                onSelect()
-                                setShowDialog(false)
-                            },
-                            colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color.White,
-                            ),
-                            shape = RoundedCornerShape(12.dp),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(50.dp),
-                    ) {
-                        Text(
-                                text = context.getString(R.string.select),
-                                fontSize = DIALOG_OPTION_FONT_SIZE,
-                                fontWeight = FontWeight.SemiBold,
-                                color = MaterialTheme.colorScheme.onSurface
-                        )
+                        Button(
+                                onClick = {
+                                    onSelect()
+                                    setShowDialog(false)
+                                },
+                                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                                shape = RoundedCornerShape(12.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                        ) {
+                            Text(
+                                    text = context.getString(R.string.select),
+                                    fontSize = DIALOG_OPTION_FONT_SIZE,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
                     }
                 }
-            }
-        }
-    }
+            },
+            confirmButton = {
+                Button(
+                        onClick = { setShowDialog(false) },
+                ) {
+                    Text(
+                            text = stringResource(R.string.close),
+                    )
+                }
+            },
+    )
 }

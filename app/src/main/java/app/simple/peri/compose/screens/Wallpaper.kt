@@ -5,7 +5,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,14 +23,14 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Label
-import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Surface
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -62,11 +61,12 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
 import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import app.simple.peri.R
+import app.simple.peri.compose.constants.DIALOG_OPTION_FONT_SIZE
+import app.simple.peri.compose.constants.DIALOG_TITLE_FONT_SIZE
 import app.simple.peri.compose.dialogs.wallpaper.EffectsDialog
 import app.simple.peri.compose.nav.Routes
 import app.simple.peri.constants.Misc
@@ -319,7 +319,6 @@ fun Wallpaper(context: Context, navController: NavHostController) {
                     ) {
                         Text(
                                 text = context.getString(R.string.edit),
-                                color = Color.White,
                                 fontSize = 18.sp,
                                 modifier = Modifier.padding(12.dp),
                                 fontWeight = FontWeight.SemiBold
@@ -328,7 +327,6 @@ fun Wallpaper(context: Context, navController: NavHostController) {
                         Icon(
                                 imageVector = Icons.Rounded.Edit,
                                 contentDescription = "",
-                                tint = Color.White,
                                 modifier = Modifier
                                     .width(24.dp)
                                     .height(24.dp)
@@ -372,58 +370,36 @@ fun Wallpaper(context: Context, navController: NavHostController) {
 
 @Composable
 fun ScreenSelectionDialog(setShowDialog: (Boolean) -> Unit, context: Context, drawable: Drawable?) {
-    Dialog(onDismissRequest = { setShowDialog(false) }) {
-        Surface(
-                shape = RoundedCornerShape(16.dp),
-                color = Color.White
-        ) {
-            Box(
-                    contentAlignment = Alignment.Center
-            ) {
-                Column(modifier = Modifier.padding(20.dp)) {
-                    Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                                text = stringResource(id = R.string.set_as_wallpaper),
-                                style = TextStyle(
-                                        fontSize = 24.sp,
-                                        fontFamily = FontFamily.Default,
-                                        fontWeight = FontWeight.Bold
-                                )
-                        )
-                        Icon(
-                                imageVector = Icons.Rounded.Close,
-                                contentDescription = "",
-                                modifier = Modifier
-                                    .width(30.dp)
-                                    .height(30.dp)
-                                    .clickable { setShowDialog(false) }
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(20.dp))
-
+    AlertDialog(
+            onDismissRequest = { setShowDialog(false) },
+            title = {
+                Text(
+                        text = stringResource(id = R.string.set_as_wallpaper),
+                        fontSize = DIALOG_TITLE_FONT_SIZE,
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = FontFamily.SansSerif,
+                        style = TextStyle.Default,
+                )
+            },
+            text = {
+                Column {
                     Button(
                             onClick = {
                                 setWallpaper(context, WallpaperManager.FLAG_LOCK, drawable!!)
                                 setShowDialog(false)
                             },
                             colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color.White,
+                                    containerColor = Color.Transparent,
                             ),
                             shape = RoundedCornerShape(12.dp),
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(50.dp),
                     ) {
                         Text(
                                 text = context.getString(R.string.lock_screen),
-                                color = Color.Black,
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.SemiBold
+                                fontSize = DIALOG_OPTION_FONT_SIZE,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                fontWeight = FontWeight.Bold
                         )
                     }
 
@@ -435,18 +411,17 @@ fun ScreenSelectionDialog(setShowDialog: (Boolean) -> Unit, context: Context, dr
                                 setShowDialog(false)
                             },
                             colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color.White,
+                                    containerColor = Color.Transparent,
                             ),
                             shape = RoundedCornerShape(12.dp),
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(50.dp),
                     ) {
                         Text(
                                 text = context.getString(R.string.home_screen),
-                                color = Color.Black,
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.SemiBold
+                                fontSize = DIALOG_OPTION_FONT_SIZE,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                fontWeight = FontWeight.Bold
                         )
                     }
 
@@ -458,24 +433,31 @@ fun ScreenSelectionDialog(setShowDialog: (Boolean) -> Unit, context: Context, dr
                                 setShowDialog(false)
                             },
                             colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color.White,
+                                    containerColor = Color.Transparent,
                             ),
                             shape = RoundedCornerShape(12.dp),
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(50.dp),
                     ) {
                         Text(
                                 text = context.getString(R.string.both),
-                                color = Color.Black,
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.SemiBold
+                                color = MaterialTheme.colorScheme.onSurface,
+                                fontSize = DIALOG_OPTION_FONT_SIZE,
+                                fontWeight = FontWeight.Bold
                         )
                     }
                 }
-            }
-        }
-    }
+            },
+            confirmButton = {
+                Button(
+                        onClick = {
+                            setShowDialog(false)
+                        })
+                {
+                    Text(stringResource(id = R.string.cancel))
+                }
+            },
+    )
 }
 
 fun setWallpaper(context: Context, flags: Int, drawable: Drawable) {

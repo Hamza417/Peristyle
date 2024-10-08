@@ -1,32 +1,25 @@
 package app.simple.peri.compose.screens
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Surface
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -47,13 +40,14 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import app.simple.peri.R
 import app.simple.peri.compose.commons.COMMON_PADDING
 import app.simple.peri.compose.commons.TopHeader
+import app.simple.peri.compose.constants.DIALOG_OPTION_FONT_SIZE
+import app.simple.peri.compose.constants.DIALOG_TITLE_FONT_SIZE
 import app.simple.peri.compose.nav.Routes
 import app.simple.peri.factories.TagsViewModelFactory
 import app.simple.peri.models.DisplayDimension
@@ -209,61 +203,53 @@ fun TagsMenu(setShowDialog: (Boolean) -> Unit,
             factory = TagsViewModelFactory()
     )
 
-    Dialog(onDismissRequest = { setShowDialog(false) }) {
-        Surface(
-                shape = RoundedCornerShape(16.dp),
-                color = Color.White
-        ) {
-            Box(
-                    contentAlignment = Alignment.Center
-            ) {
-                Column(modifier = Modifier.padding(20.dp)) {
-                    Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                                text = tag.name,
-                                style = TextStyle(
-                                        fontSize = 24.sp,
-                                        fontFamily = FontFamily.Default,
-                                        fontWeight = FontWeight.Bold
-                                )
+    AlertDialog(
+            onDismissRequest = { setShowDialog(false) },
+            title = {
+                Text(
+                        text = tag.name,
+                        style = TextStyle(
+                                fontFamily = FontFamily.SansSerif,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = DIALOG_TITLE_FONT_SIZE
                         )
-                        Icon(
-                                imageVector = Icons.Rounded.Close,
-                                contentDescription = "",
+                )
+            },
+            text = {
+                Box(
+                        contentAlignment = Alignment.Center
+                ) {
+                    Column {
+                        Button(
+                                onClick = {
+                                    tagsViewModel.deleteTag(tag)
+                                },
+                                colors = ButtonDefaults.buttonColors(
+                                        containerColor = Color.Transparent,
+                                ),
+                                shape = RoundedCornerShape(12.dp),
                                 modifier = Modifier
-                                    .width(30.dp)
-                                    .height(30.dp)
-                                    .clickable { setShowDialog(false) }
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(20.dp))
-
-                    Button(
-                            onClick = {
-                                tagsViewModel.deleteTag(tag)
-                            },
-                            colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color.White,
-                            ),
-                            shape = RoundedCornerShape(12.dp),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(50.dp),
-                    ) {
-                        Text(
-                                text = context.getString(R.string.delete),
-                                color = Color.Black,
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.SemiBold
-                        )
+                                    .fillMaxWidth()
+                                    .height(50.dp),
+                        ) {
+                            Text(
+                                    text = context.getString(R.string.delete),
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    fontSize = DIALOG_OPTION_FONT_SIZE,
+                                    fontWeight = FontWeight.SemiBold
+                            )
+                        }
                     }
                 }
-            }
-        }
-    }
+            },
+            confirmButton = {
+                Button(
+                        onClick = { setShowDialog(false) },
+                ) {
+                    Text(
+                            text = stringResource(R.string.close),
+                    )
+                }
+            },
+    )
 }

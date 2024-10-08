@@ -17,9 +17,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import app.simple.peri.R
+import app.simple.peri.compose.constants.DIALOG_TITLE_FONT_SIZE
 import app.simple.peri.models.Tag
 import app.simple.peri.viewmodels.TagsViewModel
 
@@ -37,9 +41,14 @@ fun AddTagDialog(onDismiss: () -> Unit, onAdd: (String) -> Unit) {
     AlertDialog(
             onDismissRequest = onDismiss,
             title = {
-                Text(text = stringResource(id = R.string.add_tag))
+                Text(
+                        text = stringResource(id = R.string.add_tag),
+                        fontSize = DIALOG_TITLE_FONT_SIZE,
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = FontFamily.SansSerif,
+                        style = TextStyle.Default,
+                )
             },
-            containerColor = MaterialTheme.colorScheme.background,
             text = {
                 Column {
                     TextField(

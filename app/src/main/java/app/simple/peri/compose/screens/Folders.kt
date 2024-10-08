@@ -2,10 +2,8 @@ package app.simple.peri.compose.screens
 
 import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -13,10 +11,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
@@ -24,7 +20,6 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Visibility
 import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material3.AlertDialog
@@ -330,36 +325,18 @@ fun FolderMenu(folder: Folder? = null, onDismiss: () -> Unit, onOptionSelected: 
     )
 
     AlertDialog(
+            title = {
+                Text(
+                        text = folder?.name ?: "",
+                        fontSize = DIALOG_TITLE_FONT_SIZE,
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = FontFamily.SansSerif,
+                        style = TextStyle.Default,
+                )
+            },
             onDismissRequest = { onDismiss() },
             text = {
                 Column {
-                    Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(bottom = 24.dp, end = 8.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                                text = folder?.name ?: "",
-                                style = TextStyle(
-                                        fontSize = DIALOG_TITLE_FONT_SIZE,
-                                        fontFamily = FontFamily.Default,
-                                        fontWeight = FontWeight.Bold
-                                ),
-                                modifier = Modifier.weight(1f),
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                        )
-                        Icon(
-                                imageVector = Icons.Rounded.Close,
-                                contentDescription = "",
-                                modifier = Modifier
-                                    .width(30.dp)
-                                    .height(30.dp)
-                                    .clickable { onDismiss() }
-                        )
-                    }
                     options.forEach { option ->
                         Button(
                                 onClick = {
