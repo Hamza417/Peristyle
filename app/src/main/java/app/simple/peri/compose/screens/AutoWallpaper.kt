@@ -412,7 +412,7 @@ fun AutoWallpaper(navController: NavController? = null) {
 
                             lockTagID.value = null
                             MainComposePreferences.setLockTagId(null)
-                            MainComposePreferences.setLastLockWallpaperPosition(0)
+                            MainComposePreferences.resetLastWallpaperPositions()
                         })
             }
 
@@ -429,7 +429,7 @@ fun AutoWallpaper(navController: NavController? = null) {
 
                             homeTagID.value = null
                             MainComposePreferences.setHomeTagId(null)
-                            MainComposePreferences.setLastHomeWallpaperPosition(0)
+                            MainComposePreferences.resetLastWallpaperPositions()
                         })
             }
 
@@ -495,6 +495,7 @@ fun AutoWallpaper(navController: NavController? = null) {
 
             SwitchPreference(
                     title = context.getString(R.string.linear_auto_wallpaper),
+                    description = context.getString(R.string.linear_auto_wallpaper_summary),
                     checked = MainPreferences.isLinearAutoWallpaper()
             ) {
                 MainPreferences.setLinearAutoWallpaper(it)

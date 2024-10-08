@@ -192,4 +192,5 @@
     <string name="nomedia_remove_success">.nomedia has been removed. The folder will be visible again.</string>
     <string name="generate_md5">Generate Checksum</string>
     <string name="generate_md5_summary">Use MD5 checksums for wallpaper IDs instead of URI hashcodes.</string>
+    <string name="linear_auto_wallpaper_summary">Pick wallpapers in linear order. Use this toggle to apply the same wallpaper on both screens if same tag or folder is selected.</string>
 </resources>

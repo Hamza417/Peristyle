@@ -164,14 +164,17 @@ object MainComposePreferences {
         getSharedPreferences().edit().putInt(LAST_LOCK_WALLPAPER_POSITION, value).apply()
     }
 
-    // ----------------------------------------------------------------------------------------------------- //
-
     fun getLastHomeWallpaperPosition(): Int {
         return getSharedPreferences().getInt(LAST_HOME_WALLPAPER_POSITION, 0)
     }
 
     fun setLastHomeWallpaperPosition(value: Int) {
         getSharedPreferences().edit().putInt(LAST_HOME_WALLPAPER_POSITION, value).apply()
+    }
+
+    fun resetLastWallpaperPositions() {
+        getSharedPreferences().edit().remove(LAST_LOCK_WALLPAPER_POSITION).apply()
+        getSharedPreferences().edit().remove(LAST_HOME_WALLPAPER_POSITION).apply()
     }
 
     // ----------------------------------------------------------------------------------------------------- //
