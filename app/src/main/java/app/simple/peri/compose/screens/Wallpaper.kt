@@ -73,6 +73,7 @@ import app.simple.peri.constants.Misc
 import app.simple.peri.factories.TagsViewModelFactory
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.utils.BitmapUtils.applyEffects
+import app.simple.peri.utils.BitmapUtils.multiplyMatrices
 import app.simple.peri.utils.FileUtils.toSize
 import app.simple.peri.utils.FileUtils.toUri
 import app.simple.peri.viewmodels.TagsViewModel
@@ -292,10 +293,7 @@ fun Wallpaper(context: Context, navController: NavHostController) {
                                 val bitmap = graphicsLayer.toImageBitmap().asAndroidBitmap().copy(Bitmap.Config.ARGB_8888, true)
                                 bitmap.applyEffects(
                                         blur = blurValue.times(Misc.BLUR_TIMES),
-                                        brightness = brightnessValue,
-                                        contrast = contrastValue,
-                                        saturation = saturationValue,
-                                        hue = hueValue
+                                        colorMatrix = colorMatrix
                                 )
                                 drawable = BitmapDrawable(context.resources, bitmap)
                                 showDialog = true
@@ -464,24 +462,4 @@ fun setWallpaper(context: Context, flags: Int, drawable: Drawable) {
     val wallpaperManager = WallpaperManager.getInstance(context)
     wallpaperManager.setWallpaperOffsetSteps(0F, 0F)
     wallpaperManager.setBitmap(drawable.toBitmap(), null, true, flags)
-}
-
-/**
- * Multiplies two color matrices and stores the result in the provided result array.
- *
- * @param m1 The first color matrix as a float array.
- * @param m2 The second color matrix as a float array.
- * @param result The array to store the result of the multiplication.
- */
-fun multiplyMatrices(m1: FloatArray, m2: FloatArray, result: FloatArray) {
-    for (i in 0..19) {
-        val row = i / 5
-        val col = i % 5
-        // Perform the matrix multiplication and store the result
-        result[i] = m1[row * 5] * m2[col] +
-                m1[row * 5 + 1] * m2[col + 5] +
-                m1[row * 5 + 2] * m2[col + 10] +
-                m1[row * 5 + 3] * m2[col + 15] +
-                m1[row * 5 + 4] * m2[col + 4]
-    }
 }

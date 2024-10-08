@@ -13,9 +13,9 @@ import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.palette.graphics.Palette
-import app.simple.peri.constants.Misc
 import app.simple.peri.tools.StackBlur
 import java.io.InputStream
+import androidx.compose.ui.graphics.ColorMatrix as ComposeUiGraphicsColorMatrix
 
 object BitmapUtils {
 
@@ -68,36 +68,86 @@ object BitmapUtils {
         canvas.drawBitmap(this, 0f, 0f, paint)
     }
 
-    fun Bitmap.applyEffects(brightness: Float, contrast: Float, blur: Float, saturation: Float, hue: Float) {
-        val colorMatrix = ColorMatrix().apply {
-            set(floatArrayOf(
-                    contrast, 0f, 0f, 0f, brightness,
-                    0f, contrast, 0f, 0f, brightness,
-                    0f, 0f, contrast, 0f, brightness,
-                    0f, 0f, 0f, 1f, 0f
-            ))
-        }
+    /**
+     * For compose interface only
+     */
+    fun Bitmap.applyEffects(blur: Float, brightness: Float, contrast: Float, saturation: Float, hue: Float): Bitmap {
+        // Initialize the main color matrix
+        val colorMatrix = ComposeUiGraphicsColorMatrix()
 
-        colorMatrix.postConcat(ColorMatrix().apply {
-            setRotate(0, hue)
-            setRotate(1, hue)
-            setRotate(2, hue)
-        })
+        // Create color matrices for each transformation
+        val rotateRedMatrix = ComposeUiGraphicsColorMatrix().apply { setToRotateRed(hue) }
+        val rotateGreenMatrix = ComposeUiGraphicsColorMatrix().apply { setToRotateGreen(hue) }
+        val rotateBlueMatrix = ComposeUiGraphicsColorMatrix().apply { setToRotateBlue(hue) }
+        val saturationMatrix = ComposeUiGraphicsColorMatrix().apply { setToSaturation(saturation) }
+        val contrastMatrix = ComposeUiGraphicsColorMatrix(
+                floatArrayOf(
+                        contrast, 0f, 0f, 0f, brightness,
+                        0f, contrast, 0f, 0f, brightness,
+                        0f, 0f, contrast, 0f, brightness,
+                        0f, 0f, 0f, 1f, 0f
+                )
+        )
 
-        colorMatrix.postConcat(ColorMatrix().apply {
-            setSaturation(saturation)
-        })
+        // Manually combine the matrices
+        val combinedMatrix = FloatArray(20) // Array to hold the combined matrix
+        val tempMatrix = FloatArray(20) // Temporary array for intermediate results
 
+        // Multiply the red and green rotation matrices and store the result in tempMatrix
+        multiplyMatrices(rotateRedMatrix.values, rotateGreenMatrix.values, tempMatrix)
+
+        // Multiply the result with the blue rotation matrix and store in combinedMatrix
+        multiplyMatrices(tempMatrix, rotateBlueMatrix.values, combinedMatrix)
+
+        // Multiply the result with the saturation matrix and store in tempMatrix
+        multiplyMatrices(combinedMatrix, saturationMatrix.values, tempMatrix)
+
+        // Multiply the result with the contrast matrix and store in combinedMatrix
+        multiplyMatrices(tempMatrix, contrastMatrix.values, combinedMatrix)
+
+        // Set the combined matrix to the main color matrix
+        colorMatrix.set(ComposeUiGraphicsColorMatrix(combinedMatrix))
+
+        // Apply the combined color matrix to the bitmap
         val paint = Paint()
-        paint.colorFilter = ColorMatrixColorFilter(colorMatrix)
-        val canvas = Canvas(this)
+        paint.colorFilter = ColorMatrixColorFilter(colorMatrix.toColorMatrix())
+        val bitmap = Bitmap.createBitmap(width, height, config ?: Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
         canvas.drawBitmap(this, 0f, 0f, paint)
 
         try {
-            StackBlur().blurRgb(this, blur.times(Misc.BLUR_TIMES).toInt())
-        } catch (e: IllegalArgumentException) {
+            StackBlur().blurRgb(bitmap, blur.toInt())
+        } catch (e: Exception) {
             e.printStackTrace()
         }
+
+        return bitmap
+    }
+
+    /**
+     * For compose interface only
+     */
+    fun Bitmap.applyEffects(blur: Float, colorMatrix: ComposeUiGraphicsColorMatrix): Bitmap {
+        // Apply the combined color matrix to the bitmap
+        val paint = Paint()
+        paint.colorFilter = ColorMatrixColorFilter(colorMatrix.toColorMatrix())
+        val bitmap = Bitmap.createBitmap(width, height, config ?: Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        canvas.drawBitmap(this, 0f, 0f, paint)
+
+        try {
+            StackBlur().blurRgb(bitmap, blur.toInt())
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        return bitmap
+    }
+
+    fun ComposeUiGraphicsColorMatrix.toColorMatrix(): ColorMatrix {
+        val values = FloatArray(20)
+        this.values.copyInto(values)
+        return ColorMatrix(values)
     }
 
     fun ViewGroup.createLayoutBitmap(): Bitmap {
@@ -225,5 +275,25 @@ object BitmapUtils {
     fun Bitmap.generatePalette(): Palette {
         val palette = Palette.from(this).generate()
         return palette
+    }
+
+    /**
+     * Multiplies two color matrices and stores the result in the provided result array.
+     *
+     * @param m1 The first color matrix as a float array.
+     * @param m2 The second color matrix as a float array.
+     * @param result The array to store the result of the multiplication.
+     */
+    fun multiplyMatrices(m1: FloatArray, m2: FloatArray, result: FloatArray) {
+        for (i in 0..19) {
+            val row = i / 5
+            val col = i % 5
+            // Perform the matrix multiplication and store the result
+            result[i] = m1[row * 5] * m2[col] +
+                    m1[row * 5 + 1] * m2[col + 5] +
+                    m1[row * 5 + 2] * m2[col + 10] +
+                    m1[row * 5 + 3] * m2[col + 15] +
+                    m1[row * 5 + 4] * m2[col + 4]
+        }
     }
 }
