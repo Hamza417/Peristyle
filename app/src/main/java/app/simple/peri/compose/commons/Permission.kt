@@ -27,7 +27,7 @@ fun RequestDirectoryPermission(onCancel: () -> Unit, onStorageGranted: () -> Uni
                 val modeFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
                 context.contentResolver.takePersistableUriPermission(uri, modeFlags)
                 MainPreferences.setStorageUri(uri.toString())
-                wallpaperViewModel.refresh()
+                wallpaperViewModel.refresh(true)
                 Log.d("Setup", "Storage Uri: $uri")
                 onStorageGranted()
             } else {

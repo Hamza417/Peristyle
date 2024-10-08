@@ -37,7 +37,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -89,7 +88,11 @@ fun Folders(navController: NavController? = null) {
     var requestPermission by remember { mutableStateOf(false) }
     var statusBarHeight by remember { mutableIntStateOf(0) }
     var navigationBarHeight by remember { mutableIntStateOf(0) }
-    val currentLoadingImage by wallpaperViewModel.getLoadingImage().collectAsState()
+    val currentLoadingState = wallpaperViewModel.getLoadingImage().collectAsState().value
+
+    if (currentLoadingState.isBlank()) {
+        Log.i("Folders", "Loading image is blank")
+    }
 
     statusBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
             LocalView.current.rootWindowInsets).getInsets(WindowInsetsCompat.Type.statusBars()).top
@@ -112,10 +115,6 @@ fun Folders(navController: NavController? = null) {
         )
     }
 
-    LaunchedEffect(currentLoadingImage) {
-        Log.d("FoldersScreen", "Current loading image: $currentLoadingImage")
-    }
-
     LazyVerticalStaggeredGrid(
             columns = StaggeredGridCells.Fixed(2),
             modifier = Modifier
@@ -135,10 +134,10 @@ fun Folders(navController: NavController? = null) {
                     navController = navController
             )
         }
-        if (currentLoadingImage.isBlank().invert()) {
+        if (currentLoadingState.isBlank().invert()) {
             item(span = StaggeredGridItemSpan.FullLine) {
                 Text(
-                        text = currentLoadingImage,
+                        text = currentLoadingState,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(start = 16.dp, bottom = 16.dp, end = 16.dp),

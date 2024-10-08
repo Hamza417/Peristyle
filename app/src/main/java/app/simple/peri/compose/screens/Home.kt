@@ -2,7 +2,6 @@ package app.simple.peri.compose.screens
 
 import android.graphics.drawable.Drawable
 import android.os.Build
-import android.util.Log
 import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -89,8 +88,6 @@ import kotlin.math.absoluteValue
 
 @Composable
 fun Home(navController: NavController? = null) {
-    InitWallpaperViewModel()
-
     val pagerState = rememberPagerState(pageCount = {
         2
     })
@@ -473,8 +470,5 @@ fun ShowTagDialog(title: String, onDismiss: () -> Unit) {
 @Composable
 fun InitWallpaperViewModel() {
     val wallpaperViewModel: WallpaperViewModel = viewModel()
-
-    wallpaperViewModel.getWallpapersLiveData().observeAsState().value?.let {
-        Log.d("Home", "Wallpapers: ${it.size}")
-    }
+    wallpaperViewModel.refresh()
 }

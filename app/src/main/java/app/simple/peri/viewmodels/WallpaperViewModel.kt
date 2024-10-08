@@ -24,6 +24,7 @@ import app.simple.peri.models.Folder
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.utils.BitmapUtils.generatePalette
+import app.simple.peri.utils.CommonUtils.withBooleanScope
 import app.simple.peri.utils.ConditionUtils.invert
 import app.simple.peri.utils.FileUtils.filterDotFiles
 import app.simple.peri.utils.FileUtils.generateMD5
@@ -31,6 +32,7 @@ import app.simple.peri.utils.FileUtils.listCompleteFiles
 import app.simple.peri.utils.FileUtils.listOnlyFirstLevelFiles
 import app.simple.peri.utils.PermissionUtils
 import app.simple.peri.utils.WallpaperSort.getSortedList
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -41,7 +43,8 @@ import java.io.File
 class WallpaperViewModel(application: Application) : AndroidViewModel(application) {
 
     private var loadDatabaseJob: Job? = null
-    private var loadWallpaperJob: Job? = null
+    private var isWallpaperLoading: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    private var shouldThrowError: MutableStateFlow<Boolean> = MutableStateFlow(false)
     private var broadcastReceiver: BroadcastReceiver? = null
     private val intentFilter = IntentFilter().apply {
         addAction(BundleConstants.INTENT_RECREATE_DATABASE)
@@ -53,7 +56,7 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
 
     private var isDatabaseLoaded: MutableLiveData<Boolean> = MutableLiveData(false)
 
-    var _loadingImage = MutableStateFlow("")
+    var _folderLoadingState = MutableStateFlow("")
 
     init {
         broadcastReceiver = object : BroadcastReceiver() {
@@ -71,11 +74,11 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     fun getLoadingImage(): MutableStateFlow<String> {
-        return _loadingImage
+        return _folderLoadingState
     }
 
-    fun setLoadingImage(loadingImage: String) {
-        _loadingImage.value = loadingImage
+    private fun setFolderLoadingState(loadingImage: String) {
+        _folderLoadingState.value = loadingImage
     }
 
     private val wallpapersData: MutableLiveData<ArrayList<Wallpaper>> by lazy {
@@ -200,60 +203,85 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
             @Suppress("UNCHECKED_CAST")
             wallpapersData.postValue(wallpaperList.clone() as ArrayList<Wallpaper>)
 
-            alreadyLoaded = WallpaperDatabase.getInstance(getApplication())?.wallpaperDao()?.getWallpapers()?.associateBy { it.uri }
             loadWallpaperImages()
         }
     }
 
     private fun loadWallpaperImages() {
-        loadWallpaperJob = viewModelScope.launch(Dispatchers.IO) {
-            isDatabaseLoaded.postValue(false)
+        if (isWallpaperLoading.value) {
+            Log.d(TAG, "loadWallpaperImages: previous session is still loading, skipping...")
+            return
+        }
 
-            getApplication<Application>().contentResolver.persistedUriPermissions.forEach { uri ->
-                val pickedDirectory = DocumentFile.fromTreeUri(getApplication(), uri.uri)
-                if (pickedDirectory?.exists() == true) {
-                    val files = pickedDirectory.getFiles().dotFilter()
-                    val total = files.size
+        viewModelScope.launch(Dispatchers.IO) {
+            withBooleanScope(isWallpaperLoading) {
+                runCatching {
+                    alreadyLoaded = WallpaperDatabase.getInstance(
+                            getApplication())?.wallpaperDao()?.getWallpapers()?.associateBy { it.uri }
+                    isDatabaseLoaded.postValue(false)
 
-                    if (files.isEmpty()) {
-                        loadingStatus.postValue("no files found")
-                        return@launch
-                    }
+                    getApplication<Application>().contentResolver.persistedUriPermissions.forEach { uri ->
+                        val pickedDirectory = DocumentFile.fromTreeUri(getApplication(), uri.uri)
+                        if (pickedDirectory?.exists() == true) {
+                            val files = pickedDirectory.getFiles().dotFilter()
+                            val total = files.size
+                            var count = 0
+                            setFolderLoadingState(getApplication<Application>().getString(app.simple.peri.R.string.preparing))
 
-                    if (wallpapersData.value.isNullOrEmpty()) {
-                        loadingStatus.postValue(getApplication<Application>().getString(app.simple.peri.R.string.preparing))
-                    }
-
-                    files.parallelStream().forEach { file ->
-                        try {
-                            if (alreadyLoaded?.containsKey(file.uri.toString()) == false) {
-                                val wallpaper = createWallpaperFromFile(file)
-                                wallpaper.uriHashcode = uri.uri.hashCode()
-                                wallpapers.add(wallpaper)
-                                newWallpapersData.postValue(wallpaper)
-                                WallpaperDatabase.getInstance(getApplication())?.wallpaperDao()?.insert(wallpaper)
-                                updateLoadingStatus(wallpapers.size, total)
-                                setLoadingImage("${wallpapers.size} / $total")
+                            if (files.isEmpty()) {
+                                loadingStatus.postValue("no files found")
+                                return@launch
                             }
-                        } catch (e: IllegalStateException) {
-                            e.printStackTrace()
-                            failedURIs.add(file.uri.toString())
+
+                            if (wallpapersData.value.isNullOrEmpty()) {
+                                loadingStatus.postValue(getApplication<Application>().getString(app.simple.peri.R.string.preparing))
+                            }
+
+                            files.forEach { file ->
+                                count = count.inc()
+                                if (shouldThrowError.value) {
+                                    Log.e(TAG, "loadWallpaperImages: job cancelled")
+                                    shouldThrowError.value = false
+                                    throw CancellationException("Job cancelled")
+                                }
+
+                                try {
+                                    if (alreadyLoaded?.containsKey(file.uri.toString()) == false) {
+                                        Log.i(TAG, "loadWallpaperImages: loading ${file.uri}")
+                                        val wallpaper = createWallpaperFromFile(file)
+                                        wallpaper.uriHashcode = uri.uri.hashCode()
+                                        wallpapers.add(wallpaper)
+                                        newWallpapersData.postValue(wallpaper)
+                                        WallpaperDatabase.getInstance(getApplication())?.wallpaperDao()?.insert(wallpaper)
+                                        updateLoadingStatus(count, total)
+                                        setFolderLoadingState("$count / $total")
+                                    } else {
+                                        Log.i(TAG, "loadWallpaperImages: already loaded ${file.uri}")
+                                        updateLoadingStatus(count, total)
+                                        setFolderLoadingState("$count / $total")
+                                    }
+                                } catch (e: IllegalStateException) {
+                                    e.printStackTrace()
+                                    failedURIs.add(file.uri.toString())
+                                }
+                            }
+
+                            if (alreadyLoaded.isNullOrEmpty()) {
+                                wallpapers.getSortedList()
+                                wallpapers.forEach { it.isSelected = false }
+                                wallpapersData.postValue(wallpapers)
+                            }
                         }
                     }
 
-                    if (alreadyLoaded.isNullOrEmpty()) {
-                        wallpapers.getSortedList()
-                        wallpapers.forEach { it.isSelected = false }
-                        wallpapersData.postValue(wallpapers)
-                    }
-
                     initDatabase()
-                    loadingStatus.postValue("") // clear loading statu
+                    loadingStatus.postValue("")
+                    setFolderLoadingState("")
+                    loadFolders()
+                }.getOrElse {
+                    it.printStackTrace()
                 }
             }
-
-            setLoadingImage("")
-            loadFolders()
         }
     }
 
@@ -419,19 +447,15 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
         viewModelScope.launch(Dispatchers.IO) {
             Log.d(TAG, "recreateDatabase: recreating database")
 
-            if (isWallpaperJobActive()) {
-                isDatabaseLoaded.postValue(false)
-                wallpapers.clear()
-                wallpapersData.postValue(wallpapers)
-                val wallpaperDatabase = WallpaperDatabase.getInstance(getApplication())
-                val wallpaperDao = wallpaperDatabase?.wallpaperDao()
-                wallpaperDao?.nukeTable()
+            isDatabaseLoaded.postValue(false)
+            wallpapers.clear()
+            wallpapersData.postValue(wallpapers)
+            val wallpaperDatabase = WallpaperDatabase.getInstance(getApplication())
+            val wallpaperDao = wallpaperDatabase?.wallpaperDao()
+            wallpaperDao?.nukeTable()
 
-                withContext(Dispatchers.Main) {
-                    loadWallpaperImages()
-                }
-            } else {
-                Log.d(TAG, "recreateDatabase: previous session is still loading, skipping...")
+            withContext(Dispatchers.Main) {
+                loadWallpaperImages()
             }
         }
     }
@@ -444,10 +468,6 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
             Log.d(TAG, "refreshWallpapers: database not loaded")
             func()
         }
-    }
-
-    private fun isWallpaperJobActive(): Boolean {
-        return loadWallpaperJob?.isActive == true || loadWallpaperJob?.isCompleted == false
     }
 
     override fun onCleared() {
@@ -497,13 +517,15 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
         }
     }
 
-    fun refresh() {
+    fun refresh(isForced: Boolean = false) {
         Log.i(TAG, "refresh: refreshing wallpapers")
-        loadFolders()
-        if (isWallpaperJobActive()) {
-            loadWallpaperJob?.cancel()
-            Log.i(TAG, "refresh: wallpaper job cancelled")
+
+        if (isForced) {
+            isWallpaperLoading.value = false
+            shouldThrowError.value = true
         }
+
+        loadFolders()
         loadWallpaperImages()
     }
 
