@@ -123,7 +123,7 @@ fun Settings(navController: NavController? = null) {
             val showSortDialog = remember { mutableStateOf(false) }
             val showOrderDialog = remember { mutableStateOf(false) }
             val showClearCacheDialog = remember { mutableStateOf(false) }
-            var totalCache = remember { mutableLongStateOf(0L) }
+            val totalCache = remember { mutableLongStateOf(0L) }
 
             if (showSortDialog.value) {
                 SortDialog {
@@ -178,6 +178,14 @@ fun Settings(navController: NavController? = null) {
                     topPadding = 8.dp
             ) {
                 MainPreferences.setIgnoreSubDirs(it)
+            }
+
+            SwitchPreference(
+                    title = context.getString(R.string.generate_md5),
+                    description = context.getString(R.string.generate_md5_summary),
+                    checked = MainComposePreferences.getGenerateMD5(),
+            ) {
+                MainComposePreferences.setGenerateMD5(it)
             }
 
             ClickablePreference(

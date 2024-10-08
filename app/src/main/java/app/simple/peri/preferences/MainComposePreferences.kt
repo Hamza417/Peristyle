@@ -7,6 +7,7 @@ object MainComposePreferences {
     private const val GRID_SPAN_COUNT = "grid_span_count"
     private const val WARNING_INDICATOR = "warning_indicator"
     private const val IMAGE_SHADOW = "image_shadow"
+    private const val GENERATE_MD5 = "generate_md5"
     private const val IS_LOCK_SOURCE_SET = "is_lock_source_set"
     private const val IS_HOME_SOURCE_SET = "is_home_source_set"
     private const val LOCK_TAG_ID = "lock_tag_id"
@@ -51,6 +52,16 @@ object MainComposePreferences {
 
     fun setShowWarningIndicator(value: Boolean) {
         getSharedPreferences().edit().putBoolean(WARNING_INDICATOR, value).apply()
+    }
+
+    // ----------------------------------------------------------------------------------------------------- //
+
+    fun getGenerateMD5(): Boolean {
+        return getSharedPreferences().getBoolean(GENERATE_MD5, false)
+    }
+
+    fun setGenerateMD5(value: Boolean) {
+        getSharedPreferences().edit().putBoolean(GENERATE_MD5, value).apply()
     }
 
     // ----------------------------------------------------------------------------------------------------- //

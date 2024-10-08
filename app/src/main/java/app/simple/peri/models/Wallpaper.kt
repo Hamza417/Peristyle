@@ -14,6 +14,7 @@ import androidx.palette.graphics.Palette
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.utils.FileUtils.generateMD5
 import app.simple.peri.utils.WallpaperSort
@@ -131,7 +132,11 @@ class Wallpaper() : Comparable<Wallpaper>, Serializable, Parcelable {
             val bitmap = BitmapFactory.decodeStream(inputStream, null, options)
             wallpaper.width = options.outWidth
             wallpaper.height = options.outHeight
-            wallpaper.md5 = inputStream.generateMD5()
+            if (MainComposePreferences.getGenerateMD5()) {
+                wallpaper.md5 = inputStream.generateMD5()
+            } else {
+                wallpaper.md5 = uri.hashCode().toString()
+            }
             with(bitmap?.let { Palette.from(it).generate() }) {
                 wallpaper.prominentColor = this?.vibrantSwatch?.rgb ?: this?.dominantSwatch?.rgb ?: Color.BLACK
             }

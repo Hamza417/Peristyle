@@ -190,4 +190,6 @@
     <string name="add_nomedia">Add .nomedia</string>
     <string name="remove_nomedia">Remove .nomedia</string>
     <string name="nomedia_remove_success">.nomedia has been removed. The folder will be visible again.</string>
+    <string name="generate_md5">Generate Checksum</string>
+    <string name="generate_md5_summary">Use MD5 checksums for wallpaper IDs instead of URI hashcodes.</string>
 </resources>

@@ -22,6 +22,7 @@ import app.simple.peri.constants.BundleConstants
 import app.simple.peri.database.instances.WallpaperDatabase
 import app.simple.peri.models.Folder
 import app.simple.peri.models.Wallpaper
+import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.utils.BitmapUtils.generatePalette
 import app.simple.peri.utils.CommonUtils.withBooleanScope
@@ -299,12 +300,17 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
             wallpaper.width = options.outWidth
             wallpaper.height = options.outHeight
             wallpaper.prominentColor = bitmap?.generatePalette()?.vibrantSwatch?.rgb ?: 0
+            if (MainComposePreferences.getGenerateMD5().invert()) {
+                wallpaper.md5 = file.uri.hashCode().toString()
+            }
             bitmap?.recycle()
         }
 
-        getApplication<Application>().contentResolver.openInputStream(file.uri)?.use { inputStream ->
-            wallpaper.md5 = inputStream.generateMD5()
-            Log.i(TAG, "loadWallpaperImages: ${wallpaper.name} - ${wallpaper.md5}")
+        if (MainComposePreferences.getGenerateMD5()) {
+            getApplication<Application>().contentResolver.openInputStream(file.uri)?.use { inputStream ->
+                wallpaper.md5 = inputStream.generateMD5()
+                Log.i(TAG, "loadWallpaperImages: ${wallpaper.name} - ${wallpaper.md5}")
+            }
         }
 
         return wallpaper
