@@ -1,0 +1,4 @@
+- Added toggle to disable checksum calculation
+- Fixed various loading issues
+- Fixed invalid effects on final image
+- Fixed various UI issues on dark mode
