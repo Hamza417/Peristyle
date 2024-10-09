@@ -3,6 +3,7 @@ package app.simple.peri.utils
 import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
 import app.simple.peri.utils.StringUtils.endsWithAny
+import java.io.File
 import java.io.InputStream
 import java.math.BigInteger
 import java.security.MessageDigest
@@ -16,6 +17,10 @@ object FileUtils {
 
     fun DocumentFile.isImageFile(): Boolean {
         return this.name!!.lowercase().endsWithAny(*imageExtensions)
+    }
+
+    fun String.toFile(): File {
+        return File(this)
     }
 
     fun String.toUri(): Uri {

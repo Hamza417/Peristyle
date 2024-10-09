@@ -10,7 +10,6 @@ import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import app.simple.peri.constants.Misc
 import app.simple.peri.database.instances.WallpaperDatabase
 import app.simple.peri.models.Folder
 import app.simple.peri.models.Wallpaper
@@ -18,10 +17,15 @@ import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.preferences.SharedPreferences.registerSharedPreferenceChangeListener
 import app.simple.peri.preferences.SharedPreferences.unregisterSharedPreferenceChangeListener
 import app.simple.peri.utils.WallpaperSort.getSortedList
+import id.zelory.compressor.Compressor
+import id.zelory.compressor.constraint.destination
+import id.zelory.compressor.constraint.format
+import id.zelory.compressor.constraint.quality
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.io.FileOutputStream
 
 class FolderDataViewModel(application: Application, private val folder: Folder) :
     AndroidViewModel(application), OnSharedPreferenceChangeListener {
@@ -62,43 +66,53 @@ class FolderDataViewModel(application: Application, private val folder: Folder) 
 
     fun compressWallpaper(wallpaper: Wallpaper, onSuccess: (Wallpaper) -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val context = getApplication<Application>()
-                val uri = Uri.parse(wallpaper.uri)
-                val documentFile = DocumentFile.fromSingleUri(context, uri)
+            val context = getApplication<Application>()
+            val uri = Uri.parse(wallpaper.uri)
+            val documentFile = DocumentFile.fromSingleUri(context, uri)
+            val file = File(context.cacheDir, "source_${wallpaper.name}")
+            val destinationFile = File(context.cacheDir, "compressed_${wallpaper.name}")
 
-                if (documentFile != null && documentFile.exists()) {
-                    context.contentResolver.openInputStream(uri)?.use { inputStream ->
-                        val bitmap = BitmapFactory.decodeStream(inputStream)
-                        val compressedFile =
-                            File(context.cacheDir, "compressed_${documentFile.name}")
+            file.delete()
+            destinationFile.delete()
 
-                        val format =
-                            when (documentFile.name?.substringAfterLast('.', "")?.lowercase()) {
-                                "png" -> Bitmap.CompressFormat.PNG
-                                else -> Bitmap.CompressFormat.JPEG
-                            }
+            // Copy the file to the cache directory
+            context.contentResolver.openInputStream(uri)?.use { inputStream ->
+                file.outputStream().use { outputStream ->
+                    inputStream.copyTo(outputStream)
+                }
+            }
 
-                        compressedFile.outputStream().use { outputStream ->
-                            bitmap.compress(format, Misc.COMPRESSION_PERCENTAGE, outputStream)
-                        }
+            val format = when (wallpaper.name?.substringAfterLast(".")) {
+                "jpg" -> Bitmap.CompressFormat.JPEG
+                "jpeg" -> Bitmap.CompressFormat.JPEG
+                "png" -> Bitmap.CompressFormat.PNG
+                else -> Bitmap.CompressFormat.WEBP
+            }
 
-                        context.contentResolver.openOutputStream(uri)?.use { outputStream ->
-                            compressedFile.inputStream().use { inputStream ->
-                                inputStream.copyTo(outputStream)
-                            }
-                        }
+            // Compress the file
+            val compressedImageFile = Compressor.compress(context, file) {
+                destination(destinationFile)
+                quality(60)
+                format(format)
+            }
 
-                        compressedFile.delete()
-                        val wallpaper1 = postNewWallpaper(documentFile, wallpaper)
-
-                        withContext(Dispatchers.Main) {
-                            onSuccess(wallpaper1)
-                        }
+            // Overwrite the original file with the compressed file
+            context.contentResolver.openFileDescriptor(uri, "rw")?.use { parcelFileDescriptor ->
+                FileOutputStream(parcelFileDescriptor.fileDescriptor).use { outputStream ->
+                    // Truncate the file to 0 bytes
+                    FileOutputStream(parcelFileDescriptor.fileDescriptor).channel.truncate(0)
+                    compressedImageFile.inputStream().use { inputStream ->
+                        inputStream.copyTo(outputStream)
                     }
                 }
-            } catch (e: Exception) {
-                e.printStackTrace()
+            }
+
+            file.delete()
+            destinationFile.delete()
+            val wallpaper1 = documentFile?.let { postNewWallpaper(it, wallpaper) }!!
+
+            withContext(Dispatchers.Main) {
+                onSuccess(wallpaper1)
             }
         }
     }
@@ -119,6 +133,7 @@ class FolderDataViewModel(application: Application, private val folder: Folder) 
                             bitmap.height / 2,
                             true
                         )
+
                         val reducedFile = File(context.cacheDir, "reduced_${documentFile.name}")
 
                         reducedFile.outputStream().use { outputStream ->
@@ -145,10 +160,7 @@ class FolderDataViewModel(application: Application, private val folder: Folder) 
         }
     }
 
-    private fun postNewWallpaper(
-        documentFile: DocumentFile,
-        previousWallpaper: Wallpaper
-    ): Wallpaper {
+    private fun postNewWallpaper(documentFile: DocumentFile, previousWallpaper: Wallpaper): Wallpaper {
         val wallpaper = Wallpaper().createFromUri(documentFile.uri.toString(), getApplication())
         wallpaper.md5 = previousWallpaper.md5
         wallpaper.uriHashcode = previousWallpaper.uriHashcode
