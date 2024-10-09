@@ -3,32 +3,22 @@ package app.simple.peri.viewmodels
 import android.app.Application
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import app.simple.peri.database.instances.WallpaperDatabase
+import app.simple.peri.extensions.CompressorViewModel
 import app.simple.peri.models.Folder
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.preferences.SharedPreferences.registerSharedPreferenceChangeListener
 import app.simple.peri.preferences.SharedPreferences.unregisterSharedPreferenceChangeListener
 import app.simple.peri.utils.WallpaperSort.getSortedList
-import id.zelory.compressor.Compressor
-import id.zelory.compressor.constraint.destination
-import id.zelory.compressor.constraint.format
-import id.zelory.compressor.constraint.quality
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.io.File
-import java.io.FileOutputStream
 
 class FolderDataViewModel(application: Application, private val folder: Folder) :
-    AndroidViewModel(application), OnSharedPreferenceChangeListener {
+    CompressorViewModel(application), OnSharedPreferenceChangeListener {
 
     init {
         registerSharedPreferenceChangeListener()
@@ -64,102 +54,6 @@ class FolderDataViewModel(application: Application, private val folder: Folder) 
         }
     }
 
-    fun compressWallpaper(wallpaper: Wallpaper, onSuccess: (Wallpaper) -> Unit) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val context = getApplication<Application>()
-            val uri = Uri.parse(wallpaper.uri)
-            val documentFile = DocumentFile.fromSingleUri(context, uri)
-            val file = File(context.cacheDir, "source_${wallpaper.name}")
-            val destinationFile = File(context.cacheDir, "compressed_${wallpaper.name}")
-
-            file.delete()
-            destinationFile.delete()
-
-            // Copy the file to the cache directory
-            context.contentResolver.openInputStream(uri)?.use { inputStream ->
-                file.outputStream().use { outputStream ->
-                    inputStream.copyTo(outputStream)
-                }
-            }
-
-            val format = when (wallpaper.name?.substringAfterLast(".")) {
-                "jpg" -> Bitmap.CompressFormat.JPEG
-                "jpeg" -> Bitmap.CompressFormat.JPEG
-                "png" -> Bitmap.CompressFormat.PNG
-                else -> Bitmap.CompressFormat.WEBP
-            }
-
-            // Compress the file
-            val compressedImageFile = Compressor.compress(context, file) {
-                destination(destinationFile)
-                quality(60)
-                format(format)
-            }
-
-            // Overwrite the original file with the compressed file
-            context.contentResolver.openFileDescriptor(uri, "rw")?.use { parcelFileDescriptor ->
-                FileOutputStream(parcelFileDescriptor.fileDescriptor).use { outputStream ->
-                    // Truncate the file to 0 bytes
-                    FileOutputStream(parcelFileDescriptor.fileDescriptor).channel.truncate(0)
-                    compressedImageFile.inputStream().use { inputStream ->
-                        inputStream.copyTo(outputStream)
-                    }
-                }
-            }
-
-            file.delete()
-            destinationFile.delete()
-            val wallpaper1 = documentFile?.let { postNewWallpaper(it, wallpaper) }!!
-
-            withContext(Dispatchers.Main) {
-                onSuccess(wallpaper1)
-            }
-        }
-    }
-
-    fun reduceResolution(wallpaper: Wallpaper, onSuccess: (Wallpaper) -> Unit) {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val context = getApplication<Application>()
-                val uri = Uri.parse(wallpaper.uri)
-                val documentFile = DocumentFile.fromSingleUri(context, uri)
-
-                if (documentFile != null && documentFile.exists()) {
-                    context.contentResolver.openInputStream(uri)?.use { inputStream ->
-                        val bitmap = BitmapFactory.decodeStream(inputStream)
-                        val reducedBitmap = Bitmap.createScaledBitmap(
-                            bitmap,
-                            bitmap.width / 2,
-                            bitmap.height / 2,
-                            true
-                        )
-
-                        val reducedFile = File(context.cacheDir, "reduced_${documentFile.name}")
-
-                        reducedFile.outputStream().use { outputStream ->
-                            reducedBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-                        }
-
-                        context.contentResolver.openOutputStream(uri)?.use { outputStream ->
-                            reducedFile.inputStream().use { inputStream ->
-                                inputStream.copyTo(outputStream)
-                            }
-                        }
-
-                        reducedFile.delete()
-                        val wallpaper1 = postNewWallpaper(documentFile, wallpaper)
-
-                        withContext(Dispatchers.Main) {
-                            onSuccess(wallpaper1)
-                        }
-                    }
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-    }
-
     private fun postNewWallpaper(documentFile: DocumentFile, previousWallpaper: Wallpaper): Wallpaper {
         val wallpaper = Wallpaper().createFromUri(documentFile.uri.toString(), getApplication())
         wallpaper.md5 = previousWallpaper.md5
@@ -184,6 +78,10 @@ class FolderDataViewModel(application: Application, private val folder: Folder) 
                 wallpapersData.postValue(wallpapersData.value)
             }
         }
+    }
+
+    override fun onCompressionDone(wallpaper: Wallpaper, documentFile: DocumentFile): Wallpaper {
+        return postNewWallpaper(documentFile, wallpaper)
     }
 
     override fun onCleared() {
