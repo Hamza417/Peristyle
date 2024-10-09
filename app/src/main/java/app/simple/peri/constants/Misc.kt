@@ -3,6 +3,7 @@ package app.simple.peri.constants
 object Misc {
 
     const val BLUR_TIMES = 4
+    const val COMPRESSION_PERCENTAGE = 50
     var leftMargin = 0
     var rightMargin = 0
     var topMargin = 0

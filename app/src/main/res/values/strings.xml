@@ -193,4 +193,6 @@
     <string name="generate_md5">Generate Checksum</string>
     <string name="generate_md5_summary">Use MD5 checksums for wallpaper IDs instead of URI hashcodes.</string>
     <string name="linear_auto_wallpaper_summary">Pick wallpapers in linear order. Use this toggle to apply the same wallpaper on both screens if same tag or folder is selected.</string>
+    <string name="compress">Compress</string>
+    <string name="reduce_resolution">Reduce Resolution</string>
 </resources>

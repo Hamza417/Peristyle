@@ -69,7 +69,7 @@ interface WallpaperDao {
     /**
      * Insert a wallpaper into the database
      */
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(wallpaper: Wallpaper)
 
     /**
