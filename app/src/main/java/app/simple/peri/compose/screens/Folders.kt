@@ -239,16 +239,16 @@ fun FolderItem(folder: Folder, navController: NavController? = null, wallpaperVi
             modifier = Modifier
                 .padding(8.dp)
                 .combinedClickable(
-                        onClick = {
-                            navController?.navigate(Routes.WALLPAPERS_LIST) {
-                                navController.currentBackStackEntry?.savedStateHandle?.set(Routes.FOLDER_ARG, folder)
-                            }
-                        },
-                        onLongClick = {
-                            showFolderMenu = true
-                        },
-                        indication = ripple(bounded = true),
-                        interactionSource = remember { MutableInteractionSource() }
+                    onClick = {
+                        navController?.navigate(Routes.WALLPAPERS_LIST) {
+                            navController.currentBackStackEntry?.savedStateHandle?.set(Routes.FOLDER_ARG, folder)
+                        }
+                    },
+                    onLongClick = {
+                        showFolderMenu = true
+                    },
+                    indication = ripple(bounded = true),
+                    interactionSource = remember { MutableInteractionSource() }
                 ),
             shape = RoundedCornerShape(16.dp),
     ) {
@@ -271,8 +271,9 @@ fun FolderItem(folder: Folder, navController: NavController? = null, wallpaperVi
                         .fillMaxWidth()
                         .wrapContentHeight()
                         .hazeChild(
-                                state = hazeState,
-                                style = HazeDefaults.style(backgroundColor = Color(0x50000000), blurRadius = 5.dp))
+                            state = hazeState,
+                            style = HazeDefaults.style(backgroundColor = Color(0x50000000), blurRadius = 5.dp)
+                        )
                         .align(Alignment.BottomCenter)
             ) {
                 Row(

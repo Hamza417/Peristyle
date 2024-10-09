@@ -13,6 +13,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
@@ -29,6 +30,7 @@ import app.simple.peri.compose.commons.COMMON_PADDING
 import app.simple.peri.compose.commons.SelectionMenu
 import app.simple.peri.compose.commons.TopHeader
 import app.simple.peri.compose.commons.WallpaperItem
+import app.simple.peri.compose.dialogs.common.PleaseWaitDialog
 import app.simple.peri.compose.nav.Routes
 import app.simple.peri.factories.TagsViewModelFactory
 import app.simple.peri.models.Tag
@@ -63,6 +65,7 @@ fun TaggedWallpapers(navController: NavController? = null) {
         viewModel() // We should use a dedicated ViewModel for this
     val isSelectionMode by wallpaperListViewModel.isSelectionMode.collectAsState()
     val selectionCount by wallpaperListViewModel.selectedWallpapers.collectAsState()
+    var showPleaseWaitDialog by remember { mutableStateOf(false) }
 
     statusBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
         LocalView.current.rootWindowInsets
@@ -78,6 +81,12 @@ fun TaggedWallpapers(navController: NavController? = null) {
 
     val topPadding = 8.dp + statusBarHeightDp
     val bottomPadding = 8.dp + navigationBarHeightDp
+
+    if (showPleaseWaitDialog) {
+        PleaseWaitDialog {
+            Log.i("WallpaperList", "Please wait dialog dismissed")
+        }
+    }
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -110,12 +119,16 @@ fun TaggedWallpapers(navController: NavController? = null) {
                         tagsViewModel.deleteWallpaper(deletedWallpaper)
                     },
                     onCompress = {
+                        showPleaseWaitDialog = true
                         tagsViewModel.compressWallpaper(wallpapers[index]) { wallpaper ->
+                            showPleaseWaitDialog = false
                             Log.i("TaggedWallpapers", "Compressed wallpaper: $wallpaper")
                         }
                     },
                     onReduceResolution = {
+                        showPleaseWaitDialog = true
                         tagsViewModel.reduceResolution(wallpapers[index]) { wallpaper ->
+                            showPleaseWaitDialog = false
                             Log.i("TaggedWallpapers", "Reduced resolution wallpaper: $wallpaper")
                         }
                     },

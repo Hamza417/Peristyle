@@ -13,6 +13,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
@@ -31,6 +32,7 @@ import app.simple.peri.compose.commons.COMMON_PADDING
 import app.simple.peri.compose.commons.SelectionMenu
 import app.simple.peri.compose.commons.TopHeader
 import app.simple.peri.compose.commons.WallpaperItem
+import app.simple.peri.compose.dialogs.common.PleaseWaitDialog
 import app.simple.peri.compose.nav.Routes
 import app.simple.peri.factories.FolderViewModelFactory
 import app.simple.peri.models.Folder
@@ -67,6 +69,7 @@ fun WallpaperList(navController: NavController? = null) {
         val selectionCount by wallpaperListViewModel.selectedWallpapers.collectAsState()
         var statusBarHeight by remember { mutableIntStateOf(0) }
         var navigationBarHeight by remember { mutableIntStateOf(0) }
+        var showPleaseWaitDialog by remember { mutableStateOf(false) }
         val hazeState = remember { HazeState() }
 
         statusBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
@@ -83,6 +86,13 @@ fun WallpaperList(navController: NavController? = null) {
 
         val topPadding = 8.dp + statusBarHeightDp
         val bottomPadding = 8.dp + navigationBarHeightDp
+
+
+        if (showPleaseWaitDialog) {
+            PleaseWaitDialog {
+                Log.i("WallpaperList", "Please wait dialog dismissed")
+            }
+        }
 
         Box(
             modifier = Modifier.fillMaxSize()
@@ -116,7 +126,9 @@ fun WallpaperList(navController: NavController? = null) {
                             folderDataViewModel.deleteWallpaper(deletedWallpaper)
                         },
                         onCompress = {
+                            showPleaseWaitDialog = true
                             folderDataViewModel.compressWallpaper(wallpapers[index]) {
+                                showPleaseWaitDialog = false
                                 Log.d(
                                     "WallpaperList",
                                     "Compressed wallpaper: ${wallpapers[index].size.toSize()} -> ${it.size.toSize()}"
@@ -124,7 +136,9 @@ fun WallpaperList(navController: NavController? = null) {
                             }
                         },
                         onReduceResolution = {
+                            showPleaseWaitDialog = true
                             folderDataViewModel.reduceResolution(wallpapers[index]) {
+                                showPleaseWaitDialog = false
                                 Log.d(
                                     "WallpaperList",
                                     "Reduced wallpaper: ${it.size.toSize()}, ${it.height}x${it.width}"
