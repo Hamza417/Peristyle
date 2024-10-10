@@ -16,7 +16,7 @@ import androidx.compose.ui.window.DialogProperties
 import app.simple.peri.R
 
 @Composable
-fun PleaseWaitDialog(onDismissRequest: () -> Unit) {
+fun PleaseWaitDialog(stateText: String = stringResource(id = R.string.please_wait), onDismissRequest: () -> Unit) {
     AlertDialog(
         onDismissRequest = { onDismissRequest() },
         title = { },
@@ -30,7 +30,7 @@ fun PleaseWaitDialog(onDismissRequest: () -> Unit) {
                     color = MaterialTheme.colorScheme.primary
                 )
                 Spacer(modifier = Modifier.width(16.dp))
-                Text(stringResource(id = R.string.please_wait))
+                Text(stateText)
             }
         },
         confirmButton = {

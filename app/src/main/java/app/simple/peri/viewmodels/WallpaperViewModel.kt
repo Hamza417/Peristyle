@@ -359,7 +359,7 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
         }
 
         isDatabaseLoaded.postValue(true)
-        Log.d(TAG, "initDatabase: database loaded")
+        Log.d(TAG, "database loaded")
 
         if (failedURIs.isNotEmpty()) {
             failedURIsData.postValue(failedURIs)
