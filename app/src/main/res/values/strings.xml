@@ -195,4 +195,6 @@
     <string name="linear_auto_wallpaper_summary">Pick wallpapers in linear order. Use this toggle to apply the same wallpaper on both screens if same tag or folder is selected.</string>
     <string name="compress">Compress</string>
     <string name="reduce_resolution">Reduce Resolution</string>
+    <string name="please_wait">Please Wait</string>
+    <string name="hide">Hide</string>
 </resources>
