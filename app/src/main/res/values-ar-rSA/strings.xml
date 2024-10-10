@@ -161,7 +161,7 @@
     <string name="go_back_to_legacy_interface">العودة إلى الواجهة القديمة</string>
     <string name="go_back_to_legacy_interface_summary">العودة إلى واجهة Peristyle القديمة. \n\nملحوظة: الواجهة القديمة لم تعد مدعومة.</string>
     <string name="interface_settings">الواجهة</string>
-    <string name="warning_indicator_title">إخفاء المؤشرات التحذيرية</string>
+    <string name="warning_indicator_title">إخفاء الإشارات التحذيرية</string>
     <string name="warning_indicator_summary">إخفاء الإشارات التحذيرية للخلفيات الضخمة من قائمة الخلفيات.</string>
     <string name="add_tag">إضافة وسم</string>
     <string name="add">إضافة</string>
@@ -191,4 +191,9 @@
     <string name="add_nomedia">إضافة .nomedia</string>
     <string name="remove_nomedia">إزالة .nomedia</string>
     <string name="nomedia_remove_success">تمت إزالة .nomedia. سيكون المجلد ظاهرًا مجددًا.</string>
+    <string name="generate_md5">إنشاء تدقيق مجموع</string>
+    <string name="generate_md5_summary">استخدام تدقيق مجاميع بخوارزمية هضم الرسالة الخامسة (MD5 checksums) لمعرفات الخلفيات بدلًا من رموز تلبيد معرفات الموارد الموحدة (URI hashcodes).</string>
+    <string name="linear_auto_wallpaper_summary">اختيار الخلفيات بالترتيب الخطي. استخدام هذا المفتاح لتطبيق نفس الخلفية على الشاشتين إذا تم تحديد نفس الوسم أو المجلد.</string>
+    <string name="compress">الضغط</string>
+    <string name="reduce_resolution">تقليل الدقة</string>
 </resources>
