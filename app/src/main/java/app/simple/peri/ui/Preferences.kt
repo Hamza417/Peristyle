@@ -55,7 +55,8 @@ import java.io.File
 
 class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPreferenceChangeListener {
 
-    private val flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+    private val flags =
+        Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
 
     private val storageResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -71,22 +72,23 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
             }
         }
 
-    private var requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
-        permissions.forEach {
-            when (it.key) {
-                Manifest.permission.WRITE_EXTERNAL_STORAGE -> {
-                    if (it.value) {
-                        MaterialAlertDialogBuilder(requireContext())
-                            .setMessage(R.string.permission_granted)
-                            .setPositiveButton(R.string.close) { dialog, _ ->
-                                dialog.dismiss()
-                            }
-                            .show()
+    private var requestPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+            permissions.forEach {
+                when (it.key) {
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE -> {
+                        if (it.value) {
+                            MaterialAlertDialogBuilder(requireContext())
+                                .setMessage(R.string.permission_granted)
+                                .setPositiveButton(R.string.close) { dialog, _ ->
+                                    dialog.dismiss()
+                                }
+                                .show()
+                        }
                     }
                 }
             }
         }
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         requireActivity().findViewById<CoordinatorLayout>(R.id.mainContainer)
@@ -155,25 +157,26 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
             true
         }
 
-        preferenceScreen.findPreference<Preference>("recreate_database")?.setOnPreferenceClickListener {
-            MaterialAlertDialogBuilder(requireContext())
-                .setMessage(R.string.recreate_database_message)
-                .setPositiveButton(R.string.yes) { dialog, _ ->
-                    recreateDatabase()
-                    dialog.dismiss()
-                    MaterialAlertDialogBuilder(requireContext())
-                        .setMessage(R.string.initiate_recreate_database_message)
-                        .setPositiveButton(R.string.close) { dialog1, _ ->
-                            dialog1.dismiss()
-                        }
-                        .show()
-                }
-                .setNegativeButton(R.string.close) { dialog, _ ->
-                    dialog.dismiss()
-                }
-                .show()
-            true
-        }
+        preferenceScreen.findPreference<Preference>("recreate_database")
+            ?.setOnPreferenceClickListener {
+                MaterialAlertDialogBuilder(requireContext())
+                    .setMessage(R.string.recreate_database_message)
+                    .setPositiveButton(R.string.yes) { dialog, _ ->
+                        recreateDatabase()
+                        dialog.dismiss()
+                        MaterialAlertDialogBuilder(requireContext())
+                            .setMessage(R.string.initiate_recreate_database_message)
+                            .setPositiveButton(R.string.close) { dialog1, _ ->
+                                dialog1.dismiss()
+                            }
+                            .show()
+                    }
+                    .setNegativeButton(R.string.close) { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    .show()
+                true
+            }
 
         preferenceScreen.findPreference<Preference>("clear_cache")?.setOnPreferenceClickListener {
             // Create a background thread
@@ -198,20 +201,21 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
             true
         }
 
-        preferenceScreen.findPreference<Preference>("change_directory")?.setOnPreferenceClickListener {
-            MaterialAlertDialogBuilder(requireContext())
-                .setMessage(getString(R.string.change_directory_desc, MainPreferences.getStorageUri()))
-                .setPositiveButton(R.string.change_directory) { dialog, _ ->
-                    val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
-                    storageResult.launch(intent)
-                    dialog.dismiss()
-                }
-                .setNegativeButton(R.string.close) { dialog, _ ->
-                    dialog.dismiss()
-                }
-                .show()
-            true
-        }
+        preferenceScreen.findPreference<Preference>("change_directory")
+            ?.setOnPreferenceClickListener {
+                MaterialAlertDialogBuilder(requireContext())
+                    .setMessage(getString(R.string.change_directory_desc, MainPreferences.getStorageUri()))
+                    .setPositiveButton(R.string.change_directory) { dialog, _ ->
+                        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
+                        storageResult.launch(intent)
+                        dialog.dismiss()
+                    }
+                    .setNegativeButton(R.string.close) { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    .show()
+                true
+            }
 
         preferenceScreen.findPreference<Preference>("library_stats")?.setOnPreferenceClickListener {
             val dialogDeleteBinding = DialogDeleteBinding.inflate(layoutInflater)
@@ -228,44 +232,56 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
                 }
 
                 val totalWallpapers = DocumentFile.fromTreeUri(
-                        requireContext(), Uri.parse(MainPreferences.getStorageUri()))?.listFiles()?.size
+                    requireContext(), Uri.parse(MainPreferences.getStorageUri())
+                )?.listFiles()?.size
 
                 withContext(Dispatchers.Main) {
                     dialogDeleteBinding.progress.text = getString(R.string.size_info)
                 }
 
-                val size = DocumentFile.fromTreeUri(requireContext(), Uri.parse(MainPreferences.getStorageUri()))
-                    ?.listCompleteFiles()?.toList()?.parallelStream()?.mapToLong { it.length() }?.sum()
+                val size =
+                    DocumentFile.fromTreeUri(requireContext(), Uri.parse(MainPreferences.getStorageUri()))
+                        ?.listCompleteFiles()?.toList()?.parallelStream()?.mapToLong { it.length() }
+                        ?.sum()
 
                 withContext(Dispatchers.Main) {
                     dialogDeleteBinding.progress.text = getString(R.string.cache_info)
                 }
 
-                val cacheSize = File("${requireContext().cacheDir}/image_manager_disk_cache/").walkTopDown().sumOf {
-                    it.length()
-                }
+                val cacheSize =
+                    File("${requireContext().cacheDir}/image_manager_disk_cache/").walkTopDown()
+                        .sumOf {
+                            it.length()
+                        }
 
                 val displayWidth = ScreenUtils.getScreenSize(requireContext()).width
                 val displayHeight = ScreenUtils.getScreenSize(requireContext()).height
                 Log.d("Preferences", "Display width: $displayWidth, Display height: $displayHeight")
-                val wallpaperDatabase = WallpaperDatabase.getInstance(requireContext())?.wallpaperDao()
+                val wallpaperDatabase =
+                    WallpaperDatabase.getInstance(requireContext())?.wallpaperDao()
 
-                val normalWallpapers = wallpaperDatabase?.getWallpapersByWidthAndHeight(displayWidth, displayHeight)?.size
-                val inadequateWallpapers = wallpaperDatabase?.getInadequateWallpapers(displayWidth, displayHeight)?.size
-                val excessiveWallpapers = wallpaperDatabase?.getExcessivelyLargeWallpapers(displayWidth, displayHeight)?.size
+                val normalWallpapers =
+                    wallpaperDatabase?.getWallpapersByWidthAndHeight(displayWidth, displayHeight)?.size
+                val inadequateWallpapers =
+                    wallpaperDatabase?.getInadequateWallpapers(displayWidth, displayHeight)?.size
+                val excessiveWallpapers =
+                    wallpaperDatabase?.getExcessivelyLargeWallpapers(displayWidth, displayHeight)?.size
 
                 withContext(Dispatchers.Main) {
                     progressDialog.dismiss()
 
                     MaterialAlertDialogBuilder(requireContext())
                         .setMessage(
-                                getString(R.string.library_stats_message,
-                                          totalWallpapers,
-                                          size?.toSize(),
-                                          cacheSize.toSize(),
-                                          normalWallpapers,
-                                          inadequateWallpapers,
-                                          excessiveWallpapers))
+                            getString(
+                                R.string.library_stats_message,
+                                totalWallpapers,
+                                size?.toSize(),
+                                cacheSize.toSize(),
+                                normalWallpapers,
+                                inadequateWallpapers,
+                                excessiveWallpapers
+                            )
+                        )
                         .setPositiveButton(R.string.close) { dialog, _ ->
                             dialog.dismiss()
                         }
@@ -275,47 +291,49 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
             true
         }
 
-        preferenceScreen.findPreference<Preference>("external_storage")?.setOnPreferenceClickListener {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                if (Environment.isExternalStorageManager()) {
-                    MaterialAlertDialogBuilder(requireContext())
-                        .setMessage(R.string.permission_granted)
-                        .setPositiveButton(R.string.close) { dialog, _ ->
-                            dialog.dismiss()
-                        }
-                        .show()
-                } else {
-                    requestManageExternalStoragePermission()
-                }
-            } else {
-                if (PermissionUtils.checkStoragePermission(requireContext())) {
-                    MaterialAlertDialogBuilder(requireContext())
-                        .setMessage(R.string.permission_granted)
-                        .setPositiveButton(R.string.close) { dialog, _ ->
-                            dialog.dismiss()
-                        }
-                        .show()
-                } else {
-                    requestPermissionLauncher.launch(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE))
-                }
-            }
-
-            true
-        }
-
-        preferenceScreen.findPreference<Preference>("battery_optimization")?.setOnPreferenceClickListener {
-            if (requireContext().isBatteryOptimizationDisabled()) {
-                MaterialAlertDialogBuilder(requireContext())
-                    .setMessage(R.string.permission_granted)
-                    .setPositiveButton(R.string.close) { dialog, _ ->
-                        dialog.dismiss()
+        preferenceScreen.findPreference<Preference>("external_storage")
+            ?.setOnPreferenceClickListener {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    if (Environment.isExternalStorageManager()) {
+                        MaterialAlertDialogBuilder(requireContext())
+                            .setMessage(R.string.permission_granted)
+                            .setPositiveButton(R.string.close) { dialog, _ ->
+                                dialog.dismiss()
+                            }
+                            .show()
+                    } else {
+                        requestManageExternalStoragePermission()
                     }
-                    .show()
-            } else {
-                requireContext().requestIgnoreBatteryOptimizations()
+                } else {
+                    if (PermissionUtils.checkStoragePermission(requireContext())) {
+                        MaterialAlertDialogBuilder(requireContext())
+                            .setMessage(R.string.permission_granted)
+                            .setPositiveButton(R.string.close) { dialog, _ ->
+                                dialog.dismiss()
+                            }
+                            .show()
+                    } else {
+                        requestPermissionLauncher.launch(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE))
+                    }
+                }
+
+                true
             }
-            true
-        }
+
+        preferenceScreen.findPreference<Preference>("battery_optimization")
+            ?.setOnPreferenceClickListener {
+                if (requireContext().isBatteryOptimizationDisabled()) {
+                    MaterialAlertDialogBuilder(requireContext())
+                        .setMessage(R.string.permission_granted)
+                        .setPositiveButton(R.string.close) { dialog, _ ->
+                            dialog.dismiss()
+                        }
+                        .show()
+                } else {
+                    requireContext().requestIgnoreBatteryOptimizations()
+                }
+                true
+            }
 
         preferenceScreen.findPreference<Preference>("change_directory")?.summary =
             getString(R.string.change_directory_desc, MainPreferences.getStorageUri())
@@ -325,28 +343,31 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
 
         preferenceScreen.findPreference<SwitchPreferenceCompat>("legacy_interface")?.isChecked =
             requireContext().packageManager.getComponentEnabledSetting(
-                    ComponentName(requireContext(), LegacyActivity::class.java)
+                ComponentName(requireContext(), LegacyActivity::class.java)
             ) == PackageManager.COMPONENT_ENABLED_STATE_ENABLED
 
-        preferenceScreen.findPreference<SwitchPreferenceCompat>("legacy_interface")?.setOnPreferenceChangeListener { _, newValue ->
-            val newState = when {
-                newValue as Boolean -> PackageManager.COMPONENT_ENABLED_STATE_ENABLED
-                else -> PackageManager.COMPONENT_ENABLED_STATE_DISABLED
+        preferenceScreen.findPreference<SwitchPreferenceCompat>("legacy_interface")
+            ?.setOnPreferenceChangeListener { _, newValue ->
+                val newState = when {
+                    newValue as Boolean -> PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+                    else -> PackageManager.COMPONENT_ENABLED_STATE_DISABLED
+                }
+
+                val composeState = when {
+                    newValue -> PackageManager.COMPONENT_ENABLED_STATE_DISABLED
+                    else -> PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+                }
+
+                requireContext().packageManager.setComponentEnabledSetting(
+                    ComponentName(requireContext(), LegacyActivity::class.java), newState, PackageManager.DONT_KILL_APP
+                )
+
+                requireContext().packageManager.setComponentEnabledSetting(
+                    ComponentName(requireContext(), MainComposeActivity::class.java), composeState, PackageManager.DONT_KILL_APP
+                )
+
+                true
             }
-
-            val composeState = when {
-                newValue -> PackageManager.COMPONENT_ENABLED_STATE_DISABLED
-                else -> PackageManager.COMPONENT_ENABLED_STATE_ENABLED
-            }
-
-            requireContext().packageManager.setComponentEnabledSetting(
-                    ComponentName(requireContext(), LegacyActivity::class.java), newState, PackageManager.DONT_KILL_APP)
-
-            requireContext().packageManager.setComponentEnabledSetting(
-                    ComponentName(requireContext(), MainComposeActivity::class.java), composeState, PackageManager.DONT_KILL_APP)
-
-            true
-        }
     }
 
     override fun onDestroy() {
@@ -365,41 +386,43 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
                         .build()
 
                     val biometricPrompt = BiometricPrompt(
-                            this, ContextCompat.getMainExecutor(requireContext()),
-                            object : BiometricPrompt.AuthenticationCallback() {
-                                override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
-                                    super.onAuthenticationError(errorCode, errString)
-                                    p0.edit().putBoolean(p1, false).apply()
+                        this, ContextCompat.getMainExecutor(requireContext()),
+                        object : BiometricPrompt.AuthenticationCallback() {
+                            override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+                                super.onAuthenticationError(errorCode, errString)
+                                p0.edit().putBoolean(p1, false).apply()
 
-                                    MaterialAlertDialogBuilder(requireContext())
-                                        .setMessage(errString.toString())
-                                        .setPositiveButton(R.string.close) { dialog, _ ->
-                                            preferenceScreen.findPreference<SwitchPreferenceCompat>("is_biometric")?.isChecked = false
-                                            dialog.dismiss()
-                                        }
-                                        .show()
-                                }
+                                MaterialAlertDialogBuilder(requireContext())
+                                    .setMessage(errString.toString())
+                                    .setPositiveButton(R.string.close) { dialog, _ ->
+                                        preferenceScreen.findPreference<SwitchPreferenceCompat>("is_biometric")?.isChecked =
+                                            false
+                                        dialog.dismiss()
+                                    }
+                                    .show()
+                            }
 
-                                override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-                                    super.onAuthenticationSucceeded(result)
+                            override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                                super.onAuthenticationSucceeded(result)
 
-                                    MaterialAlertDialogBuilder(requireContext())
-                                        .setMessage(R.string.biometric_success)
-                                        .setPositiveButton(R.string.close) { dialog, _ ->
-                                            dialog.dismiss()
-                                        }
-                                        .show()
-                                }
+                                MaterialAlertDialogBuilder(requireContext())
+                                    .setMessage(R.string.biometric_success)
+                                    .setPositiveButton(R.string.close) { dialog, _ ->
+                                        dialog.dismiss()
+                                    }
+                                    .show()
+                            }
 
-                                override fun onAuthenticationFailed() {
-                                    super.onAuthenticationFailed()
-                                    Log.d("Preferences", "Biometric: failed")
-                                }
-                            })
+                            override fun onAuthenticationFailed() {
+                                super.onAuthenticationFailed()
+                                Log.d("Preferences", "Biometric: failed")
+                            }
+                        })
 
                     biometricPrompt.authenticate(promptInfo)
                 } else {
-                    preferenceScreen.findPreference<SwitchPreferenceCompat>("is_biometric")?.isChecked = false
+                    preferenceScreen.findPreference<SwitchPreferenceCompat>("is_biometric")?.isChecked =
+                        false
                     p0!!.edit().putBoolean(p1, false).apply()
                 }
             }
@@ -465,15 +488,6 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            if (Environment.isExternalStorageManager()) {
-
-            }
-        }
-    }
-
     companion object {
         fun newInstance(): Preferences {
             val args = Bundle()
@@ -486,10 +500,12 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
         //    <string name="positional_url">https://github.com/Hamza417/Positional</string>
 
         private const val INURE_GITHUB_URL = "https://github.com/Hamza417/Inure"
-        private const val INURE_PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=app.simple.inure.play"
+        private const val INURE_PLAY_STORE_URL =
+            "https://play.google.com/store/apps/details?id=app.simple.inure.play"
         private const val INURE_F_DROID_URL = "https://f-droid.org/packages/app.simple.inure"
 
         private const val POSITIONAL_GITHUB_URL = "https://github.com/Hamza417/Positional"
-        private const val POSITIONAL_PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=app.simple.positional"
+        private const val POSITIONAL_PLAY_STORE_URL =
+            "https://play.google.com/store/apps/details?id=app.simple.positional"
     }
 }

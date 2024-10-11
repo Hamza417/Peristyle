@@ -235,13 +235,6 @@
         app:summary="@string/full_info"
         app:title="" />
 
-    <!-- Telegram Group -->
-    <Preference
-        app:iconSpaceReserved="true"
-        app:key="telegram"
-        app:summary="@string/telegram_summary"
-        app:title="@string/telegram_group" />
-
     <PreferenceCategory
         app:iconSpaceReserved="true"
         app:title="@string/other_apps" />

@@ -15,7 +15,7 @@
     <string name="order">順序</string>
     <string name="ascending">遞增</string>
     <string name="descending">遞減</string>
-    <string name="full_info">Peri是一款由Hamza Rizwan開發的簡單壁紙管理應用程式。</string>
+    <string name="full_info">Peri是一款由Hamza Rizwan開發的簡單壁紙管理應用程式。\n%1$s</string>
     <string name="close">關閉</string>
     <string name="delete_message">您確定刪除 %1$s 牆紙嗎？</string>
     <string name="no_wallpaper_selected">未選取墻紙</string>
