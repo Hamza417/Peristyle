@@ -139,8 +139,6 @@
     <string name="ignore_dot_files">.dot Dosyalarını Yoksay</string>
     <string name="ignore_subdirectories">Alt Dizinleri Yoksay</string>
     <string name="linear_auto_wallpaper">Doğrusal Sırada Seç</string>
-    <string name="telegram_group">Telegram Grubu</string>
-    <string name="telegram_summary">Uygulamayla ilgili tartışmalar ve hata raporları için uygulamanın Telegram grubuna katılın.</string>
     <string name="copy">Kopyala</string>
     <string name="restart">Yeniden Başlat</string>
     <string name="permission_granted">İzin Verildi</string>

@@ -138,8 +138,6 @@
     <string name="ignore_dot_files">忽略 .dot 檔案</string>
     <string name="ignore_subdirectories">忽略子目錄</string>
     <string name="linear_auto_wallpaper">在自動桌布中線性選取桌布</string>
-    <string name="telegram_group">Telegram 群組</string>
-    <string name="telegram_summary">加入應用程式的 Telegram 群組，進行應用程式相關討論並提交錯誤報告。</string>
     <string name="copy">複製</string>
     <string name="restart">重啟</string>
     <string name="permission_granted">已批准</string>

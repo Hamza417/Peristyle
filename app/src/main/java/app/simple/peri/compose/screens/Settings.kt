@@ -244,15 +244,6 @@ fun Settings(navController: NavController? = null) {
             )
 
             ClickablePreference(
-                    title = context.getString(R.string.telegram_group),
-                    description = context.getString(R.string.telegram_summary))
-            {
-                val intent = Intent(Intent.ACTION_VIEW)
-                intent.data = Uri.parse("https://t.me/peristyle_app")
-                context.startActivity(intent)
-            }
-
-            ClickablePreference(
                     title = context.getString(R.string.github),
                     description = context.getString(R.string.github_summary))
             {

@@ -138,6 +138,4 @@
     <string name="ignore_dot_files">忽略 .dot 文件</string>
     <string name="ignore_subdirectories">忽略子目录</string>
     <string name="linear_auto_wallpaper">在自动壁纸中顺序选择壁纸</string>
-    <string name="telegram_group">Telegram 群组</string>
-    <string name="telegram_summary">加入我们的 Telegram 群组来讨论应用相关的话题或提交错误报告。</string>
 </resources>

@@ -139,8 +139,6 @@
     <string name="ignore_dot_files">تجاهل ملفات .dot</string>
     <string name="ignore_subdirectories">تجاهل المجلدات الفرعية</string>
     <string name="linear_auto_wallpaper">الاختيار بترتيب خطي</string>
-    <string name="telegram_group">مجموعة تيليجرام</string>
-    <string name="telegram_summary">الانضمام إلى مجموعة تيليجرام الخاصة بالتطبيق للمناقشات ذات صلة بالتطبيق وتقديم تقارير الأخطاء.</string>
     <string name="copy">نسخ</string>
     <string name="restart">إعادة التشغيل</string>
     <string name="permission_granted">الإذن ممنوح</string>

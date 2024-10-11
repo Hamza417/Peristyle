@@ -138,8 +138,6 @@
     <string name="ignore_dot_files">Ignore .dot files</string>
     <string name="ignore_subdirectories">Ignore subdirectories</string>
     <string name="linear_auto_wallpaper">Pick in Linear Order</string>
-    <string name="telegram_group">Telegram Group</string>
-    <string name="telegram_summary">Join app\'s Telegram group for app related discussions and submitting bug reports.</string>
     <string name="copy">Copy</string>
     <string name="restart">Restart</string>
     <string name="permission_granted">Permission Granted</string>
