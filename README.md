@@ -1,9 +1,6 @@
 # Peristyle
 
-Simple wallpaper manager app for Android built using Material libraries and design guidelines.
-
-**Update:** Peristyle is going through UI overhaul while migrating towards Compose. You may see a
-new and modern looking interface from the newer versions now.
+Simple wallpaper manager app for Android.
 
 ## Why Peristyle?
 
@@ -18,17 +15,17 @@ from there? then Peristyle is for you :)
 Features:
 
 - Simple architecture, browse wallpapers and use system wallpaper manager to set them as wallpaper.
-- Multiple folders support
-- Ability to assign Tags to any wallpaper
+- Multiple folders support.
+- Ability to assign Tags to any wallpaper.
 - Can scan .nomedia directories, useful if you want to keep your wallpapers away from gallery.
 - Apply blur and color filters dynamically on any wallpaper before applying.
-- Simple yet pretty animations with proper optimizations
-- No ads, no tracking, no analytics, no internet permissions, no unnecessary permissions
-- Auto wallpaper change support with dedicated folders and tags for each screens
-- Built-in live wallpaper picker
-- Dark mode support
-- Fully Material You design
-- Glassmorphic UI based on realtime blur effects and caustic shadows
+- Simple yet pretty animations with proper optimizations.
+- No ads, no tracking, no analytics, no internet permissions, no unnecessary permissions.
+- Auto wallpaper change support with dedicated folders and tags for each screens.
+- Built-in live wallpaper picker.
+- Dark mode support.
+- Glassmorphic UI based on realtime blur effects and caustic shadows.
+- Material You themes and colors.
 
 ## Stats
 
