@@ -12,8 +12,6 @@ from there? then Peristyle is for you :)
 
 ## Features
 
-Features:
-
 - Simple architecture, browse wallpapers and use system wallpaper manager to set them as wallpaper.
 - Multiple folders support.
 - Ability to assign Tags to any wallpaper.
