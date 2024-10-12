@@ -79,7 +79,8 @@ so [here on Crowdin](https://crowdin.com/project/peristyle).
 | Chinese Simplified    | [@shanzhaxiaok](https://crowdin.com/profile/shanzhaxiaok)                                              |
 | Chinese Traditional   | [@aaypkzixad](https://crowdin.com/profile/aaypkzixad), [@hugoalh](https://crowdin.com/profile/hugoalh) |
 | French                | [@ppp987](https://crowdin.com/profile/ppp987)                                                          |
-| Polish                | [@Tama10](https://crowdin.com/profile/tama10)                                                          |
+| German                | [@ottozumkeller](https://crowdin.com/profile/ottozumkeller)                                            |
+| Polish                | [@Tama10](https://crowdin.com/profile/tama10), [@chefski](https://crowdin.com/profile/chefski)         |
 | Portuguese, Brazilian | [@teogabriel](https://crowdin.com/profile/teogabriel)                                                  |
 | Spanish               | [@esneiderfjaimes](https://crowdin.com/profile/esneiderfjaimes)                                        |
 | Turkish               | [@mikropsoft](https://crowdin.com/profile/mikropsoft)                                                  |
