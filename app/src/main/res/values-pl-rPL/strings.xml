@@ -175,9 +175,25 @@
     <string name="source_summary">Przypisz konkretny tag lub folder do ustawienia tapety dla każdego ekranu. Jeśli nie przypisano tagów lub folderów, lub pustych, z kolekcji zostanie pobrana losowa tapeta.</string>
     <string name="not_set">Nie Ustawiono</string>
     <string name="duration_summary">Ustaw opóźnienie pomiędzy każdym wyzwalaczem lub wyłącz automatyczną tapetę.</string>
-    <string name="select_folder_info">Możesz dodać więcej folderu później w aplikacji.</string>
+    <string name="select_folder_info">Możesz dodać więcej folderów później w aplikacji.</string>
     <string name="developer_profile">Profil Dewelopera</string>
     <string name="allow_media_access">Zezwalaj na Dostęp do Mediów</string>
     <string name="allow_media_access_info">Nie udało się udzielić ręcznego dostępu do tapet systemu. Wybranie opcji \'Zezwól na Wszystko\', pozwoli aplikacji na automatyczne przyznanie dostępu do plików.</string>
     <string name="lock_screen_wallpaper_info">Tapeta ekranu blokady nie jest dostępna poniżej Androida 14</string>
+    <string name="effects">Efekty</string>
+    <string name="apply_effects_summary">Zastosuj efekty na tapetach.</string>
+    <string name="default_effects">Domyślne efekty</string>
+    <string name="default_effects_summary">Domyślne efekty dla tapet, gdy nie ustawiono żadnych niestandardowych preferencji.</string>
+    <string name="live_wallpapers">Tapety Animowane</string>
+    <string name="reset">Zresetuj</string>
+    <string name="add_nomedia">Dodaj .nomedia</string>
+    <string name="remove_nomedia">Usuń .nomedia</string>
+    <string name="nomedia_remove_success">.nomedia został usunięty. Folder będzie ponownie widoczny.</string>
+    <string name="generate_md5">Wygeneruj Sumę Kontrolną</string>
+    <string name="generate_md5_summary">Użyj sum kontrolnych MD5 dla identyfikatorów tapety zamiast hashkodów URI.</string>
+    <string name="linear_auto_wallpaper_summary">Wybierz tapetę w kolejności liniowej. Użyj tego przełącznika, aby zastosować tę samą tapetę na obu ekranach, jeśli wybrany jest ten sam tag lub folder.</string>
+    <string name="compress">Kompresuj</string>
+    <string name="reduce_resolution">Redukuj Rozdzielczość</string>
+    <string name="please_wait">Czekaj</string>
+    <string name="hide">Ukryj</string>
 </resources>
