@@ -64,13 +64,15 @@ class AutoWallpaperService : Service() {
             if (!isNextWallpaperActionRunning) {
                 isNextWallpaperActionRunning = true
                 runCatching {
-                    Toast.makeText(applicationContext, R.string.changing_wallpaper, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(applicationContext, R.string.changing_wallpaper, Toast.LENGTH_SHORT)
+                        .show()
                 }
                 init()
                 isNextWallpaperActionRunning = false
             } else {
                 Log.d(TAG, "Next wallpaper action already running, ignoring")
-                Toast.makeText(applicationContext, R.string.next_wallpaper_already_running, Toast.LENGTH_SHORT).show()
+                Toast.makeText(applicationContext, R.string.next_wallpaper_already_running, Toast.LENGTH_SHORT)
+                    .show()
             }
         } else {
             init()
@@ -110,16 +112,19 @@ class AutoWallpaperService : Service() {
             runCatching {
                 val files = getWallpapersFromDatabase()
                 if (MainPreferences.isTweakOptionSelected(MainPreferences.LINEAR_AUTO_WALLPAPER)) {
-                    if (MainPreferences.getLastWallpaperPosition() >= (files?.size?.minus(1) ?: 0)) {
+                    if (MainPreferences.getLastWallpaperPosition() >= (files?.size?.minus(1)
+                            ?: 0)
+                    ) {
                         files?.get(0)?.uri?.toUri()?.let { uri ->
                             setWallpaperFromUri(uri, files)
                             MainPreferences.setLastWallpaperPosition(0)
                         }
                     } else {
-                        files?.get(MainPreferences.getLastWallpaperPosition().plus(1))?.uri?.toUri()?.let { uri ->
-                            setWallpaperFromUri(uri, files)
-                            MainPreferences.setLastWallpaperPosition(MainPreferences.getLastWallpaperPosition() + 1)
-                        }
+                        files?.get(MainPreferences.getLastWallpaperPosition().plus(1))?.uri?.toUri()
+                            ?.let { uri ->
+                                setWallpaperFromUri(uri, files)
+                                MainPreferences.setLastWallpaperPosition(MainPreferences.getLastWallpaperPosition() + 1)
+                            }
                     }
                 } else {
                     files?.random()?.uri?.toUri()?.let { uri ->
@@ -175,20 +180,22 @@ class AutoWallpaperService : Service() {
 
         BitmapFactory.decodeStream(ByteArrayInputStream(byteArray), null, bitmapOptions)
 
-        return BitmapFactory.decodeStream(ByteArrayInputStream(byteArray), null, BitmapFactory.Options().apply {
-            inPreferredConfig = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                Bitmap.Config.RGBA_1010102
-            } else {
-                Bitmap.Config.ARGB_8888
-            }
+        return BitmapFactory.decodeStream(
+            ByteArrayInputStream(byteArray), null, BitmapFactory.Options().apply {
+                inPreferredConfig = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    Bitmap.Config.RGBA_1010102
+                } else {
+                    Bitmap.Config.ARGB_8888
+                }
 
-            inMutable = true
+                inMutable = true
 
-            Log.d(TAG, "Expected bitmap size: $displayWidth x $displayHeight")
-            inSampleSize = BitmapUtils.calculateInSampleSize(bitmapOptions, displayWidth, displayHeight)
-            inJustDecodeBounds = false
-            Log.d(TAG, "Bitmap decoded with sample size: ${this.inSampleSize}")
-        })!!
+                Log.d(TAG, "Expected bitmap size: $displayWidth x $displayHeight")
+                inSampleSize =
+                    BitmapUtils.calculateInSampleSize(bitmapOptions, displayWidth, displayHeight)
+                inJustDecodeBounds = false
+                Log.d(TAG, "Bitmap decoded with sample size: ${this.inSampleSize}")
+            })!!
     }
 
     private fun calculateVisibleCropHint(bitmap: Bitmap): Rect {
@@ -259,9 +266,9 @@ class AutoWallpaperService : Service() {
 
     private fun isLegacyInterface(): Boolean {
         return applicationContext.packageManager.getComponentEnabledSetting(
-                ComponentName(applicationContext, LegacyActivity::class.java)
+            ComponentName(applicationContext, LegacyActivity::class.java)
         ) == PackageManager.COMPONENT_ENABLED_STATE_ENABLED && applicationContext.packageManager.getComponentEnabledSetting(
-                ComponentName(applicationContext, MainComposeActivity::class.java)
+            ComponentName(applicationContext, MainComposeActivity::class.java)
         ) == PackageManager.COMPONENT_ENABLED_STATE_DISABLED
     }
 
@@ -278,26 +285,32 @@ class AutoWallpaperService : Service() {
                 if (homeWallpaper.isNotNull()) {
                     Log.d(TAG, "Home wallpaper found: ${homeWallpaper?.uri}")
                     getBitmapFromUri(homeWallpaper!!) {
-                        it.applyEffects(brightness = MainComposePreferences.getAutoWallpaperHomeBrightness(),
-                                        contrast = MainComposePreferences.getAutoWallpaperHomeContrast(),
-                                        blur = MainComposePreferences.getAutoWallpaperHomeBlur(),
-                                        saturation = MainComposePreferences.getAutoWallpaperHomeSaturation(),
-                                        hue = MainComposePreferences.getAutoWallpaperHomeHue())
+                        var bitmap = it.copy(it.config ?: Bitmap.Config.ARGB_8888, true)
+                        bitmap = bitmap.applyEffects(
+                            brightness = MainComposePreferences.getAutoWallpaperHomeBrightness(),
+                            contrast = MainComposePreferences.getAutoWallpaperHomeContrast(),
+                            blur = MainComposePreferences.getAutoWallpaperHomeBlur(),
+                            saturation = MainComposePreferences.getAutoWallpaperHomeSaturation(),
+                            hue = MainComposePreferences.getAutoWallpaperHomeHue()
+                        )
 
-                        wallpaperManager.setBitmap(it, null, true, WallpaperManager.FLAG_SYSTEM)
+                        wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_SYSTEM)
                     }
                 }
 
                 if (lockWallpaper.isNotNull()) {
                     Log.d(TAG, "Lock wallpaper found: ${lockWallpaper?.uri}")
                     getBitmapFromUri(lockWallpaper!!) {
-                        it.applyEffects(brightness = MainComposePreferences.getAutoWallpaperLockBrightness(),
-                                        contrast = MainComposePreferences.getAutoWallpaperLockContrast(),
-                                        blur = MainComposePreferences.getAutoWallpaperLockBlur(),
-                                        saturation = MainComposePreferences.getAutoWallpaperLockSaturation(),
-                                        hue = MainComposePreferences.getAutoWallpaperLockHue())
+                        var bitmap = it.copy(it.config ?: Bitmap.Config.ARGB_8888, true)
+                        bitmap = bitmap.applyEffects(
+                            brightness = MainComposePreferences.getAutoWallpaperLockBrightness(),
+                            contrast = MainComposePreferences.getAutoWallpaperLockContrast(),
+                            blur = MainComposePreferences.getAutoWallpaperLockBlur(),
+                            saturation = MainComposePreferences.getAutoWallpaperLockSaturation(),
+                            hue = MainComposePreferences.getAutoWallpaperLockHue()
+                        )
 
-                        wallpaperManager.setBitmap(it, null, true, WallpaperManager.FLAG_LOCK)
+                        wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_LOCK)
                     }
                 }
 
@@ -307,12 +320,14 @@ class AutoWallpaperService : Service() {
                         wallpaper = getWallpapersFromDatabase()?.random()
 
                         getBitmapFromUri(wallpaper!!) {
-                            val bitmap = it.copy(it.config ?: Bitmap.Config.ARGB_8888, true)
-                            bitmap.applyEffects(brightness = MainComposePreferences.getAutoWallpaperBrightness(),
-                                                contrast = MainComposePreferences.getAutoWallpaperContrast(),
-                                                blur = MainComposePreferences.getAutoWallpaperBlur(),
-                                                saturation = MainComposePreferences.getAutoWallpaperSaturation(),
-                                                hue = MainComposePreferences.getAutoWallpaperHue())
+                            var bitmap = it.copy(it.config ?: Bitmap.Config.ARGB_8888, true)
+                            bitmap = bitmap.applyEffects(
+                                brightness = MainComposePreferences.getAutoWallpaperBrightness(),
+                                contrast = MainComposePreferences.getAutoWallpaperContrast(),
+                                blur = MainComposePreferences.getAutoWallpaperBlur(),
+                                saturation = MainComposePreferences.getAutoWallpaperSaturation(),
+                                hue = MainComposePreferences.getAutoWallpaperHue()
+                            )
 
                             if (MainPreferences.isSettingForHomeScreen()) {
                                 wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_SYSTEM)
@@ -332,14 +347,16 @@ class AutoWallpaperService : Service() {
                         Log.d(TAG, "No lock wallpaper found, setting random wallpaper")
                         if (MainPreferences.isSettingForLockScreen()) {
                             getBitmapFromUri(getWallpapersFromDatabase()?.random()!!) {
-                                val bitmap = it.copy(it.config ?: Bitmap.Config.ARGB_8888, true)
-                                bitmap.applyEffects(brightness = MainComposePreferences.getAutoWallpaperBrightness(),
-                                                    contrast = MainComposePreferences.getAutoWallpaperContrast(),
-                                                    blur = MainComposePreferences.getAutoWallpaperBlur(),
-                                                    saturation = MainComposePreferences.getAutoWallpaperSaturation(),
-                                                    hue = MainComposePreferences.getAutoWallpaperHue())
+                                var bitmap = it.copy(it.config ?: Bitmap.Config.ARGB_8888, true)
+                                bitmap = bitmap.applyEffects(
+                                    brightness = MainComposePreferences.getAutoWallpaperBrightness(),
+                                    contrast = MainComposePreferences.getAutoWallpaperContrast(),
+                                    blur = MainComposePreferences.getAutoWallpaperBlur(),
+                                    saturation = MainComposePreferences.getAutoWallpaperSaturation(),
+                                    hue = MainComposePreferences.getAutoWallpaperHue()
+                                )
 
-                                wallpaperManager.setBitmap(it, null, true, WallpaperManager.FLAG_LOCK)
+                                wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_LOCK)
                             }
                         }
                     }
@@ -348,14 +365,16 @@ class AutoWallpaperService : Service() {
                         Log.d(TAG, "No home wallpaper found, setting random wallpaper")
                         if (MainPreferences.isSettingForHomeScreen()) {
                             getBitmapFromUri(getWallpapersFromDatabase()?.random()!!) {
-                                val bitmap = it.copy(it.config ?: Bitmap.Config.ARGB_8888, true)
-                                bitmap.applyEffects(brightness = MainComposePreferences.getAutoWallpaperBrightness(),
-                                                    contrast = MainComposePreferences.getAutoWallpaperContrast(),
-                                                    blur = MainComposePreferences.getAutoWallpaperBlur(),
-                                                    saturation = MainComposePreferences.getAutoWallpaperSaturation(),
-                                                    hue = MainComposePreferences.getAutoWallpaperHue())
+                                var bitmap = it.copy(it.config ?: Bitmap.Config.ARGB_8888, true)
+                                bitmap = bitmap.applyEffects(
+                                    brightness = MainComposePreferences.getAutoWallpaperBrightness(),
+                                    contrast = MainComposePreferences.getAutoWallpaperContrast(),
+                                    blur = MainComposePreferences.getAutoWallpaperBlur(),
+                                    saturation = MainComposePreferences.getAutoWallpaperSaturation(),
+                                    hue = MainComposePreferences.getAutoWallpaperHue()
+                                )
 
-                                wallpaperManager.setBitmap(it, null, true, WallpaperManager.FLAG_SYSTEM)
+                                wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_SYSTEM)
                             }
                         }
                     }
@@ -413,9 +432,12 @@ class AutoWallpaperService : Service() {
                 if (MainPreferences.isLinearAutoWallpaper()) {
                     val wallpapers = wallpaperDao?.getWallpapersByMD5s(tag?.sum!!)
                     try {
-                        wallpaper = wallpapers?.get(MainComposePreferences.getLastHomeWallpaperPosition().plus(1))
+                        wallpaper = wallpapers?.get(
+                            MainComposePreferences.getLastHomeWallpaperPosition().plus(1)
+                        )
                         MainComposePreferences.setLastHomeWallpaperPosition(
-                                MainComposePreferences.getLastHomeWallpaperPosition().plus(1))
+                            MainComposePreferences.getLastHomeWallpaperPosition().plus(1)
+                        )
                     } catch (e: IndexOutOfBoundsException) {
                         MainComposePreferences.setLastHomeWallpaperPosition(0)
                         wallpapers?.get(0)
@@ -429,13 +451,17 @@ class AutoWallpaperService : Service() {
             }
 
             MainComposePreferences.getHomeFolderName().isNotNull() -> {
-                val wallpapers = wallpaperDao?.getWallpapersByUriHashcode(MainComposePreferences.getHomeFolderId())
+                val wallpapers =
+                    wallpaperDao?.getWallpapersByUriHashcode(MainComposePreferences.getHomeFolderId())
 
                 if (MainPreferences.isLinearAutoWallpaper()) {
                     try {
-                        wallpaper = wallpapers?.get(MainComposePreferences.getLastHomeWallpaperPosition().plus(1))
+                        wallpaper = wallpapers?.get(
+                            MainComposePreferences.getLastHomeWallpaperPosition().plus(1)
+                        )
                         MainComposePreferences.setLastHomeWallpaperPosition(
-                                MainComposePreferences.getLastHomeWallpaperPosition().plus(1))
+                            MainComposePreferences.getLastHomeWallpaperPosition().plus(1)
+                        )
                     } catch (e: IndexOutOfBoundsException) {
                         MainComposePreferences.setLastHomeWallpaperPosition(0)
                         wallpapers?.get(0)
@@ -474,9 +500,12 @@ class AutoWallpaperService : Service() {
                 val wallpapers = wallpaperDao?.getWallpapersByMD5s(tag?.sum!!)
                 wallpaper = if (MainPreferences.isLinearAutoWallpaper()) {
                     try {
-                        wallpapers?.get(MainComposePreferences.getLastLockWallpaperPosition().plus(1)).also {
+                        wallpapers?.get(
+                            MainComposePreferences.getLastLockWallpaperPosition().plus(1)
+                        ).also {
                             MainComposePreferences.setLastLockWallpaperPosition(
-                                    MainComposePreferences.getLastLockWallpaperPosition().plus(1))
+                                MainComposePreferences.getLastLockWallpaperPosition().plus(1)
+                            )
                         }
                     } catch (e: IndexOutOfBoundsException) {
                         MainComposePreferences.setLastLockWallpaperPosition(0)
@@ -490,12 +519,16 @@ class AutoWallpaperService : Service() {
             }
 
             MainComposePreferences.getLockFolderName().isNotNull() -> {
-                val wallpapers = wallpaperDao?.getWallpapersByUriHashcode(MainComposePreferences.getLockFolderId())
+                val wallpapers =
+                    wallpaperDao?.getWallpapersByUriHashcode(MainComposePreferences.getLockFolderId())
                 wallpaper = if (MainPreferences.isLinearAutoWallpaper()) {
                     try {
-                        wallpapers?.get(MainComposePreferences.getLastLockWallpaperPosition().plus(1)).also {
+                        wallpapers?.get(
+                            MainComposePreferences.getLastLockWallpaperPosition().plus(1)
+                        ).also {
                             MainComposePreferences.setLastLockWallpaperPosition(
-                                    MainComposePreferences.getLastLockWallpaperPosition().plus(1))
+                                MainComposePreferences.getLastLockWallpaperPosition().plus(1)
+                            )
                         }
                     } catch (e: IndexOutOfBoundsException) {
                         MainComposePreferences.setLastLockWallpaperPosition(0)
