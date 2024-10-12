@@ -3,13 +3,15 @@ Peristyle is created to be extremely simple and sophisticated wallpaper manager 
 Features:
 
 - Simple architecture, browse wallpapers and use system wallpaper manager to set them as wallpaper.
-- Multiple folders support
-- Ability to assign Tags to any wallpaper
+- Multiple folders support.
+- Ability to assign Tags to any wallpaper.
 - Can scan .nomedia directories, useful if you want to keep your wallpapers away from gallery.
 - Apply blur and color filters dynamically on any wallpaper before applying.
-- Simple yet pretty animations with proper optimizations
-- No ads, no tracking, no analytics, no internet permissions, no unnecessary permissions
-- Auto wallpaper change support with dedicated folders and tags for each screens
-- Built-in live wallpaper picker and manager
-- Dark mode support
-- Fully Material You design
+- Simple yet pretty animations with proper optimizations.
+- Compress or reduce images on the fly.
+- No ads, no tracking, no analytics, no internet permissions, no unnecessary permissions.
+- Auto wallpaper change support with dedicated folders and tags for each screens.
+- Built-in live wallpaper picker.
+- Dark mode support.
+- Glassmorphic UI based on realtime blur effects and caustic shadows.
+- Material You themes and colors.

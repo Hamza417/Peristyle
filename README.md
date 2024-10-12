@@ -18,6 +18,7 @@ from there? then Peristyle is for you :)
 - Can scan .nomedia directories, useful if you want to keep your wallpapers away from gallery.
 - Apply blur and color filters dynamically on any wallpaper before applying.
 - Simple yet pretty animations with proper optimizations.
+- Compress or reduce images on the fly.
 - No ads, no tracking, no analytics, no internet permissions, no unnecessary permissions.
 - Auto wallpaper change support with dedicated folders and tags for each screens.
 - Built-in live wallpaper picker.
