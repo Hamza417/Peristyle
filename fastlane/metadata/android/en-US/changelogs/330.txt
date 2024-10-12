@@ -1,0 +1,4 @@
+- Added option to compress or reduce image on the fly
+- Fixed auto wallpaper effects not working properly
+- Added German translations
+- Removed telegram group links from the app
