@@ -45,6 +45,7 @@ from there? then Peristyle is for you :)
 | ![07](./fastlane/metadata/android/en-US/images/phoneScreenshots/07.png) | ![08](./fastlane/metadata/android/en-US/images/phoneScreenshots/08.png) | ![09](./fastlane/metadata/android/en-US/images/phoneScreenshots/09.png) |
 
 ### Peristyle also has a totally different UI based on Material You
+
 It can be toggled from the app settings.
 
 | ![001](./screenshots/01.png) | ![002](./screenshots/02.png) | ![003](./screenshots/03.png) |
@@ -57,8 +58,11 @@ Peristyle supports triggering the AutoWallpaperService from other apps using the
 intent: `app.peristyle.START_AUTO_WALLPAPER_SERVICE`
 
 ## Permission Usage
-Peristyle needs `MANAGE_EXTERNAL_STORAGE` and `READ_MEDIA_IMAGES` to be allowed to show the system wallpapers in the app.
-It has been discussed in the [Issue #72](https://github.com/Hamza417/Peristyle/issues/72#issuecomment-2357558761).
+
+Peristyle needs `MANAGE_EXTERNAL_STORAGE` and `READ_MEDIA_IMAGES` to be allowed to show the system
+wallpapers in the app.
+It has been discussed in
+the [Issue #72](https://github.com/Hamza417/Peristyle/issues/72#issuecomment-2357558761).
 
 The `REQUEST_IGNORE_BATTERY_OPTIMIZATIONS` is used to run Auto Wallpaper service whenever required.
 
@@ -74,18 +78,19 @@ so [here on Crowdin](https://crowdin.com/project/peristyle).
 
 ### Translation Contributors
 
-| Language              | Translators                                                                                            |
-|-----------------------|--------------------------------------------------------------------------------------------------------|
-| Arabic                | [@eyadmahm0ud](https://crowdin.com/profile/eyadmahm0ud)                                                |
-| Chinese Simplified    | [@shanzhaxiaok](https://crowdin.com/profile/shanzhaxiaok)                                              |
-| Chinese Traditional   | [@aaypkzixad](https://crowdin.com/profile/aaypkzixad), [@hugoalh](https://crowdin.com/profile/hugoalh) |
-| French                | [@ppp987](https://crowdin.com/profile/ppp987)                                                          |
-| German                | [@ottozumkeller](https://crowdin.com/profile/ottozumkeller)                                            |
-| Polish                | [@Tama10](https://crowdin.com/profile/tama10), [@chefski](https://crowdin.com/profile/chefski)         |
-| Portuguese, Brazilian | [@teogabriel](https://crowdin.com/profile/teogabriel)                                                  |
-| Spanish               | [@esneiderfjaimes](https://crowdin.com/profile/esneiderfjaimes)                                        |
-| Turkish               | [@mikropsoft](https://crowdin.com/profile/mikropsoft)                                                  |
-| Vietnamese            | [@xeus0000](https://crowdin.com/profile/xeus0000)                                                      |
+| Language              | Translators                                                                                                     |
+|-----------------------|-----------------------------------------------------------------------------------------------------------------|
+| Arabic                | [@eyadmahm0ud](https://crowdin.com/profile/eyadmahm0ud)                                                         |
+| Chinese Simplified    | [@shanzhaxiaok](https://crowdin.com/profile/shanzhaxiaok) [@xjchenyang](https://crowdin.com/profile/xjchenyang) |
+| Chinese Traditional   | [@aaypkzixad](https://crowdin.com/profile/aaypkzixad), [@hugoalh](https://crowdin.com/profile/hugoalh)          |
+| French                | [@ppp987](https://crowdin.com/profile/ppp987)                                                                   |
+| German                | [@ottozumkeller](https://crowdin.com/profile/ottozumkeller)                                                     |
+| Italian               | [@gabrifrz](https://crowdin.com/profile/gabrifrz)                                                               |
+| Polish                | [@Tama10](https://crowdin.com/profile/tama10), [@chefski](https://crowdin.com/profile/chefski)                  |
+| Portuguese, Brazilian | [@teogabriel](https://crowdin.com/profile/teogabriel)                                                           |
+| Spanish               | [@esneiderfjaimes](https://crowdin.com/profile/esneiderfjaimes)                                                 |
+| Turkish               | [@mikropsoft](https://crowdin.com/profile/mikropsoft)                                                           |
+| Vietnamese            | [@xeus0000](https://crowdin.com/profile/xeus0000)                                                               |
 
 Last updated: 18 Sept, 2024
 
