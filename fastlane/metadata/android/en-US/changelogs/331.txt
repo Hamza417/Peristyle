@@ -1,0 +1,2 @@
+- Fixed crashes caused by NaN in aspect ratio
+- Italian translations
