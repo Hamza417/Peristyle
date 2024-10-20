@@ -93,8 +93,6 @@ fun Folders(navController: NavController? = null) {
             LocalView.current.rootWindowInsets).getInsets(WindowInsetsCompat.Type.statusBars()).top
     navigationBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
             LocalView.current.rootWindowInsets).getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
-    displayDimension.width = LocalView.current.width
-    displayDimension.height = LocalView.current.height
 
     val statusBarHeightPx = statusBarHeight
     val statusBarHeightDp = with(LocalDensity.current) { statusBarHeightPx.toDp() }
@@ -184,8 +182,6 @@ fun FolderItem(folder: Folder, navController: NavController? = null, wallpaperVi
     var showFolderMenu by remember { mutableStateOf(false) }
     var showNomediaSuccess by remember { mutableStateOf(false) }
     var showNomediaRemoveSuccess by remember { mutableStateOf(false) }
-    displayDimension.width = LocalView.current.width
-    displayDimension.height = LocalView.current.height
 
     if (showFolderMenu) {
         FolderMenu(

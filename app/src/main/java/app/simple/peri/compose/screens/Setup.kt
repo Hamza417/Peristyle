@@ -72,8 +72,6 @@ fun Setup(context: Context, navController: NavController? = null) {
             LocalView.current.rootWindowInsets).getInsets(WindowInsetsCompat.Type.statusBars()).top
     navigationBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
             LocalView.current.rootWindowInsets).getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
-    displayDimension.width = LocalView.current.width
-    displayDimension.height = LocalView.current.height
 
     val statusBarHeightPx = statusBarHeight
     val statusBarHeightDp = with(LocalDensity.current) { statusBarHeightPx.toDp() }

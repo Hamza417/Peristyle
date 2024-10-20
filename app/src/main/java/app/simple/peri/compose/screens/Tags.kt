@@ -50,7 +50,6 @@ import app.simple.peri.compose.constants.DIALOG_OPTION_FONT_SIZE
 import app.simple.peri.compose.constants.DIALOG_TITLE_FONT_SIZE
 import app.simple.peri.compose.nav.Routes
 import app.simple.peri.factories.TagsViewModelFactory
-import app.simple.peri.models.DisplayDimension
 import app.simple.peri.models.Tag
 import app.simple.peri.viewmodels.TagsViewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
@@ -59,8 +58,6 @@ import dev.chrisbanes.haze.HazeDefaults
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.hazeChild
-
-val displayDimension = DisplayDimension(1080, 1920)
 
 @Composable
 fun Tags(navController: NavController? = null) {
@@ -75,8 +72,6 @@ fun Tags(navController: NavController? = null) {
             LocalView.current.rootWindowInsets).getInsets(WindowInsetsCompat.Type.statusBars()).top
     navigationBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
             LocalView.current.rootWindowInsets).getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
-    displayDimension.width = LocalView.current.width
-    displayDimension.height = LocalView.current.height
 
     val statusBarHeightPx = statusBarHeight
     val statusBarHeightDp = with(LocalDensity.current) { statusBarHeightPx.toDp() }
