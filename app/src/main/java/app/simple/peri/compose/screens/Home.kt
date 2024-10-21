@@ -45,6 +45,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -65,6 +66,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.lerp
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -76,11 +79,11 @@ import app.simple.peri.models.Wallpaper
 import app.simple.peri.utils.FileUtils.toUri
 import app.simple.peri.viewmodels.HomeScreenViewModel
 import app.simple.peri.viewmodels.WallpaperViewModel
+import com.bumptech.glide.integration.compose.CrossFade
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import dev.chrisbanes.haze.HazeDefaults
@@ -110,6 +113,26 @@ fun Home(navController: NavController? = null) {
     homeScreenViewModel.getSystemWallpaper().observe(LocalLifecycleOwner.current) {
         systemWallpapers.clear()
         systemWallpapers = it.toMutableStateList()
+    }
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    DisposableEffect(LocalLifecycleOwner.current) {
+        val observer = object : DefaultLifecycleObserver {
+            override fun onPause(owner: LifecycleOwner) {
+                homeScreenViewModel.stopPostingRandomWallpaper()
+            }
+
+            override fun onResume(owner: LifecycleOwner) {
+                homeScreenViewModel.startPostingRandomWallpaper()
+            }
+        }
+
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
     }
 
     Column(
@@ -220,6 +243,7 @@ fun WallpaperItem(title: String, onClick: () -> Unit, modifier: Modifier = Modif
             GlideImage(
                 model = wallpaper?.uri?.toUri(),
                 contentDescription = null,
+                transition = CrossFade,
                 modifier = Modifier
                     .fillMaxSize()
                     .haze(state = hazeState),
@@ -237,7 +261,6 @@ fun WallpaperItem(title: String, onClick: () -> Unit, modifier: Modifier = Modif
                         return false
                     }
                 })
-                    .transition(withCrossFade())
                     .disallowHardwareConfig()
                     .fitCenter()
             }

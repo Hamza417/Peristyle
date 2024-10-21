@@ -80,6 +80,7 @@ import app.simple.peri.utils.FileUtils.toUri
 import app.simple.peri.viewmodels.TagsViewModel
 import app.simple.peri.viewmodels.WallpaperListViewModel
 import app.simple.peri.viewmodels.WallpaperViewModel
+import com.bumptech.glide.integration.compose.CrossFade
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.load.DataSource
@@ -153,6 +154,7 @@ fun WallpaperItem(
             GlideImage(
                 model = wallpaper.uri.toUri(),
                 contentDescription = null,
+                transition = CrossFade,
                 modifier = Modifier
                     .fillMaxWidth()
                     .wrapContentHeight()
@@ -218,6 +220,7 @@ fun WallpaperItem(
                 GlideImage(
                     model = wallpaper.uri.toUri(),
                     contentDescription = null,
+                    transition = CrossFade,
                     modifier = Modifier
                         .fillMaxSize()
                         .haze(hazeState),
