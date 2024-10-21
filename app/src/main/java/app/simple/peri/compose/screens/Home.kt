@@ -41,15 +41,14 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -62,9 +61,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.lerp
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import app.simple.peri.R
@@ -95,7 +96,7 @@ fun Home(navController: NavController? = null) {
     InitDisplayDimension()
 
     val pagerState = rememberPagerState(pageCount = {
-        2
+        3
     })
 
     val fling = PagerDefaults.flingBehavior(
@@ -104,85 +105,87 @@ fun Home(navController: NavController? = null) {
     )
 
     val homeScreenViewModel: HomeScreenViewModel = viewModel()
-    val systemWallpapers: ArrayList<Wallpaper>
-            by homeScreenViewModel.getSystemWallpaper().observeAsState(initial = arrayListOf())
+    var systemWallpapers = remember { mutableStateListOf<Wallpaper>() }
 
-    Surface(
-        modifier = Modifier
+    homeScreenViewModel.getSystemWallpaper().observe(LocalLifecycleOwner.current) {
+        systemWallpapers.clear()
+        systemWallpapers = it.toMutableStateList()
+    }
+
+    Column(
+        Modifier
             .fillMaxSize()
-            .windowInsetsPadding(WindowInsets.safeDrawing),
-        color = Color.Transparent
+            .windowInsetsPadding(WindowInsets.safeDrawing)
     ) {
-        Column {
-            Header(
-                title = stringResource(id = R.string.app_name),
-                modifier = Modifier.padding(24.dp),
-                navController = navController
-            )
+        Header(
+            title = stringResource(id = R.string.app_name),
+            modifier = Modifier.padding(24.dp),
+            navController = navController
+        )
 
-            HorizontalPager(
-                state = pagerState,
-                contentPadding = PaddingValues(horizontal = 48.dp),
-                flingBehavior = fling,
+        HorizontalPager(
+            state = pagerState,
+            contentPadding = PaddingValues(horizontal = 48.dp),
+            flingBehavior = fling,
+            modifier = Modifier
+                .weight(1f)
+        ) { page ->
+            val wallpaper = systemWallpapers.getOrNull(page)
+
+            WallpaperItem(
+                title = when (page) {
+                    0 -> stringResource(id = R.string.home_screen)
+                    1 -> stringResource(id = R.string.lock_screen)
+                    else -> wallpaper?.name ?: ""
+                },
+                onClick = {
+                    if (wallpaper != null) {
+                        navController?.navigate(Routes.WALLPAPER) {
+                            navController.currentBackStackEntry?.savedStateHandle?.set(Routes.WALLPAPER_ARG, wallpaper)
+                        }
+                    }
+                },
                 modifier = Modifier
                     .weight(1f)
-            ) { page ->
-                val wallpaper = systemWallpapers.getOrNull(page)
+                    .graphicsLayer {
+                        // Calculate the absolute offset for the current page from the
+                        // scroll position. We use the absolute value which allows us to mirror
+                        // any effects for both directions
+                        val pageOffset =
+                            ((pagerState.currentPage - page) + pagerState.currentPageOffsetFraction).absoluteValue
+                        val startScale = 0.95f
 
-                WallpaperItem(
-                    title = when (page) {
-                        0 -> stringResource(id = R.string.home_screen)
-                        else -> stringResource(id = R.string.lock_screen)
-                    },
-                    onClick = {
-                        if (wallpaper != null) {
-                            navController?.navigate(Routes.WALLPAPER) {
-                                navController.currentBackStackEntry?.savedStateHandle?.set(Routes.WALLPAPER_ARG, wallpaper)
-                            }
-                        }
-                    },
-                    modifier = Modifier
-                        .weight(1f)
-                        .graphicsLayer {
-                            // Calculate the absolute offset for the current page from the
-                            // scroll position. We use the absolute value which allows us to mirror
-                            // any effects for both directions
-                            val pageOffset =
-                                ((pagerState.currentPage - page) + pagerState.currentPageOffsetFraction).absoluteValue
-                            val startScale = 0.95f
+                        // We animate the alpha, between 50% and 100%
+                        // alpha = lerp(
+                        //        start = 0.75f,
+                        //        stop = 1f,
+                        //        fraction = 1f - pageOffset.coerceIn(0f, 1f),
+                        //)
 
-                            // We animate the alpha, between 50% and 100%
-                            // alpha = lerp(
-                            //        start = 0.75f,
-                            //        stop = 1f,
-                            //        fraction = 1f - pageOffset.coerceIn(0f, 1f),
-                            //)
+                        scaleX = lerp(
+                            start = startScale,
+                            stop = 1f,
+                            fraction = 1f - pageOffset.coerceIn(0f, 1f),
+                        )
 
-                            scaleX = lerp(
-                                start = startScale,
-                                stop = 1f,
-                                fraction = 1f - pageOffset.coerceIn(0f, 1f),
-                            )
+                        scaleY = lerp(
+                            start = startScale,
+                            stop = 1f,
+                            fraction = 1f - pageOffset.coerceIn(0f, 1f),
+                        )
+                    }
+                    .padding(8.dp), // Add padding to create space between the cards
+                wallpaper = wallpaper
 
-                            scaleY = lerp(
-                                start = startScale,
-                                stop = 1f,
-                                fraction = 1f - pageOffset.coerceIn(0f, 1f),
-                            )
-                        }
-                        .padding(8.dp), // Add padding to create space between the cards
-                    wallpaper = wallpaper
-
-                )
-            }
-
-            BottomMenu(
-                modifier = Modifier
-                    .padding(8.dp)
-                    .height(120.dp),
-                navController = navController
             )
         }
+
+        BottomMenu(
+            modifier = Modifier
+                .padding(8.dp)
+                .height(120.dp),
+            navController = navController
+        )
     }
 }
 
@@ -257,6 +260,8 @@ fun WallpaperItem(title: String, onClick: () -> Unit, modifier: Modifier = Modif
                     fontSize = 24.sp, // Set the font size
                     fontWeight = FontWeight.Bold, // Make the text bold
                     color = Color.White, // Set the text color
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
 
                 val info = when (title) {
