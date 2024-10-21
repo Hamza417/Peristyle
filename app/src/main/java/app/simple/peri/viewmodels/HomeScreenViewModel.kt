@@ -42,7 +42,7 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
             }
         }
 
-        handler.postDelayed(randomWallpaperRepeatRunnable, 10000)
+        startPostingRandomWallpaper()
     }
 
     private fun getCurrentSystemWallpaper(): ArrayList<Wallpaper> {
@@ -106,9 +106,17 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
                 Log.i("HomeScreenViewModel", "Posting random wallpaper")
             }
 
-            handler.removeCallbacksAndMessages(null)
-            handler.postDelayed(this, 10000)
+            startPostingRandomWallpaper()
         }
+    }
+
+    fun stopPostingRandomWallpaper() {
+        handler.removeCallbacksAndMessages(null)
+    }
+
+    fun startPostingRandomWallpaper() {
+        stopPostingRandomWallpaper()
+        handler.postDelayed(randomWallpaperRepeatRunnable, 10000)
     }
 
     override fun onCleared() {

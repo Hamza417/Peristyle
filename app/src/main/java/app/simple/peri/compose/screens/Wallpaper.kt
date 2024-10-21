@@ -87,7 +87,8 @@ import me.saket.telephoto.zoomable.glide.ZoomableGlideImage
 
 @Composable
 fun Wallpaper(context: Context, navController: NavHostController) {
-    val wallpaper = navController.previousBackStackEntry?.savedStateHandle?.get<Wallpaper>(Routes.WALLPAPER_ARG)
+    val wallpaper =
+        navController.previousBackStackEntry?.savedStateHandle?.get<Wallpaper>(Routes.WALLPAPER_ARG)
     var showDialog by remember { mutableStateOf(false) }
     var drawable by remember { mutableStateOf<Drawable?>(null) }
     var blurValue by remember { mutableFloatStateOf(0f) } // 0F..25F
@@ -99,7 +100,7 @@ fun Wallpaper(context: Context, navController: NavHostController) {
     val coroutineScope = rememberCoroutineScope()
     val graphicsLayer = rememberGraphicsLayer()
     val tagsViewModel: TagsViewModel = viewModel(
-            factory = TagsViewModelFactory(wallpaper?.md5 ?: "")
+        factory = TagsViewModelFactory(wallpaper?.md5 ?: "")
     )
     var displayWidth by remember { mutableIntStateOf(0) }
     var displayHeight by remember { mutableIntStateOf(0) }
@@ -108,23 +109,23 @@ fun Wallpaper(context: Context, navController: NavHostController) {
 
     if (showEditDialog.value) {
         EffectsDialog(
-                showDialog = showEditDialog.value,
-                setShowDialog = {
-                    showEditDialog.value = it
-                    showDetailsCard.value = !it
-                },
-                initialBlurValue = blurValue,
-                initialBrightnessValue = brightnessValue,
-                initialContrastValue = contrastValue,
-                initialSaturationValue = saturationValue,
-                initialHueValue = hueValue,
-                onApplyEffects = { blur, brightness, contrast, saturation, hue ->
-                    blurValue = blur
-                    brightnessValue = brightness
-                    contrastValue = contrast
-                    saturationValue = saturation
-                    hueValue = hue
-                }
+            showDialog = showEditDialog.value,
+            setShowDialog = {
+                showEditDialog.value = it
+                showDetailsCard.value = !it
+            },
+            initialBlurValue = blurValue,
+            initialBrightnessValue = brightnessValue,
+            initialContrastValue = contrastValue,
+            initialSaturationValue = saturationValue,
+            initialHueValue = hueValue,
+            onApplyEffects = { blur, brightness, contrast, saturation, hue ->
+                blurValue = blur
+                brightnessValue = brightness
+                contrastValue = contrast
+                saturationValue = saturation
+                hueValue = hue
+            }
         )
     }
 
@@ -136,7 +137,7 @@ fun Wallpaper(context: Context, navController: NavHostController) {
     }
 
     Box(
-            modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
     ) {
         val currentScale = remember {
             mutableStateOf(ContentScale.Crop)
@@ -153,12 +154,12 @@ fun Wallpaper(context: Context, navController: NavHostController) {
         val rotateBlueMatrix = ColorMatrix().apply { setToRotateBlue(hueValue) }
         val saturationMatrix = ColorMatrix().apply { setToSaturation(saturationValue) }
         val contrastMatrix = ColorMatrix(
-                floatArrayOf(
-                        contrastValue, 0f, 0f, 0f, brightnessValue,
-                        0f, contrastValue, 0f, 0f, brightnessValue,
-                        0f, 0f, contrastValue, 0f, brightnessValue,
-                        0f, 0f, 0f, 1f, 0f
-                )
+            floatArrayOf(
+                contrastValue, 0f, 0f, 0f, brightnessValue,
+                0f, contrastValue, 0f, 0f, brightnessValue,
+                0f, 0f, contrastValue, 0f, brightnessValue,
+                0f, 0f, 0f, 1f, 0f
+            )
         )
 
         // Manually combine the matrices
@@ -181,35 +182,35 @@ fun Wallpaper(context: Context, navController: NavHostController) {
         colorMatrix.set(ColorMatrix(combinedMatrix))
 
         Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .haze(state = hazeState)
-                    .drawWithContent {
-                        // call record to capture the content in the graphics layer
-                        graphicsLayer.record {
-                            // draw the contents of the composable into the graphics layer
-                            this@drawWithContent.drawContent()
-                        }
-                        // draw the graphics layer on the visible canvas
-                        drawLayer(graphicsLayer)
-                    },
+            modifier = Modifier
+                .fillMaxSize()
+                .haze(state = hazeState)
+                .drawWithContent {
+                    // call record to capture the content in the graphics layer
+                    graphicsLayer.record {
+                        // draw the contents of the composable into the graphics layer
+                        this@drawWithContent.drawContent()
+                    }
+                    // draw the graphics layer on the visible canvas
+                    drawLayer(graphicsLayer)
+                },
         ) {
             ZoomableGlideImage(
-                    model = wallpaper?.uri?.toUri(),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .blur(blurValue.dp),
-                    alignment = Alignment.Center,
-                    contentScale = currentScale.value,
-                    colorFilter = ColorMatrixColorFilter(colorMatrix),
-                    onClick = {
-                        showDetailsCard.value = !showDetailsCard.value
-                    },
-                    onLongClick = {
-                        showEditDialog.value = true
-                        showDetailsCard.value = false
-                    },
+                model = wallpaper?.uri?.toUri(),
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .blur(blurValue.dp),
+                alignment = Alignment.Center,
+                contentScale = currentScale.value,
+                colorFilter = ColorMatrixColorFilter(colorMatrix),
+                onClick = {
+                    showDetailsCard.value = !showDetailsCard.value
+                },
+                onLongClick = {
+                    showEditDialog.value = true
+                    showDetailsCard.value = false
+                },
             )
             {
                 it.transition(withCrossFade())
@@ -220,64 +221,65 @@ fun Wallpaper(context: Context, navController: NavHostController) {
 
         if (showDetailsCard.value) {
             Card(
-                    modifier = Modifier
-                        .align(Alignment.BottomStart)
-                        .padding(16.dp)
-                        .fillMaxWidth()
-                        .wrapContentHeight()
-                        .windowInsetsPadding(WindowInsets.safeDrawing)
-                        .clip(RoundedCornerShape(32.dp))
-                        .hazeChild(
-                                state = hazeState,
-                                style = HazeDefaults.style(backgroundColor = Color(0x50000000), blurRadius = 15.dp)),
-                    shape = RoundedCornerShape(32.dp),
-                    colors = CardDefaults.cardColors(
-                            containerColor = Color.Transparent,
-                    )
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .padding(16.dp)
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .windowInsetsPadding(WindowInsets.safeDrawing)
+                    .clip(RoundedCornerShape(32.dp))
+                    .hazeChild(
+                        state = hazeState,
+                        style = HazeDefaults.style(backgroundColor = Color(0x50000000), blurRadius = 15.dp)
+                    ),
+                shape = RoundedCornerShape(32.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color.Transparent,
+                )
             ) {
                 Text(
-                        text = wallpaper?.name ?: "",
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White,
-                        modifier = Modifier.padding(top = 16.dp, start = 16.dp),
-                        fontSize = 22.sp
+                    text = wallpaper?.name ?: "",
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White,
+                    modifier = Modifier.padding(top = 16.dp, start = 16.dp),
+                    fontSize = 22.sp
                 )
 
                 Text(
-                        text = buildString {
-                            append(wallpaper?.width ?: 0)
-                            append(" x ")
-                            append(wallpaper?.height ?: 0)
-                            append(", ")
-                            append(wallpaper?.size?.toSize() ?: "")
-                        },
-                        fontWeight = FontWeight.Light,
-                        color = Color.White,
-                        modifier = Modifier.padding(start = 16.dp, top = 4.dp),
-                        fontSize = 18.sp
+                    text = buildString {
+                        append(wallpaper?.width ?: 0)
+                        append(" x ")
+                        append(wallpaper?.height ?: 0)
+                        append(", ")
+                        append(wallpaper?.size?.toSize() ?: "")
+                    },
+                    fontWeight = FontWeight.Light,
+                    color = Color.White,
+                    modifier = Modifier.padding(start = 16.dp, top = 4.dp),
+                    fontSize = 18.sp
                 )
 
                 if (tags.isNotEmpty()) {
                     Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.Start,
-                            verticalAlignment = Alignment.CenterVertically
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Start,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
-                                imageVector = Icons.AutoMirrored.Rounded.Label,
-                                contentDescription = "",
-                                tint = Color.White,
-                                modifier = Modifier
-                                    .width(32.dp)
-                                    .height(32.dp)
-                                    .padding(start = 12.dp, bottom = 16.dp)
+                            imageVector = Icons.AutoMirrored.Rounded.Label,
+                            contentDescription = "",
+                            tint = Color.White,
+                            modifier = Modifier
+                                .width(32.dp)
+                                .height(32.dp)
+                                .padding(start = 12.dp, bottom = 16.dp)
                         )
                         Text(
-                                text = tags.joinToString(", "),
-                                fontWeight = FontWeight.Light,
-                                color = Color.White,
-                                modifier = Modifier.padding(start = 8.dp, bottom = 16.dp),
-                                fontSize = 18.sp
+                            text = tags.joinToString(", "),
+                            fontWeight = FontWeight.Light,
+                            color = Color.White,
+                            modifier = Modifier.padding(start = 8.dp, bottom = 16.dp),
+                            fontSize = 18.sp
                         )
                     }
                 } else {
@@ -290,10 +292,11 @@ fun Wallpaper(context: Context, navController: NavHostController) {
                     if (showLaunchedEffect.value) {
                         LaunchedEffect(showLaunchedEffect) {
                             coroutineScope.launch {
-                                val bitmap = graphicsLayer.toImageBitmap().asAndroidBitmap().copy(Bitmap.Config.ARGB_8888, true)
+                                val bitmap = graphicsLayer.toImageBitmap().asAndroidBitmap()
+                                    .copy(Bitmap.Config.ARGB_8888, true)
                                 bitmap.applyEffects(
-                                        blur = blurValue.times(Misc.BLUR_TIMES),
-                                        colorMatrix = colorMatrix
+                                    blur = blurValue.times(Misc.BLUR_TIMES),
+                                    colorMatrix = colorMatrix
                                 )
                                 drawable = BitmapDrawable(context.resources, bitmap)
                                 showDialog = true
@@ -303,53 +306,53 @@ fun Wallpaper(context: Context, navController: NavHostController) {
                     }
 
                     Button(
-                            onClick = {
-                                showEditDialog.value = true
-                                showDetailsCard.value = false
-                            },
-                            shape = RoundedCornerShape(20.dp),
-                            modifier = Modifier
-                                .wrapContentWidth()
-                                .padding(start = 16.dp, bottom = 16.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color.Unspecified,
-                            )
+                        onClick = {
+                            showEditDialog.value = true
+                            showDetailsCard.value = false
+                        },
+                        shape = RoundedCornerShape(20.dp),
+                        modifier = Modifier
+                            .wrapContentWidth()
+                            .padding(start = 16.dp, bottom = 16.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Unspecified,
+                        )
                     ) {
                         Text(
-                                text = context.getString(R.string.edit),
-                                fontSize = 18.sp,
-                                modifier = Modifier.padding(12.dp),
-                                fontWeight = FontWeight.SemiBold
+                            text = context.getString(R.string.edit),
+                            fontSize = 18.sp,
+                            modifier = Modifier.padding(12.dp),
+                            fontWeight = FontWeight.SemiBold
                         )
 
                         Icon(
-                                imageVector = Icons.Rounded.Edit,
-                                contentDescription = "",
-                                modifier = Modifier
-                                    .width(24.dp)
-                                    .height(24.dp)
-                                    .padding(end = 8.dp)
+                            imageVector = Icons.Rounded.Edit,
+                            contentDescription = "",
+                            modifier = Modifier
+                                .width(24.dp)
+                                .height(24.dp)
+                                .padding(end = 8.dp)
                         )
                     }
 
                     Button(
-                            onClick = {
-                                showLaunchedEffect.value = true
-                            },
-                            shape = RoundedCornerShape(20.dp),
-                            modifier = Modifier
-                                .weight(0.5F)
-                                .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color.White,
-                            )
+                        onClick = {
+                            showLaunchedEffect.value = true
+                        },
+                        shape = RoundedCornerShape(20.dp),
+                        modifier = Modifier
+                            .weight(0.5F)
+                            .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.White,
+                        )
                     ) {
                         Text(
-                                text = context.getString(R.string.set_as_wallpaper),
-                                color = Color.Black,
-                                fontSize = 18.sp,
-                                modifier = Modifier.padding(12.dp),
-                                fontWeight = FontWeight.SemiBold
+                            text = context.getString(R.string.set_as_wallpaper),
+                            color = Color.Black,
+                            fontSize = 18.sp,
+                            modifier = Modifier.padding(12.dp),
+                            fontWeight = FontWeight.SemiBold
                         )
                     }
                 }
@@ -358,9 +361,9 @@ fun Wallpaper(context: Context, navController: NavHostController) {
 
         if (showDialog) {
             ScreenSelectionDialog(
-                    setShowDialog = { showDialog = it },
-                    context = context,
-                    drawable = drawable
+                setShowDialog = { showDialog = it },
+                context = context,
+                drawable = drawable
             )
         }
     }
@@ -369,92 +372,92 @@ fun Wallpaper(context: Context, navController: NavHostController) {
 @Composable
 fun ScreenSelectionDialog(setShowDialog: (Boolean) -> Unit, context: Context, drawable: Drawable?) {
     AlertDialog(
-            onDismissRequest = { setShowDialog(false) },
-            title = {
-                Text(
-                        text = stringResource(id = R.string.set_as_wallpaper),
-                        fontSize = DIALOG_TITLE_FONT_SIZE,
-                        fontWeight = FontWeight.Bold,
-                        fontFamily = FontFamily.SansSerif,
-                        style = TextStyle.Default,
-                )
-            },
-            text = {
-                Column {
-                    Button(
-                            onClick = {
-                                setWallpaper(context, WallpaperManager.FLAG_LOCK, drawable!!)
-                                setShowDialog(false)
-                            },
-                            colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color.Transparent,
-                            ),
-                            shape = RoundedCornerShape(12.dp),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                    ) {
-                        Text(
-                                text = context.getString(R.string.lock_screen),
-                                fontSize = DIALOG_OPTION_FONT_SIZE,
-                                color = MaterialTheme.colorScheme.onSurface,
-                                fontWeight = FontWeight.Bold
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(5.dp))
-
-                    Button(
-                            onClick = {
-                                setWallpaper(context, WallpaperManager.FLAG_SYSTEM, drawable!!)
-                                setShowDialog(false)
-                            },
-                            colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color.Transparent,
-                            ),
-                            shape = RoundedCornerShape(12.dp),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                    ) {
-                        Text(
-                                text = context.getString(R.string.home_screen),
-                                fontSize = DIALOG_OPTION_FONT_SIZE,
-                                color = MaterialTheme.colorScheme.onSurface,
-                                fontWeight = FontWeight.Bold
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(5.dp))
-
-                    Button(
-                            onClick = {
-                                setWallpaper(context, WallpaperManager.FLAG_SYSTEM or WallpaperManager.FLAG_LOCK, drawable!!)
-                                setShowDialog(false)
-                            },
-                            colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color.Transparent,
-                            ),
-                            shape = RoundedCornerShape(12.dp),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                    ) {
-                        Text(
-                                text = context.getString(R.string.both),
-                                color = MaterialTheme.colorScheme.onSurface,
-                                fontSize = DIALOG_OPTION_FONT_SIZE,
-                                fontWeight = FontWeight.Bold
-                        )
-                    }
-                }
-            },
-            confirmButton = {
+        onDismissRequest = { setShowDialog(false) },
+        title = {
+            Text(
+                text = stringResource(id = R.string.set_as_wallpaper),
+                fontSize = DIALOG_TITLE_FONT_SIZE,
+                fontWeight = FontWeight.Bold,
+                fontFamily = FontFamily.SansSerif,
+                style = TextStyle.Default,
+            )
+        },
+        text = {
+            Column {
                 Button(
-                        onClick = {
-                            setShowDialog(false)
-                        })
-                {
-                    Text(stringResource(id = R.string.cancel))
+                    onClick = {
+                        setWallpaper(context, WallpaperManager.FLAG_LOCK, drawable!!)
+                        setShowDialog(false)
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Transparent,
+                    ),
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    Text(
+                        text = context.getString(R.string.lock_screen),
+                        fontSize = DIALOG_OPTION_FONT_SIZE,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
-            },
+
+                Spacer(modifier = Modifier.height(5.dp))
+
+                Button(
+                    onClick = {
+                        setWallpaper(context, WallpaperManager.FLAG_SYSTEM, drawable!!)
+                        setShowDialog(false)
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Transparent,
+                    ),
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    Text(
+                        text = context.getString(R.string.home_screen),
+                        fontSize = DIALOG_OPTION_FONT_SIZE,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(5.dp))
+
+                Button(
+                    onClick = {
+                        setWallpaper(context, WallpaperManager.FLAG_SYSTEM or WallpaperManager.FLAG_LOCK, drawable!!)
+                        setShowDialog(false)
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Transparent,
+                    ),
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    Text(
+                        text = context.getString(R.string.both),
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontSize = DIALOG_OPTION_FONT_SIZE,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    setShowDialog(false)
+                })
+            {
+                Text(stringResource(id = R.string.cancel))
+            }
+        },
     )
 }
 

@@ -68,6 +68,7 @@ import app.simple.peri.compose.nav.Routes
 import app.simple.peri.models.Folder
 import app.simple.peri.utils.ConditionUtils.invert
 import app.simple.peri.viewmodels.WallpaperViewModel
+import com.bumptech.glide.integration.compose.CrossFade
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
@@ -90,9 +91,11 @@ fun Folders(navController: NavController? = null) {
     }
 
     statusBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
-            LocalView.current.rootWindowInsets).getInsets(WindowInsetsCompat.Type.statusBars()).top
+            LocalView.current.rootWindowInsets
+    ).getInsets(WindowInsetsCompat.Type.statusBars()).top
     navigationBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
-            LocalView.current.rootWindowInsets).getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
+            LocalView.current.rootWindowInsets
+    ).getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
 
     val statusBarHeightPx = statusBarHeight
     val statusBarHeightDp = with(LocalDensity.current) { statusBarHeightPx.toDp() }
@@ -144,9 +147,11 @@ fun Folders(navController: NavController? = null) {
             }
         }
         items(folders.size) { index ->
-            FolderItem(folder = folders[index],
-                       navController = navController,
-                       wallpaperViewModel = wallpaperViewModel) {
+            FolderItem(
+                    folder = folders[index],
+                    navController = navController,
+                    wallpaperViewModel = wallpaperViewModel
+            ) {
                 wallpaperViewModel.deleteFolder(it)
             }
         }
@@ -235,16 +240,16 @@ fun FolderItem(folder: Folder, navController: NavController? = null, wallpaperVi
             modifier = Modifier
                 .padding(8.dp)
                 .combinedClickable(
-                    onClick = {
-                        navController?.navigate(Routes.WALLPAPERS_LIST) {
-                            navController.currentBackStackEntry?.savedStateHandle?.set(Routes.FOLDER_ARG, folder)
-                        }
-                    },
-                    onLongClick = {
-                        showFolderMenu = true
-                    },
-                    indication = ripple(bounded = true),
-                    interactionSource = remember { MutableInteractionSource() }
+                        onClick = {
+                            navController?.navigate(Routes.WALLPAPERS_LIST) {
+                                navController.currentBackStackEntry?.savedStateHandle?.set(Routes.FOLDER_ARG, folder)
+                            }
+                        },
+                        onLongClick = {
+                            showFolderMenu = true
+                        },
+                        indication = ripple(bounded = true),
+                        interactionSource = remember { MutableInteractionSource() }
                 ),
             shape = RoundedCornerShape(16.dp),
     ) {
@@ -255,6 +260,7 @@ fun FolderItem(folder: Folder, navController: NavController? = null, wallpaperVi
             GlideImage(
                     model = app.simple.peri.glide.folders.Folder(folder.hashcode, context = LocalContext.current),
                     contentDescription = null,
+                    transition = CrossFade,
                     modifier = Modifier.haze(hazeState),
             ) {
                 it
@@ -267,8 +273,8 @@ fun FolderItem(folder: Folder, navController: NavController? = null, wallpaperVi
                         .fillMaxWidth()
                         .wrapContentHeight()
                         .hazeChild(
-                            state = hazeState,
-                            style = HazeDefaults.style(backgroundColor = Color(0x50000000), blurRadius = 5.dp)
+                                state = hazeState,
+                                style = HazeDefaults.style(backgroundColor = Color(0x50000000), blurRadius = 5.dp)
                         )
                         .align(Alignment.BottomCenter)
             ) {
