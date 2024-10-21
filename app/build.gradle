@@ -43,7 +43,13 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
             // Clean gradle cache before building release
-            preBuild.dependsOn 'clean'
+            // preBuild.dependsOn 'clean'
+        }
+
+        debug {
+            minifyEnabled false
+            shrinkResources false
+            vcsInfo.include false
         }
     }
 

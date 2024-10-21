@@ -2,7 +2,9 @@ package app.simple.peri.compose.commons
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.Icon
@@ -14,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -34,9 +37,13 @@ fun TopHeader(title: String, modifier: Modifier = Modifier, count: Int = 0, navC
                 text = title,
                 textAlign = TextAlign.Start,
                 fontSize = 32.sp, // Set the font size
-                modifier = Modifier.weight(1f), // Set the weight
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(end = 8.dp), // Set the weight
                 fontWeight = FontWeight.Bold, // Make the text bold
-                lineHeight = 30.sp, // Set the line height
+                lineHeight = 36.sp, // Set the line height
+                maxLines = 1, // Set the max lines
+                overflow = TextOverflow.Ellipsis, // Set the overflow
         )
 
         if (count > 0) {
@@ -44,7 +51,7 @@ fun TopHeader(title: String, modifier: Modifier = Modifier, count: Int = 0, navC
                     text = count.toString(),
                     textAlign = TextAlign.End,
                     fontSize = 24.sp,
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.wrapContentWidth(),
                     fontWeight = FontWeight.Thin,
             )
         }

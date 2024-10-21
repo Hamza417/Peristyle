@@ -13,8 +13,10 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import app.simple.peri.BuildConfig
 import app.simple.peri.database.instances.WallpaperDatabase
 import app.simple.peri.models.Wallpaper
+import app.simple.peri.utils.ConditionUtils.invert
 import app.simple.peri.utils.PermissionUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -69,16 +71,16 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
         val lockUri = getFileUri(lockFile)
 
         return arrayListOf(
-            Wallpaper().createFromUri(systemUri.toString(), getApplication()),
-            Wallpaper().createFromUri(lockUri.toString(), getApplication()),
-            getRandomWallpaperFromDatabase()
+                Wallpaper().createFromUri(systemUri.toString(), getApplication()),
+                Wallpaper().createFromUri(lockUri.toString(), getApplication()),
+                getRandomWallpaperFromDatabase()
         )
     }
 
     private fun createTempFile(fileName: String): File {
         val file = File(
-            getApplication<Application>().filesDir,
-            fileName.replace("$", System.currentTimeMillis().div(1000).toString())
+                getApplication<Application>().filesDir,
+                fileName.replace("$", System.currentTimeMillis().div(1000).toString())
         )
         if (file.exists()) file.delete()
         return file
@@ -86,7 +88,7 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
 
     private fun getFileUri(file: File): Uri {
         return FileProvider.getUriForFile(
-            getApplication(), "${getApplication<Application>().packageName}.provider", file
+                getApplication(), "${getApplication<Application>().packageName}.provider", file
         )
     }
 
@@ -96,8 +98,8 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
         return wallpaper ?: Wallpaper()
     }
 
-    private val randomWallpaperRepeatRunnable = object : Runnable {
-        override fun run() {
+    private val randomWallpaperRepeatRunnable = Runnable {
+        if (BuildConfig.DEBUG.invert()) {
             viewModelScope.launch(Dispatchers.Default) {
                 systemWallpaperData.postValue(systemWallpaperData.value?.apply {
                     this[2] = getRandomWallpaperFromDatabase()
@@ -105,9 +107,9 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
 
                 Log.i("HomeScreenViewModel", "Posting random wallpaper")
             }
-
-            startPostingRandomWallpaper()
         }
+
+        startPostingRandomWallpaper()
     }
 
     fun stopPostingRandomWallpaper() {
