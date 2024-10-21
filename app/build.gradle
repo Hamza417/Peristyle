@@ -41,6 +41,9 @@ android {
             shrinkResources true
             vcsInfo.include false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
+            // Clean gradle cache before building release
+            preBuild.dependsOn 'clean'
         }
     }
 
@@ -50,7 +53,10 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.11"
+        /**
+         * Reference: https://developer.android.com/jetpack/androidx/releases/compose-kotlin
+         */
+        kotlinCompilerExtensionVersion = "1.5.14"
     }
 
     kotlinOptions {
