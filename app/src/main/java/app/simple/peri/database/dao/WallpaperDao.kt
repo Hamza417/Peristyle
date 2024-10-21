@@ -54,6 +54,10 @@ interface WallpaperDao {
     @Query("DELETE FROM wallpapers WHERE name NOT LIKE '%.jpg' AND name NOT LIKE '%.jpeg' AND name NOT LIKE '%.webp' AND name NOT LIKE '%.png'")
     fun sanitizeEntries()
 
+    fun getRandomWallpaper(): Wallpaper {
+        return getWallpapers().random()
+    }
+
     /**
      * Delete a wallpaper from the database
      */
