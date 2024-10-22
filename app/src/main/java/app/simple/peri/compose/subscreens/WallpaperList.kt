@@ -16,6 +16,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
@@ -52,16 +53,20 @@ fun WallpaperList(navController: NavController? = null) {
                 factory = FolderViewModelFactory(hashCode = folder)
         )
 
-        val wallpapers = remember { mutableStateListOf<Wallpaper>() }
+        var wallpapers = remember { mutableStateListOf<Wallpaper>() }
         val updatedWallpapers by folderDataViewModel.getWallpapers().collectAsState()
 
         // Update the wallpapers list
         wallpapers.clear()
-        wallpapers.addAll(updatedWallpapers)
+        wallpapers = updatedWallpapers.toMutableStateList()
         Log.d("WallpaperList", "Updated wallpapers: ${updatedWallpapers.size}")
 
-        val wallpaperListViewModel: WallpaperListViewModel =
-            viewModel() // We should use a dedicated ViewModel for this
+        if (wallpapers.isEmpty()) { // TODO = list doesn't update with this
+            Log.e("WallpaperList", "Wallpapers list is empty")
+            return
+        }
+
+        val wallpaperListViewModel: WallpaperListViewModel = viewModel() // We should use a dedicated ViewModel for this
         val isSelectionMode by wallpaperListViewModel.isSelectionMode.collectAsState()
         val selectionCount by wallpaperListViewModel.selectedWallpapers.collectAsState()
         var statusBarHeight by remember { mutableIntStateOf(0) }
@@ -83,7 +88,6 @@ fun WallpaperList(navController: NavController? = null) {
 
         val topPadding = 8.dp + statusBarHeightDp
         val bottomPadding = 8.dp + navigationBarHeightDp
-
 
         if (showPleaseWaitDialog) {
             PleaseWaitDialog {
@@ -115,7 +119,7 @@ fun WallpaperList(navController: NavController? = null) {
                             navController = navController
                     )
                 }
-                items(wallpapers.size) { index ->
+                items(wallpapers.size, key = { wallpapers[it].hashCode() }) { index ->
                     WallpaperItem(
                             wallpaper = wallpapers[index],
                             navController = navController,
@@ -126,20 +130,14 @@ fun WallpaperList(navController: NavController? = null) {
                                 showPleaseWaitDialog = true
                                 folderDataViewModel.compressWallpaper(wallpapers[index]) {
                                     showPleaseWaitDialog = false
-                                    Log.d(
-                                            "WallpaperList",
-                                            "Compressed wallpaper: ${wallpapers[index].size.toSize()} -> ${it.size.toSize()}"
-                                    )
+                                    Log.d("WallpaperList", "Compressed wallpaper: ${wallpapers[index].size.toSize()} -> ${it.size.toSize()}")
                                 }
                             },
                             onReduceResolution = {
                                 showPleaseWaitDialog = true
                                 folderDataViewModel.reduceResolution(wallpapers[index]) {
                                     showPleaseWaitDialog = false
-                                    Log.d(
-                                            "WallpaperList",
-                                            "Reduced wallpaper: ${it.size.toSize()}, ${it.height}x${it.width}"
-                                    )
+                                    Log.d("WallpaperList", "Reduced wallpaper: ${it.size.toSize()}, ${it.height}x${it.width}")
                                 }
                             },
                             isSelectionMode = isSelectionMode,

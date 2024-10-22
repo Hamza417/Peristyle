@@ -29,15 +29,8 @@ class FolderDataViewModel(application: Application, private val folder: Folder) 
     init {
         val wallpaperDao = WallpaperDatabase.getInstance(application)?.wallpaperDao()
         wallpaperRepository = WallpaperRepository(wallpaperDao!!)
-
-        viewModelScope.launch {
-            wallpaperRepository.getAllWallpapers().collect { updatedWallpapers ->
-                val filteredWallpapers = updatedWallpapers.filter { it.folderUriHashcode == folder.hashcode }
-                _wallpapers.value = filteredWallpapers
-            }
-        }
-
         registerSharedPreferenceChangeListener()
+        loadWallpapers()
     }
 
     fun getWallpapers(): StateFlow<List<Wallpaper>> = wallpapers
@@ -62,7 +55,17 @@ class FolderDataViewModel(application: Application, private val folder: Folder) 
         val wallpaperDatabase = WallpaperDatabase.getInstance(getApplication())
         val wallpaperDao = wallpaperDatabase?.wallpaperDao()
         wallpaperDao?.insert(wallpaper)
+        _wallpapers.value = emptyList() // TODO = Flow will not emit the list until everything clears here
         return wallpaper
+    }
+
+    private fun loadWallpapers() {
+        viewModelScope.launch {
+            wallpaperRepository.getAllWallpapers().collect { updatedWallpapers ->
+                val filteredWallpapers = updatedWallpapers.filter { it.folderUriHashcode == folder.hashcode }
+                _wallpapers.value = filteredWallpapers.getSortedList()
+            }
+        }
     }
 
     override fun onCleared() {

@@ -58,6 +58,7 @@ fun TaggedWallpapers(navController: NavController? = null) {
         wallpapers.clear()
         wallpapers = updatedWallpapers.toMutableStateList()
     }
+
     var statusBarHeight by remember { mutableIntStateOf(0) }
     var navigationBarHeight by remember { mutableIntStateOf(0) }
     val hazeState = remember { HazeState() }
