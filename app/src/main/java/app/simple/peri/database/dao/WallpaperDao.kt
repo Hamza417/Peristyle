@@ -7,11 +7,15 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import app.simple.peri.models.Wallpaper
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface WallpaperDao {
     @Query("SELECT * FROM wallpapers ORDER BY dateModified DESC")
     fun getWallpapers(): List<Wallpaper>
+
+    @Query("SELECT * FROM wallpapers ORDER BY dateModified DESC")
+    fun getWallpapersFlow(): Flow<List<Wallpaper>>
 
     fun getWallpapersByWidthAndHeight(width: Int, height: Int): List<Wallpaper> {
         return getWallpapers().filter { it.width == width && it.height == height }

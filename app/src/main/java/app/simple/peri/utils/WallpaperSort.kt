@@ -24,6 +24,12 @@ object WallpaperSort {
         }
     }
 
+    fun List<Wallpaper>.getSortedList(): List<Wallpaper> {
+        val sortedList = ArrayList(this) // Copy the list
+        sortedList.getSortedList()
+        return sortedList
+    }
+
     private fun ArrayList<Wallpaper>.sortByName() {
         if (isOrderAsc()) {
             sortBy { it.name }

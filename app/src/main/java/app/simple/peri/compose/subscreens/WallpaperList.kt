@@ -16,7 +16,6 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
@@ -24,7 +23,6 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowInsetsCompat
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import app.simple.peri.R
@@ -51,17 +49,16 @@ fun WallpaperList(navController: NavController? = null) {
 
     if (folder != null) {
         val folderDataViewModel: FolderDataViewModel = viewModel(
-            factory = FolderViewModelFactory(hashCode = folder)
+                factory = FolderViewModelFactory(hashCode = folder)
         )
 
-        var wallpapers = remember { mutableStateListOf<Wallpaper>() }
+        val wallpapers = remember { mutableStateListOf<Wallpaper>() }
+        val updatedWallpapers by folderDataViewModel.getWallpapers().collectAsState()
 
-        folderDataViewModel.getWallpapers()
-            .observe(LocalLifecycleOwner.current) { updatedWallpapers ->
-                wallpapers.clear()
-                wallpapers = updatedWallpapers.toMutableStateList()
-                Log.d("WallpaperList", "Updated wallpapers: ${updatedWallpapers.size}")
-            }
+        // Update the wallpapers list
+        wallpapers.clear()
+        wallpapers.addAll(updatedWallpapers)
+        Log.d("WallpaperList", "Updated wallpapers: ${updatedWallpapers.size}")
 
         val wallpaperListViewModel: WallpaperListViewModel =
             viewModel() // We should use a dedicated ViewModel for this
@@ -73,10 +70,10 @@ fun WallpaperList(navController: NavController? = null) {
         val hazeState = remember { HazeState() }
 
         statusBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
-            LocalView.current.rootWindowInsets
+                LocalView.current.rootWindowInsets
         ).getInsets(WindowInsetsCompat.Type.statusBars()).top
         navigationBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
-            LocalView.current.rootWindowInsets
+                LocalView.current.rootWindowInsets
         ).getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
 
         val statusBarHeightPx = statusBarHeight
@@ -95,70 +92,70 @@ fun WallpaperList(navController: NavController? = null) {
         }
 
         Box(
-            modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize()
         ) {
             LazyVerticalGrid(
-                columns = GridCells.Fixed(MainComposePreferences.getGridSpanCount()),
-                state = wallpaperListViewModel.lazyGridState,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .haze(state = hazeState),
-                contentPadding = PaddingValues(
-                    top = topPadding,
-                    start = 8.dp,
-                    end = 8.dp,
-                    bottom = bottomPadding
-                )
+                    columns = GridCells.Fixed(MainComposePreferences.getGridSpanCount()),
+                    state = wallpaperListViewModel.lazyGridState,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .haze(state = hazeState),
+                    contentPadding = PaddingValues(
+                            top = topPadding,
+                            start = 8.dp,
+                            end = 8.dp,
+                            bottom = bottomPadding
+                    )
             ) {
                 item(span = { GridItemSpan(maxLineSpan) }) {
                     TopHeader(
-                        title = folder.name ?: stringResource(R.string.unknown),
-                        count = wallpapers.size,
-                        modifier = Modifier.padding(COMMON_PADDING),
-                        navController = navController
+                            title = folder.name ?: stringResource(R.string.unknown),
+                            count = wallpapers.size,
+                            modifier = Modifier.padding(COMMON_PADDING),
+                            navController = navController
                     )
                 }
                 items(wallpapers.size) { index ->
                     WallpaperItem(
-                        wallpaper = wallpapers[index],
-                        navController = navController,
-                        onDelete = { deletedWallpaper ->
-                            folderDataViewModel.deleteWallpaper(deletedWallpaper)
-                        },
-                        onCompress = {
-                            showPleaseWaitDialog = true
-                            folderDataViewModel.compressWallpaper(wallpapers[index]) {
-                                showPleaseWaitDialog = false
-                                Log.d(
-                                    "WallpaperList",
-                                    "Compressed wallpaper: ${wallpapers[index].size.toSize()} -> ${it.size.toSize()}"
-                                )
-                            }
-                        },
-                        onReduceResolution = {
-                            showPleaseWaitDialog = true
-                            folderDataViewModel.reduceResolution(wallpapers[index]) {
-                                showPleaseWaitDialog = false
-                                Log.d(
-                                    "WallpaperList",
-                                    "Reduced wallpaper: ${it.size.toSize()}, ${it.height}x${it.width}"
-                                )
-                            }
-                        },
-                        isSelectionMode = isSelectionMode,
-                        wallpaperListViewModel = wallpaperListViewModel,
-                        list = wallpapers
+                            wallpaper = wallpapers[index],
+                            navController = navController,
+                            onDelete = { deletedWallpaper ->
+                                folderDataViewModel.deleteWallpaper(deletedWallpaper)
+                            },
+                            onCompress = {
+                                showPleaseWaitDialog = true
+                                folderDataViewModel.compressWallpaper(wallpapers[index]) {
+                                    showPleaseWaitDialog = false
+                                    Log.d(
+                                            "WallpaperList",
+                                            "Compressed wallpaper: ${wallpapers[index].size.toSize()} -> ${it.size.toSize()}"
+                                    )
+                                }
+                            },
+                            onReduceResolution = {
+                                showPleaseWaitDialog = true
+                                folderDataViewModel.reduceResolution(wallpapers[index]) {
+                                    showPleaseWaitDialog = false
+                                    Log.d(
+                                            "WallpaperList",
+                                            "Reduced wallpaper: ${it.size.toSize()}, ${it.height}x${it.width}"
+                                    )
+                                }
+                            },
+                            isSelectionMode = isSelectionMode,
+                            wallpaperListViewModel = wallpaperListViewModel,
+                            list = wallpapers
                     )
                 }
             }
 
             if (isSelectionMode) {
                 SelectionMenu(
-                    list = wallpapers,
-                    count = selectionCount,
-                    modifier = Modifier.align(Alignment.BottomCenter),
-                    hazeState = hazeState,
-                    wallpaperListViewModel = wallpaperListViewModel
+                        list = wallpapers,
+                        count = selectionCount,
+                        modifier = Modifier.align(Alignment.BottomCenter),
+                        hazeState = hazeState,
+                        wallpaperListViewModel = wallpaperListViewModel
                 )
             }
         }
