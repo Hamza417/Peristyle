@@ -1,10 +1,12 @@
 package app.simple.peri.database.dao
 
+import android.util.Log
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import app.simple.peri.models.Wallpaper
 import kotlinx.coroutines.flow.Flow
@@ -42,7 +44,7 @@ interface WallpaperDao {
     fun getWallpapersByMD5s(md5s: Set<String>): List<Wallpaper>
 
     /**
-     * Get wallpapers by the matching the [Wallpaper.uriHashcode]
+     * Get wallpapers by the matching the [Wallpaper.folderUriHashcode]
      * with the specified [uriHashcode]
      */
     @Query("SELECT * FROM wallpapers WHERE uri_hashcode = :uriHashcode")
@@ -80,6 +82,17 @@ interface WallpaperDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(wallpaper: Wallpaper)
 
+    @Transaction
+    fun insertWithConflictHandling(wallpaper: Wallpaper) {
+        val existingWallpaper = getWallpaperByMD5(wallpaper.md5)
+        if (existingWallpaper != null) {
+            wallpaper.md5 += "duplicate"
+            Log.i("WallpaperDao", "Duplicate wallpaper found: ${wallpaper.md5}")
+        }
+
+        insert(wallpaper)
+    }
+
     /**
      * Delete the entire table
      */
@@ -87,7 +100,7 @@ interface WallpaperDao {
     fun nukeTable()
 
     /**
-     * Delete wallpaper by the matching the [Wallpaper.uriHashcode]
+     * Delete wallpaper by the matching the [Wallpaper.folderUriHashcode]
      * with the specified [hashcode]
      */
     @Query("DELETE FROM wallpapers WHERE uri_hashcode = :hashcode")

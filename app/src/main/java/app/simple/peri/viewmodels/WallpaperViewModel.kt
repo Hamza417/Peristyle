@@ -22,13 +22,10 @@ import app.simple.peri.constants.BundleConstants
 import app.simple.peri.database.instances.WallpaperDatabase
 import app.simple.peri.models.Folder
 import app.simple.peri.models.Wallpaper
-import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.preferences.MainPreferences
-import app.simple.peri.utils.BitmapUtils.generatePalette
 import app.simple.peri.utils.CommonUtils.withBooleanScope
 import app.simple.peri.utils.ConditionUtils.invert
 import app.simple.peri.utils.FileUtils.filterDotFiles
-import app.simple.peri.utils.FileUtils.generateMD5
 import app.simple.peri.utils.FileUtils.listCompleteFiles
 import app.simple.peri.utils.FileUtils.listOnlyFirstLevelFiles
 import app.simple.peri.utils.PermissionUtils
@@ -125,8 +122,8 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
                     val pickedDirectory =
                         DocumentFile.fromTreeUri(getApplication(), Uri.parse(storageUri))
                     it.postValue(
-                        pickedDirectory?.findFile(".nomedia")?.exists()?.invert()
-                                ?: false.invert() || pickedDirectory?.name?.startsWith(".") ?: false.invert()
+                            pickedDirectory?.findFile(".nomedia")?.exists()?.invert()
+                                    ?: false.invert() || pickedDirectory?.name?.startsWith(".") ?: false.invert()
                     )
                 }
             }
@@ -223,12 +220,12 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
             withBooleanScope(isWallpaperLoading) {
                 runCatching {
                     alreadyLoaded = WallpaperDatabase.getInstance(
-                        getApplication()
+                            getApplication()
                     )?.wallpaperDao()?.getWallpapers()?.associateBy { it.uri }
                     isDatabaseLoaded.postValue(false)
 
-                    getApplication<Application>().contentResolver.persistedUriPermissions.forEach { uri ->
-                        val pickedDirectory = DocumentFile.fromTreeUri(getApplication(), uri.uri)
+                    getApplication<Application>().contentResolver.persistedUriPermissions.forEach { folder ->
+                        val pickedDirectory = DocumentFile.fromTreeUri(getApplication(), folder.uri)
                         if (pickedDirectory?.exists() == true) {
                             val files = pickedDirectory.getFiles().dotFilter()
                             val total = files.size
@@ -255,8 +252,8 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
                                 try {
                                     if (alreadyLoaded?.containsKey(file.uri.toString()) == false) {
                                         Log.i(TAG, "loadWallpaperImages: loading ${file.uri}")
-                                        val wallpaper = createWallpaperFromFile(file)
-                                        wallpaper.uriHashcode = uri.uri.hashCode()
+                                        val wallpaper = Wallpaper.createWallpaperFromFile(file, getApplication())
+                                        wallpaper.folderUriHashcode = folder.uri.hashCode()
                                         wallpapers.add(wallpaper)
                                         newWallpapersData.postValue(wallpaper)
                                         WallpaperDatabase.getInstance(getApplication())
@@ -265,8 +262,8 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
                                         setFolderLoadingState("$count / $total")
                                     } else {
                                         Log.i(
-                                            TAG,
-                                            "loadWallpaperImages: already loaded ${file.uri}"
+                                                TAG,
+                                                "loadWallpaperImages: already loaded ${file.uri}"
                                         )
                                         updateLoadingStatus(count, total)
                                         setFolderLoadingState("$count / $total")
@@ -294,38 +291,6 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
                 }
             }
         }
-    }
-
-    private fun createWallpaperFromFile(file: DocumentFile): Wallpaper {
-        val wallpaper = Wallpaper().apply {
-            name = file.name
-            uri = file.uri.toString()
-            dateModified = file.lastModified()
-            size = file.length()
-        }
-
-        getApplication<Application>().contentResolver.openInputStream(file.uri)
-            ?.use { inputStream ->
-                val options = BitmapFactory.Options().apply { inJustDecodeBounds = false }
-                val bitmap = BitmapFactory.decodeStream(inputStream, null, options)
-                wallpaper.width = options.outWidth
-                wallpaper.height = options.outHeight
-                wallpaper.prominentColor = bitmap?.generatePalette()?.vibrantSwatch?.rgb ?: 0
-                if (MainComposePreferences.getGenerateMD5().invert()) {
-                    wallpaper.md5 = file.uri.hashCode().toString()
-                }
-                bitmap?.recycle()
-            }
-
-        if (MainComposePreferences.getGenerateMD5()) {
-            getApplication<Application>().contentResolver.openInputStream(file.uri)
-                ?.use { inputStream ->
-                    wallpaper.md5 = inputStream.generateMD5()
-                    Log.i(TAG, "loadWallpaperImages: ${wallpaper.name} - ${wallpaper.md5}")
-                }
-        }
-
-        return wallpaper
     }
 
     private fun updateLoadingStatus(count: Int, total: Int) {
@@ -390,15 +355,15 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
         val lockUri = getFileUri(lockFile)
 
         return arrayListOf(
-            Wallpaper().createFromUri(systemUri.toString(), getApplication()),
-            Wallpaper().createFromUri(lockUri.toString(), getApplication())
+                Wallpaper.createFromUri(systemUri.toString(), getApplication()),
+                Wallpaper.createFromUri(lockUri.toString(), getApplication())
         )
     }
 
     private fun createTempFile(fileName: String): File {
         val file = File(
-            getApplication<Application>().filesDir,
-            fileName.replace("$", System.currentTimeMillis().div(1000).toString())
+                getApplication<Application>().filesDir,
+                fileName.replace("$", System.currentTimeMillis().div(1000).toString())
         )
         if (file.exists()) file.delete()
         return file
@@ -406,7 +371,7 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
 
     private fun getFileUri(file: File): Uri {
         return FileProvider.getUriForFile(
-            getApplication(), "${getApplication<Application>().packageName}.provider", file
+                getApplication(), "${getApplication<Application>().packageName}.provider", file
         )
     }
 
@@ -555,8 +520,8 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
     fun deleteFolder(it: Folder) {
         viewModelScope.launch(Dispatchers.IO) {
             getApplication<Application>().contentResolver.releasePersistableUriPermission(
-                Uri.parse(it.uri),
-                Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                    Uri.parse(it.uri),
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
             )
             val wallpaperDatabase = WallpaperDatabase.getInstance(getApplication())
             val wallpaperDao = wallpaperDatabase?.wallpaperDao()
@@ -595,7 +560,7 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
                 pickedDirectory.findFile(".nomedia")?.delete()
 
                 if (pickedDirectory.findFile(".nomedia") == null
-                    || pickedDirectory.findFile(".nomedia")?.exists() == false
+                        || pickedDirectory.findFile(".nomedia")?.exists() == false
                 ) {
                     isNomediaDirectory.postValue(true)
                     withContext(Dispatchers.Main) {

@@ -7,16 +7,18 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.Parcel
 import android.os.Parcelable
+import android.util.Log
 import androidx.annotation.NonNull
-import androidx.core.net.toUri
 import androidx.documentfile.provider.DocumentFile
-import androidx.palette.graphics.Palette
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.preferences.MainPreferences
+import app.simple.peri.utils.BitmapUtils.generatePalette
+import app.simple.peri.utils.ConditionUtils.invert
 import app.simple.peri.utils.FileUtils.generateMD5
+import app.simple.peri.utils.FileUtils.toUri
 import app.simple.peri.utils.WallpaperSort
 import java.io.Serializable
 
@@ -51,7 +53,7 @@ class Wallpaper() : Comparable<Wallpaper>, Serializable, Parcelable {
     var size: Long = 0
 
     @ColumnInfo(name = "uri_hashcode")
-    var uriHashcode: Int = 0
+    var folderUriHashcode: Int = 0
 
     @ColumnInfo
     var isSelected: Boolean = false
@@ -65,7 +67,7 @@ class Wallpaper() : Comparable<Wallpaper>, Serializable, Parcelable {
         height = parcel.readValue(Int::class.java.classLoader) as? Int
         dateModified = parcel.readLong()
         size = parcel.readLong()
-        uriHashcode = parcel.readInt()
+        folderUriHashcode = parcel.readInt()
         isSelected = parcel.readByte() != 0.toByte()
     }
 
@@ -101,48 +103,12 @@ class Wallpaper() : Comparable<Wallpaper>, Serializable, Parcelable {
         result = 31 * result + isSelected.hashCode()
         result = 31 * result + md5.hashCode()
         result = 31 * result + prominentColor
-        result = 31 * result + uriHashcode
+        result = 31 * result + folderUriHashcode
         return result
     }
 
     fun isNull(): Boolean {
         return name == null || uri.isEmpty() || width == null || height == null
-    }
-
-    /**
-     * Use this method to create a Wallpaper object from a URI only for files
-     * that doesn't exist in the database and are not required to be associated
-     * with a specific folder.
-     *
-     * [uriHashcode] will return null
-     *
-     * @param uri The URI of the file
-     */
-    fun createFromUri(uri: String, context: Context): Wallpaper {
-        val wallpaper = Wallpaper()
-        wallpaper.uri = uri
-        val documentFile = DocumentFile.fromSingleUri(context, Uri.parse(uri))
-        wallpaper.name = documentFile?.name
-        wallpaper.size = documentFile?.length() ?: 0
-        wallpaper.dateModified = documentFile?.lastModified() ?: 0
-
-        context.contentResolver.openInputStream(uri.toUri())?.use { inputStream ->
-            val options = BitmapFactory.Options()
-            options.inJustDecodeBounds = false
-            val bitmap = BitmapFactory.decodeStream(inputStream, null, options)
-            wallpaper.width = options.outWidth
-            wallpaper.height = options.outHeight
-            if (MainComposePreferences.getGenerateMD5()) {
-                wallpaper.md5 = inputStream.generateMD5()
-            } else {
-                wallpaper.md5 = uri.hashCode().toString()
-            }
-            with(bitmap?.let { Palette.from(it).generate() }) {
-                wallpaper.prominentColor = this?.vibrantSwatch?.rgb ?: this?.dominantSwatch?.rgb ?: Color.BLACK
-            }
-        }
-
-        return wallpaper
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -154,7 +120,7 @@ class Wallpaper() : Comparable<Wallpaper>, Serializable, Parcelable {
         parcel.writeValue(height)
         parcel.writeLong(dateModified)
         parcel.writeLong(size)
-        parcel.writeInt(uriHashcode)
+        parcel.writeInt(folderUriHashcode)
         parcel.writeByte(if (isSelected) 1 else 0)
     }
 
@@ -170,6 +136,51 @@ class Wallpaper() : Comparable<Wallpaper>, Serializable, Parcelable {
         override fun newArray(size: Int): Array<Wallpaper?> {
             return arrayOfNulls(size)
         }
-    }
 
+        private const val TAG = "Wallpaper"
+
+        /**
+         * Use this method to create a Wallpaper object from a URI only for files
+         * that doesn't exist in the database and are not required to be associated
+         * with a specific folder.
+         *
+         * [folderUriHashcode] will return null
+         *
+         * @param uri The URI of the file
+         */
+        fun createFromUri(uri: String, context: Context): Wallpaper {
+            val wallpaper = Wallpaper()
+            wallpaper.uri = uri
+            val documentFile = DocumentFile.fromSingleUri(context, Uri.parse(uri))
+            wallpaper.name = documentFile?.name
+            wallpaper.size = documentFile?.length() ?: 0
+            wallpaper.dateModified = documentFile?.lastModified() ?: 0
+
+            context.contentResolver.openInputStream(uri.toUri())?.use { inputStream ->
+                val options = BitmapFactory.Options()
+                options.inJustDecodeBounds = false
+                val bitmap = BitmapFactory.decodeStream(inputStream, null, options)
+                wallpaper.width = options.outWidth
+                wallpaper.height = options.outHeight
+                wallpaper.prominentColor = bitmap?.generatePalette()?.vibrantSwatch?.rgb ?: 0
+
+                if (MainComposePreferences.getGenerateMD5().invert()) {
+                    wallpaper.md5 = uri.hashCode().toString()
+                }
+            }
+
+            if (MainComposePreferences.getGenerateMD5()) {
+                context.contentResolver.openInputStream(uri.toUri())?.use { inputStream ->
+                    wallpaper.md5 = inputStream.generateMD5()
+                    Log.i(TAG, "loadWallpaperImages: ${wallpaper.name} - ${wallpaper.md5}")
+                }
+            }
+
+            return wallpaper
+        }
+
+        fun createWallpaperFromFile(file: DocumentFile, context: Context): Wallpaper {
+            return createFromUri(file.uri.toString(), context)
+        }
+    }
 }

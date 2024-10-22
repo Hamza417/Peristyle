@@ -71,8 +71,8 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
         val lockUri = getFileUri(lockFile)
 
         return arrayListOf(
-                Wallpaper().createFromUri(systemUri.toString(), getApplication()),
-                Wallpaper().createFromUri(lockUri.toString(), getApplication()),
+                Wallpaper.createFromUri(systemUri.toString(), getApplication()),
+                Wallpaper.createFromUri(lockUri.toString(), getApplication()),
                 getRandomWallpaperFromDatabase()
         )
     }

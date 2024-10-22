@@ -155,9 +155,9 @@ class TagsViewModel(application: Application, private val md5: String? = null, p
     }
 
     private fun postNewWallpaper(documentFile: DocumentFile, previousWallpaper: Wallpaper): Wallpaper {
-        val wallpaper = Wallpaper().createFromUri(documentFile.uri.toString(), getApplication())
+        val wallpaper = Wallpaper.createFromUri(documentFile.uri.toString(), getApplication())
         wallpaper.md5 = previousWallpaper.md5
-        wallpaper.uriHashcode = previousWallpaper.uriHashcode
+        wallpaper.folderUriHashcode = previousWallpaper.folderUriHashcode
         wallpaper.dateModified = previousWallpaper.dateModified
         val wallpaperDatabase = WallpaperDatabase.getInstance(getApplication())
         val wallpaperDao = wallpaperDatabase?.wallpaperDao()
