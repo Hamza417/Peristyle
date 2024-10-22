@@ -13,11 +13,11 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import app.simple.peri.BuildConfig
 import app.simple.peri.database.instances.WallpaperDatabase
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.utils.ConditionUtils.invert
 import app.simple.peri.utils.PermissionUtils
+import id.zelory.compressor.BuildConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
@@ -118,7 +118,7 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
 
     fun startPostingRandomWallpaper() {
         stopPostingRandomWallpaper()
-        handler.postDelayed(randomWallpaperRepeatRunnable, 10000)
+        handler.postDelayed(randomWallpaperRepeatRunnable, RANDOM_WALLPAPER_DELAY)
     }
 
     override fun onCleared() {
@@ -129,5 +129,6 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
     companion object {
         private const val SYSTEM_WALLPAPER = "system_wallpaper_$.png"
         private const val LOCK_WALLPAPER = "lock_wallpaper_$.png"
+        private const val RANDOM_WALLPAPER_DELAY = 30L * 1000L // 30 seconds
     }
 }
