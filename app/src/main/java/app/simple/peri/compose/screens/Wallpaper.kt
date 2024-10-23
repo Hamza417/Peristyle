@@ -252,8 +252,6 @@ fun Wallpaper(context: Context, navController: NavHostController) {
                             append(wallpaper?.height ?: 0)
                             append(", ")
                             append(wallpaper?.size?.toSize() ?: "")
-                            append(System.lineSeparator())
-                            append(wallpaper?.md5 ?: "")
                         },
                         fontWeight = FontWeight.Light,
                         color = Color.White,
