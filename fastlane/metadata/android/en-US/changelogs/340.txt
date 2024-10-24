@@ -1,0 +1,7 @@
+- Added a random wallpaper page on home screen
+- Added crossfade animation to all image thumbnails
+- Added a proper clear cache dialog
+- Added realtime database updates.
+    - Images will load in realtime in the lists
+- Fix header wrapping the long text even with available space
+- Minor fixes
