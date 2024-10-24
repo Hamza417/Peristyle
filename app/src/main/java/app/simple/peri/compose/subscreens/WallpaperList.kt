@@ -74,12 +74,10 @@ fun WallpaperList(navController: NavController? = null) {
         var showPleaseWaitDialog by remember { mutableStateOf(false) }
         val hazeState = remember { HazeState() }
 
-        statusBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
-                LocalView.current.rootWindowInsets
-        ).getInsets(WindowInsetsCompat.Type.statusBars()).top
-        navigationBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
-                LocalView.current.rootWindowInsets
-        ).getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
+        statusBarHeight = WindowInsetsCompat.toWindowInsetsCompat(LocalView.current.rootWindowInsets)
+            .getInsets(WindowInsetsCompat.Type.statusBars()).top
+        navigationBarHeight = WindowInsetsCompat.toWindowInsetsCompat(LocalView.current.rootWindowInsets)
+            .getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
 
         val statusBarHeightPx = statusBarHeight
         val statusBarHeightDp = with(LocalDensity.current) { statusBarHeightPx.toDp() }
@@ -97,6 +95,8 @@ fun WallpaperList(navController: NavController? = null) {
 
         Box(
                 modifier = Modifier.fillMaxSize()
+                // Uncomment this line if blurring is needed
+                // .then(if (showPleaseWaitDialog) Modifier.blur(8.dp) else Modifier)
         ) {
             LazyVerticalGrid(
                     columns = GridCells.Fixed(MainComposePreferences.getGridSpanCount()),

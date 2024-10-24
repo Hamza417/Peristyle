@@ -101,11 +101,15 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
     private val randomWallpaperRepeatRunnable = Runnable {
         if (BuildConfig.DEBUG.invert()) {
             viewModelScope.launch(Dispatchers.Default) {
-                systemWallpaperData.postValue(systemWallpaperData.value?.apply {
-                    this[2] = getRandomWallpaperFromDatabase()
-                })
+                if (BuildConfig.DEBUG.invert()) {
+                    systemWallpaperData.postValue(systemWallpaperData.value?.apply {
+                        this[2] = getRandomWallpaperFromDatabase()
+                    })
 
-                Log.i("HomeScreenViewModel", "Posting random wallpaper")
+                    Log.i("HomeScreenViewModel", "Posting random wallpaper")
+                } else {
+                    Log.i("HomeScreenViewModel", "Skipping posting random wallpaper")
+                }
             }
         }
 

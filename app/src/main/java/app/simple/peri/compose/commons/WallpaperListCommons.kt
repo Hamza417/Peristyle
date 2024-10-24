@@ -99,14 +99,14 @@ import kotlinx.coroutines.withContext
 @OptIn(ExperimentalGlideComposeApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun WallpaperItem(
-    wallpaper: Wallpaper,
-    navController: NavController? = null,
-    onDelete: (Wallpaper) -> Unit,
-    onCompress: () -> Unit,
-    onReduceResolution: () -> Unit,
-    isSelectionMode: Boolean,
-    wallpaperListViewModel: WallpaperListViewModel,
-    list: List<Wallpaper>
+        wallpaper: Wallpaper,
+        navController: NavController? = null,
+        onDelete: (Wallpaper) -> Unit,
+        onCompress: () -> Unit,
+        onReduceResolution: () -> Unit,
+        isSelectionMode: Boolean,
+        wallpaperListViewModel: WallpaperListViewModel,
+        list: List<Wallpaper>
 ) {
     val hazeState = remember { HazeState() }
     var showDialog by remember { mutableStateOf(false) }
@@ -120,31 +120,31 @@ fun WallpaperItem(
 
     val aspectRatio by remember {
         mutableFloatStateOf(
-            if (!(displayWidth.toFloat() / displayHeight.toFloat()).isNaN()) {
-                displayWidth.toFloat() / displayHeight.toFloat()
-            } else {
-                16f / 9f
-            }
+                if (!(displayWidth.toFloat() / displayHeight.toFloat()).isNaN()) {
+                    displayWidth.toFloat() / displayHeight.toFloat()
+                } else {
+                    16f / 9f
+                }
         )
     }
 
     if (showDialog) {
         WallpaperMenu({
-            showDialog = it
-        }, wallpaper,
-            onDelete = onDelete,
-            onSelect = {
-                wallpaper.isSelected = wallpaper.isSelected.not()
-                isSelected = wallpaper.isSelected
-                wallpaperListViewModel.setSelectionMode(list.any { it.isSelected })
-                wallpaperListViewModel.setSelectedWallpapers(list.count { it.isSelected })
-            },
-            onCompress = {
-                onCompress()
-            },
-            onReduceResolution = {
-                onReduceResolution()
-            })
+                          showDialog = it
+                      }, wallpaper,
+                      onDelete = onDelete,
+                      onSelect = {
+                          wallpaper.isSelected = wallpaper.isSelected.not()
+                          isSelected = wallpaper.isSelected
+                          wallpaperListViewModel.setSelectionMode(list.any { it.isSelected })
+                          wallpaperListViewModel.setSelectedWallpapers(list.count { it.isSelected })
+                      },
+                      onCompress = {
+                          onCompress()
+                      },
+                      onReduceResolution = {
+                          onReduceResolution()
+                      })
     }
 
     Box {
@@ -152,20 +152,20 @@ fun WallpaperItem(
 
         if (imageShadow) {
             GlideImage(
-                model = wallpaper.uri.toUri(),
-                contentDescription = null,
-                transition = CrossFade,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight()
-                    .padding(16.dp)
-                    .blur(30.dp, edgeTreatment = BlurredEdgeTreatment.Unbounded)
-                    .alpha(0.5f)
-                    .graphicsLayer {
-                        clip = false
-                    }
-                    .align(Alignment.BottomCenter),
-                alignment = Alignment.BottomCenter,
+                    model = wallpaper.uri.toUri(),
+                    contentDescription = null,
+                    transition = CrossFade,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                        .padding(16.dp)
+                        .blur(30.dp, edgeTreatment = BlurredEdgeTreatment.Unbounded)
+                        .alpha(0.5f)
+                        .graphicsLayer {
+                            clip = false
+                        }
+                        .align(Alignment.BottomCenter),
+                    alignment = Alignment.BottomCenter,
             ) {
                 it.override(512, 512)
                     .transition(withCrossFade())
@@ -175,73 +175,73 @@ fun WallpaperItem(
         }
 
         ElevatedCard(
-            elevation = CardDefaults.cardElevation(
-                defaultElevation = if (imageShadow) 24.dp else 0.dp,
-            ),
-            modifier = Modifier
-                .aspectRatio(aspectRatio)
-                .padding(
-                    start = 8.dp,
-                    bottom = if (imageShadow) 35.dp else 8.dp,
-                    end = 8.dp,
-                    top = 8.dp
-                )
-                .shadow(
-                    if (imageShadow) 0.dp else 24.dp,
-                    shape = RoundedCornerShape(16.dp),
-                    clip = false,
-                    spotColor = Color(wallpaper.prominentColor),
-                    ambientColor = Color(wallpaper.prominentColor)
-                )
-                .combinedClickable(
-                    onClick = {
-                        if (isSelectionMode) {
-                            wallpaper.isSelected = wallpaper.isSelected.not()
-                            isSelected = wallpaper.isSelected
-                            wallpaperListViewModel.setSelectionMode(list.any { it.isSelected })
-                            wallpaperListViewModel.setSelectedWallpapers(list.count { it.isSelected })
-                        } else {
-                            navController?.navigate(Routes.WALLPAPER) {
-                                navController.currentBackStackEntry
-                                    ?.savedStateHandle?.set(Routes.WALLPAPER_ARG, wallpaper)
-                            }
-                        }
-                    },
-                    onLongClick = {
-                        showDialog = true
-                    }
+                elevation = CardDefaults.cardElevation(
+                        defaultElevation = if (imageShadow) 24.dp else 0.dp,
                 ),
-            shape = RoundedCornerShape(16.dp),
+                modifier = Modifier
+                    .aspectRatio(aspectRatio)
+                    .padding(
+                            start = 8.dp,
+                            bottom = if (imageShadow) 35.dp else 8.dp,
+                            end = 8.dp,
+                            top = 8.dp
+                    )
+                    .shadow(
+                            if (imageShadow) 0.dp else 24.dp,
+                            shape = RoundedCornerShape(16.dp),
+                            clip = false,
+                            spotColor = Color(wallpaper.prominentColor),
+                            ambientColor = Color(wallpaper.prominentColor)
+                    )
+                    .combinedClickable(
+                            onClick = {
+                                if (isSelectionMode) {
+                                    wallpaper.isSelected = wallpaper.isSelected.not()
+                                    isSelected = wallpaper.isSelected
+                                    wallpaperListViewModel.setSelectionMode(list.any { it.isSelected })
+                                    wallpaperListViewModel.setSelectedWallpapers(list.count { it.isSelected })
+                                } else {
+                                    navController?.navigate(Routes.WALLPAPER) {
+                                        navController.currentBackStackEntry
+                                            ?.savedStateHandle?.set(Routes.WALLPAPER_ARG, wallpaper)
+                                    }
+                                }
+                            },
+                            onLongClick = {
+                                showDialog = true
+                            }
+                    ),
+                shape = RoundedCornerShape(16.dp),
         ) {
             Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center,
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center,
             ) {
                 GlideImage(
-                    model = wallpaper.uri.toUri(),
-                    contentDescription = null,
-                    transition = CrossFade,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .haze(hazeState),
-                    alignment = Alignment.Center,
+                        model = wallpaper.uri.toUri(),
+                        contentDescription = null,
+                        transition = CrossFade,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .haze(hazeState),
+                        alignment = Alignment.Center,
                 ) {
                     it.addListener(object : RequestListener<Drawable> {
                         override fun onLoadFailed(
-                            e: GlideException?,
-                            model: Any?,
-                            target: Target<Drawable>,
-                            isFirstResource: Boolean
+                                e: GlideException?,
+                                model: Any?,
+                                target: Target<Drawable>,
+                                isFirstResource: Boolean
                         ): Boolean {
                             return false
                         }
 
                         override fun onResourceReady(
-                            resource: Drawable,
-                            model: Any,
-                            target: Target<Drawable>?,
-                            dataSource: DataSource,
-                            isFirstResource: Boolean
+                                resource: Drawable,
+                                model: Any,
+                                target: Target<Drawable>?,
+                                dataSource: DataSource,
+                                isFirstResource: Boolean
                         ): Boolean {
                             return false
                         }
@@ -252,29 +252,29 @@ fun WallpaperItem(
                 }
 
                 Column(
-                    modifier = Modifier
-                        .wrapContentHeight()
-                        .fillMaxWidth()
-                        .hazeChild(
-                            state = hazeState,
-                            style = HazeDefaults.style(
-                                backgroundColor = Color(0x50000000),
-                                blurRadius = 5.dp
+                        modifier = Modifier
+                            .wrapContentHeight()
+                            .fillMaxWidth()
+                            .hazeChild(
+                                    state = hazeState,
+                                    style = HazeDefaults.style(
+                                            backgroundColor = Color(0x50000000),
+                                            blurRadius = 5.dp
+                                    )
                             )
-                        )
-                        .align(Alignment.BottomCenter)
+                            .align(Alignment.BottomCenter)
                 ) {
                     Text(
-                        text = wallpaper.name ?: "",
-                        modifier = Modifier
-                            .padding(start = 16.dp, top = 16.dp, end = 16.dp),
-                        textAlign = TextAlign.Start,
-                        fontSize = 18.sp, // Set the font size
-                        fontWeight = FontWeight.Bold, // Make the text bold
-                        color = Color.White, // Set the text color
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        softWrap = false,
+                            text = wallpaper.name ?: "",
+                            modifier = Modifier
+                                .padding(start = 16.dp, top = 16.dp, end = 16.dp),
+                            textAlign = TextAlign.Start,
+                            fontSize = 18.sp, // Set the font size
+                            fontWeight = FontWeight.Bold, // Make the text bold
+                            color = Color.White, // Set the text color
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            softWrap = false,
                     )
 
                     WallpaperDimensionsText(wallpaper, displayWidth, displayHeight, isSelected)
@@ -286,25 +286,25 @@ fun WallpaperItem(
 
 @Composable
 fun WallpaperDimensionsText(
-    wallpaper: Wallpaper,
-    displayWidth: Int,
-    displayHeight: Int,
-    isSelected: Boolean
+        wallpaper: Wallpaper,
+        displayWidth: Int,
+        displayHeight: Int,
+        isSelected: Boolean
 ) {
     val showWarningIndicator = remember { MainComposePreferences.getShowWarningIndicator() }
 
     Row(
-        modifier = Modifier
-            .padding(start = 16.dp, top = 4.dp, bottom = 16.dp, end = 16.dp),
-        verticalAlignment = Alignment.CenterVertically
+            modifier = Modifier
+                .padding(start = 16.dp, top = 4.dp, bottom = 16.dp, end = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = "${wallpaper.width ?: 0}x${wallpaper.height ?: 0}, ${wallpaper.size.toSize()}",
-            textAlign = TextAlign.Start,
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Light,
-            color = Color.White,
-            modifier = Modifier.weight(1f)
+                text = "${wallpaper.width ?: 0}x${wallpaper.height ?: 0}, ${wallpaper.size.toSize()}",
+                textAlign = TextAlign.Start,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Light,
+                color = Color.White,
+                modifier = Modifier.weight(1f)
         )
 
         if (showWarningIndicator) {
@@ -312,20 +312,20 @@ fun WallpaperDimensionsText(
                 (wallpaper.width ?: 0) > displayWidth || (wallpaper.height
                     ?: 0) > displayHeight -> {
                     Icon(
-                        imageVector = Icons.Rounded.Warning,
-                        contentDescription = null,
-                        tint = Color.LightGray,
-                        modifier = Modifier.size(16.dp)
+                            imageVector = Icons.Rounded.Warning,
+                            contentDescription = null,
+                            tint = Color.LightGray,
+                            modifier = Modifier.size(16.dp)
                     )
                 }
 
                 (wallpaper.width ?: 0) < displayWidth || (wallpaper.height
                     ?: 0) < displayHeight -> {
                     Icon(
-                        imageVector = Icons.Rounded.Warning,
-                        contentDescription = null,
-                        tint = Color.Red,
-                        modifier = Modifier.size(16.dp)
+                            imageVector = Icons.Rounded.Warning,
+                            contentDescription = null,
+                            tint = Color.Red,
+                            modifier = Modifier.size(16.dp)
                     )
                 }
 
@@ -339,11 +339,11 @@ fun WallpaperDimensionsText(
             Spacer(modifier = Modifier.width(8.dp))
 
             Icon(
-                imageVector = Icons.Rounded.Check,
-                contentDescription = null,
-                tint = Color.White,
-                modifier = Modifier
-                    .size(16.dp),
+                    imageVector = Icons.Rounded.Check,
+                    contentDescription = null,
+                    tint = Color.White,
+                    modifier = Modifier
+                        .size(16.dp),
             )
         }
     }
@@ -351,11 +351,11 @@ fun WallpaperDimensionsText(
 
 @Composable
 fun SelectionMenu(
-    modifier: Modifier = Modifier,
-    list: List<Wallpaper>,
-    count: Int = list.count { it.isSelected },
-    hazeState: HazeState,
-    wallpaperListViewModel: WallpaperListViewModel
+        modifier: Modifier = Modifier,
+        list: List<Wallpaper>,
+        count: Int = list.count { it.isSelected },
+        hazeState: HazeState,
+        wallpaperListViewModel: WallpaperListViewModel
 ) {
 
     val context = LocalContext.current
@@ -364,96 +364,96 @@ fun SelectionMenu(
 
     if (showDeleteSureDialog) {
         SureDialog(title = stringResource(R.string.delete),
-            text = stringResource(R.string.delete_message, list.count { it.isSelected }),
-            onConfirm = {
-                // Delete the selected wallpapers
-                showDeleteSureDialog = false
-                wallpaperListViewModel.deleteSelectedWallpapers(list.toMutableList())
-            },
-            onDismiss = {
-                showDeleteSureDialog = false
-            }
+                   text = stringResource(R.string.delete_message, list.count { it.isSelected }),
+                   onConfirm = {
+                       // Delete the selected wallpapers
+                       showDeleteSureDialog = false
+                       wallpaperListViewModel.deleteSelectedWallpapers(list.toMutableList())
+                   },
+                   onDismiss = {
+                       showDeleteSureDialog = false
+                   }
         )
     }
 
     Card(
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 0.dp,
-        ),
-        modifier = modifier
-            .wrapContentHeight()
-            .padding(32.dp)
-            .clip(RoundedCornerShape(32.dp))
-            .hazeChild(
-                state = hazeState,
-                style = HazeDefaults.style(backgroundColor = Color(0x65000000), blurRadius = 15.dp)
+            elevation = CardDefaults.cardElevation(
+                    defaultElevation = 0.dp,
             ),
-        colors = CardDefaults.cardColors(
-            containerColor = Color.Transparent,
-        ),
-        shape = RoundedCornerShape(48.dp),
+            modifier = modifier
+                .wrapContentHeight()
+                .padding(32.dp)
+                .clip(RoundedCornerShape(32.dp))
+                .hazeChild(
+                        state = hazeState,
+                        style = HazeDefaults.style(backgroundColor = Color(0x65000000), blurRadius = 15.dp)
+                ),
+            colors = CardDefaults.cardColors(
+                    containerColor = Color.Transparent,
+            ),
+            shape = RoundedCornerShape(48.dp),
     ) {
         Row {
             IconButton(
-                onClick = {
-                    showDeleteSureDialog = true
-                },
-                modifier = Modifier
-                    .size(iconSize)
+                    onClick = {
+                        showDeleteSureDialog = true
+                    },
+                    modifier = Modifier
+                        .size(iconSize)
             ) {
                 Icon(
-                    imageVector = Icons.Rounded.Delete,
-                    contentDescription = null,
-                    tint = Color.White
+                        imageVector = Icons.Rounded.Delete,
+                        contentDescription = null,
+                        tint = Color.White
                 )
             }
             IconButton(
-                onClick = {
-                    val filesUri = list.filter { it.isSelected }.map { it.uri.toUri() }
-                    val intent = Intent(Intent.ACTION_SEND_MULTIPLE)
-                    intent.type = "image/*"
-                    intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, ArrayList(filesUri))
-                    context.startActivity(Intent.createChooser(intent, "Share Wallpapers"))
-                },
-                modifier = Modifier
-                    .size(iconSize)
+                    onClick = {
+                        val filesUri = list.filter { it.isSelected }.map { it.uri.toUri() }
+                        val intent = Intent(Intent.ACTION_SEND_MULTIPLE)
+                        intent.type = "image/*"
+                        intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, ArrayList(filesUri))
+                        context.startActivity(Intent.createChooser(intent, "Share Wallpapers"))
+                    },
+                    modifier = Modifier
+                        .size(iconSize)
             ) {
                 Icon(
-                    imageVector = Icons.Rounded.Share,
-                    contentDescription = null,
-                    tint = Color.White
+                        imageVector = Icons.Rounded.Share,
+                        contentDescription = null,
+                        tint = Color.White
                 )
             }
             VerticalDivider(
-                modifier = Modifier
-                    .width(1.dp)
-                    .height(iconSize),
-                color = Color.White
+                    modifier = Modifier
+                        .width(1.dp)
+                        .height(iconSize),
+                    color = Color.White
             )
             Text(
-                text = count.toString(),
-                color = Color.White,
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier
-                    .padding(start = 24.dp)
-                    .align(Alignment.CenterVertically)
+                    text = count.toString(),
+                    color = Color.White,
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .padding(start = 24.dp)
+                        .align(Alignment.CenterVertically)
             )
             IconButton(
-                onClick = {
-                    list.forEach {
-                        it.isSelected = false
-                    }
-                    wallpaperListViewModel.setSelectionMode(false)
-                    wallpaperListViewModel.setSelectedWallpapers(0)
-                },
-                modifier = Modifier
-                    .size(iconSize)
+                    onClick = {
+                        list.forEach {
+                            it.isSelected = false
+                        }
+                        wallpaperListViewModel.setSelectionMode(false)
+                        wallpaperListViewModel.setSelectedWallpapers(0)
+                    },
+                    modifier = Modifier
+                        .size(iconSize)
             ) {
                 Icon(
-                    imageVector = Icons.Rounded.Close,
-                    contentDescription = null,
-                    tint = Color.White
+                        imageVector = Icons.Rounded.Close,
+                        contentDescription = null,
+                        tint = Color.White
                 )
             }
         }
@@ -462,220 +462,220 @@ fun SelectionMenu(
 
 @Composable
 fun WallpaperMenu(
-    setShowDialog: (Boolean) -> Unit,
-    wallpaper: Wallpaper,
-    onDelete: (Wallpaper) -> Unit,
-    onSelect: () -> Unit = {},
-    onAddTag: () -> Unit = {},
-    onCompress: () -> Unit = {},
-    onReduceResolution: () -> Unit = {}
+        setShowDialog: (Boolean) -> Unit,
+        wallpaper: Wallpaper,
+        onDelete: (Wallpaper) -> Unit,
+        onSelect: () -> Unit = {},
+        onAddTag: () -> Unit = {},
+        onCompress: () -> Unit = {},
+        onReduceResolution: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val tagsViewModel: TagsViewModel = viewModel(
-        factory = TagsViewModelFactory()
+            factory = TagsViewModelFactory()
     )
     val wallpaperViewModel: WallpaperViewModel = viewModel()
     val showTagDialog = remember { mutableStateOf(false) }
 
     if (showTagDialog.value) {
         AddTagDialog(
-            onDismiss = { showTagDialog.value = false },
-            onAdd = { tagName ->
-                tagsViewModel.addTag(tagName, wallpaper)
-                showTagDialog.value = false
-            }
+                onDismiss = { showTagDialog.value = false },
+                onAdd = { tagName ->
+                    tagsViewModel.addTag(tagName, wallpaper)
+                    showTagDialog.value = false
+                }
         )
     }
 
     AlertDialog(
-        onDismissRequest = { setShowDialog(false) },
-        title = {
-            Text(
-                text = wallpaper.name ?: "",
-                style = TextStyle(
-                    fontFamily = FontFamily.SansSerif,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = DIALOG_TITLE_FONT_SIZE
+            onDismissRequest = { setShowDialog(false) },
+            title = {
+                Text(
+                        text = wallpaper.name ?: "",
+                        style = TextStyle(
+                                fontFamily = FontFamily.SansSerif,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = DIALOG_TITLE_FONT_SIZE
+                        )
                 )
-            )
-        },
-        text = {
-            Box(
-                contentAlignment = Alignment.Center
-            ) {
-                Column {
-                    Button(
-                        onClick = {
-                            ShareCompat.IntentBuilder(context)
-                                .setType("image/*")
-                                .setChooserTitle("Share Wallpaper")
-                                .setStream(wallpaper.uri.toUri())
-                                .startChooser()
-                        },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
-                        shape = RoundedCornerShape(12.dp),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                    ) {
-                        Text(
-                            text = context.getString(R.string.send),
-                            color = MaterialTheme.colorScheme.onSurface,
-                            fontSize = DIALOG_OPTION_FONT_SIZE,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(5.dp))
-
-                    Button(
-                        onClick = {
-                            coroutineScope.launch(Dispatchers.IO) {
-                                if (DocumentFile.fromSingleUri(context, wallpaper.uri.toUri())
-                                        ?.delete() == true
-                                ) {
-                                    withContext(Dispatchers.Main) {
-                                        wallpaperViewModel.removeWallpaper(wallpaper)
-                                        onDelete(wallpaper)
-                                        setShowDialog(false)
-                                    }
-                                }
-                            }
-                        },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
-                        shape = RoundedCornerShape(12.dp),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                    ) {
-                        Text(
-                            text = context.getString(R.string.delete),
-                            color = MaterialTheme.colorScheme.onSurface,
-                            fontSize = DIALOG_OPTION_FONT_SIZE,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(5.dp))
-
-                    Button(
-                        onClick = {
-                            showTagDialog.value = true
-                        },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
-                        shape = RoundedCornerShape(12.dp),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                    ) {
-                        Text(
-                            text = context.getString(R.string.add_tag),
-                            color = MaterialTheme.colorScheme.onSurface,
-                            fontSize = DIALOG_OPTION_FONT_SIZE,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(5.dp))
-
-                    Button(
-                        onClick = {
-                            val intent = Intent(Intent.ACTION_EDIT)
-                            intent.setDataAndType(wallpaper.uri.toUri(), "image/*")
-                            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                            context.startActivity(
-                                Intent.createChooser(
-                                    intent,
-                                    context.getString(R.string.edit)
-                                )
+            },
+            text = {
+                Box(
+                        contentAlignment = Alignment.Center
+                ) {
+                    Column {
+                        Button(
+                                onClick = {
+                                    ShareCompat.IntentBuilder(context)
+                                        .setType("image/*")
+                                        .setChooserTitle("Share Wallpaper")
+                                        .setStream(wallpaper.uri.toUri())
+                                        .startChooser()
+                                },
+                                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                                shape = RoundedCornerShape(12.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                        ) {
+                            Text(
+                                    text = context.getString(R.string.send),
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    fontSize = DIALOG_OPTION_FONT_SIZE,
+                                    fontWeight = FontWeight.SemiBold
                             )
-                            setShowDialog(false)
-                        },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
-                        shape = RoundedCornerShape(12.dp),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                    ) {
-                        Text(
-                            text = context.getString(R.string.edit),
-                            color = MaterialTheme.colorScheme.onSurface,
-                            fontSize = DIALOG_OPTION_FONT_SIZE,
-                            fontWeight = FontWeight.SemiBold
+                        }
+
+                        Spacer(modifier = Modifier.height(5.dp))
+
+                        Button(
+                                onClick = {
+                                    coroutineScope.launch(Dispatchers.IO) {
+                                        if (DocumentFile.fromSingleUri(context, wallpaper.uri.toUri())
+                                                    ?.delete() == true
+                                        ) {
+                                            withContext(Dispatchers.Main) {
+                                                wallpaperViewModel.removeWallpaper(wallpaper)
+                                                onDelete(wallpaper)
+                                                setShowDialog(false)
+                                            }
+                                        }
+                                    }
+                                },
+                                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                                shape = RoundedCornerShape(12.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                        ) {
+                            Text(
+                                    text = context.getString(R.string.delete),
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    fontSize = DIALOG_OPTION_FONT_SIZE,
+                                    fontWeight = FontWeight.SemiBold
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(5.dp))
+
+                        Button(
+                                onClick = {
+                                    showTagDialog.value = true
+                                },
+                                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                                shape = RoundedCornerShape(12.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                        ) {
+                            Text(
+                                    text = context.getString(R.string.add_tag),
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    fontSize = DIALOG_OPTION_FONT_SIZE,
+                                    fontWeight = FontWeight.SemiBold
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(5.dp))
+
+                        Button(
+                                onClick = {
+                                    val intent = Intent(Intent.ACTION_EDIT)
+                                    intent.setDataAndType(wallpaper.uri.toUri(), "image/*")
+                                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                    context.startActivity(
+                                            Intent.createChooser(
+                                                    intent,
+                                                    context.getString(R.string.edit)
+                                            )
+                                    )
+                                    setShowDialog(false)
+                                },
+                                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                                shape = RoundedCornerShape(12.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                        ) {
+                            Text(
+                                    text = context.getString(R.string.edit),
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    fontSize = DIALOG_OPTION_FONT_SIZE,
+                                    fontWeight = FontWeight.SemiBold
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(5.dp))
+
+                        Button(
+                                onClick = {
+                                    onSelect()
+                                    setShowDialog(false)
+                                },
+                                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                                shape = RoundedCornerShape(12.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                        ) {
+                            Text(
+                                    text = context.getString(R.string.select),
+                                    fontSize = DIALOG_OPTION_FONT_SIZE,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+
+                        HorizontalDivider(
+                                modifier = Modifier
+                                    .padding(top = 5.dp, bottom = 5.dp)
+                                    .fillMaxWidth()
                         )
-                    }
 
-                    Spacer(modifier = Modifier.height(5.dp))
+                        Button(
+                                onClick = {
+                                    onCompress()
+                                    setShowDialog(false)
+                                },
+                                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                                shape = RoundedCornerShape(12.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                        ) {
+                            Text(
+                                    text = context.getString(R.string.compress),
+                                    fontSize = DIALOG_OPTION_FONT_SIZE,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
 
-                    Button(
-                        onClick = {
-                            onSelect()
-                            setShowDialog(false)
-                        },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
-                        shape = RoundedCornerShape(12.dp),
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                    ) {
-                        Text(
-                            text = context.getString(R.string.select),
-                            fontSize = DIALOG_OPTION_FONT_SIZE,
-                            fontWeight = FontWeight.SemiBold,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                    }
+                        Spacer(modifier = Modifier.height(5.dp))
 
-                    HorizontalDivider(
-                        modifier = Modifier
-                            .padding(top = 5.dp, bottom = 5.dp)
-                            .fillMaxWidth()
-                    )
-
-                    Button(
-                        onClick = {
-                            onCompress()
-                            setShowDialog(false)
-                        },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
-                        shape = RoundedCornerShape(12.dp),
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                    ) {
-                        Text(
-                            text = context.getString(R.string.compress),
-                            fontSize = DIALOG_OPTION_FONT_SIZE,
-                            fontWeight = FontWeight.SemiBold,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(5.dp))
-
-                    Button(
-                        onClick = {
-                            onReduceResolution()
-                            setShowDialog(false)
-                        },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
-                        shape = RoundedCornerShape(12.dp),
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                    ) {
-                        Text(
-                            text = context.getString(R.string.reduce_resolution),
-                            fontSize = DIALOG_OPTION_FONT_SIZE,
-                            fontWeight = FontWeight.SemiBold,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
+                        Button(
+                                onClick = {
+                                    onReduceResolution()
+                                    setShowDialog(false)
+                                },
+                                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                                shape = RoundedCornerShape(12.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                        ) {
+                            Text(
+                                    text = context.getString(R.string.reduce_resolution),
+                                    fontSize = DIALOG_OPTION_FONT_SIZE,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
                     }
                 }
-            }
-        },
-        confirmButton = {
-            Button(
-                onClick = { setShowDialog(false) },
-            ) {
-                Text(
-                    text = stringResource(R.string.close),
-                )
-            }
-        },
+            },
+            confirmButton = {
+                Button(
+                        onClick = { setShowDialog(false) },
+                ) {
+                    Text(
+                            text = stringResource(R.string.close),
+                    )
+                }
+            },
     )
 }
