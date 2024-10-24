@@ -108,7 +108,7 @@ fun BottomHeader(title: String,
                         ambientColor = MaterialTheme.colorScheme.surfaceVariant)
                 .hazeChild(
                         state = hazeState,
-                        style = HazeMaterials.ultraThin()
+                        style = HazeMaterials.thin()
                 ),
             verticalAlignment = Alignment.CenterVertically,
     ) {

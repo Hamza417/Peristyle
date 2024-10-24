@@ -4,6 +4,7 @@ import android.content.Intent
 import android.graphics.drawable.Drawable
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -93,6 +94,8 @@ import dev.chrisbanes.haze.HazeDefaults
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.hazeChild
+import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
+import dev.chrisbanes.haze.materials.HazeMaterials
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -350,6 +353,7 @@ fun WallpaperDimensionsText(
     }
 }
 
+@OptIn(ExperimentalHazeMaterialsApi::class)
 @Composable
 fun SelectionMenu(
         modifier: Modifier = Modifier,
@@ -361,7 +365,7 @@ fun SelectionMenu(
 ) {
 
     val context = LocalContext.current
-    val iconSize = 72.dp
+    val iconSize = 56.dp
     var showDeleteSureDialog by remember { mutableStateOf(false) }
 
     if (showDeleteSureDialog) {
@@ -384,19 +388,21 @@ fun SelectionMenu(
             ),
             modifier = modifier
                 .wrapContentHeight()
-                .padding(32.dp)
+                .padding(16.dp)
                 .padding(bottom = navigationBarHeight)
-                .clip(RoundedCornerShape(32.dp))
+                .clip(RoundedCornerShape(16.dp))
                 .hazeChild(
                         state = hazeState,
-                        style = HazeDefaults.style(backgroundColor = Color(0x65000000), blurRadius = 15.dp)
+                        style = HazeMaterials.thin()
                 ),
             colors = CardDefaults.cardColors(
                     containerColor = Color.Transparent,
             ),
             shape = RoundedCornerShape(48.dp),
     ) {
-        Row {
+        Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
             IconButton(
                     onClick = {
                         showDeleteSureDialog = true
@@ -407,7 +413,6 @@ fun SelectionMenu(
                 Icon(
                         imageVector = Icons.Rounded.Delete,
                         contentDescription = null,
-                        tint = Color.White
                 )
             }
             IconButton(
@@ -420,26 +425,24 @@ fun SelectionMenu(
                     },
                     modifier = Modifier
                         .size(iconSize)
+                        .padding(end = COMMON_PADDING)
             ) {
                 Icon(
                         imageVector = Icons.Rounded.Share,
                         contentDescription = null,
-                        tint = Color.White
                 )
             }
             VerticalDivider(
                     modifier = Modifier
                         .width(1.dp)
                         .height(iconSize),
-                    color = Color.White
             )
             Text(
                     text = count.toString(),
-                    color = Color.White,
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier
-                        .padding(start = 24.dp)
+                        .padding(start = 24.dp, end = 8.dp)
                         .align(Alignment.CenterVertically)
             )
             IconButton(
@@ -456,7 +459,6 @@ fun SelectionMenu(
                 Icon(
                         imageVector = Icons.Rounded.Close,
                         contentDescription = null,
-                        tint = Color.White
                 )
             }
         }
