@@ -36,3 +36,5 @@ If applicable, add screenshots to help explain your problem.
 
 **Additional context**
 Add any other context about the problem here.
+
+**Warning:** Any bug reports withut proper steps to reporduce the issue and relevent info will be closed/ignored.
