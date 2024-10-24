@@ -194,4 +194,6 @@
     <string name="linear_auto_wallpaper_summary">اختيار الخلفيات بالترتيب الخطي. استخدام هذا المفتاح لتطبيق نفس الخلفية على الشاشتين إذا تم تحديد نفس الوسم أو المجلد.</string>
     <string name="compress">الضغط</string>
     <string name="reduce_resolution">تقليل الدقة</string>
+    <string name="please_wait">الرجاء الانتظار</string>
+    <string name="hide">إخفاء</string>
 </resources>
