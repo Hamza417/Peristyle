@@ -161,9 +161,11 @@ fun WallpaperList(navController: NavController? = null) {
                 SelectionMenu(
                         list = wallpapers,
                         count = selectionCount,
-                        modifier = Modifier.align(Alignment.BottomCenter),
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter),
                         hazeState = hazeState,
-                        wallpaperListViewModel = wallpaperListViewModel
+                        wallpaperListViewModel = wallpaperListViewModel,
+                        navigationBarHeight = bottomPadding
                 )
             }
 

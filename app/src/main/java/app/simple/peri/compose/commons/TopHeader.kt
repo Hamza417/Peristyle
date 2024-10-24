@@ -9,10 +9,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -31,7 +33,11 @@ import dev.chrisbanes.haze.materials.HazeMaterials
 val COMMON_PADDING = 16.dp
 
 @Composable
-fun TopHeader(title: String, modifier: Modifier = Modifier, count: Int = 0, navController: NavController? = null, isSettings: Boolean = false) {
+fun TopHeader(title: String,
+              modifier: Modifier = Modifier,
+              count: Int = 0,
+              navController: NavController? = null,
+              isSettings: Boolean = false) {
     Row(
             modifier = modifier
                 .fillMaxWidth()
@@ -78,7 +84,14 @@ fun TopHeader(title: String, modifier: Modifier = Modifier, count: Int = 0, navC
 
 @OptIn(ExperimentalHazeMaterialsApi::class)
 @Composable
-fun BottomHeader(title: String, modifier: Modifier = Modifier, count: Int = 0, navController: NavController? = null, isSettings: Boolean = false, hazeState: HazeState, navigationBarHeight: Dp, statusBarHeight: Dp) {
+fun BottomHeader(title: String,
+                 modifier: Modifier = Modifier,
+                 count: Int = 0,
+                 navController: NavController? = null,
+                 isSettings: Boolean = false,
+                 hazeState: HazeState,
+                 navigationBarHeight: Dp,
+                 statusBarHeight: Dp) {
 
     val navHeight = if (navigationBarHeight == 0.dp) {
         COMMON_PADDING
@@ -90,6 +103,9 @@ fun BottomHeader(title: String, modifier: Modifier = Modifier, count: Int = 0, n
             modifier = modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
+                .shadow(elevation = 24.dp,
+                        spotColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        ambientColor = MaterialTheme.colorScheme.surfaceVariant)
                 .hazeChild(
                         state = hazeState,
                         style = HazeMaterials.ultraThin()

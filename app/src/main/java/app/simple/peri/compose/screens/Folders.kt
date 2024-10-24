@@ -42,6 +42,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
@@ -58,6 +59,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import app.simple.peri.R
+import app.simple.peri.compose.commons.BottomHeader
 import app.simple.peri.compose.commons.COMMON_PADDING
 import app.simple.peri.compose.commons.RequestDirectoryPermission
 import app.simple.peri.compose.commons.TopHeader
@@ -66,6 +68,7 @@ import app.simple.peri.compose.constants.DIALOG_TITLE_FONT_SIZE
 import app.simple.peri.compose.dialogs.common.ShowWarningDialog
 import app.simple.peri.compose.nav.Routes
 import app.simple.peri.models.Folder
+import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.utils.ConditionUtils.invert
 import app.simple.peri.viewmodels.WallpaperViewModel
 import com.bumptech.glide.integration.compose.CrossFade
@@ -85,6 +88,7 @@ fun Folders(navController: NavController? = null) {
     var statusBarHeight by remember { mutableIntStateOf(0) }
     var navigationBarHeight by remember { mutableIntStateOf(0) }
     val currentLoadingState = wallpaperViewModel.getLoadingImage().collectAsState().value
+    val hazeState = remember { HazeState() }
 
     if (currentLoadingState.isBlank()) {
         Log.i("Folders", "Loading image is blank")
@@ -101,8 +105,14 @@ fun Folders(navController: NavController? = null) {
     val statusBarHeightDp = with(LocalDensity.current) { statusBarHeightPx.toDp() }
     val navigationBarHeightPx = navigationBarHeight
     val navigationBarHeightDp = with(LocalDensity.current) { navigationBarHeightPx.toDp() }
+    var bottomHeaderHeight by remember { mutableStateOf(0.dp) }
+
     val topPadding = 8.dp + statusBarHeightDp
-    val bottomPadding = 8.dp + navigationBarHeightDp
+    val bottomPadding = 8.dp + if (MainComposePreferences.getBottomHeader()) {
+        bottomHeaderHeight
+    } else {
+        navigationBarHeightDp
+    }
 
     if (requestPermission) {
         RequestDirectoryPermission(
@@ -111,70 +121,93 @@ fun Folders(navController: NavController? = null) {
         )
     }
 
-    LazyVerticalStaggeredGrid(
-            columns = StaggeredGridCells.Fixed(2),
-            modifier = Modifier
-                .fillMaxSize(),
-            contentPadding = PaddingValues(
-                    top = topPadding,
-                    start = 8.dp,
-                    end = 8.dp,
-                    bottom = bottomPadding
-            )
-    ) {
-        item(span = StaggeredGridItemSpan.FullLine) {
-            TopHeader(
-                    title = stringResource(R.string.folder),
-                    count = folders.size,
-                    modifier = Modifier.padding(COMMON_PADDING),
-                    navController = navController
-            )
-        }
-        if (currentLoadingState.isBlank().invert()) {
-            item(span = StaggeredGridItemSpan.FullLine) {
-                Text(
-                        text = currentLoadingState,
+    Box {
+        LazyVerticalStaggeredGrid(
+                columns = StaggeredGridCells.Fixed(2),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .haze(state = hazeState),
+                contentPadding = PaddingValues(
+                        top = topPadding,
+                        start = 8.dp,
+                        end = 8.dp,
+                        bottom = bottomPadding
+                )
+        ) {
+            if (MainComposePreferences.getBottomHeader().invert()) {
+                item(span = StaggeredGridItemSpan.FullLine) {
+                    TopHeader(
+                            title = stringResource(R.string.folder),
+                            count = folders.size,
+                            modifier = Modifier.padding(COMMON_PADDING),
+                            navController = navController
+                    )
+                }
+            }
+            if (currentLoadingState.isBlank().invert()) {
+                item(span = StaggeredGridItemSpan.FullLine) {
+                    Text(
+                            text = currentLoadingState,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = 16.dp, bottom = 16.dp, end = 16.dp),
+                            textAlign = TextAlign.Start,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                    )
+                }
+            }
+            items(folders.size) { index ->
+                FolderItem(
+                        folder = folders[index],
+                        navController = navController,
+                        wallpaperViewModel = wallpaperViewModel
+                ) {
+                    wallpaperViewModel.deleteFolder(it)
+                }
+            }
+            item {
+                ElevatedCard(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(start = 16.dp, bottom = 16.dp, end = 16.dp),
-                        textAlign = TextAlign.Start,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                )
+                            .padding(8.dp)
+                            .aspectRatio(displayDimension.getAspectRatio()),
+                        shape = RoundedCornerShape(16.dp),
+                        elevation = CardDefaults.cardElevation(
+                                defaultElevation = 16.dp,
+                                pressedElevation = 0.dp
+                        ),
+                        onClick = { requestPermission = true }
+                ) {
+                    Icon(
+                            imageVector = Icons.Rounded.Add,
+                            contentDescription = "Add folder",
+                            modifier = Modifier.fillMaxSize(),
+                            tint = MaterialTheme.colorScheme.surfaceDim
+                    )
+                }
             }
         }
-        items(folders.size) { index ->
-            FolderItem(
-                    folder = folders[index],
-                    navController = navController,
-                    wallpaperViewModel = wallpaperViewModel
-            ) {
-                wallpaperViewModel.deleteFolder(it)
-            }
-        }
-        item {
-            ElevatedCard(
+
+        if (MainComposePreferences.getBottomHeader()) {
+            val density = LocalDensity.current
+
+            BottomHeader(
+                    title = stringResource(R.string.folder),
+                    count = folders.size,
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp)
-                        .aspectRatio(displayDimension.getAspectRatio()),
-                    shape = RoundedCornerShape(16.dp),
-                    elevation = CardDefaults.cardElevation(
-                            defaultElevation = 16.dp,
-                            pressedElevation = 0.dp
-                    ),
-                    onClick = { requestPermission = true }
-            ) {
-                Icon(
-                        imageVector = Icons.Rounded.Add,
-                        contentDescription = "Add folder",
-                        modifier = Modifier.fillMaxSize(),
-                        tint = MaterialTheme.colorScheme.surfaceDim
-                )
-            }
+                        .align(Alignment.BottomCenter)
+                        .onGloballyPositioned {
+                            bottomHeaderHeight = with(density) { it.size.height.toDp() }
+                        },
+                    navController = navController,
+                    hazeState = hazeState,
+                    navigationBarHeight = navigationBarHeightDp,
+                    statusBarHeight = statusBarHeightDp
+            )
         }
     }
 }

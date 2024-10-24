@@ -60,6 +60,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ShareCompat
@@ -355,7 +356,8 @@ fun SelectionMenu(
         list: List<Wallpaper>,
         count: Int = list.count { it.isSelected },
         hazeState: HazeState,
-        wallpaperListViewModel: WallpaperListViewModel
+        wallpaperListViewModel: WallpaperListViewModel,
+        navigationBarHeight: Dp
 ) {
 
     val context = LocalContext.current
@@ -383,6 +385,7 @@ fun SelectionMenu(
             modifier = modifier
                 .wrapContentHeight()
                 .padding(32.dp)
+                .padding(bottom = navigationBarHeight)
                 .clip(RoundedCornerShape(32.dp))
                 .hazeChild(
                         state = hazeState,

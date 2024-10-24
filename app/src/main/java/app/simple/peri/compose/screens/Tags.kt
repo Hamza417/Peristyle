@@ -31,6 +31,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
@@ -44,6 +45,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import app.simple.peri.R
+import app.simple.peri.compose.commons.BottomHeader
 import app.simple.peri.compose.commons.COMMON_PADDING
 import app.simple.peri.compose.commons.TopHeader
 import app.simple.peri.compose.constants.DIALOG_OPTION_FONT_SIZE
@@ -51,6 +53,7 @@ import app.simple.peri.compose.constants.DIALOG_TITLE_FONT_SIZE
 import app.simple.peri.compose.nav.Routes
 import app.simple.peri.factories.TagsViewModelFactory
 import app.simple.peri.models.Tag
+import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.viewmodels.TagsViewModel
 import com.bumptech.glide.integration.compose.CrossFade
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
@@ -63,65 +66,95 @@ import dev.chrisbanes.haze.hazeChild
 @Composable
 fun Tags(navController: NavController? = null) {
     val tagsViewModel: TagsViewModel = viewModel(
-        factory = TagsViewModelFactory()
+            factory = TagsViewModelFactory()
     )
     var tags = remember { mutableListOf<Tag>() }
     var statusBarHeight by remember { mutableIntStateOf(0) }
     var navigationBarHeight by remember { mutableIntStateOf(0) }
+    val hazeState = remember { HazeState() }
 
     statusBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
-        LocalView.current.rootWindowInsets
+            LocalView.current.rootWindowInsets
     ).getInsets(WindowInsetsCompat.Type.statusBars()).top
     navigationBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
-        LocalView.current.rootWindowInsets
+            LocalView.current.rootWindowInsets
     ).getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
 
     val statusBarHeightPx = statusBarHeight
     val statusBarHeightDp = with(LocalDensity.current) { statusBarHeightPx.toDp() }
     val navigationBarHeightPx = navigationBarHeight
     val navigationBarHeightDp = with(LocalDensity.current) { navigationBarHeightPx.toDp() }
+    var bottomHeaderHeight by remember { mutableStateOf(0.dp) }
+
     val topPadding = 8.dp + statusBarHeightDp
-    val bottomPadding = 8.dp + navigationBarHeightDp
+    val bottomPadding = 8.dp + if (MainComposePreferences.getBottomHeader()) {
+        bottomHeaderHeight
+    } else {
+        navigationBarHeightDp
+    }
 
     tagsViewModel.getTags().observeAsState().value?.let {
         tags.clear()
         tags.addAll(it)
     }
 
-    LazyVerticalStaggeredGrid(
-        columns = StaggeredGridCells.Fixed(2),
-        modifier = Modifier
-            .fillMaxSize(),
-        contentPadding = PaddingValues(
-            top = topPadding,
-            start = 8.dp,
-            end = 8.dp,
-            bottom = bottomPadding
-        ),
-    ) {
-        item(span = StaggeredGridItemSpan.FullLine) {
-            TopHeader(
-                title = stringResource(R.string.tags),
-                modifier = Modifier.padding(COMMON_PADDING),
-                count = tags.size,
-                navController = navController
+    Box {
+        LazyVerticalStaggeredGrid(
+                columns = StaggeredGridCells.Fixed(2),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .haze(state = hazeState),
+                contentPadding = PaddingValues(
+                        top = topPadding,
+                        start = 8.dp,
+                        end = 8.dp,
+                        bottom = bottomPadding
+                ),
+        ) {
+            if (MainComposePreferences.getBottomHeader().not()) {
+                item(span = StaggeredGridItemSpan.FullLine) {
+                    TopHeader(
+                            title = stringResource(R.string.tags),
+                            modifier = Modifier.padding(COMMON_PADDING),
+                            count = tags.size,
+                            navController = navController
+                    )
+                }
+            }
+            if (tags.isEmpty()) {
+                item(span = StaggeredGridItemSpan.FullLine) {
+                    Text(
+                            text = stringResource(id = R.string.tags_summary),
+                            modifier = Modifier.padding(COMMON_PADDING)
+                    )
+                }
+            }
+            items(tags.size) { index ->
+                TagItem(
+                        tag = tags[index],
+                        navController = navController
+                ) {
+                    tags = tags.filter { tag -> tag.name != it.name }.toMutableList()
+                }
+            }
+        }
+
+        if (MainComposePreferences.getBottomHeader()) {
+            val density = LocalDensity.current
+
+            BottomHeader(
+                    title = stringResource(R.string.tags),
+                    count = tags.size,
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .onGloballyPositioned {
+                            bottomHeaderHeight = with(density) { it.size.height.toDp() }
+                        },
+                    navController = navController,
+                    hazeState = hazeState,
+                    navigationBarHeight = navigationBarHeightDp,
+                    statusBarHeight = statusBarHeightDp
             )
-        }
-        if (tags.isEmpty()) {
-            item(span = StaggeredGridItemSpan.FullLine) {
-                Text(
-                    text = stringResource(id = R.string.tags_summary),
-                    modifier = Modifier.padding(COMMON_PADDING)
-                )
-            }
-        }
-        items(tags.size) { index ->
-            TagItem(
-                tag = tags[index],
-                navController = navController
-            ) {
-                tags = tags.filter { tag -> tag.name != it.name }.toMutableList()
-            }
         }
     }
 }
@@ -134,63 +167,63 @@ fun TagItem(tag: Tag, navController: NavController? = null, onDelete: (Tag) -> U
 
     if (showDialog) {
         TagsMenu(
-            setShowDialog = { showDialog = it },
-            tag = tag,
-            onDelete = { tag ->
-                onDelete(tag)
-                showDialog = false
-            }
+                setShowDialog = { showDialog = it },
+                tag = tag,
+                onDelete = { tag ->
+                    onDelete(tag)
+                    showDialog = false
+                }
         )
     }
 
     ElevatedCard(
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 12.dp,
-        ),
-        modifier = Modifier
-            .padding(8.dp)
-            .combinedClickable(
-                onClick = {
-                    navController?.navigate(Routes.TAGGED_WALLPAPERS) {
-                        navController.currentBackStackEntry?.savedStateHandle?.set(Routes.TAG_ARG, tag)
-                    }
-                },
-                onLongClick = {
-                    showDialog = true
-                }),
+            elevation = CardDefaults.cardElevation(
+                    defaultElevation = 12.dp,
+            ),
+            modifier = Modifier
+                .padding(8.dp)
+                .combinedClickable(
+                        onClick = {
+                            navController?.navigate(Routes.TAGGED_WALLPAPERS) {
+                                navController.currentBackStackEntry?.savedStateHandle?.set(Routes.TAG_ARG, tag)
+                            }
+                        },
+                        onLongClick = {
+                            showDialog = true
+                        }),
     ) {
         Box {
             GlideImage(
-                model = app.simple.peri.glide.tags.Tag(tag, LocalContext.current),
-                contentDescription = null,
-                transition = CrossFade,
-                modifier = Modifier.haze(hazeState),
+                    model = app.simple.peri.glide.tags.Tag(tag, LocalContext.current),
+                    contentDescription = null,
+                    transition = CrossFade,
+                    modifier = Modifier.haze(hazeState),
             )
 
             Column(
-                modifier = Modifier
-                    .wrapContentHeight()
-                    .fillMaxWidth()
-                    .hazeChild(
-                        state = hazeState,
-                        style = HazeDefaults.style(backgroundColor = Color(0x50000000), blurRadius = 5.dp)
-                    )
-                    .align(Alignment.BottomCenter)
+                    modifier = Modifier
+                        .wrapContentHeight()
+                        .fillMaxWidth()
+                        .hazeChild(
+                                state = hazeState,
+                                style = HazeDefaults.style(backgroundColor = Color(0x50000000), blurRadius = 5.dp)
+                        )
+                        .align(Alignment.BottomCenter)
             ) {
                 Text(
-                    text = tag.name,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp,
-                    color = Color.White,
-                    modifier = Modifier.padding(start = COMMON_PADDING, end = COMMON_PADDING, top = COMMON_PADDING)
+                        text = tag.name,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp,
+                        color = Color.White,
+                        modifier = Modifier.padding(start = COMMON_PADDING, end = COMMON_PADDING, top = COMMON_PADDING)
                 )
 
                 Text(
-                    text = stringResource(id = R.string.tag_count, tag.sum.count()),
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Light,
-                    color = Color.White,
-                    modifier = Modifier.padding(start = COMMON_PADDING, end = COMMON_PADDING, bottom = COMMON_PADDING)
+                        text = stringResource(id = R.string.tag_count, tag.sum.count()),
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Light,
+                        color = Color.White,
+                        modifier = Modifier.padding(start = COMMON_PADDING, end = COMMON_PADDING, bottom = COMMON_PADDING)
                 )
             }
         }
@@ -199,61 +232,61 @@ fun TagItem(tag: Tag, navController: NavController? = null, onDelete: (Tag) -> U
 
 @Composable
 fun TagsMenu(setShowDialog: (Boolean) -> Unit,
-    tag: Tag,
-    onDelete: (Tag) -> Unit) {
+             tag: Tag,
+             onDelete: (Tag) -> Unit) {
 
     val context = LocalContext.current
     val tagsViewModel: TagsViewModel = viewModel(
-        factory = TagsViewModelFactory()
+            factory = TagsViewModelFactory()
     )
 
     AlertDialog(
-        onDismissRequest = { setShowDialog(false) },
-        title = {
-            Text(
-                text = tag.name,
-                style = TextStyle(
-                    fontFamily = FontFamily.SansSerif,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = DIALOG_TITLE_FONT_SIZE
-                )
-            )
-        },
-        text = {
-            Box(
-                contentAlignment = Alignment.Center
-            ) {
-                Column {
-                    Button(
-                        onClick = {
-                            tagsViewModel.deleteTag(tag)
-                        },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.Transparent,
-                        ),
-                        shape = RoundedCornerShape(12.dp),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(50.dp),
-                    ) {
-                        Text(
-                            text = context.getString(R.string.delete),
-                            color = MaterialTheme.colorScheme.onSurface,
-                            fontSize = DIALOG_OPTION_FONT_SIZE,
-                            fontWeight = FontWeight.SemiBold
+            onDismissRequest = { setShowDialog(false) },
+            title = {
+                Text(
+                        text = tag.name,
+                        style = TextStyle(
+                                fontFamily = FontFamily.SansSerif,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = DIALOG_TITLE_FONT_SIZE
                         )
+                )
+            },
+            text = {
+                Box(
+                        contentAlignment = Alignment.Center
+                ) {
+                    Column {
+                        Button(
+                                onClick = {
+                                    tagsViewModel.deleteTag(tag)
+                                },
+                                colors = ButtonDefaults.buttonColors(
+                                        containerColor = Color.Transparent,
+                                ),
+                                shape = RoundedCornerShape(12.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(50.dp),
+                        ) {
+                            Text(
+                                    text = context.getString(R.string.delete),
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    fontSize = DIALOG_OPTION_FONT_SIZE,
+                                    fontWeight = FontWeight.SemiBold
+                            )
+                        }
                     }
                 }
-            }
-        },
-        confirmButton = {
-            Button(
-                onClick = { setShowDialog(false) },
-            ) {
-                Text(
-                    text = stringResource(R.string.close),
-                )
-            }
-        },
+            },
+            confirmButton = {
+                Button(
+                        onClick = { setShowDialog(false) },
+                ) {
+                    Text(
+                            text = stringResource(R.string.close),
+                    )
+                }
+            },
     )
 }
