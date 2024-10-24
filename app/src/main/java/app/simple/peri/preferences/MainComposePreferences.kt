@@ -36,6 +36,7 @@ object MainComposePreferences {
     private const val AUTO_WALLPAPER_LOCK_HUE = "auto_wallpaper_lock_hue"
     private const val DEVICE_WIDTH = "device_width"
     private const val DEVICE_HEIGHT = "device_height"
+    private const val BOTTOM_HEADER = "bottom_header"
 
     // ----------------------------------------------------------------------------------------------------- //
 
@@ -374,5 +375,15 @@ object MainComposePreferences {
 
     fun getAspectRatio(): Float {
         return getDeviceWidth().toFloat() / getDeviceHeight().toFloat()
+    }
+
+    // ----------------------------------------------------------------------------------------------------- //
+
+    fun getBottomHeader(): Boolean {
+        return getSharedPreferences().getBoolean(BOTTOM_HEADER, false)
+    }
+
+    fun setBottomHeader(value: Boolean) {
+        getSharedPreferences().edit().putBoolean(BOTTOM_HEADER, value).apply()
     }
 }

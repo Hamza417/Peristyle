@@ -237,6 +237,14 @@ fun Settings(navController: NavController? = null) {
                 context.packageManager.setComponentEnabledSetting(
                         ComponentName(context, MainComposeActivity::class.java), composeState, PackageManager.DONT_KILL_APP)
             }
+
+            SwitchPreference(
+                    title = context.getString(R.string.bottom_bar),
+                    description = context.getString(R.string.bottom_bar_summary),
+                    checked = MainComposePreferences.getBottomHeader()
+            ) {
+                MainComposePreferences.setBottomHeader(it)
+            }
         }
         item {
             val showDeveloperProfileDialog = remember { mutableStateOf(false) }

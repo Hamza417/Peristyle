@@ -19,6 +19,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
@@ -27,6 +28,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import app.simple.peri.R
+import app.simple.peri.compose.commons.BottomHeader
 import app.simple.peri.compose.commons.COMMON_PADDING
 import app.simple.peri.compose.commons.SelectionMenu
 import app.simple.peri.compose.commons.TopHeader
@@ -37,6 +39,7 @@ import app.simple.peri.factories.FolderViewModelFactory
 import app.simple.peri.models.Folder
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.preferences.MainComposePreferences
+import app.simple.peri.utils.ConditionUtils.invert
 import app.simple.peri.utils.FileUtils.toSize
 import app.simple.peri.viewmodels.FolderDataViewModel
 import app.simple.peri.viewmodels.WallpaperListViewModel
@@ -83,9 +86,14 @@ fun WallpaperList(navController: NavController? = null) {
         val statusBarHeightDp = with(LocalDensity.current) { statusBarHeightPx.toDp() }
         val navigationBarHeightPx = navigationBarHeight
         val navigationBarHeightDp = with(LocalDensity.current) { navigationBarHeightPx.toDp() }
+        var bottomHeaderHeight by remember { mutableStateOf(0.dp) }
 
         val topPadding = 8.dp + statusBarHeightDp
-        val bottomPadding = 8.dp + navigationBarHeightDp
+        val bottomPadding = 8.dp + if (MainComposePreferences.getBottomHeader()) {
+            bottomHeaderHeight
+        } else {
+            navigationBarHeightDp
+        }
 
         if (showPleaseWaitDialog) {
             PleaseWaitDialog {
@@ -111,13 +119,15 @@ fun WallpaperList(navController: NavController? = null) {
                             bottom = bottomPadding
                     )
             ) {
-                item(span = { GridItemSpan(maxLineSpan) }) {
-                    TopHeader(
-                            title = folder.name ?: stringResource(R.string.unknown),
-                            count = wallpapers.size,
-                            modifier = Modifier.padding(COMMON_PADDING),
-                            navController = navController
-                    )
+                if (MainComposePreferences.getBottomHeader().invert()) {
+                    item(span = { GridItemSpan(maxLineSpan) }) {
+                        TopHeader(
+                                title = folder.name ?: stringResource(R.string.unknown),
+                                count = wallpapers.size,
+                                modifier = Modifier.padding(COMMON_PADDING),
+                                navController = navController
+                        )
+                    }
                 }
                 items(wallpapers.size, key = { wallpapers[it].hashCode() }) { index ->
                     WallpaperItem(
@@ -154,6 +164,24 @@ fun WallpaperList(navController: NavController? = null) {
                         modifier = Modifier.align(Alignment.BottomCenter),
                         hazeState = hazeState,
                         wallpaperListViewModel = wallpaperListViewModel
+                )
+            }
+
+            if (MainComposePreferences.getBottomHeader()) {
+                val density = LocalDensity.current
+
+                BottomHeader(
+                        title = folder.name ?: stringResource(R.string.unknown),
+                        count = wallpapers.size,
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .onGloballyPositioned {
+                                bottomHeaderHeight = with(density) { it.size.height.toDp() }
+                            },
+                        navController = navController,
+                        hazeState = hazeState,
+                        navigationBarHeight = navigationBarHeightDp,
+                        statusBarHeight = statusBarHeightDp
                 )
             }
         }

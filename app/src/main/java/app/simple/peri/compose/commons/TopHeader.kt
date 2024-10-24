@@ -17,11 +17,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import app.simple.peri.R
 import app.simple.peri.compose.nav.Routes
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.hazeChild
+import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
+import dev.chrisbanes.haze.materials.HazeMaterials
 
 val COMMON_PADDING = 16.dp
 
@@ -61,6 +66,67 @@ fun TopHeader(title: String, modifier: Modifier = Modifier, count: Int = 0, navC
                     onClick = {
                         navController?.navigate(Routes.SETTINGS)
                     },
+            ) {
+                Icon(
+                        imageVector = Icons.Rounded.Settings,
+                        contentDescription = stringResource(id = R.string.settings),
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalHazeMaterialsApi::class)
+@Composable
+fun BottomHeader(title: String, modifier: Modifier = Modifier, count: Int = 0, navController: NavController? = null, isSettings: Boolean = false, hazeState: HazeState, navigationBarHeight: Dp, statusBarHeight: Dp) {
+
+    val navHeight = if (navigationBarHeight == 0.dp) {
+        COMMON_PADDING
+    } else {
+        navigationBarHeight
+    }
+
+    Row(
+            modifier = modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .hazeChild(
+                        state = hazeState,
+                        style = HazeMaterials.ultraThin()
+                ),
+            verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+                text = title,
+                textAlign = TextAlign.Start,
+                fontSize = 32.sp, // Set the font size
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(end = 8.dp, bottom = navHeight, start = COMMON_PADDING, top = COMMON_PADDING), // Set the weight
+                fontWeight = FontWeight.Bold, // Make the text bold
+                lineHeight = 36.sp, // Set the line height
+                maxLines = 1, // Set the max lines
+                overflow = TextOverflow.Ellipsis, // Set the overflow
+        )
+
+        if (count > 0) {
+            Text(
+                    text = count.toString(),
+                    textAlign = TextAlign.End,
+                    fontSize = 24.sp,
+                    modifier = Modifier
+                        .wrapContentWidth()
+                        .padding(end = 8.dp, bottom = navHeight, top = COMMON_PADDING),
+                    fontWeight = FontWeight.Thin,
+            )
+        }
+
+        if (isSettings.not()) {
+            IconButton(
+                    onClick = {
+                        navController?.navigate(Routes.SETTINGS)
+                    },
+                    modifier = Modifier.padding(end = COMMON_PADDING, bottom = navHeight, top = COMMON_PADDING),
             ) {
                 Icon(
                         imageVector = Icons.Rounded.Settings,

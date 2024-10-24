@@ -195,4 +195,6 @@
     <string name="reduce_resolution">Reduce Resolution</string>
     <string name="please_wait">Please Wait</string>
     <string name="hide">Hide</string>
+    <string name="bottom_bar">Bottom Bar</string>
+    <string name="bottom_bar_summary">Move the header to the bottom of the app.</string>
 </resources>
