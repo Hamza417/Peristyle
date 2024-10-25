@@ -676,6 +676,29 @@ fun WallpaperMenu(
                                     color = MaterialTheme.colorScheme.onSurface
                             )
                         }
+
+                        Spacer(modifier = Modifier.height(5.dp))
+
+                        Button(
+                                onClick = {
+                                    wallpaperViewModel.reloadMetadata(wallpaper) {
+                                        Log.i("WallpaperMenu", "Metadata reloaded: $it")
+                                        Log.i("WallpaperMenu", "for wallpaper: $wallpaper")
+                                        setShowDialog(false)
+                                    }
+                                },
+                                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                                shape = RoundedCornerShape(12.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                        ) {
+                            Text(
+                                    text = context.getString(R.string.reload_metadata),
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    fontSize = DIALOG_OPTION_FONT_SIZE,
+                                    fontWeight = FontWeight.SemiBold
+                            )
+                        }
                     }
                 }
             },

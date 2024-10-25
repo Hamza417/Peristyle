@@ -7,7 +7,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
 import android.util.Log
@@ -464,24 +463,10 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
     fun reloadMetadata(wallpaper: Wallpaper, func: (Wallpaper) -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             val wallpaperDatabase = WallpaperDatabase.getInstance(getApplication())
-            val documentFile =
-                DocumentFile.fromSingleUri(getApplication(), Uri.parse(wallpaper.uri))
-
-            getApplication<Application>().contentResolver.openInputStream(Uri.parse(wallpaper.uri))
-                ?.use { inputStream ->
-                    val options = BitmapFactory.Options()
-                    options.inJustDecodeBounds = true
-                    BitmapFactory.decodeStream(inputStream, null, options)
-                    wallpaper.width = options.outWidth
-                    wallpaper.height = options.outHeight
-                }
-
-            if (documentFile?.exists() == true) {
-                wallpaper.size = documentFile.length()
-                wallpaper.dateModified = documentFile.lastModified()
-            }
-
-            wallpaperDatabase?.wallpaperDao()?.update(wallpaper)
+            val updatedWallpaper = Wallpaper.createFromUri(wallpaper.uri, getApplication())
+            updatedWallpaper.md5 = wallpaper.md5
+            updatedWallpaper.folderUriHashcode = wallpaper.folderUriHashcode
+            wallpaperDatabase?.wallpaperDao()?.update(updatedWallpaper)
 
             withContext(Dispatchers.Main) {
                 func(wallpaper)
