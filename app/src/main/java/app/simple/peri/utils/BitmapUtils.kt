@@ -85,13 +85,15 @@ object BitmapUtils {
         val rotateGreenMatrix = ComposeUiGraphicsColorMatrix().apply { setToRotateGreen(hue) }
         val rotateBlueMatrix = ComposeUiGraphicsColorMatrix().apply { setToRotateBlue(hue) }
         val saturationMatrix = ComposeUiGraphicsColorMatrix().apply { setToSaturation(saturation) }
-        val contrastMatrix = ComposeUiGraphicsColorMatrix(
-            floatArrayOf(
-                contrast, 0f, 0f, 0f, brightness,
-                0f, contrast, 0f, 0f, brightness,
-                0f, 0f, contrast, 0f, brightness,
-                0f, 0f, 0f, 1f, 0f
-            )
+        val scale = contrast
+        val translate = (-0.5f * scale + 0.5f + brightness / 255f) * 255f
+        val contrastMatrix = androidx.compose.ui.graphics.ColorMatrix(
+                floatArrayOf(
+                        scale, 0f, 0f, 0f, translate,
+                        0f, scale, 0f, 0f, translate,
+                        0f, 0f, scale, 0f, translate,
+                        0f, 0f, 0f, 1f, 0f
+                )
         )
 
         // Manually combine the matrices

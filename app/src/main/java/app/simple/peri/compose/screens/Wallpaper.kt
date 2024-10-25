@@ -156,11 +156,13 @@ fun Wallpaper(context: Context, navController: NavHostController) {
         val rotateGreenMatrix = ColorMatrix().apply { setToRotateGreen(hueValue) }
         val rotateBlueMatrix = ColorMatrix().apply { setToRotateBlue(hueValue) }
         val saturationMatrix = ColorMatrix().apply { setToSaturation(saturationValue) }
+        val scale = contrastValue
+        val translate = (-0.5f * scale + 0.5f + brightnessValue / 255f) * 255f
         val contrastMatrix = ColorMatrix(
                 floatArrayOf(
-                        contrastValue, 0f, 0f, 0f, brightnessValue,
-                        0f, contrastValue, 0f, 0f, brightnessValue,
-                        0f, 0f, contrastValue, 0f, brightnessValue,
+                        scale, 0f, 0f, 0f, translate,
+                        0f, scale, 0f, 0f, translate,
+                        0f, 0f, scale, 0f, translate,
                         0f, 0f, 0f, 1f, 0f
                 )
         )
