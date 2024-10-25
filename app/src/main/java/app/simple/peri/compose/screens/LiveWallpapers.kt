@@ -94,6 +94,7 @@ fun LiveWallpapers(navController: NavHostController) {
     val navigationBarHeightPx = navigationBarHeight
     val navigationBarHeightDp = with(LocalDensity.current) { navigationBarHeightPx.toDp() }
     var bottomHeaderHeight by remember { mutableStateOf(0.dp) }
+    val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
 
     val topPadding = 8.dp + statusBarHeightDp
     val bottomPadding = 8.dp + if (MainComposePreferences.getBottomHeader()) {
@@ -128,7 +129,7 @@ fun LiveWallpapers(navController: NavHostController) {
 
     Box {
         LazyVerticalGrid(
-                columns = GridCells.Fixed(MainComposePreferences.getGridSpanCount()),
+                columns = GridCells.Fixed(MainComposePreferences.getGridSpanCount(isLandscape)),
                 modifier = Modifier
                     .fillMaxSize()
                     .haze(state = hazeState),

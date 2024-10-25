@@ -1,5 +1,6 @@
 package app.simple.peri.compose.subscreens
 
+import android.content.res.Configuration
 import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -20,6 +21,7 @@ import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
@@ -69,6 +71,7 @@ fun TaggedWallpapers(navController: NavController? = null) {
     val isSelectionMode by wallpaperListViewModel.isSelectionMode.collectAsState()
     val selectionCount by wallpaperListViewModel.selectedWallpapers.collectAsState()
     var showPleaseWaitDialog by remember { mutableStateOf(false) }
+    val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
 
     statusBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
             LocalView.current.rootWindowInsets
@@ -100,7 +103,7 @@ fun TaggedWallpapers(navController: NavController? = null) {
             modifier = Modifier.fillMaxSize()
     ) {
         LazyVerticalStaggeredGrid(
-                columns = StaggeredGridCells.Fixed(MainComposePreferences.getGridSpanCount()),
+                columns = StaggeredGridCells.Fixed(MainComposePreferences.getGridSpanCount(isLandscape)),
                 state = wallpaperListViewModel.lazyGridState,
                 modifier = Modifier
                     .fillMaxSize()

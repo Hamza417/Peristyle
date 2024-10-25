@@ -5,7 +5,8 @@ import app.simple.peri.preferences.SharedPreferences.getSharedPreferences
 
 object MainComposePreferences {
 
-    private const val GRID_SPAN_COUNT = "grid_span_count"
+    private const val GRID_SPAN_COUNT_VERT = "grid_span_count"
+    private const val GRID_SPAN_COUNT_LAND = "grid_span_count_land"
     private const val WARNING_INDICATOR = "warning_indicator"
     private const val IMAGE_SHADOW = "image_shadow"
     private const val GENERATE_MD5 = "generate_md5"
@@ -41,12 +42,28 @@ object MainComposePreferences {
 
     // ----------------------------------------------------------------------------------------------------- //
 
-    fun getGridSpanCount(): Int {
-        return getSharedPreferences().getInt(GRID_SPAN_COUNT, 2)
+    fun getGridSpanCountPortrait(): Int {
+        return getSharedPreferences().getInt(GRID_SPAN_COUNT_VERT, 2)
     }
 
-    fun setGridSpanCount(value: Int) {
-        getSharedPreferences().edit().putInt(GRID_SPAN_COUNT, value).apply()
+    fun setGridSpanCountPortrait(value: Int) {
+        getSharedPreferences().edit().putInt(GRID_SPAN_COUNT_VERT, value).apply()
+    }
+
+    fun getGridSpanCountLandscape(): Int {
+        return getSharedPreferences().getInt(GRID_SPAN_COUNT_LAND, 3)
+    }
+
+    fun setGridSpanCountLandscape(value: Int) {
+        getSharedPreferences().edit().putInt(GRID_SPAN_COUNT_LAND, value).apply()
+    }
+
+    fun getGridSpanCount(isLandscape: Boolean): Int {
+        return if (isLandscape) {
+            getGridSpanCountLandscape()
+        } else {
+            getGridSpanCountPortrait()
+        }
     }
 
     // ----------------------------------------------------------------------------------------------------- //

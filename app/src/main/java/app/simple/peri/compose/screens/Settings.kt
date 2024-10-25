@@ -86,7 +86,6 @@ fun Settings(navController: NavController? = null) {
                 NumberSelectionDialog(
                         onDismiss = { numberSelectionDialog.value = false },
                         onNumberSelected = {
-                            MainComposePreferences.setGridSpanCount(it)
                             numberSelectionDialog.value = false
                         }
                 )
