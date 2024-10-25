@@ -5,6 +5,8 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -67,6 +69,7 @@ import androidx.navigation.NavHostController
 import app.simple.peri.R
 import app.simple.peri.compose.constants.DIALOG_OPTION_FONT_SIZE
 import app.simple.peri.compose.constants.DIALOG_TITLE_FONT_SIZE
+import app.simple.peri.compose.dialogs.common.ShowWarningDialog
 import app.simple.peri.compose.dialogs.wallpaper.EffectsDialog
 import app.simple.peri.compose.nav.Routes
 import app.simple.peri.constants.Misc
@@ -363,14 +366,36 @@ fun Wallpaper(context: Context, navController: NavHostController) {
             ScreenSelectionDialog(
                     setShowDialog = { showDialog = it },
                     context = context,
-                    drawable = drawable
+                    drawable = drawable,
+                    wallpaper = wallpaper!!
             )
         }
     }
 }
 
 @Composable
-fun ScreenSelectionDialog(setShowDialog: (Boolean) -> Unit, context: Context, drawable: Drawable?) {
+fun ScreenSelectionDialog(setShowDialog: (Boolean) -> Unit, context: Context, drawable: Drawable?, wallpaper: Wallpaper) {
+    val shouldExport = remember { mutableStateOf(false) }
+    val showDoneDialog = remember { mutableStateOf(false) }
+
+    if (shouldExport.value) {
+        ExportWallpaper(context, drawable!!, wallpaper) {
+            shouldExport.value = false
+            showDoneDialog.value = true
+        }
+    }
+
+    if (showDoneDialog.value) {
+        ShowWarningDialog(
+                title = context.getString(R.string.exported),
+                warning = wallpaper.name!!.substringBeforeLast(".") + "_edited.png",
+                onDismiss = {
+                    setShowDialog(false)
+                    showDoneDialog.value = false
+                }
+        )
+    }
+
     AlertDialog(
             onDismissRequest = { setShowDialog(false) },
             title = {
@@ -447,6 +472,27 @@ fun ScreenSelectionDialog(setShowDialog: (Boolean) -> Unit, context: Context, dr
                                 fontWeight = FontWeight.Bold
                         )
                     }
+
+                    Spacer(modifier = Modifier.height(5.dp))
+
+                    Button(
+                            onClick = {
+                                shouldExport.value = true
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color.Transparent,
+                            ),
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                    ) {
+                        Text(
+                                text = context.getString(R.string.export),
+                                color = MaterialTheme.colorScheme.onSurface,
+                                fontSize = DIALOG_OPTION_FONT_SIZE,
+                                fontWeight = FontWeight.Bold
+                        )
+                    }
                 }
             },
             confirmButton = {
@@ -465,4 +511,23 @@ fun setWallpaper(context: Context, flags: Int, drawable: Drawable) {
     val wallpaperManager = WallpaperManager.getInstance(context)
     wallpaperManager.setWallpaperOffsetSteps(0F, 0F)
     wallpaperManager.setBitmap(drawable.toBitmap(), null, true, flags)
+}
+
+@Composable
+fun ExportWallpaper(context: Context, drawable: Drawable, wallpaper: Wallpaper, onExport: () -> Unit = {}) {
+    val wallpaperExportLauncher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("image/x-png")) { uri ->
+        uri?.let {
+            context.contentResolver.openOutputStream(it)?.use { outputStream ->
+                drawable.toBitmap().compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+            }
+
+            onExport()
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        val extension = wallpaper.name?.substringAfterLast(".")
+        val fileName = wallpaper.name?.replace(extension!!, "_edited.png") ?: "edited.png"
+        wallpaperExportLauncher.launch(fileName)
+    }
 }

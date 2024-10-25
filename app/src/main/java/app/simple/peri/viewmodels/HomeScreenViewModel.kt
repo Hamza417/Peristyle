@@ -70,11 +70,19 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
         val systemUri = getFileUri(systemFile)
         val lockUri = getFileUri(lockFile)
 
-        return arrayListOf(
-                Wallpaper.createFromUri(systemUri.toString(), getApplication()),
-                Wallpaper.createFromUri(lockUri.toString(), getApplication()),
-                getRandomWallpaperFromDatabase()
-        )
+        return try {
+            arrayListOf(
+                    Wallpaper.createFromUri(systemUri.toString(), getApplication()),
+                    Wallpaper.createFromUri(lockUri.toString(), getApplication()),
+                    getRandomWallpaperFromDatabase()
+            )
+        } catch (e: NoSuchElementException) {
+            arrayListOf(
+                    Wallpaper.createFromUri(systemUri.toString(), getApplication()),
+                    Wallpaper.createFromUri(lockUri.toString(), getApplication()),
+                    Wallpaper()
+            )
+        }
     }
 
     private fun createTempFile(fileName: String): File {
@@ -92,6 +100,7 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
         )
     }
 
+    @Throws(NoSuchElementException::class)
     private fun getRandomWallpaperFromDatabase(): Wallpaper {
         val wallpaperDatabase = WallpaperDatabase.getInstance(getApplication())
         val wallpaper = wallpaperDatabase?.wallpaperDao()?.getRandomWallpaper()
@@ -101,14 +110,18 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
     private val randomWallpaperRepeatRunnable = Runnable {
         if (BuildConfig.DEBUG.invert()) {
             viewModelScope.launch(Dispatchers.Default) {
-                if (BuildConfig.DEBUG.invert()) {
-                    systemWallpaperData.postValue(systemWallpaperData.value?.apply {
-                        this[2] = getRandomWallpaperFromDatabase()
-                    })
+                try {
+                    if (BuildConfig.DEBUG.invert()) {
+                        systemWallpaperData.postValue(systemWallpaperData.value?.apply {
+                            this[2] = getRandomWallpaperFromDatabase()
+                        })
 
-                    Log.i("HomeScreenViewModel", "Posting random wallpaper")
-                } else {
-                    Log.i("HomeScreenViewModel", "Skipping posting random wallpaper")
+                        Log.i("HomeScreenViewModel", "Posting random wallpaper")
+                    } else {
+                        Log.i("HomeScreenViewModel", "Skipping posting random wallpaper")
+                    }
+                } catch (_: NoSuchElementException) {
+                    // poooo peeeeee ppooooo pooooo
                 }
             }
         }
