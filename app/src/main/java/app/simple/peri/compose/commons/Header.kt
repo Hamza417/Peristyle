@@ -1,5 +1,6 @@
 package app.simple.peri.compose.commons
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -7,6 +8,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -99,7 +101,7 @@ fun BottomHeader(title: String,
         navigationBarHeight
     }
 
-    Row(
+    Column(
             modifier = modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
@@ -108,46 +110,53 @@ fun BottomHeader(title: String,
                         ambientColor = MaterialTheme.colorScheme.surfaceVariant)
                 .hazeChild(
                         state = hazeState,
-                        style = HazeMaterials.thin()
+                        style = HazeMaterials.regular()
                 ),
-            verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(
-                text = title,
-                textAlign = TextAlign.Start,
-                fontSize = 32.sp, // Set the font size
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(end = 8.dp, bottom = navHeight, start = COMMON_PADDING, top = COMMON_PADDING), // Set the weight
-                fontWeight = FontWeight.Bold, // Make the text bold
-                lineHeight = 36.sp, // Set the line height
-                maxLines = 1, // Set the max lines
-                overflow = TextOverflow.Ellipsis, // Set the overflow
+        HorizontalDivider(
+                color = MaterialTheme.colorScheme.surfaceVariant,
         )
 
-        if (count > 0) {
+        Row(
+                verticalAlignment = Alignment.CenterVertically,
+        ) {
             Text(
-                    text = count.toString(),
-                    textAlign = TextAlign.End,
-                    fontSize = 24.sp,
+                    text = title,
+                    textAlign = TextAlign.Start,
+                    fontSize = 32.sp, // Set the font size
                     modifier = Modifier
-                        .wrapContentWidth()
-                        .padding(end = 8.dp, bottom = navHeight, top = COMMON_PADDING),
-                    fontWeight = FontWeight.Thin,
+                        .weight(1f)
+                        .padding(end = 8.dp, bottom = navHeight, start = COMMON_PADDING, top = COMMON_PADDING), // Set the weight
+                    fontWeight = FontWeight.Bold, // Make the text bold
+                    lineHeight = 36.sp, // Set the line height
+                    maxLines = 1, // Set the max lines
+                    overflow = TextOverflow.Ellipsis, // Set the overflow
             )
-        }
 
-        if (isSettings.not()) {
-            IconButton(
-                    onClick = {
-                        navController?.navigate(Routes.SETTINGS)
-                    },
-                    modifier = Modifier.padding(end = COMMON_PADDING, bottom = navHeight, top = COMMON_PADDING),
-            ) {
-                Icon(
-                        imageVector = Icons.Rounded.Settings,
-                        contentDescription = stringResource(id = R.string.settings),
+            if (count > 0) {
+                Text(
+                        text = count.toString(),
+                        textAlign = TextAlign.End,
+                        fontSize = 24.sp,
+                        modifier = Modifier
+                            .wrapContentWidth()
+                            .padding(end = 8.dp, bottom = navHeight, top = COMMON_PADDING),
+                        fontWeight = FontWeight.Thin,
                 )
+            }
+
+            if (isSettings.not()) {
+                IconButton(
+                        onClick = {
+                            navController?.navigate(Routes.SETTINGS)
+                        },
+                        modifier = Modifier.padding(end = COMMON_PADDING, bottom = navHeight, top = COMMON_PADDING),
+                ) {
+                    Icon(
+                            imageVector = Icons.Rounded.Settings,
+                            contentDescription = stringResource(id = R.string.settings),
+                    )
+                }
             }
         }
     }
