@@ -54,6 +54,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
@@ -233,8 +234,9 @@ fun WallpaperItem(
                         contentDescription = null,
                         transition = CrossFade,
                         modifier = Modifier
-                            .haze(hazeState),
-                        alignment = Alignment.Center,
+                            .haze(hazeState)
+                            .fillMaxSize(),
+                        contentScale = ContentScale.Crop
                 ) {
                     it.addListener(object : RequestListener<Drawable> {
                         override fun onLoadFailed(
@@ -256,7 +258,6 @@ fun WallpaperItem(
                             return false
                         }
                     })
-                        .centerCrop()
                         .disallowHardwareConfig()
                 }
 
