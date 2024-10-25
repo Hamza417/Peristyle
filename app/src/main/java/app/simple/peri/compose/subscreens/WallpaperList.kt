@@ -5,9 +5,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -106,8 +106,8 @@ fun WallpaperList(navController: NavController? = null) {
                 // Uncomment this line if blurring is needed
                 // .then(if (showPleaseWaitDialog) Modifier.blur(8.dp) else Modifier)
         ) {
-            LazyVerticalGrid(
-                    columns = GridCells.Fixed(MainComposePreferences.getGridSpanCount()),
+            LazyVerticalStaggeredGrid(
+                    columns = StaggeredGridCells.Fixed(MainComposePreferences.getGridSpanCount()),
                     state = wallpaperListViewModel.lazyGridState,
                     modifier = Modifier
                         .fillMaxSize()
@@ -120,7 +120,7 @@ fun WallpaperList(navController: NavController? = null) {
                     )
             ) {
                 if (MainComposePreferences.getBottomHeader().invert()) {
-                    item(span = { GridItemSpan(maxLineSpan) }) {
+                    item(span = StaggeredGridItemSpan.FullLine) {
                         TopHeader(
                                 title = folder.name ?: stringResource(R.string.unknown),
                                 count = wallpapers.size,

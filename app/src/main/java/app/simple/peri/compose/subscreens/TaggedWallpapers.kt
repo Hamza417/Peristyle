@@ -5,9 +5,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -99,8 +99,8 @@ fun TaggedWallpapers(navController: NavController? = null) {
     Box(
             modifier = Modifier.fillMaxSize()
     ) {
-        LazyVerticalGrid(
-                columns = GridCells.Fixed(MainComposePreferences.getGridSpanCount()),
+        LazyVerticalStaggeredGrid(
+                columns = StaggeredGridCells.Fixed(MainComposePreferences.getGridSpanCount()),
                 state = wallpaperListViewModel.lazyGridState,
                 modifier = Modifier
                     .fillMaxSize()
@@ -113,7 +113,7 @@ fun TaggedWallpapers(navController: NavController? = null) {
                 )
         ) {
             if (MainComposePreferences.getBottomHeader().not()) {
-                item(span = { GridItemSpan(maxLineSpan) }) {
+                item(span = StaggeredGridItemSpan.FullLine) {
                     TopHeader(
                             title = tag.name, count = wallpapers.size,
                             modifier = Modifier.padding(COMMON_PADDING),

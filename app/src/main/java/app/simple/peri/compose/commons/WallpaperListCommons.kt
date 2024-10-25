@@ -2,6 +2,7 @@ package app.simple.peri.compose.commons
 
 import android.content.Intent
 import android.graphics.drawable.Drawable
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -124,13 +125,19 @@ fun WallpaperItem(
 
     val aspectRatio by remember {
         mutableFloatStateOf(
-                if (!(displayWidth.toFloat() / displayHeight.toFloat()).isNaN()) {
-                    displayWidth.toFloat() / displayHeight.toFloat()
+                if (MainComposePreferences.isOriginalAspectRatio()) {
+                    wallpaper.width?.toFloat()?.div(wallpaper.height!!) ?: (16f / 9f)
                 } else {
-                    16f / 9f
+                    if (!(displayWidth.toFloat() / displayHeight.toFloat()).isNaN()) {
+                        displayWidth.toFloat() / displayHeight.toFloat()
+                    } else {
+                        16f / 9f
+                    }
                 }
         )
     }
+
+    Log.i("WallpaperItem", "Aspect ratio: $aspectRatio for ${wallpaper.name}")
 
     if (showDialog) {
         WallpaperMenu({
@@ -226,7 +233,6 @@ fun WallpaperItem(
                         contentDescription = null,
                         transition = CrossFade,
                         modifier = Modifier
-                            .fillMaxSize()
                             .haze(hazeState),
                         alignment = Alignment.Center,
                 ) {
@@ -250,9 +256,8 @@ fun WallpaperItem(
                             return false
                         }
                     })
-                        .transition(withCrossFade())
-                        .disallowHardwareConfig()
                         .centerCrop()
+                        .disallowHardwareConfig()
                 }
 
                 Column(

@@ -37,6 +37,7 @@ object MainComposePreferences {
     private const val DEVICE_WIDTH = "device_width"
     private const val DEVICE_HEIGHT = "device_height"
     private const val BOTTOM_HEADER = "bottom_header"
+    private const val ORIGINAL_ASPECT_RATIO = "original_aspect_ratio"
 
     // ----------------------------------------------------------------------------------------------------- //
 
@@ -71,7 +72,7 @@ object MainComposePreferences {
     // ----------------------------------------------------------------------------------------------------- //
 
     fun getShowImageShadow(): Boolean {
-        return getSharedPreferences().getBoolean(IMAGE_SHADOW, true)
+        return getSharedPreferences().getBoolean(IMAGE_SHADOW, false)
     }
 
     fun setShowImageShadow(value: Boolean) {
@@ -385,5 +386,15 @@ object MainComposePreferences {
 
     fun setBottomHeader(value: Boolean) {
         getSharedPreferences().edit().putBoolean(BOTTOM_HEADER, value).apply()
+    }
+
+    // ----------------------------------------------------------------------------------------------------- //
+
+    fun isOriginalAspectRatio(): Boolean {
+        return getSharedPreferences().getBoolean(ORIGINAL_ASPECT_RATIO, false)
+    }
+
+    fun setOriginalAspectRatio(value: Boolean) {
+        getSharedPreferences().edit().putBoolean(ORIGINAL_ASPECT_RATIO, value).apply()
     }
 }

@@ -199,6 +199,15 @@ fun Settings(navController: NavController? = null) {
             }
 
             SwitchPreference(
+                    title = context.getString(R.string.original_aspect_ratio),
+                    description = context.getString(R.string.original_aspect_ratio_summary),
+                    checked = MainComposePreferences.isOriginalAspectRatio(),
+                    topPadding = 8.dp
+            ) {
+                MainComposePreferences.setOriginalAspectRatio(it)
+            }
+
+            SwitchPreference(
                     title = context.getString(R.string.generate_md5),
                     description = context.getString(R.string.generate_md5_summary),
                     checked = MainComposePreferences.getGenerateMD5(),

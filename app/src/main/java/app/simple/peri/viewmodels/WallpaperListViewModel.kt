@@ -1,7 +1,7 @@
 package app.simple.peri.viewmodels
 
 import android.app.Application
-import androidx.compose.foundation.lazy.grid.LazyGridState
+import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class WallpaperListViewModel(application: Application) : AndroidViewModel(application) {
-    var lazyGridState: LazyGridState by mutableStateOf(LazyGridState(0, 0))
+    var lazyGridState: LazyStaggeredGridState by mutableStateOf(LazyStaggeredGridState(0, 0))
 
     private val _isSelectionMode = MutableStateFlow(false)
     val isSelectionMode: StateFlow<Boolean> get() = _isSelectionMode
