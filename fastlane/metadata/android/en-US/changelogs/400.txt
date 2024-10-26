@@ -1,0 +1,11 @@
+- Added option to move the header to the bottom
+- Added option to load original aspect ratio for thumbnails
+- Added option to select grid spans separately for each orientation
+- Added option to export edited wallpaper
+- Added separate RGB hue sliders
+- Added auto wallpaper notification with delete and send button
+- Added system wallpaper changed detection mechanism
+- Improved effects and cropping algorithms
+- Fixed selection menu issue
+- Fixed wallpaper effects state loss
+- Fixed loading folders taking up a long time
