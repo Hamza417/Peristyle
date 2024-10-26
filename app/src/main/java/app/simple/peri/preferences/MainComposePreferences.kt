@@ -24,17 +24,23 @@ object MainComposePreferences {
     private const val AUTO_WALLPAPER_BRIGHTNESS = "auto_wallpaper_brightness"
     private const val AUTO_WALLPAPER_CONTRAST = "auto_wallpaper_contrast"
     private const val AUTO_WALLPAPER_SATURATION = "auto_wallpaper_saturation"
-    private const val AUTO_WALLPAPER_HUE = "auto_wallpaper_hue"
+    private const val AUTO_WALLPAPER_HUE_RED = "auto_wallpaper_hue_red"
+    private const val AUTO_WALLPAPER_HUE_GREEN = "auto_wallpaper_hue_green"
+    private const val AUTO_WALLPAPER_HUE_BLUE = "auto_wallpaper_hue_blue"
     private const val AUTO_WALLPAPER_HOME_BLUR = "auto_wallpaper_home_blur"
     private const val AUTO_WALLPAPER_HOME_BRIGHTNESS = "auto_wallpaper_home_brightness"
     private const val AUTO_WALLPAPER_HOME_CONTRAST = "auto_wallpaper_home_contrast"
     private const val AUTO_WALLPAPER_HOME_SATURATION = "auto_wallpaper_home_saturation"
-    private const val AUTO_WALLPAPER_HOME_HUE = "auto_wallpaper_home_hue"
+    private const val AUTO_WALLPAPER_HOME_HUE_RED = "auto_wallpaper_home_hue_red"
+    private const val AUTO_WALLPAPER_HOME_HUE_GREEN = "auto_wallpaper_home_hue_green"
+    private const val AUTO_WALLPAPER_HOME_HUE_BLUE = "auto_wallpaper_home_hue_blue"
     private const val AUTO_WALLPAPER_LOCK_BLUR = "auto_wallpaper_lock_blur"
     private const val AUTO_WALLPAPER_LOCK_BRIGHTNESS = "auto_wallpaper_lock_brightness"
     private const val AUTO_WALLPAPER_LOCK_CONTRAST = "auto_wallpaper_lock_contrast"
     private const val AUTO_WALLPAPER_LOCK_SATURATION = "auto_wallpaper_lock_saturation"
-    private const val AUTO_WALLPAPER_LOCK_HUE = "auto_wallpaper_lock_hue"
+    private const val AUTO_WALLPAPER_LOCK_HUE_RED = "auto_wallpaper_lock_hue_red"
+    private const val AUTO_WALLPAPER_LOCK_HUE_GREEN = "auto_wallpaper_lock_hue_green"
+    private const val AUTO_WALLPAPER_LOCK_HUE_BLUE = "auto_wallpaper_lock_hue_blue"
     private const val DEVICE_WIDTH = "device_width"
     private const val DEVICE_HEIGHT = "device_height"
     private const val BOTTOM_HEADER = "bottom_header"
@@ -241,12 +247,28 @@ object MainComposePreferences {
 
     // ----------------------------------------------------------------------------------------------------- //
 
-    fun getAutoWallpaperHue(): Float {
-        return getSharedPreferences().getFloat(AUTO_WALLPAPER_HUE, 0f)
+    fun getAutoWallpaperHueRed(): Float {
+        return getSharedPreferences().getFloat(AUTO_WALLPAPER_HUE_RED, 0f)
     }
 
-    fun setAutoWallpaperHue(value: Float) {
-        getSharedPreferences().edit().putFloat(AUTO_WALLPAPER_HUE, value).apply()
+    fun setAutoWallpaperHueRed(value: Float) {
+        getSharedPreferences().edit().putFloat(AUTO_WALLPAPER_HUE_RED, value).apply()
+    }
+
+    fun getAutoWallpaperHueGreen(): Float {
+        return getSharedPreferences().getFloat(AUTO_WALLPAPER_HUE_GREEN, 0f)
+    }
+
+    fun setAutoWallpaperHueGreen(value: Float) {
+        getSharedPreferences().edit().putFloat(AUTO_WALLPAPER_HUE_GREEN, value).apply()
+    }
+
+    fun getAutoWallpaperHueBlue(): Float {
+        return getSharedPreferences().getFloat(AUTO_WALLPAPER_HUE_BLUE, 0f)
+    }
+
+    fun setAutoWallpaperHueBlue(value: Float) {
+        getSharedPreferences().edit().putFloat(AUTO_WALLPAPER_HUE_BLUE, value).apply()
     }
 
     // ----------------------------------------------------------------------------------------------------- //
@@ -291,12 +313,28 @@ object MainComposePreferences {
 
     // ----------------------------------------------------------------------------------------------------- //
 
-    fun getAutoWallpaperHomeHue(): Float {
-        return getSharedPreferences().getFloat(AUTO_WALLPAPER_HOME_HUE, 0f)
+    fun getAutoWallpaperHomeHueRed(): Float {
+        return getSharedPreferences().getFloat(AUTO_WALLPAPER_HOME_HUE_RED, 0f)
     }
 
-    fun setAutoWallpaperHomeHue(value: Float) {
-        getSharedPreferences().edit().putFloat(AUTO_WALLPAPER_HOME_HUE, value).apply()
+    fun setAutoWallpaperHomeHueRed(value: Float) {
+        getSharedPreferences().edit().putFloat(AUTO_WALLPAPER_HOME_HUE_RED, value).apply()
+    }
+
+    fun getAutoWallpaperHomeHueGreen(): Float {
+        return getSharedPreferences().getFloat(AUTO_WALLPAPER_HOME_HUE_GREEN, 0f)
+    }
+
+    fun setAutoWallpaperHomeHueGreen(value: Float) {
+        getSharedPreferences().edit().putFloat(AUTO_WALLPAPER_HOME_HUE_GREEN, value).apply()
+    }
+
+    fun getAutoWallpaperHomeHueBlue(): Float {
+        return getSharedPreferences().getFloat(AUTO_WALLPAPER_HOME_HUE_BLUE, 0f)
+    }
+
+    fun setAutoWallpaperHomeHueBlue(value: Float) {
+        getSharedPreferences().edit().putFloat(AUTO_WALLPAPER_HOME_HUE_BLUE, value).apply()
     }
 
     // ----------------------------------------------------------------------------------------------------- //
@@ -341,12 +379,28 @@ object MainComposePreferences {
 
     // ----------------------------------------------------------------------------------------------------- //
 
-    fun getAutoWallpaperLockHue(): Float {
-        return getSharedPreferences().getFloat(AUTO_WALLPAPER_LOCK_HUE, 0f)
+    fun getAutoWallpaperLockHueRed(): Float {
+        return getSharedPreferences().getFloat(AUTO_WALLPAPER_LOCK_HUE_RED, 0f)
     }
 
-    fun setAutoWallpaperLockHue(value: Float) {
-        getSharedPreferences().edit().putFloat(AUTO_WALLPAPER_LOCK_HUE, value).apply()
+    fun setAutoWallpaperLockHueRed(value: Float) {
+        getSharedPreferences().edit().putFloat(AUTO_WALLPAPER_LOCK_HUE_RED, value).apply()
+    }
+
+    fun getAutoWallpaperLockHueGreen(): Float {
+        return getSharedPreferences().getFloat(AUTO_WALLPAPER_LOCK_HUE_GREEN, 0f)
+    }
+
+    fun setAutoWallpaperLockHueGreen(value: Float) {
+        getSharedPreferences().edit().putFloat(AUTO_WALLPAPER_LOCK_HUE_GREEN, value).apply()
+    }
+
+    fun getAutoWallpaperLockHueBlue(): Float {
+        return getSharedPreferences().getFloat(AUTO_WALLPAPER_LOCK_HUE_BLUE, 0f)
+    }
+
+    fun setAutoWallpaperLockHueBlue(value: Float) {
+        getSharedPreferences().edit().putFloat(AUTO_WALLPAPER_LOCK_HUE_BLUE, value).apply()
     }
 
     // ----------------------------------------------------------------------------------------------------- //

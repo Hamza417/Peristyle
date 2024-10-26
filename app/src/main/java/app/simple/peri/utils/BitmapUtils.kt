@@ -76,22 +76,21 @@ object BitmapUtils {
     /**
      * For compose interface only
      */
-    fun Bitmap.applyEffects(blur: Float, brightness: Float, contrast: Float, saturation: Float, hue: Float): Bitmap {
+    fun Bitmap.applyEffects(blur: Float, brightness: Float, contrast: Float, saturation: Float, hueRed: Float, hueGreen: Float, hueBlue: Float): Bitmap {
         // Initialize the main color matrix
         val colorMatrix = ComposeUiGraphicsColorMatrix()
 
         // Create color matrices for each transformation
-        val rotateRedMatrix = ComposeUiGraphicsColorMatrix().apply { setToRotateRed(hue) }
-        val rotateGreenMatrix = ComposeUiGraphicsColorMatrix().apply { setToRotateGreen(hue) }
-        val rotateBlueMatrix = ComposeUiGraphicsColorMatrix().apply { setToRotateBlue(hue) }
+        val rotateRedMatrix = ComposeUiGraphicsColorMatrix().apply { setToRotateRed(hueRed) }
+        val rotateGreenMatrix = ComposeUiGraphicsColorMatrix().apply { setToRotateGreen(hueGreen) }
+        val rotateBlueMatrix = ComposeUiGraphicsColorMatrix().apply { setToRotateBlue(hueBlue) }
         val saturationMatrix = ComposeUiGraphicsColorMatrix().apply { setToSaturation(saturation) }
-        val scale = contrast
-        val translate = (-0.5f * scale + 0.5f + brightness / 255f) * 255f
+        val translate = (-0.5f * contrast + 0.5f + brightness / 255f) * 255f
         val contrastMatrix = androidx.compose.ui.graphics.ColorMatrix(
                 floatArrayOf(
-                        scale, 0f, 0f, 0f, translate,
-                        0f, scale, 0f, 0f, translate,
-                        0f, 0f, scale, 0f, translate,
+                        contrast, 0f, 0f, 0f, translate,
+                        0f, contrast, 0f, 0f, translate,
+                        0f, 0f, contrast, 0f, translate,
                         0f, 0f, 0f, 1f, 0f
                 )
         )

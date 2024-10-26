@@ -113,7 +113,7 @@ class AutoWallpaperService : Service() {
                 val files = getWallpapersFromDatabase()
                 if (MainPreferences.isTweakOptionSelected(MainPreferences.LINEAR_AUTO_WALLPAPER)) {
                     if (MainPreferences.getLastWallpaperPosition() >= (files?.size?.minus(1)
-                            ?: 0)
+                                ?: 0)
                     ) {
                         files?.get(0)?.uri?.toUri()?.let { uri ->
                             setWallpaperFromUri(uri, files)
@@ -181,21 +181,21 @@ class AutoWallpaperService : Service() {
         BitmapFactory.decodeStream(ByteArrayInputStream(byteArray), null, bitmapOptions)
 
         return BitmapFactory.decodeStream(
-            ByteArrayInputStream(byteArray), null, BitmapFactory.Options().apply {
-                inPreferredConfig = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    Bitmap.Config.RGBA_1010102
-                } else {
-                    Bitmap.Config.ARGB_8888
-                }
+                ByteArrayInputStream(byteArray), null, BitmapFactory.Options().apply {
+            inPreferredConfig = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                Bitmap.Config.RGBA_1010102
+            } else {
+                Bitmap.Config.ARGB_8888
+            }
 
-                inMutable = true
+            inMutable = true
 
-                Log.d(TAG, "Expected bitmap size: $displayWidth x $displayHeight")
-                inSampleSize =
-                    BitmapUtils.calculateInSampleSize(bitmapOptions, displayWidth, displayHeight)
-                inJustDecodeBounds = false
-                Log.d(TAG, "Bitmap decoded with sample size: ${this.inSampleSize}")
-            })!!
+            Log.d(TAG, "Expected bitmap size: $displayWidth x $displayHeight")
+            inSampleSize =
+                BitmapUtils.calculateInSampleSize(bitmapOptions, displayWidth, displayHeight)
+            inJustDecodeBounds = false
+            Log.d(TAG, "Bitmap decoded with sample size: ${this.inSampleSize}")
+        })!!
     }
 
     private fun calculateVisibleCropHint(bitmap: Bitmap): Rect {
@@ -266,9 +266,9 @@ class AutoWallpaperService : Service() {
 
     private fun isLegacyInterface(): Boolean {
         return applicationContext.packageManager.getComponentEnabledSetting(
-            ComponentName(applicationContext, LegacyActivity::class.java)
+                ComponentName(applicationContext, LegacyActivity::class.java)
         ) == PackageManager.COMPONENT_ENABLED_STATE_ENABLED && applicationContext.packageManager.getComponentEnabledSetting(
-            ComponentName(applicationContext, MainComposeActivity::class.java)
+                ComponentName(applicationContext, MainComposeActivity::class.java)
         ) == PackageManager.COMPONENT_ENABLED_STATE_DISABLED
     }
 
@@ -287,11 +287,13 @@ class AutoWallpaperService : Service() {
                     getBitmapFromUri(homeWallpaper!!) {
                         var bitmap = it.copy(it.config ?: Bitmap.Config.ARGB_8888, true)
                         bitmap = bitmap.applyEffects(
-                            brightness = MainComposePreferences.getAutoWallpaperHomeBrightness(),
-                            contrast = MainComposePreferences.getAutoWallpaperHomeContrast(),
-                            blur = MainComposePreferences.getAutoWallpaperHomeBlur(),
-                            saturation = MainComposePreferences.getAutoWallpaperHomeSaturation(),
-                            hue = MainComposePreferences.getAutoWallpaperHomeHue()
+                                brightness = MainComposePreferences.getAutoWallpaperHomeBrightness(),
+                                contrast = MainComposePreferences.getAutoWallpaperHomeContrast(),
+                                blur = MainComposePreferences.getAutoWallpaperHomeBlur(),
+                                saturation = MainComposePreferences.getAutoWallpaperHomeSaturation(),
+                                hueRed = MainComposePreferences.getAutoWallpaperHomeHueRed(),
+                                hueGreen = MainComposePreferences.getAutoWallpaperHomeHueGreen(),
+                                hueBlue = MainComposePreferences.getAutoWallpaperHomeHueBlue()
                         )
 
                         wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_SYSTEM)
@@ -303,11 +305,13 @@ class AutoWallpaperService : Service() {
                     getBitmapFromUri(lockWallpaper!!) {
                         var bitmap = it.copy(it.config ?: Bitmap.Config.ARGB_8888, true)
                         bitmap = bitmap.applyEffects(
-                            brightness = MainComposePreferences.getAutoWallpaperLockBrightness(),
-                            contrast = MainComposePreferences.getAutoWallpaperLockContrast(),
-                            blur = MainComposePreferences.getAutoWallpaperLockBlur(),
-                            saturation = MainComposePreferences.getAutoWallpaperLockSaturation(),
-                            hue = MainComposePreferences.getAutoWallpaperLockHue()
+                                brightness = MainComposePreferences.getAutoWallpaperLockBrightness(),
+                                contrast = MainComposePreferences.getAutoWallpaperLockContrast(),
+                                blur = MainComposePreferences.getAutoWallpaperLockBlur(),
+                                saturation = MainComposePreferences.getAutoWallpaperLockSaturation(),
+                                hueRed = MainComposePreferences.getAutoWallpaperLockHueRed(),
+                                hueGreen = MainComposePreferences.getAutoWallpaperLockHueGreen(),
+                                hueBlue = MainComposePreferences.getAutoWallpaperLockHueBlue()
                         )
 
                         wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_LOCK)
@@ -322,11 +326,13 @@ class AutoWallpaperService : Service() {
                         getBitmapFromUri(wallpaper!!) {
                             var bitmap = it.copy(it.config ?: Bitmap.Config.ARGB_8888, true)
                             bitmap = bitmap.applyEffects(
-                                brightness = MainComposePreferences.getAutoWallpaperBrightness(),
-                                contrast = MainComposePreferences.getAutoWallpaperContrast(),
-                                blur = MainComposePreferences.getAutoWallpaperBlur(),
-                                saturation = MainComposePreferences.getAutoWallpaperSaturation(),
-                                hue = MainComposePreferences.getAutoWallpaperHue()
+                                    brightness = MainComposePreferences.getAutoWallpaperBrightness(),
+                                    contrast = MainComposePreferences.getAutoWallpaperContrast(),
+                                    blur = MainComposePreferences.getAutoWallpaperBlur(),
+                                    saturation = MainComposePreferences.getAutoWallpaperSaturation(),
+                                    hueRed = MainComposePreferences.getAutoWallpaperHueRed(),
+                                    hueGreen = MainComposePreferences.getAutoWallpaperHueGreen(),
+                                    hueBlue = MainComposePreferences.getAutoWallpaperHueBlue()
                             )
 
                             if (MainPreferences.isSettingForHomeScreen()) {
@@ -349,11 +355,13 @@ class AutoWallpaperService : Service() {
                             getBitmapFromUri(getWallpapersFromDatabase()?.random()!!) {
                                 var bitmap = it.copy(it.config ?: Bitmap.Config.ARGB_8888, true)
                                 bitmap = bitmap.applyEffects(
-                                    brightness = MainComposePreferences.getAutoWallpaperBrightness(),
-                                    contrast = MainComposePreferences.getAutoWallpaperContrast(),
-                                    blur = MainComposePreferences.getAutoWallpaperBlur(),
-                                    saturation = MainComposePreferences.getAutoWallpaperSaturation(),
-                                    hue = MainComposePreferences.getAutoWallpaperHue()
+                                        brightness = MainComposePreferences.getAutoWallpaperBrightness(),
+                                        contrast = MainComposePreferences.getAutoWallpaperContrast(),
+                                        blur = MainComposePreferences.getAutoWallpaperBlur(),
+                                        saturation = MainComposePreferences.getAutoWallpaperSaturation(),
+                                        hueRed = MainComposePreferences.getAutoWallpaperHueRed(),
+                                        hueGreen = MainComposePreferences.getAutoWallpaperHueGreen(),
+                                        hueBlue = MainComposePreferences.getAutoWallpaperHueBlue()
                                 )
 
                                 wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_LOCK)
@@ -367,11 +375,13 @@ class AutoWallpaperService : Service() {
                             getBitmapFromUri(getWallpapersFromDatabase()?.random()!!) {
                                 var bitmap = it.copy(it.config ?: Bitmap.Config.ARGB_8888, true)
                                 bitmap = bitmap.applyEffects(
-                                    brightness = MainComposePreferences.getAutoWallpaperBrightness(),
-                                    contrast = MainComposePreferences.getAutoWallpaperContrast(),
-                                    blur = MainComposePreferences.getAutoWallpaperBlur(),
-                                    saturation = MainComposePreferences.getAutoWallpaperSaturation(),
-                                    hue = MainComposePreferences.getAutoWallpaperHue()
+                                        brightness = MainComposePreferences.getAutoWallpaperBrightness(),
+                                        contrast = MainComposePreferences.getAutoWallpaperContrast(),
+                                        blur = MainComposePreferences.getAutoWallpaperBlur(),
+                                        saturation = MainComposePreferences.getAutoWallpaperSaturation(),
+                                        hueRed = MainComposePreferences.getAutoWallpaperHueRed(),
+                                        hueGreen = MainComposePreferences.getAutoWallpaperHueGreen(),
+                                        hueBlue = MainComposePreferences.getAutoWallpaperHueBlue()
                                 )
 
                                 wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_SYSTEM)
@@ -433,10 +443,10 @@ class AutoWallpaperService : Service() {
                     val wallpapers = wallpaperDao?.getWallpapersByMD5s(tag?.sum!!)
                     try {
                         wallpaper = wallpapers?.get(
-                            MainComposePreferences.getLastHomeWallpaperPosition().plus(1)
+                                MainComposePreferences.getLastHomeWallpaperPosition().plus(1)
                         )
                         MainComposePreferences.setLastHomeWallpaperPosition(
-                            MainComposePreferences.getLastHomeWallpaperPosition().plus(1)
+                                MainComposePreferences.getLastHomeWallpaperPosition().plus(1)
                         )
                     } catch (e: IndexOutOfBoundsException) {
                         MainComposePreferences.setLastHomeWallpaperPosition(0)
@@ -457,10 +467,10 @@ class AutoWallpaperService : Service() {
                 if (MainPreferences.isLinearAutoWallpaper()) {
                     try {
                         wallpaper = wallpapers?.get(
-                            MainComposePreferences.getLastHomeWallpaperPosition().plus(1)
+                                MainComposePreferences.getLastHomeWallpaperPosition().plus(1)
                         )
                         MainComposePreferences.setLastHomeWallpaperPosition(
-                            MainComposePreferences.getLastHomeWallpaperPosition().plus(1)
+                                MainComposePreferences.getLastHomeWallpaperPosition().plus(1)
                         )
                     } catch (e: IndexOutOfBoundsException) {
                         MainComposePreferences.setLastHomeWallpaperPosition(0)
@@ -501,10 +511,10 @@ class AutoWallpaperService : Service() {
                 wallpaper = if (MainPreferences.isLinearAutoWallpaper()) {
                     try {
                         wallpapers?.get(
-                            MainComposePreferences.getLastLockWallpaperPosition().plus(1)
+                                MainComposePreferences.getLastLockWallpaperPosition().plus(1)
                         ).also {
                             MainComposePreferences.setLastLockWallpaperPosition(
-                                MainComposePreferences.getLastLockWallpaperPosition().plus(1)
+                                    MainComposePreferences.getLastLockWallpaperPosition().plus(1)
                             )
                         }
                     } catch (e: IndexOutOfBoundsException) {
@@ -524,10 +534,10 @@ class AutoWallpaperService : Service() {
                 wallpaper = if (MainPreferences.isLinearAutoWallpaper()) {
                     try {
                         wallpapers?.get(
-                            MainComposePreferences.getLastLockWallpaperPosition().plus(1)
+                                MainComposePreferences.getLastLockWallpaperPosition().plus(1)
                         ).also {
                             MainComposePreferences.setLastLockWallpaperPosition(
-                                MainComposePreferences.getLastLockWallpaperPosition().plus(1)
+                                    MainComposePreferences.getLastLockWallpaperPosition().plus(1)
                             )
                         }
                     } catch (e: IndexOutOfBoundsException) {
