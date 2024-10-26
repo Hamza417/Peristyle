@@ -36,6 +36,15 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
         return systemWallpaperData
     }
 
+    init {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+            WallpaperManager.getInstance(application).addOnColorsChangedListener({ _, _ ->
+                                                                                     postCurrentSystemWallpaper()
+                                                                                     Log.i("HomeScreenViewModel", "Wallpaper colors changed")
+                                                                                 }, Handler(Looper.getMainLooper()))
+        }
+    }
+
     private fun postCurrentSystemWallpaper() {
         Log.i("HomeScreenViewModel", "Posting current system wallpaper")
         viewModelScope.launch(Dispatchers.IO) {
