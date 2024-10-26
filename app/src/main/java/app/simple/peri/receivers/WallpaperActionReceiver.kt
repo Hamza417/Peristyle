@@ -7,28 +7,43 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import androidx.documentfile.provider.DocumentFile
+import app.simple.peri.R
 import app.simple.peri.services.AutoWallpaperService
 import app.simple.peri.utils.FileUtils.toUri
 
 class WallpaperActionReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
-        if (intent.action == AutoWallpaperService.ACTION_DELETE_WALLPAPER) {
-            val isHomeScreen = intent.getBooleanExtra("isHomeScreen", true)
-            val wallpaperManager = WallpaperManager.getInstance(context)
+        when (intent.action) {
+            AutoWallpaperService.ACTION_DELETE_WALLPAPER -> {
+                val isHomeScreen = intent.getBooleanExtra("isHomeScreen", true)
+                val wallpaperManager = WallpaperManager.getInstance(context)
 
-            if (isHomeScreen) {
-                wallpaperManager.clear(WallpaperManager.FLAG_SYSTEM)
-            } else {
-                wallpaperManager.clear(WallpaperManager.FLAG_LOCK)
+                if (isHomeScreen) {
+                    wallpaperManager.clear(WallpaperManager.FLAG_SYSTEM)
+                } else {
+                    wallpaperManager.clear(WallpaperManager.FLAG_LOCK)
+                }
+
+                val uri = intent.getStringExtra(AutoWallpaperService.EXTRA_WALLPAPER_URI)!!.toUri()
+                val documentFile = DocumentFile.fromSingleUri(context, uri)
+                documentFile?.delete()
+                Log.d(TAG, "Wallpaper deleted")
+
+                val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                notificationManager.cancel(intent.getIntExtra(AutoWallpaperService.EXTRA_NOTIFICATION_ID, 0))
             }
+            AutoWallpaperService.ACTION_SEND_WALLPAPER -> {
+                val uri = intent.getStringExtra(AutoWallpaperService.EXTRA_WALLPAPER_URI)!!.toUri()
+                val sendIntent = Intent(Intent.ACTION_SEND).apply {
+                    type = "image/*"
+                    putExtra(Intent.EXTRA_STREAM, uri)
+                }
 
-            val uri = intent.getStringExtra(AutoWallpaperService.EXTRA_WALLPAPER_URI)!!.toUri()
-            val documentFile = DocumentFile.fromSingleUri(context, uri)
-            documentFile?.delete()
-            Log.d(TAG, "Wallpaper deleted")
+                context.startActivity(Intent.createChooser(sendIntent, context.getString(R.string.send)))
 
-            val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.cancel(intent.getIntExtra(AutoWallpaperService.EXTRA_NOTIFICATION_ID, 0))
+                val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                notificationManager.cancel(intent.getIntExtra(AutoWallpaperService.EXTRA_NOTIFICATION_ID, 0))
+            }
         }
     }
 

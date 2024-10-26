@@ -614,8 +614,19 @@ class AutoWallpaperService : Service() {
             putExtra(EXTRA_WALLPAPER_URI, uri.toString())
             putExtra(EXTRA_NOTIFICATION_ID, notificationId)
         }
+
+        val sendIntent = Intent(this, WallpaperActionReceiver::class.java).apply {
+            action = ACTION_SEND_WALLPAPER
+            putExtra(EXTRA_WALLPAPER_URI, uri.toString())
+            putExtra(EXTRA_IS_HOME_SCREEN, isHomeScreen)
+            putExtra(EXTRA_NOTIFICATION_ID, notificationId)
+        }
+
         val deletePendingIntent: PendingIntent = PendingIntent.getBroadcast(
                 this, 0, deleteIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+        val sendPendingIntent: PendingIntent = PendingIntent.getActivity(
+                this, 0, sendIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
         val notification = NotificationCompat.Builder(this, channelId)
@@ -623,6 +634,7 @@ class AutoWallpaperService : Service() {
             .setContentTitle(if (isHomeScreen) applicationContext.getString(R.string.home_screen) else applicationContext.getString(R.string.lock_screen))
             .setContentText(applicationContext.getString(R.string.wallpaper_changed))
             .addAction(R.drawable.ic_delete, applicationContext.getString(R.string.delete_current_wallpaper), deletePendingIntent)
+            .addAction(R.drawable.ic_share, applicationContext.getString(R.string.send), sendPendingIntent)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setSilent(true)
             .build()
@@ -633,6 +645,7 @@ class AutoWallpaperService : Service() {
     companion object {
         const val ACTION_NEXT_WALLPAPER: String = "app.simple.peri.services.action.NEXT_WALLPAPER"
         const val ACTION_DELETE_WALLPAPER = "app.simple.peri.services.action.DELETE_WALLPAPER"
+        const val ACTION_SEND_WALLPAPER = "app.simple.peri.services.action.SEND_WALLPAPER"
 
         const val EXTRA_IS_HOME_SCREEN = "app.simple.peri.services.extra.IS_HOME_SCREEN"
         const val EXTRA_WALLPAPER_URI = "app.simple.peri.services.extra.URI"
