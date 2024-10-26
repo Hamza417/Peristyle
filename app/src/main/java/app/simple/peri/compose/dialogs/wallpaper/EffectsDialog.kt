@@ -1,8 +1,10 @@
 package app.simple.peri.compose.dialogs.wallpaper
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Slider
@@ -26,26 +28,36 @@ fun EffectsDialog(
         initialBrightnessValue: Float = 1f,
         initialContrastValue: Float = 1f,
         initialSaturationValue: Float = 1f,
-        initialHueValue: Float = 0f,
-        onApplyEffects: (Float, Float, Float, Float, Float) -> Unit
+        initialHueRedValue: Float = 0f,
+        initialHueGreenValue: Float = 0f,
+        initialHueBlueValue: Float = 0f,
+        onApplyEffects: (Float, Float, Float, Float, Float, Float, Float) -> Unit
 ) {
+    val space = 16.dp
+
     if (showDialog) {
         val blurValue = remember { mutableFloatStateOf(initialBlurValue) }
         val brightnessValue = remember { mutableFloatStateOf(initialBrightnessValue) }
         val contrastValue = remember { mutableFloatStateOf(initialContrastValue) }
         val saturationValue = remember { mutableFloatStateOf(initialSaturationValue) }
-        val hueValue = remember { mutableFloatStateOf(initialHueValue) }
+        val hueRedValue = remember { mutableFloatStateOf(initialHueRedValue) }
+        val hueGreenValue = remember { mutableFloatStateOf(initialHueGreenValue) }
+        val hueBlueValue = remember { mutableFloatStateOf(initialHueBlueValue) }
 
         LaunchedEffect(blurValue.floatValue,
                        brightnessValue.floatValue,
                        contrastValue.floatValue,
                        saturationValue.floatValue,
-                       hueValue.floatValue) {
+                       hueRedValue.floatValue,
+                       hueGreenValue.floatValue,
+                       hueBlueValue.floatValue) {
             onApplyEffects(blurValue.floatValue,
                            brightnessValue.floatValue,
                            contrastValue.floatValue,
                            saturationValue.floatValue,
-                           hueValue.floatValue)
+                           hueRedValue.floatValue,
+                           hueGreenValue.floatValue,
+                           hueBlueValue.floatValue)
         }
 
         fun resetValues() {
@@ -53,7 +65,9 @@ fun EffectsDialog(
             brightnessValue.floatValue = 1F
             contrastValue.floatValue = 1F
             saturationValue.floatValue = 1F
-            hueValue.floatValue = 0F
+            hueRedValue.floatValue = 0F
+            hueGreenValue.floatValue = 0F
+            hueBlueValue.floatValue = 0F
         }
 
         AlertDialog(
@@ -126,20 +140,49 @@ fun EffectsDialog(
                                 )
                         )
                         Spacer(modifier = Modifier.height(16.dp))
+
                         Text(
                                 text = stringResource(id = R.string.hue),
                                 color = Color.White
                         )
-                        Slider(
-                                value = hueValue.floatValue,
-                                onValueChange = { hueValue.floatValue = it },
-                                valueRange = 0F..360F,
-                                colors = SliderDefaults.colors(
-                                        thumbColor = Color.White,
-                                        activeTrackColor = Color.White,
-                                        inactiveTrackColor = Color.White.copy(alpha = 0.1F),
-                                )
-                        )
+
+                        Row {
+                            Slider(
+                                    value = hueRedValue.floatValue,
+                                    onValueChange = { hueRedValue.floatValue = it },
+                                    valueRange = 0F..360F,
+                                    colors = SliderDefaults.colors(
+                                            thumbColor = Color.Red,
+                                            activeTrackColor = Color.White,
+                                            inactiveTrackColor = Color.White.copy(alpha = 0.1F),
+                                    ),
+                                    modifier = Modifier.weight(1F)
+                            )
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Slider(
+                                    value = hueGreenValue.floatValue,
+                                    onValueChange = { hueGreenValue.floatValue = it },
+                                    valueRange = 0F..360F,
+                                    colors = SliderDefaults.colors(
+                                            thumbColor = Color.Green,
+                                            activeTrackColor = Color.White,
+                                            inactiveTrackColor = Color.White.copy(alpha = 0.1F),
+                                    ),
+                                    modifier = Modifier.weight(1F)
+                            )
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Slider(
+                                    value = hueBlueValue.floatValue,
+                                    onValueChange = { hueBlueValue.floatValue = it },
+                                    valueRange = 0F..360F,
+                                    colors = SliderDefaults.colors(
+                                            thumbColor = Color.Blue,
+                                            activeTrackColor = Color.White,
+                                            inactiveTrackColor = Color.White.copy(alpha = 0.1F),
+                                    ),
+                                    modifier = Modifier.weight(1F)
+                            )
+                        }
                     }
                 },
                 confirmButton = {

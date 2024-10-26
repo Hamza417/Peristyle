@@ -98,7 +98,9 @@ fun Wallpaper(context: Context, navController: NavHostController) {
     var brightnessValue by remember { mutableFloatStateOf(0f) } // -255F..255F
     var contrastValue by remember { mutableFloatStateOf(1f) } // 0F..10F
     var saturationValue by remember { mutableFloatStateOf(1f) } // 0F..2F
-    var hueValue by remember { mutableFloatStateOf(0f) } // 0F..360F
+    var hueValueRed by remember { mutableFloatStateOf(0f) } // 0F..360F
+    var hueValueGreen by remember { mutableFloatStateOf(0f) } // 0F..360F
+    var hueValueBlue by remember { mutableFloatStateOf(0f) } // 0F..360F
     var tags by remember { mutableStateOf(emptyList<String>()) }
     val coroutineScope = rememberCoroutineScope()
     val graphicsLayer = rememberGraphicsLayer()
@@ -121,13 +123,15 @@ fun Wallpaper(context: Context, navController: NavHostController) {
                 initialBrightnessValue = brightnessValue,
                 initialContrastValue = contrastValue,
                 initialSaturationValue = saturationValue,
-                initialHueValue = hueValue,
-                onApplyEffects = { blur, brightness, contrast, saturation, hue ->
+                initialHueRedValue = hueValueRed,
+                onApplyEffects = { blur, brightness, contrast, saturation, hueRed, hueGreen, hueBlue ->
                     blurValue = blur
                     brightnessValue = brightness
                     contrastValue = contrast
                     saturationValue = saturation
-                    hueValue = hue
+                    hueValueRed = hueRed
+                    hueValueGreen = hueGreen
+                    hueValueBlue = hueBlue
                 }
         )
     }
@@ -152,9 +156,9 @@ fun Wallpaper(context: Context, navController: NavHostController) {
         val colorMatrix = ColorMatrix()
 
         // Create color matrices for each transformation
-        val rotateRedMatrix = ColorMatrix().apply { setToRotateRed(hueValue) }
-        val rotateGreenMatrix = ColorMatrix().apply { setToRotateGreen(hueValue) }
-        val rotateBlueMatrix = ColorMatrix().apply { setToRotateBlue(hueValue) }
+        val rotateRedMatrix = ColorMatrix().apply { setToRotateRed(hueValueRed) }
+        val rotateGreenMatrix = ColorMatrix().apply { setToRotateGreen(hueValueGreen) }
+        val rotateBlueMatrix = ColorMatrix().apply { setToRotateBlue(hueValueBlue) }
         val saturationMatrix = ColorMatrix().apply { setToSaturation(saturationValue) }
         val scale = contrastValue
         val translate = (-0.5f * scale + 0.5f + brightnessValue / 255f) * 255f
