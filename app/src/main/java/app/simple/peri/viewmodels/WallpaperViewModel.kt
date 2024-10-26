@@ -186,6 +186,7 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
                     folders.add(folder)
                 }
             }
+
             foldersData.postValue(folders)
         }
     }

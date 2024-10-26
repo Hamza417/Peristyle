@@ -49,6 +49,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.NavController
 import app.simple.peri.BuildConfig
@@ -147,8 +148,10 @@ fun Setup(context: Context, navController: NavController? = null) {
 fun Permissions(modifier: Modifier, context: Context, navController: NavController? = null) {
     var showExternalPermissionDialog by remember { mutableStateOf(false) }
     var showBatteryOptimizationDialog by remember { mutableStateOf(false) }
+    var showNotificationDialog by remember { mutableStateOf(false) }
     var requestPermissionLauncher by remember { mutableStateOf(false) }
     var requestMediaImages by remember { mutableStateOf(false) }
+    var requestNotificationPermission by remember { mutableStateOf(false) }
 
     if (showExternalPermissionDialog) {
         ShowWarningDialog(
@@ -170,8 +173,24 @@ fun Permissions(modifier: Modifier, context: Context, navController: NavControll
         )
     }
 
+    if (showNotificationDialog) {
+        ShowWarningDialog(
+                title = context.getString(R.string.notifications),
+                warning = context.getString(R.string.permission_granted),
+                onDismiss = {
+                    showNotificationDialog = false
+                }
+        )
+    }
+
     if (requestPermissionLauncher) {
         RequestStoragePermissions()
+    }
+
+    if (requestNotificationPermission) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            RequestNotificationPermission()
+        }
     }
 
     if (requestMediaImages) {
@@ -258,6 +277,20 @@ fun Permissions(modifier: Modifier, context: Context, navController: NavControll
                 )
                 DescriptionPreference(description = context.getString(R.string.allow_media_access_info))
             }
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            ClickablePreference(
+                    title = context.getString(R.string.notifications),
+                    description = context.getString(R.string.notifications_summary),
+                    onClick = {
+                        if (NotificationManagerCompat.from(context).areNotificationsEnabled()) {
+                            showNotificationDialog = true
+                        } else {
+                            requestNotificationPermission = true
+                        }
+                    }
+            )
         }
     }
 }
@@ -390,6 +423,26 @@ fun RequestStoragePermissions() {
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
+fun RequestNotificationPermission() {
+    val requestPermissionLauncher = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        // Handle the result of the permission request
+        if (isGranted) {
+            Log.d("Permission", "NOTIFICATION granted")
+        } else {
+            Log.d("Permission", "NOTIFICATION denied")
+        }
+    }
+
+    // Ensure the launcher is initialized before launching the permission request
+    LaunchedEffect(Unit) {
+        requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
+@Composable
 fun RequestReadMediaImagesPermission(onCancel: () -> Unit) {
     val requestPermissionLauncher = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.RequestPermission()
@@ -416,12 +469,14 @@ fun isSetupComplete(context: Context): Boolean {
                     && Environment.isExternalStorageManager()
                     && context.isBatteryOptimizationDisabled()
                     && PermissionUtils.checkMediaImagesPermission(context)
+                    && PermissionUtils.checkNotificationPermission(context)
         }
 
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
             context.contentResolver.persistedUriPermissions.isNotEmpty()
                     && Environment.isExternalStorageManager()
                     && context.isBatteryOptimizationDisabled()
+                    && PermissionUtils.checkStoragePermission(context)
         }
 
         else -> {

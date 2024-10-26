@@ -201,4 +201,6 @@
     <string name="original_aspect_ratio_summary">Render wallpaper thumbnails in original aspect ratio of wallpapers.</string>
     <string name="wallpaper_changed">Your wallpaper has changed.</string>
     <string name="delete_current_wallpaper">Delete Current Wallpaper</string>
+    <string name="notifications">Post Notifications</string>
+    <string name="notifications_summary">Allows the app to post auto wallpaper related notification.</string>
 </resources>
