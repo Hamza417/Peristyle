@@ -45,6 +45,7 @@ object MainComposePreferences {
     private const val DEVICE_HEIGHT = "device_height"
     private const val BOTTOM_HEADER = "bottom_header"
     private const val ORIGINAL_ASPECT_RATIO = "original_aspect_ratio"
+    private const val AUTO_WALLPAPER_NOTIFICATION = "auto_wallpaper_notification"
 
     // ----------------------------------------------------------------------------------------------------- //
 
@@ -467,5 +468,15 @@ object MainComposePreferences {
 
     fun setOriginalAspectRatio(value: Boolean) {
         getSharedPreferences().edit().putBoolean(ORIGINAL_ASPECT_RATIO, value).apply()
+    }
+
+    // ----------------------------------------------------------------------------------------------------- //
+
+    fun getAutoWallpaperNotification(): Boolean {
+        return getSharedPreferences().getBoolean(AUTO_WALLPAPER_NOTIFICATION, true)
+    }
+
+    fun setAutoWallpaperNotification(value: Boolean) {
+        getSharedPreferences().edit().putBoolean(AUTO_WALLPAPER_NOTIFICATION, value).apply()
     }
 }

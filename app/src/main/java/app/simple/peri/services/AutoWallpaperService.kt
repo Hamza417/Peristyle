@@ -602,6 +602,10 @@ class AutoWallpaperService : Service() {
     }
 
     private fun showWallpaperChangedNotification(isHomeScreen: Boolean, uri: Uri) {
+        if (MainComposePreferences.getAutoWallpaperNotification().invert()) {
+            return
+        }
+
         val channelId = if (isHomeScreen) CHANNEL_ID_HOME else CHANNEL_ID_LOCK
         val notificationId = if (isHomeScreen) 1 else 2
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -615,18 +619,17 @@ class AutoWallpaperService : Service() {
             putExtra(EXTRA_NOTIFICATION_ID, notificationId)
         }
 
-        val sendIntent = Intent(this, WallpaperActionReceiver::class.java).apply {
-            action = ACTION_SEND_WALLPAPER
-            putExtra(EXTRA_WALLPAPER_URI, uri.toString())
-            putExtra(EXTRA_IS_HOME_SCREEN, isHomeScreen)
-            putExtra(EXTRA_NOTIFICATION_ID, notificationId)
+        val sendIntent = Intent(Intent.ACTION_SEND).apply {
+            type = "image/*"
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_STREAM, uri)
         }
 
         val deletePendingIntent: PendingIntent = PendingIntent.getBroadcast(
                 this, 0, deleteIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
         val sendPendingIntent: PendingIntent = PendingIntent.getActivity(
-                this, 0, sendIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                this, 0, Intent.createChooser(sendIntent, null), PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
         val notification = NotificationCompat.Builder(this, channelId)

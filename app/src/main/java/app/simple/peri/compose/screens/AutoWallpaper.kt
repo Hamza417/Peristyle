@@ -509,6 +509,14 @@ fun AutoWallpaper(navController: NavController? = null) {
                 MainPreferences.setLinearAutoWallpaper(it)
             }
 
+            SwitchPreference(
+                    title = context.getString(R.string.notifications),
+                    description = context.getString(R.string.notifications_summary),
+                    checked = MainComposePreferences.getAutoWallpaperNotification()
+            ) {
+                MainComposePreferences.setAutoWallpaperNotification(it)
+            }
+
             if (showEffectsDialog.value) {
                 AutoWallpaperEffectsDialog(
                         showDialog = showEffectsDialog.value,
