@@ -210,10 +210,29 @@ class AutoWallpaperService : Service() {
     }
 
     private fun calculateVisibleCropHint(bitmap: Bitmap): Rect {
-        val left = bitmap.width.div(2) - displayWidth.div(2)
-        val top = 0
-        val right = left + displayWidth
-        val bottom = bitmap.height
+        // Calculate the aspect ratio of the display
+        val aspectRatio = displayWidth.toFloat() / displayHeight.toFloat()
+        // Calculate the aspect ratio of the bitmap
+        val bitmapAspectRatio = bitmap.width.toFloat() / bitmap.height.toFloat()
+
+        // Determine the crop width and height based on the aspect ratios
+        val (cropWidth, cropHeight) = if (bitmapAspectRatio > aspectRatio) {
+            // If the bitmap is wider than the desired aspect ratio
+            val width = (bitmap.height * aspectRatio).toInt()
+            width to bitmap.height
+        } else {
+            // If the bitmap is taller than the desired aspect ratio
+            val height = (bitmap.width / aspectRatio).toInt()
+            bitmap.width to height
+        }
+
+        // Calculate the left, top, right, and bottom coordinates for the crop rectangle
+        val left = (bitmap.width - cropWidth) / 2
+        val top = (bitmap.height - cropHeight) / 2
+        val right = left + cropWidth
+        val bottom = top + cropHeight
+
+        // Return the calculated crop rectangle
         return Rect(left, top, right, bottom)
     }
 
