@@ -199,4 +199,6 @@
     <string name="bottom_bar_summary">Move the header to the bottom of the app.</string>
     <string name="original_aspect_ratio">Original Aspect Ratio</string>
     <string name="original_aspect_ratio_summary">Render wallpaper thumbnails in original aspect ratio of wallpapers.</string>
+    <string name="wallpaper_changed">Your wallpaper has changed.</string>
+    <string name="delete_current_wallpaper">Delete Current Wallpaper</string>
 </resources>

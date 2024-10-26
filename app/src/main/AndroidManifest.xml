@@ -129,6 +129,11 @@
         </receiver>
 
         <receiver
+            android:name=".receivers.WallpaperActionReceiver"
+            android:enabled="true"
+            android:exported="false" />
+
+        <receiver
             android:name=".widgets.NextWallpaperWidget"
             android:enabled="true"
             android:exported="true"

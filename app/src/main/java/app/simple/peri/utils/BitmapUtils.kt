@@ -123,8 +123,7 @@ object BitmapUtils {
 
         try {
             StackBlur().blurRgb(bitmap, blur.times(Misc.BLUR_TIMES).toInt())
-        } catch (e: Exception) {
-            e.printStackTrace()
+        } catch (_: Exception) {
         }
 
         return bitmap
