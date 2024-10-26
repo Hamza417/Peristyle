@@ -38,7 +38,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -79,6 +78,7 @@ import app.simple.peri.utils.BitmapUtils.applyEffects
 import app.simple.peri.utils.BitmapUtils.multiplyMatrices
 import app.simple.peri.utils.FileUtils.toSize
 import app.simple.peri.utils.FileUtils.toUri
+import app.simple.peri.viewmodels.StateViewModel
 import app.simple.peri.viewmodels.TagsViewModel
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
 import dev.chrisbanes.haze.HazeDefaults
@@ -90,17 +90,17 @@ import me.saket.telephoto.zoomable.glide.ZoomableGlideImage
 
 @Composable
 fun Wallpaper(context: Context, navController: NavHostController) {
-    val wallpaper =
-        navController.previousBackStackEntry?.savedStateHandle?.get<Wallpaper>(Routes.WALLPAPER_ARG)
+    val wallpaper = navController.previousBackStackEntry?.savedStateHandle?.get<Wallpaper>(Routes.WALLPAPER_ARG)
+    val stateViewModel: StateViewModel = viewModel()
     var showDialog by remember { mutableStateOf(false) }
     var drawable by remember { mutableStateOf<Drawable?>(null) }
-    var blurValue by remember { mutableFloatStateOf(0f) } // 0F..25F
-    var brightnessValue by remember { mutableFloatStateOf(0f) } // -255F..255F
-    var contrastValue by remember { mutableFloatStateOf(1f) } // 0F..10F
-    var saturationValue by remember { mutableFloatStateOf(1f) } // 0F..2F
-    var hueValueRed by remember { mutableFloatStateOf(0f) } // 0F..360F
-    var hueValueGreen by remember { mutableFloatStateOf(0f) } // 0F..360F
-    var hueValueBlue by remember { mutableFloatStateOf(0f) } // 0F..360F
+    var blurValue by remember { stateViewModel::blurValue } // 0F..25F
+    var brightnessValue by remember { stateViewModel::brightnessValue } // -255F..255F
+    var contrastValue by remember { stateViewModel::contrastValue } // 0F..10F
+    var saturationValue by remember { stateViewModel::saturationValue } // 0F..2F
+    var hueValueRed by remember { stateViewModel::hueValueRed } // 0F..360F
+    var hueValueGreen by remember { stateViewModel::hueValueGreen } // 0F..360F
+    var hueValueBlue by remember { stateViewModel::hueValueBlue } // 0F..360F
     var tags by remember { mutableStateOf(emptyList<String>()) }
     val coroutineScope = rememberCoroutineScope()
     val graphicsLayer = rememberGraphicsLayer()
@@ -124,6 +124,8 @@ fun Wallpaper(context: Context, navController: NavHostController) {
                 initialContrastValue = contrastValue,
                 initialSaturationValue = saturationValue,
                 initialHueRedValue = hueValueRed,
+                initialHueGreenValue = hueValueGreen,
+                initialHueBlueValue = hueValueBlue,
                 onApplyEffects = { blur, brightness, contrast, saturation, hueRed, hueGreen, hueBlue ->
                     blurValue = blur
                     brightnessValue = brightness
@@ -521,7 +523,8 @@ fun setWallpaper(context: Context, flags: Int, drawable: Drawable) {
 
 @Composable
 fun ExportWallpaper(context: Context, drawable: Drawable, wallpaper: Wallpaper, onExport: () -> Unit = {}) {
-    val wallpaperExportLauncher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("image/x-png")) { uri ->
+    val wallpaperExportLauncher = rememberLauncherForActivityResult(
+            ActivityResultContracts.CreateDocument("image/x-png")) { uri ->
         uri?.let {
             context.contentResolver.openOutputStream(it)?.use { outputStream ->
                 drawable.toBitmap().compress(Bitmap.CompressFormat.PNG, 100, outputStream)
