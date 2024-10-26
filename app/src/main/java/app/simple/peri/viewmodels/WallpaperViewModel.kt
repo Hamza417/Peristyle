@@ -176,16 +176,30 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
                     val folder = Folder().apply {
                         name = pickedDirectory.name
                         this.uri = uri.uri.toString()
-                        count =
-                            wallpaperDao?.getWallpapersByUriHashcode(uri.uri?.hashCode() ?: 0)?.size
-                                ?: 0
+                        count = wallpaperDao?.getWallpapersCountByUriHashcode(uri.uri.hashCode()) ?: 0
                         hashcode = uri.uri.hashCode()
-                        isNomedia = pickedDirectory.findFile(".nomedia")?.exists() == true
+                        isNomedia = false
                     }
 
                     folders.add(folder)
                 }
             }
+
+            foldersData.postValue(folders)
+
+            /**
+             * Finding .nomedia files can take a long time
+             * So we post the folders first and then find the .nomedia files
+             */
+            folders.forEach { folder ->
+                val pickedDirectory = DocumentFile.fromTreeUri(getApplication(), Uri.parse(folder.uri))
+                if (pickedDirectory?.exists() == true) {
+                    if (pickedDirectory.findFile(".nomedia")?.exists() == true) {
+                        folder.isNomedia = true
+                    }
+                }
+            }
+
 
             foldersData.postValue(folders)
         }

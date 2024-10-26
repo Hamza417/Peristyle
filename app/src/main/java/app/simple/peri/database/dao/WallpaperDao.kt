@@ -51,6 +51,12 @@ interface WallpaperDao {
     fun getWallpapersByUriHashcode(uriHashcode: Int): List<Wallpaper>
 
     /**
+     * Get count of wallpapers of the specified [uriHashcode]
+     */
+    @Query("SELECT COUNT(*) FROM wallpapers WHERE uri_hashcode = :uriHashcode")
+    fun getWallpapersCountByUriHashcode(uriHashcode: Int): Int
+
+    /**
      * Clean any entry that doesn't have any of the
      * specified extension
      *

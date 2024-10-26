@@ -78,7 +78,6 @@ import app.simple.peri.models.DisplayDimension
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.utils.FileUtils.toUri
 import app.simple.peri.viewmodels.HomeScreenViewModel
-import app.simple.peri.viewmodels.WallpaperViewModel
 import com.bumptech.glide.integration.compose.CrossFade
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
@@ -502,10 +501,4 @@ fun ShowTagDialog(title: String, onDismiss: () -> Unit) {
             }
         }
     )
-}
-
-@Composable
-fun InitWallpaperViewModel() {
-    val wallpaperViewModel: WallpaperViewModel = viewModel()
-    wallpaperViewModel.refresh()
 }
