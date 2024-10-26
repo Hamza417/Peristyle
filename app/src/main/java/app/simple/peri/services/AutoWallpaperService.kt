@@ -626,13 +626,13 @@ class AutoWallpaperService : Service() {
         }
 
         val channelId = if (isHomeScreen) CHANNEL_ID_HOME else CHANNEL_ID_LOCK
-        val notificationId = if (isHomeScreen) 1 else 2
+        val notificationId = if (isHomeScreen) HOME_NOTIFICATION_ID else LOCK_NOTIFICATION_ID
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         notificationManager.cancel(notificationId) // Clear existing notification
 
         val deleteIntent = Intent(this, WallpaperActionReceiver::class.java).apply {
-            action = ACTION_DELETE_WALLPAPER
+            action = if (isHomeScreen) ACTION_DELETE_WALLPAPER_HOME else ACTION_DELETE_WALLPAPER_LOCK
             putExtra(EXTRA_IS_HOME_SCREEN, isHomeScreen)
             putExtra(EXTRA_WALLPAPER_URI, uri.toString())
             putExtra(EXTRA_NOTIFICATION_ID, notificationId)
@@ -645,11 +645,10 @@ class AutoWallpaperService : Service() {
         }
 
         val deletePendingIntent: PendingIntent = PendingIntent.getBroadcast(
-                this, 0, deleteIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
+                this, notificationId, deleteIntent, PendingIntent.FLAG_IMMUTABLE)
+
         val sendPendingIntent: PendingIntent = PendingIntent.getActivity(
-                this, 0, Intent.createChooser(sendIntent, null), PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
+                this, notificationId, Intent.createChooser(sendIntent, null), PendingIntent.FLAG_IMMUTABLE)
 
         val notification = NotificationCompat.Builder(this, channelId)
             .setSmallIcon(R.drawable.ic_peristyle)
@@ -666,8 +665,8 @@ class AutoWallpaperService : Service() {
 
     companion object {
         const val ACTION_NEXT_WALLPAPER: String = "app.simple.peri.services.action.NEXT_WALLPAPER"
-        const val ACTION_DELETE_WALLPAPER = "app.simple.peri.services.action.DELETE_WALLPAPER"
-        const val ACTION_SEND_WALLPAPER = "app.simple.peri.services.action.SEND_WALLPAPER"
+        const val ACTION_DELETE_WALLPAPER_HOME = "app.simple.peri.services.action.DELETE_WALLPAPER_HOME"
+        const val ACTION_DELETE_WALLPAPER_LOCK = "app.simple.peri.services.action.DELETE_WALLPAPER_LOCK"
 
         const val EXTRA_IS_HOME_SCREEN = "app.simple.peri.services.extra.IS_HOME_SCREEN"
         const val EXTRA_WALLPAPER_URI = "app.simple.peri.services.extra.URI"
@@ -676,5 +675,8 @@ class AutoWallpaperService : Service() {
         private const val TAG = "AutoWallpaperService"
         private const val CHANNEL_ID_HOME = "wallpaper_home_channel"
         private const val CHANNEL_ID_LOCK = "wallpaper_lock_channel"
+
+        const val HOME_NOTIFICATION_ID = 1234
+        const val LOCK_NOTIFICATION_ID = 5367
     }
 }
