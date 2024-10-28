@@ -37,11 +37,14 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
     }
 
     init {
+        fun post() {
+            postCurrentSystemWallpaper()
+            Log.i("HomeScreenViewModel", "Wallpaper colors changed")
+        }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
-            WallpaperManager.getInstance(application).addOnColorsChangedListener({ _, _ ->
-                                                                                     postCurrentSystemWallpaper()
-                                                                                     Log.i("HomeScreenViewModel", "Wallpaper colors changed")
-                                                                                 }, Handler(Looper.getMainLooper()))
+            WallpaperManager.getInstance(application)
+                .addOnColorsChangedListener({ _, _ -> post() }, Handler(Looper.getMainLooper()))
         }
     }
 
@@ -76,19 +79,16 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
         systemFile.outputStream().use { systemBitmap?.compress(Bitmap.CompressFormat.PNG, 100, it) }
         lockFile.outputStream().use { lockBitmap?.compress(Bitmap.CompressFormat.PNG, 100, it) }
 
-        val systemUri = getFileUri(systemFile)
-        val lockUri = getFileUri(lockFile)
-
         return try {
             arrayListOf(
-                    Wallpaper.createFromUri(systemUri.toString(), getApplication()),
-                    Wallpaper.createFromUri(lockUri.toString(), getApplication()),
+                    Wallpaper.createFromFile(systemFile),
+                    Wallpaper.createFromFile(lockFile),
                     getRandomWallpaperFromDatabase()
             )
         } catch (e: NoSuchElementException) {
             arrayListOf(
-                    Wallpaper.createFromUri(systemUri.toString(), getApplication()),
-                    Wallpaper.createFromUri(lockUri.toString(), getApplication()),
+                    Wallpaper.createFromFile(systemFile),
+                    Wallpaper.createFromFile(lockFile),
                     Wallpaper()
             )
         }

@@ -79,6 +79,7 @@ import app.simple.peri.compose.nav.Routes
 import app.simple.peri.factories.TagsViewModelFactory
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.preferences.MainComposePreferences
+import app.simple.peri.utils.FileUtils.toFile
 import app.simple.peri.utils.FileUtils.toSize
 import app.simple.peri.utils.FileUtils.toUri
 import app.simple.peri.viewmodels.ComposeWallpaperViewModel
@@ -138,8 +139,6 @@ fun WallpaperItem(
         )
     }
 
-    Log.i("WallpaperItem", "Aspect ratio: $aspectRatio for ${wallpaper.name}")
-
     if (showDialog) {
         WallpaperMenu({
                           showDialog = it
@@ -164,7 +163,7 @@ fun WallpaperItem(
 
         if (imageShadow) {
             GlideImage(
-                    model = wallpaper.uri.toUri(),
+                    model = wallpaper.filePath.toFile(),
                     contentDescription = null,
                     transition = CrossFade,
                     modifier = Modifier
@@ -230,7 +229,7 @@ fun WallpaperItem(
                     contentAlignment = Alignment.Center,
             ) {
                 GlideImage(
-                        model = wallpaper.uri.toUri(),
+                        model = wallpaper.filePath.toFile(),
                         contentDescription = null,
                         transition = CrossFade,
                         modifier = Modifier

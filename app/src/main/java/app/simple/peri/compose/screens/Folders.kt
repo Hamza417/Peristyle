@@ -117,7 +117,10 @@ fun Folders(navController: NavController? = null) {
     if (requestPermission) {
         RequestDirectoryPermission(
                 onCancel = { requestPermission = false },
-                onStorageGranted = { requestPermission = false }
+                onStorageGranted = {
+                    requestPermission = false
+                    composeWallpaperViewModel.refresh(isForced = true)
+                }
         )
     }
 

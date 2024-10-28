@@ -3,6 +3,7 @@ package app.simple.peri.glide.folders
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
+import android.util.Log
 import app.simple.peri.compose.screens.displayDimension
 import app.simple.peri.database.instances.WallpaperDatabase
 import com.bumptech.glide.Glide
@@ -17,6 +18,7 @@ class FolderFetcher(val folder: Folder) : DataFetcher<Bitmap> {
         val wallpaperDatabase = WallpaperDatabase.getInstance(folder.context)!!
         val wallpaperList = wallpaperDatabase.wallpaperDao().getWallpapersByUriHashcode(folder.hashCode)
         val bitmapList = mutableListOf<FutureTarget<Bitmap>>()
+        Log.i(TAG, "Loading wallpapers from folder: ${wallpaperList.size}")
 
         // Fetch top 6 wallpapers
         val topWallpapers = wallpaperList.take(GRID_COUNT)
@@ -28,7 +30,7 @@ class FolderFetcher(val folder: Folder) : DataFetcher<Bitmap> {
              */
             val bitmap = Glide.with(folder.context)
                 .asBitmap()
-                .load(wallpaper.uri)
+                .load(wallpaper.filePath)
                 .centerCrop()
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .submit(displayDimension.getReducedWidth(), displayDimension.getReducedHeight())

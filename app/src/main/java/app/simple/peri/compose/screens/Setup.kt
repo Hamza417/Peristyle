@@ -51,6 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import app.simple.peri.BuildConfig
 import app.simple.peri.R
@@ -63,6 +64,7 @@ import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.utils.PermissionUtils
 import app.simple.peri.utils.PermissionUtils.isBatteryOptimizationDisabled
 import app.simple.peri.utils.PermissionUtils.requestIgnoreBatteryOptimizations
+import app.simple.peri.viewmodels.ComposeWallpaperViewModel
 
 @Composable
 fun Setup(context: Context, navController: NavController? = null) {
@@ -300,6 +302,7 @@ fun Permissions(modifier: Modifier, context: Context, navController: NavControll
 fun Folder(modifier: Modifier, context: Context, navController: NavController? = null) {
     var launchDirectoryPermission by remember { mutableStateOf(false) }
     var showDirectoryPermissionDialog by remember { mutableStateOf(false) }
+    val composeWallpaperViewModel: ComposeWallpaperViewModel = viewModel()
     var directories by remember { mutableStateOf(MainComposePreferences.getAllWallpaperPaths().joinToString("\n")) }
 
     if (launchDirectoryPermission) {
@@ -311,6 +314,7 @@ fun Folder(modifier: Modifier, context: Context, navController: NavController? =
                     launchDirectoryPermission = false
                     showDirectoryPermissionDialog = true
                     directories = MainComposePreferences.getAllWallpaperPaths().joinToString("\n")
+                    composeWallpaperViewModel.refresh()
                 }
         )
     }
@@ -468,7 +472,7 @@ fun RequestReadMediaImagesPermission(onCancel: () -> Unit) {
 fun isSetupComplete(context: Context): Boolean {
     return when {
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
-            context.contentResolver.persistedUriPermissions.isNotEmpty()
+            MainComposePreferences.getAllWallpaperPaths().isNotEmpty()
                     && Environment.isExternalStorageManager()
                     && context.isBatteryOptimizationDisabled()
                     && PermissionUtils.checkMediaImagesPermission(context)
@@ -476,14 +480,14 @@ fun isSetupComplete(context: Context): Boolean {
         }
 
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
-            context.contentResolver.persistedUriPermissions.isNotEmpty()
+            MainComposePreferences.getAllWallpaperPaths().isNotEmpty()
                     && Environment.isExternalStorageManager()
                     && context.isBatteryOptimizationDisabled()
                     && PermissionUtils.checkStoragePermission(context)
         }
 
         else -> {
-            context.contentResolver.persistedUriPermissions.isNotEmpty()
+            MainComposePreferences.getAllWallpaperPaths().isNotEmpty()
                     && PermissionUtils.checkStoragePermission(context)
                     && context.isBatteryOptimizationDisabled()
         }

@@ -6,14 +6,14 @@ import android.os.Parcelable;
 public class Folder implements Parcelable {
     private int hashcode;
     private String name;
-    private String uri;
+    private String path;
     private int count;
     private boolean isNomedia;
     
-    public Folder(int hashcode, String name, String uri, int count, boolean isNomedia) {
+    public Folder(int hashcode, String name, String path, int count, boolean isNomedia) {
         this.hashcode = hashcode;
         this.name = name;
-        this.uri = uri;
+        this.path = path;
         this.count = count;
         this.isNomedia = isNomedia;
     }
@@ -24,7 +24,7 @@ public class Folder implements Parcelable {
     protected Folder(Parcel in) {
         hashcode = in.readInt();
         name = in.readString();
-        uri = in.readString();
+        path = in.readString();
         count = in.readInt();
         isNomedia = in.readByte() != 0;
     }
@@ -33,7 +33,7 @@ public class Folder implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(hashcode);
         dest.writeString(name);
-        dest.writeString(uri);
+        dest.writeString(path);
         dest.writeInt(count);
         dest.writeByte((byte) (isNomedia ? 1 : 0));
     }
@@ -43,7 +43,7 @@ public class Folder implements Parcelable {
         return 0;
     }
     
-    public static final Creator <Folder> CREATOR = new Creator <Folder>() {
+    public static final Creator <Folder> CREATOR = new Creator <>() {
         @Override
         public Folder createFromParcel(Parcel in) {
             return new Folder(in);
@@ -71,12 +71,12 @@ public class Folder implements Parcelable {
         this.name = name;
     }
     
-    public String getUri() {
-        return uri;
+    public String getPath() {
+        return path;
     }
     
-    public void setUri(String uri) {
-        this.uri = uri;
+    public void setPath(String path) {
+        this.path = path;
     }
     
     public int getCount() {

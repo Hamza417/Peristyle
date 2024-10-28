@@ -76,8 +76,8 @@ import app.simple.peri.factories.TagsViewModelFactory
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.utils.BitmapUtils.applyEffects
 import app.simple.peri.utils.BitmapUtils.multiplyMatrices
+import app.simple.peri.utils.FileUtils.toFile
 import app.simple.peri.utils.FileUtils.toSize
-import app.simple.peri.utils.FileUtils.toUri
 import app.simple.peri.viewmodels.StateViewModel
 import app.simple.peri.viewmodels.TagsViewModel
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
@@ -207,7 +207,7 @@ fun Wallpaper(context: Context, navController: NavHostController) {
                     },
         ) {
             ZoomableGlideImage(
-                    model = wallpaper?.uri?.toUri(),
+                    model = wallpaper?.filePath?.toFile(),
                     contentDescription = null,
                     modifier = Modifier
                         .fillMaxSize()

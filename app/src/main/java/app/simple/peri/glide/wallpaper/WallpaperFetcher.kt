@@ -2,7 +2,9 @@ package app.simple.peri.glide.wallpaper
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.util.Log
 import app.simple.peri.utils.BitmapUtils
+import app.simple.peri.utils.FileUtils.toFile
 import app.simple.peri.utils.FileUtils.toUri
 import com.bumptech.glide.Priority
 import com.bumptech.glide.load.DataSource
@@ -12,20 +14,37 @@ import java.io.FileNotFoundException
 class WallpaperFetcher(private val wallpaper: Wallpaper) : DataFetcher<Bitmap> {
     override fun loadData(priority: Priority, callback: DataFetcher.DataCallback<in Bitmap>) {
         try {
-            wallpaper.context.contentResolver.openFileDescriptor(wallpaper.wallpaper.uri.toUri(), "r")?.use {
-                val bitmap = BitmapFactory.decodeFileDescriptor(it.fileDescriptor, null, BitmapFactory.Options().apply {
-                    inPreferredConfig = Bitmap.Config.ARGB_8888
-                    inSampleSize = BitmapUtils.calculateInSampleSize(this, MIN_IMAGE_SIZE, MIN_IMAGE_SIZE)
-                    inJustDecodeBounds = false
-                })
+            Log.i(TAG, "Loading wallpaper: ${wallpaper.wallpaper.name}")
+            Log.i(TAG, "Loading wallpaper from file: ${wallpaper.wallpaper.filePath}")
+            Log.i(TAG, "Loading wallpaper from uri: ${wallpaper.wallpaper.uri}")
+            if (wallpaper.wallpaper.uri.isEmpty()) {
+                wallpaper.wallpaper.filePath.toFile().let {
+                    Log.i(TAG, "Loading wallpaper from file: ${it.absolutePath}")
+                    val bitmap = BitmapFactory.decodeFile(it.absolutePath, BitmapFactory.Options().apply {
+                        inPreferredConfig = Bitmap.Config.ARGB_8888
+                        inSampleSize = BitmapUtils.calculateInSampleSize(this, MIN_IMAGE_SIZE, MIN_IMAGE_SIZE)
+                        inJustDecodeBounds = false
+                    })
 
-                callback.onDataReady(bitmap)
+                    callback.onDataReady(bitmap)
+                }
+            } else {
+                Log.i(TAG, "Loading wallpaper from uri: ${wallpaper.wallpaper.uri}")
+                wallpaper.context.contentResolver.openFileDescriptor(wallpaper.wallpaper.uri.toUri(), "r")?.use {
+                    val bitmap = BitmapFactory.decodeFileDescriptor(it.fileDescriptor, null, BitmapFactory.Options().apply {
+                        inPreferredConfig = Bitmap.Config.ARGB_8888
+                        inSampleSize = BitmapUtils.calculateInSampleSize(this, MIN_IMAGE_SIZE, MIN_IMAGE_SIZE)
+                        inJustDecodeBounds = false
+                    })
 
-                /**
-                 * Read more about this here:
-                 * https://github.com/bumptech/glide/wiki/Resource-re-use-in-Glide#how
-                 */
-                // bitmap?.recycle()
+                    callback.onDataReady(bitmap)
+
+                    /**
+                     * Read more about this here:
+                     * https://github.com/bumptech/glide/wiki/Resource-re-use-in-Glide#how
+                     */
+                    // bitmap?.recycle()
+                }
             }
         } catch (e: FileNotFoundException) {
             callback.onLoadFailed(e)

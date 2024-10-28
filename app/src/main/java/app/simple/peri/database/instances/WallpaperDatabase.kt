@@ -8,7 +8,7 @@ import app.simple.peri.database.dao.WallpaperDao
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.utils.ConditionUtils.invert
 
-@Database(entities = [Wallpaper::class], version = 7)
+@Database(entities = [Wallpaper::class], version = 8)
 abstract class WallpaperDatabase : RoomDatabase() {
     abstract fun wallpaperDao(): WallpaperDao
 

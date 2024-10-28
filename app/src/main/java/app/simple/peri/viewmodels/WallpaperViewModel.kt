@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
 import android.util.Log
@@ -19,29 +20,22 @@ import androidx.lifecycle.viewModelScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import app.simple.peri.constants.BundleConstants
 import app.simple.peri.database.instances.WallpaperDatabase
-import app.simple.peri.models.Folder
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.preferences.MainPreferences
-import app.simple.peri.utils.CommonUtils.withBooleanScope
 import app.simple.peri.utils.ConditionUtils.invert
 import app.simple.peri.utils.FileUtils.filterDotFiles
 import app.simple.peri.utils.FileUtils.listCompleteFiles
 import app.simple.peri.utils.FileUtils.listOnlyFirstLevelFiles
+import app.simple.peri.utils.FileUtils.toUri
 import app.simple.peri.utils.PermissionUtils
 import app.simple.peri.utils.WallpaperSort.getSortedList
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 
 class WallpaperViewModel(application: Application) : AndroidViewModel(application) {
 
-    private var loadDatabaseJob: Job? = null
-    private var isWallpaperLoading: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    private var shouldThrowError: MutableStateFlow<Boolean> = MutableStateFlow(false)
     private var broadcastReceiver: BroadcastReceiver? = null
     private val intentFilter = IntentFilter().apply {
         addAction(BundleConstants.INTENT_RECREATE_DATABASE)
@@ -53,7 +47,7 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
 
     private var isDatabaseLoaded: MutableLiveData<Boolean> = MutableLiveData(false)
 
-    private var _folderLoadingState = MutableStateFlow("")
+    private var isLoading = false
 
     init {
         broadcastReceiver = object : BroadcastReceiver() {
@@ -67,16 +61,7 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
             }
         }
 
-        LocalBroadcastManager.getInstance(application)
-            .registerReceiver(broadcastReceiver!!, intentFilter)
-    }
-
-    fun getLoadingImage(): MutableStateFlow<String> {
-        return _folderLoadingState
-    }
-
-    private fun setFolderLoadingState(loadingImage: String) {
-        _folderLoadingState.value = loadingImage
+        LocalBroadcastManager.getInstance(application).registerReceiver(broadcastReceiver!!, intentFilter)
     }
 
     private val wallpapersData: MutableLiveData<ArrayList<Wallpaper>> by lazy {
@@ -99,12 +84,6 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
         }
     }
 
-    private val foldersData: MutableLiveData<ArrayList<Folder>> by lazy {
-        MutableLiveData<ArrayList<Folder>>().also {
-            loadFolders()
-        }
-    }
-
     private val loadingStatus: MutableLiveData<String> by lazy {
         MutableLiveData<String>()
     }
@@ -118,12 +97,10 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
             if (MainPreferences.getShowNomediaDialog()) {
                 viewModelScope.launch(Dispatchers.Default) {
                     val storageUri = MainPreferences.getStorageUri()
-                    val pickedDirectory =
-                        DocumentFile.fromTreeUri(getApplication(), Uri.parse(storageUri))
+                    val pickedDirectory = DocumentFile.fromTreeUri(getApplication(), Uri.parse(storageUri))
                     it.postValue(
                             pickedDirectory?.findFile(".nomedia")?.exists()?.invert()
-                                    ?: false.invert() || pickedDirectory?.name?.startsWith(".") ?: false.invert()
-                    )
+                                    ?: false.invert() || pickedDirectory?.name?.startsWith(".") ?: false.invert())
                 }
             }
         }
@@ -161,52 +138,8 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
         return systemWallpaperData
     }
 
-    fun getFoldersLiveData(): MutableLiveData<ArrayList<Folder>> {
-        return foldersData
-    }
-
-    private fun loadFolders() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val folders = ArrayList<Folder>()
-            val wallpaperDatabase = WallpaperDatabase.getInstance(getApplication())
-            val wallpaperDao = wallpaperDatabase?.wallpaperDao()
-            getApplication<Application>().contentResolver.persistedUriPermissions.forEach { uri ->
-                val pickedDirectory = DocumentFile.fromTreeUri(getApplication(), uri.uri)
-                if (pickedDirectory?.exists() == true) {
-                    val folder = Folder().apply {
-                        name = pickedDirectory.name
-                        this.uri = uri.uri.toString()
-                        count = wallpaperDao?.getWallpapersCountByUriHashcode(uri.uri.hashCode()) ?: 0
-                        hashcode = uri.uri.hashCode()
-                        isNomedia = false
-                    }
-
-                    folders.add(folder)
-                }
-            }
-
-            foldersData.postValue(folders)
-
-            /**
-             * Finding .nomedia files can take a long time
-             * So we post the folders first and then find the .nomedia files
-             */
-            folders.forEach { folder ->
-                val pickedDirectory = DocumentFile.fromTreeUri(getApplication(), Uri.parse(folder.uri))
-                if (pickedDirectory?.exists() == true) {
-                    if (pickedDirectory.findFile(".nomedia")?.exists() == true) {
-                        folder.isNomedia = true
-                    }
-                }
-            }
-
-
-            foldersData.postValue(folders)
-        }
-    }
-
     private fun loadWallpaperDatabase() {
-        loadDatabaseJob = viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.IO) {
             val wallpaperDatabase = WallpaperDatabase.getInstance(getApplication())
             val wallpaperDao = wallpaperDatabase?.wallpaperDao()
             wallpaperDao?.sanitizeEntries() // Sanitize the database
@@ -220,96 +153,82 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
             @Suppress("UNCHECKED_CAST")
             wallpapersData.postValue(wallpaperList.clone() as ArrayList<Wallpaper>)
 
+            alreadyLoaded = WallpaperDatabase.getInstance(getApplication())?.wallpaperDao()?.getWallpapers()?.associateBy { it.uri }
             loadWallpaperImages()
         }
     }
 
     private fun loadWallpaperImages() {
-        if (isWallpaperLoading.value) {
-            Log.d(TAG, "loadWallpaperImages: previous session is still loading, skipping...")
-            return
-        }
-
         viewModelScope.launch(Dispatchers.IO) {
-            withBooleanScope(isWallpaperLoading) {
-                runCatching {
-                    alreadyLoaded = WallpaperDatabase.getInstance(
-                            getApplication()
-                    )?.wallpaperDao()?.getWallpapers()?.associateBy { it.uri }
-                    isDatabaseLoaded.postValue(false)
+            isLoading = true
+            isDatabaseLoaded.postValue(false)
 
-                    getApplication<Application>().contentResolver.persistedUriPermissions.forEach { folder ->
-                        val pickedDirectory = DocumentFile.fromTreeUri(getApplication(), folder.uri)
-                        if (pickedDirectory?.exists() == true) {
-                            val files = pickedDirectory.getFiles().dotFilter()
-                            val total = files.size
-                            var count = 0
-                            setFolderLoadingState(getApplication<Application>().getString(app.simple.peri.R.string.preparing))
+            val uri = MainPreferences.getStorageUri()?.toUri()!!
+            val pickedDirectory = DocumentFile.fromTreeUri(getApplication(), uri)
+            loadingStatus.postValue(getApplication<Application>().getString(app.simple.peri.R.string.preparing))
+            val files = pickedDirectory?.getFiles()?.dotFilter()
+            var count = 0
+            val total = files?.size ?: 0
 
-                            if (files.isEmpty()) {
-                                loadingStatus.postValue("no files found")
-                                return@launch
-                            }
+            if (files.isNullOrEmpty()) {
+                loadingStatus.postValue("no files found")
+                return@launch
+            }
 
-                            if (wallpapersData.value.isNullOrEmpty()) {
-                                loadingStatus.postValue(getApplication<Application>().getString(app.simple.peri.R.string.preparing))
-                            }
+            loadingStatus.postValue("0 : 0%")
+            files.parallelStream().forEach { file ->
+                try {
+                    val wallpaper = Wallpaper()
 
-                            files.forEach { file ->
-                                count = count.inc()
-                                if (shouldThrowError.value) {
-                                    Log.e(TAG, "loadWallpaperImages: job cancelled")
-                                    shouldThrowError.value = false
-                                    throw CancellationException("Job cancelled")
-                                }
+                    if ((alreadyLoaded?.containsKey(file.uri.toString()) == true).invert()) {
+                        wallpaper.name = file.name
+                        wallpaper.uri = file.uri.toString()
+                        wallpaper.dateModified = file.lastModified()
+                        wallpaper.size = file.length()
 
-                                try {
-                                    if (alreadyLoaded?.containsKey(file.uri.toString()) == false) {
-                                        Log.i(TAG, "loadWallpaperImages: loading ${file.uri}")
-                                        val wallpaper = Wallpaper.createWallpaperFromFile(file, getApplication())
-                                        wallpaper.folderUriHashcode = folder.uri.hashCode()
-                                        wallpapers.add(wallpaper)
-                                        newWallpapersData.postValue(wallpaper)
-                                        WallpaperDatabase.getInstance(getApplication())
-                                            ?.wallpaperDao()?.insert(wallpaper)
-                                        updateLoadingStatus(count, total)
-                                        setFolderLoadingState("$count / $total")
-                                    } else {
-                                        Log.i(
-                                                TAG,
-                                                "loadWallpaperImages: already loaded ${file.uri}"
-                                        )
-                                        updateLoadingStatus(count, total)
-                                        setFolderLoadingState("$count / $total")
-                                    }
-                                } catch (e: IllegalStateException) {
-                                    e.printStackTrace()
-                                    failedURIs.add(file.uri.toString())
-                                }
-                            }
-
-                            if (alreadyLoaded.isNullOrEmpty()) {
-                                wallpapers.getSortedList()
-                                wallpapers.forEach { it.isSelected = false }
-                                wallpapersData.postValue(wallpapers)
-                            }
+                        getApplication<Application>().contentResolver.openInputStream(file.uri)?.use { inputStream ->
+                            val options = BitmapFactory.Options()
+                            options.inJustDecodeBounds = true
+                            BitmapFactory.decodeStream(inputStream, null, options)
+                            wallpaper.width = options.outWidth
+                            wallpaper.height = options.outHeight
                         }
+
+                        // Log.d(TAG, "loadWallpaperImages: ${wallpaper.name}, ${wallpaper.width}, ${wallpaper.height}")
                     }
 
-                    initDatabase()
-                    loadingStatus.postValue("")
-                    setFolderLoadingState("")
-                    loadFolders()
-                }.getOrElse {
-                    it.printStackTrace()
+                    if (wallpaper.isNull().invert()) {
+                        if ((alreadyLoaded?.containsKey(file.uri.toString()) == true).invert()) {
+                            count++
+                            wallpapers.add(wallpaper)
+                            if (alreadyLoaded?.isNotEmpty() == true) {
+                                newWallpapersData.postValue(wallpaper)
+                                WallpaperDatabase.getInstance(getApplication())?.wallpaperDao()?.insert(wallpaper)
+                            }
+
+                            loadingStatus.postValue("$count : ${(count / total.toFloat() * 100).toInt()}%")
+                        }
+                    }
+                } catch (e: IllegalStateException) {
+                    e.printStackTrace()
+                    failedURIs.add(file.uri.toString())
                 }
             }
-        }
-    }
 
-    private fun updateLoadingStatus(count: Int, total: Int) {
-        val progress = (count / total.toFloat() * 100).toInt()
-        loadingStatus.postValue("$count : $progress%")
+            if (alreadyLoaded?.isEmpty() == true) {
+                wallpapers.getSortedList()
+
+                wallpapers.forEach {
+                    it.isSelected = false
+                }
+
+                wallpapersData.postValue(wallpapers)
+            }
+
+            initDatabase()
+            loadingStatus.postValue("Done")
+            isLoading = false
+        }
     }
 
     private fun initDatabase() {
@@ -318,10 +237,9 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
 
         wallpaperDao?.getWallpapers()?.forEach {
             try {
-                getApplication<Application>().contentResolver.openInputStream(Uri.parse(it.uri))
-                    ?.use { _ ->
-                        // Log.d(TAG, "initDatabase: ${it.name} exists")
-                    }
+                getApplication<Application>().contentResolver.openInputStream(Uri.parse(it.uri))?.use { _ ->
+                    // Log.d(TAG, "initDatabase: ${it.name} exists")
+                }
             } catch (e: Exception) {
                 // Log.d(TAG, "initDatabase: ${it.name} doesn't exist")
                 wallpaperDao.delete(it)
@@ -334,15 +252,24 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
                 wallpaperDao?.insert(it)
             }
         } catch (e: ConcurrentModificationException) {
-            // rarely occurs but occurs :)))))))))))
+            // rarely occurs
+            Log.e(TAG, "initDatabase: ConcurrentModificationException occurred while inserting wallpapers into database - ${e.message}")
         }
 
         isDatabaseLoaded.postValue(true)
-        Log.d(TAG, "database loaded")
+        Log.d(TAG, "initDatabase: database loaded")
 
         if (failedURIs.isNotEmpty()) {
             failedURIsData.postValue(failedURIs)
         }
+    }
+
+    private fun ArrayList<Wallpaper>.toHashMap(): HashMap<Long, Wallpaper> {
+        val hashMap = HashMap<Long, Wallpaper>()
+        this.forEach {
+            hashMap[it.dateModified] = it
+        }
+        return hashMap
     }
 
     private fun getCurrentSystemWallpaper(): ArrayList<Wallpaper> {
@@ -375,10 +302,8 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     private fun createTempFile(fileName: String): File {
-        val file = File(
-                getApplication<Application>().filesDir,
-                fileName.replace("$", System.currentTimeMillis().div(1000).toString())
-        )
+        val file = File(getApplication<Application>().filesDir,
+                        fileName.replace("$", System.currentTimeMillis().div(1000).toString()))
         if (file.exists()) file.delete()
         return file
     }
@@ -389,25 +314,10 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
         )
     }
 
-    private fun postCurrentSystemWallpaper() {
+    fun postCurrentSystemWallpaper() {
         viewModelScope.launch(Dispatchers.IO) {
-            when {
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
-                    when {
-                        PermissionUtils.checkStoragePermission(getApplication())
-                                && PermissionUtils.checkMediaImagesPermission(getApplication()) -> {
-                            systemWallpaperData.postValue(getCurrentSystemWallpaper())
-                        }
-                    }
-                }
-
-                else -> {
-                    when {
-                        PermissionUtils.checkStoragePermission(getApplication()) -> {
-                            systemWallpaperData.postValue(getCurrentSystemWallpaper())
-                        }
-                    }
-                }
+            if (PermissionUtils.checkStoragePermission(getApplication())) {
+                systemWallpaperData.postValue(getCurrentSystemWallpaper())
             }
         }
     }
@@ -437,9 +347,6 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
             val wallpaperDatabase = WallpaperDatabase.getInstance(getApplication())
             val wallpaperDao = wallpaperDatabase?.wallpaperDao()
             wallpaperDao?.delete(wallpaper)
-            DocumentFile.fromSingleUri(getApplication(), Uri.parse(wallpaper.uri))?.delete()
-            wallpapers.remove(wallpaper)
-            wallpapersData.postValue(wallpapers)
         }
     }
 
@@ -447,15 +354,19 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
         viewModelScope.launch(Dispatchers.IO) {
             Log.d(TAG, "recreateDatabase: recreating database")
 
-            isDatabaseLoaded.postValue(false)
-            wallpapers.clear()
-            wallpapersData.postValue(wallpapers)
-            val wallpaperDatabase = WallpaperDatabase.getInstance(getApplication())
-            val wallpaperDao = wallpaperDatabase?.wallpaperDao()
-            wallpaperDao?.nukeTable()
+            if (isLoading.invert()) {
+                isDatabaseLoaded.postValue(false)
+                wallpapers.clear()
+                wallpapersData.postValue(wallpapers)
+                val wallpaperDatabase = WallpaperDatabase.getInstance(getApplication())
+                val wallpaperDao = wallpaperDatabase?.wallpaperDao()
+                wallpaperDao?.nukeTable()
 
-            withContext(Dispatchers.Main) {
-                loadWallpaperImages()
+                withContext(Dispatchers.Main) {
+                    loadWallpaperImages()
+                }
+            } else {
+                Log.d(TAG, "recreateDatabase: previous session is still loading, skipping...")
             }
         }
     }
@@ -478,10 +389,22 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
     fun reloadMetadata(wallpaper: Wallpaper, func: (Wallpaper) -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             val wallpaperDatabase = WallpaperDatabase.getInstance(getApplication())
-            val updatedWallpaper = Wallpaper.createFromUri(wallpaper.uri, getApplication())
-            updatedWallpaper.md5 = wallpaper.md5
-            updatedWallpaper.folderUriHashcode = wallpaper.folderUriHashcode
-            wallpaperDatabase?.wallpaperDao()?.update(updatedWallpaper)
+            val documentFile = DocumentFile.fromSingleUri(getApplication(), Uri.parse(wallpaper.uri))
+
+            getApplication<Application>().contentResolver.openInputStream(Uri.parse(wallpaper.uri))?.use { inputStream ->
+                val options = BitmapFactory.Options()
+                options.inJustDecodeBounds = true
+                BitmapFactory.decodeStream(inputStream, null, options)
+                wallpaper.width = options.outWidth
+                wallpaper.height = options.outHeight
+            }
+
+            if (documentFile?.exists() == true) {
+                wallpaper.size = documentFile.length()
+                wallpaper.dateModified = documentFile.lastModified()
+            }
+
+            wallpaperDatabase?.wallpaperDao()?.update(wallpaper)
 
             withContext(Dispatchers.Main) {
                 func(wallpaper)
@@ -502,73 +425,6 @@ class WallpaperViewModel(application: Application) : AndroidViewModel(applicatio
             filterDotFiles()
         } else {
             this
-        }
-    }
-
-    fun refresh(isForced: Boolean = false) {
-        Log.i(TAG, "refresh: refreshing wallpapers")
-
-        if (isForced) {
-            isWallpaperLoading.value = false
-            shouldThrowError.value = true
-        }
-
-        loadFolders()
-        loadWallpaperImages()
-    }
-
-    fun deleteFolder(it: Folder) {
-        viewModelScope.launch(Dispatchers.IO) {
-            getApplication<Application>().contentResolver.releasePersistableUriPermission(
-                    Uri.parse(it.uri),
-                    Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-            )
-            val wallpaperDatabase = WallpaperDatabase.getInstance(getApplication())
-            val wallpaperDao = wallpaperDatabase?.wallpaperDao()
-            wallpaperDao?.deleteByUriHashcode(it.hashcode)
-            loadWallpaperDatabase()
-            loadFolders()
-        }
-    }
-
-    fun addNoMediaFile(folder: Folder, onSuccess: () -> Unit) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val pickedDirectory = DocumentFile.fromTreeUri(getApplication(), Uri.parse(folder.uri))
-
-            if (pickedDirectory?.exists() == true) {
-                if (pickedDirectory.findFile(".nomedia") == null) {
-                    pickedDirectory.createFile("*/*", ".nomedia")
-                }
-
-                if (pickedDirectory.findFile(".nomedia")?.exists() == true) {
-                    isNomediaDirectory.postValue(false)
-                    withContext(Dispatchers.Main) {
-                        onSuccess()
-                        loadFolders()
-                    }
-                }
-            }
-        }
-    }
-
-    fun removeNoMediaFile(folder: Folder, onSuccess: () -> Unit) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val pickedDirectory =
-                DocumentFile.fromTreeUri(getApplication(), Uri.parse(folder.uri))!!
-
-            if (pickedDirectory.exists()) {
-                pickedDirectory.findFile(".nomedia")?.delete()
-
-                if (pickedDirectory.findFile(".nomedia") == null
-                        || pickedDirectory.findFile(".nomedia")?.exists() == false
-                ) {
-                    isNomediaDirectory.postValue(true)
-                    withContext(Dispatchers.Main) {
-                        onSuccess()
-                        loadFolders()
-                    }
-                }
-            }
         }
     }
 

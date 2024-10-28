@@ -16,6 +16,7 @@ import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.utils.BitmapUtils.generatePalette
 import app.simple.peri.utils.FileUtils.toUri
 import app.simple.peri.utils.WallpaperSort
+import java.io.File
 import java.io.Serializable
 
 @Entity(tableName = "wallpapers")
@@ -28,6 +29,9 @@ class Wallpaper() : Comparable<Wallpaper>, Serializable, Parcelable {
     @ColumnInfo(name = "uri")
     @NonNull
     var uri: String = ""
+
+    @ColumnInfo(name = "file")
+    var filePath: String = ""
 
     @PrimaryKey
     @ColumnInfo(name = "md5")
@@ -57,6 +61,7 @@ class Wallpaper() : Comparable<Wallpaper>, Serializable, Parcelable {
     constructor(parcel: Parcel) : this() {
         name = parcel.readString()
         uri = parcel.readString().toString()
+        filePath = parcel.readString().toString()
         md5 = parcel.readString().toString()
         prominentColor = parcel.readInt()
         width = parcel.readValue(Int::class.java.classLoader) as? Int
@@ -110,6 +115,7 @@ class Wallpaper() : Comparable<Wallpaper>, Serializable, Parcelable {
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(name)
         parcel.writeString(uri)
+        parcel.writeString(filePath)
         parcel.writeString(md5)
         parcel.writeInt(prominentColor)
         parcel.writeValue(width)
@@ -167,6 +173,31 @@ class Wallpaper() : Comparable<Wallpaper>, Serializable, Parcelable {
 
         fun createWallpaperFromFile(file: DocumentFile, context: Context): Wallpaper {
             return createFromUri(file.uri.toString(), context)
+        }
+
+        /**
+         * Use this method to create a Wallpaper object from a File.
+         *
+         * @param file The File object
+         */
+        fun createFromFile(file: File): Wallpaper {
+            val wallpaper = Wallpaper()
+            wallpaper.filePath = file.absolutePath
+            wallpaper.name = file.name
+            wallpaper.size = file.length()
+            wallpaper.dateModified = file.lastModified()
+
+            file.inputStream().use { inputStream ->
+                val options = BitmapFactory.Options()
+                options.inJustDecodeBounds = false
+                val bitmap = BitmapFactory.decodeStream(inputStream, null, options)
+                wallpaper.width = options.outWidth
+                wallpaper.height = options.outHeight
+                wallpaper.prominentColor = bitmap?.generatePalette()?.vibrantSwatch?.rgb ?: 0
+                wallpaper.md5 = file.hashCode().toString()
+            }
+
+            return wallpaper
         }
     }
 }

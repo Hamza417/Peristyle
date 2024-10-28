@@ -76,7 +76,7 @@ import app.simple.peri.compose.commons.InitDisplayDimension
 import app.simple.peri.compose.nav.Routes
 import app.simple.peri.models.DisplayDimension
 import app.simple.peri.models.Wallpaper
-import app.simple.peri.utils.FileUtils.toUri
+import app.simple.peri.utils.FileUtils.toFile
 import app.simple.peri.viewmodels.HomeScreenViewModel
 import com.bumptech.glide.integration.compose.CrossFade
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
@@ -135,9 +135,9 @@ fun Home(navController: NavController? = null) {
     }
 
     Column(
-        Modifier
-            .fillMaxSize()
-            .windowInsetsPadding(WindowInsets.safeDrawing)
+            Modifier
+                .fillMaxSize()
+                .windowInsetsPadding(WindowInsets.safeDrawing)
     ) {
         Header(
             title = stringResource(id = R.string.app_name),
@@ -185,15 +185,15 @@ fun Home(navController: NavController? = null) {
                         //)
 
                         scaleX = lerp(
-                            start = startScale,
-                            stop = 1f,
-                            fraction = 1f - pageOffset.coerceIn(0f, 1f),
+                                start = startScale,
+                                stop = 1f,
+                                fraction = 1f - pageOffset.coerceIn(0f, 1f),
                         )
 
                         scaleY = lerp(
-                            start = startScale,
-                            stop = 1f,
-                            fraction = 1f - pageOffset.coerceIn(0f, 1f),
+                                start = startScale,
+                                stop = 1f,
+                                fraction = 1f - pageOffset.coerceIn(0f, 1f),
                         )
                     }
                     .padding(8.dp), // Add padding to create space between the cards
@@ -229,18 +229,18 @@ fun WallpaperItem(title: String, onClick: () -> Unit, modifier: Modifier = Modif
                 clip = false
             }
             .shadow(
-                12.dp,
-                shape = RoundedCornerShape(32.dp),
-                clip = false,
-                spotColor = Color(wallpaper?.prominentColor ?: Color.DarkGray.toArgb()),
-                ambientColor = Color(wallpaper?.prominentColor ?: Color.DarkGray.toArgb())
+                    12.dp,
+                    shape = RoundedCornerShape(32.dp),
+                    clip = false,
+                    spotColor = Color(wallpaper?.prominentColor ?: Color.DarkGray.toArgb()),
+                    ambientColor = Color(wallpaper?.prominentColor ?: Color.DarkGray.toArgb())
             ),
         onClick = onClick,
         shape = RoundedCornerShape(32.dp),
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             GlideImage(
-                model = wallpaper?.uri?.toUri(),
+                    model = wallpaper?.filePath?.toFile(),
                 contentDescription = null,
                 transition = CrossFade,
                 modifier = Modifier
@@ -269,8 +269,8 @@ fun WallpaperItem(title: String, onClick: () -> Unit, modifier: Modifier = Modif
                     .wrapContentHeight()
                     .fillMaxWidth()
                     .hazeChild(
-                        state = hazeState,
-                        style = HazeDefaults.style(backgroundColor = Color(0x50000000), blurRadius = 15.dp)
+                            state = hazeState,
+                            style = HazeDefaults.style(backgroundColor = Color(0x50000000), blurRadius = 15.dp)
                     )
                     .align(Alignment.BottomCenter)
             ) {
@@ -407,20 +407,20 @@ fun BottomMenu(modifier: Modifier = Modifier, navController: NavController? = nu
                 .weight(0.4f)
                 .height(height)
                 .combinedClickable(
-                    onClick = {
-                        navController?.navigate(Routes.FOLDERS)
-                    },
-                    onLongClick = {
-                        Toast
-                            .makeText(
-                                context,
-                                context.getString(R.string.folder),
-                                Toast.LENGTH_SHORT
-                            )
-                            .show()
-                    },
-                    indication = ripple(bounded = true, radius = 32.dp),
-                    interactionSource = remember { MutableInteractionSource() }
+                        onClick = {
+                            navController?.navigate(Routes.FOLDERS)
+                        },
+                        onLongClick = {
+                            Toast
+                                .makeText(
+                                        context,
+                                        context.getString(R.string.folder),
+                                        Toast.LENGTH_SHORT
+                                )
+                                .show()
+                        },
+                        indication = ripple(bounded = true, radius = 32.dp),
+                        interactionSource = remember { MutableInteractionSource() }
                 ),
             shape = RoundedCornerShape(32.dp),
             colors = CardDefaults.cardColors(
@@ -456,18 +456,18 @@ fun BottomMenuItem(modifier: Modifier = Modifier, @StringRes title: Int = 0, ima
                 .padding(start = 4.dp, end = 4.dp)
                 .aspectRatio(1f)
                 .combinedClickable(
-                    onClick = onClick,
-                    onLongClick = {
-                        Toast
-                            .makeText(
-                                context,
-                                context.getString(title),
-                                Toast.LENGTH_SHORT
-                            )
-                            .show()
-                    },
-                    indication = ripple(bounded = true, radius = 32.dp),
-                    interactionSource = remember { MutableInteractionSource() }
+                        onClick = onClick,
+                        onLongClick = {
+                            Toast
+                                .makeText(
+                                        context,
+                                        context.getString(title),
+                                        Toast.LENGTH_SHORT
+                                )
+                                .show()
+                        },
+                        indication = ripple(bounded = true, radius = 32.dp),
+                        interactionSource = remember { MutableInteractionSource() }
                 ),
             shape = RoundedCornerShape(32.dp),
         ) {
