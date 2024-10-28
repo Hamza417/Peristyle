@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
@@ -116,7 +117,6 @@ fun Wallpaper(context: Context, navController: NavHostController) {
     val showEditDialog = remember { mutableStateOf(false) }
     val showDetailsCard = remember { mutableStateOf(true) }
     val launchEffectActivity = remember { mutableStateOf(false) }
-    val showSavedEffects = remember { mutableStateOf(false) }
 
     if (showEditDialog.value) {
         EffectsDialog(
@@ -143,7 +143,7 @@ fun Wallpaper(context: Context, navController: NavHostController) {
                 },
                 onSaveEffects = { blur, brightness, contrast, saturation, hueRed, hueGreen, hueBlue ->
                     stateViewModel.saveEffectInDatabase(Effect(blur, brightness, contrast, saturation, hueRed, hueGreen, hueBlue)) {
-                        showSavedEffects.value = true
+                        Log.i("Wallpaper", "Effect saved")
                     }
                 }
         )
@@ -167,16 +167,6 @@ fun Wallpaper(context: Context, navController: NavHostController) {
                         launchEffectActivity.value = false
                     })
         }
-    }
-
-    if (showSavedEffects.value) {
-        ShowWarningDialog(
-                title = context.getString(R.string.effects),
-                warning = context.getString(R.string.saved_summary),
-                onDismiss = {
-                    showSavedEffects.value = false
-                }
-        )
     }
 
     displayWidth = LocalView.current.width

@@ -105,6 +105,14 @@ class EffectsActivity : ComponentActivity() {
                         isSettings = true
                 )
             }
+            if (effects.isEmpty()) {
+                item(span = { GridItemSpan(maxLineSpan) }) {
+                    Text(
+                            text = stringResource(R.string.no_effects_summary),
+                            modifier = Modifier.padding(COMMON_PADDING)
+                    )
+                }
+            }
             items(effects.size, key = { effects[it].id }) { index ->
                 val showMenu = remember { mutableStateOf(false) }
 
