@@ -67,7 +67,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ShareCompat
-import androidx.documentfile.provider.DocumentFile
+import androidx.core.content.FileProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import app.simple.peri.R
@@ -517,10 +517,16 @@ fun WallpaperMenu(
                     Column {
                         Button(
                                 onClick = {
+                                    val uri = FileProvider.getUriForFile(
+                                            context,
+                                            context.packageName + ".provider",
+                                            wallpaper.filePath.toFile()
+                                    )
+
                                     ShareCompat.IntentBuilder(context)
                                         .setType("image/*")
                                         .setChooserTitle("Share Wallpaper")
-                                        .setStream(wallpaper.uri.toUri())
+                                        .setStream(uri)
                                         .startChooser()
                                 },
                                 colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
@@ -541,9 +547,7 @@ fun WallpaperMenu(
                         Button(
                                 onClick = {
                                     coroutineScope.launch(Dispatchers.IO) {
-                                        if (DocumentFile.fromSingleUri(context, wallpaper.uri.toUri())
-                                                    ?.delete() == true
-                                        ) {
+                                        if (wallpaper.filePath.toFile().delete()) {
                                             withContext(Dispatchers.Main) {
                                                 composeWallpaperViewModel.removeWallpaper(wallpaper)
                                                 onDelete(wallpaper)
@@ -588,8 +592,14 @@ fun WallpaperMenu(
 
                         Button(
                                 onClick = {
+                                    val uri = FileProvider.getUriForFile(
+                                            context,
+                                            context.packageName + ".provider",
+                                            wallpaper.filePath.toFile()
+                                    )
+
                                     val intent = Intent(Intent.ACTION_EDIT)
-                                    intent.setDataAndType(wallpaper.uri.toUri(), "image/*")
+                                    intent.setDataAndType(uri, "image/*")
                                     intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                                     context.startActivity(
                                             Intent.createChooser(

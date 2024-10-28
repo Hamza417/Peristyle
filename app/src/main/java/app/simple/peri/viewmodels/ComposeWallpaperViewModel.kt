@@ -27,6 +27,7 @@ import app.simple.peri.utils.CommonUtils.withBooleanScope
 import app.simple.peri.utils.FileUtils.filterDotFiles
 import app.simple.peri.utils.FileUtils.listCompleteFiles
 import app.simple.peri.utils.FileUtils.listOnlyFirstLevelFiles
+import app.simple.peri.utils.FileUtils.toFile
 import app.simple.peri.utils.PermissionUtils
 import app.simple.peri.utils.WallpaperSort.getSortedList
 import kotlinx.coroutines.CancellationException
@@ -378,7 +379,6 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
             val wallpaperDatabase = WallpaperDatabase.getInstance(getApplication())
             val wallpaperDao = wallpaperDatabase?.wallpaperDao()
             wallpaperDao?.delete(wallpaper)
-            DocumentFile.fromSingleUri(getApplication(), Uri.parse(wallpaper.uri))?.delete()
             wallpapers.remove(wallpaper)
             wallpapersData.postValue(wallpapers)
         }
@@ -419,8 +419,7 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
     fun reloadMetadata(wallpaper: Wallpaper, func: (Wallpaper) -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             val wallpaperDatabase = WallpaperDatabase.getInstance(getApplication())
-            val updatedWallpaper = Wallpaper.createFromUri(wallpaper.uri, getApplication())
-            updatedWallpaper.md5 = wallpaper.md5
+            val updatedWallpaper = Wallpaper.createFromFile(wallpaper.filePath.toFile())
             updatedWallpaper.folderUriHashcode = wallpaper.folderUriHashcode
             wallpaperDatabase?.wallpaperDao()?.update(updatedWallpaper)
 
