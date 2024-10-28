@@ -9,7 +9,9 @@ import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
 import app.simple.peri.models.Wallpaper
+import app.simple.peri.utils.ConditionUtils.invert
 import kotlinx.coroutines.flow.Flow
+import kotlin.system.measureTimeMillis
 
 @Dao
 interface WallpaperDao {
@@ -123,4 +125,16 @@ interface WallpaperDao {
      */
     @Query("DELETE FROM wallpapers WHERE uri_hashcode = :hashcode")
     fun deleteByUriHashcode(hashcode: Int)
+
+    fun purgeNonExistingWallpapers() {
+        Log.i("WallpaperDao", "Purged non-existing wallpapers in: ${
+            measureTimeMillis {
+                getWallpapers().forEach {
+                    if (it.getFile().exists().invert()) {
+                        delete(it)
+                    }
+                }
+            }
+        }")
+    }
 }

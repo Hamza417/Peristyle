@@ -178,6 +178,7 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
 
             @Suppress("UNCHECKED_CAST")
             wallpapersData.postValue(wallpaperList.clone() as ArrayList<Wallpaper>)
+            wallpaperDao.purgeNonExistingWallpapers()
 
             loadWallpaperImages()
         }

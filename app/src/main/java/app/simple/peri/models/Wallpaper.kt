@@ -14,6 +14,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.utils.BitmapUtils.generatePalette
+import app.simple.peri.utils.FileUtils.toFile
 import app.simple.peri.utils.FileUtils.toUri
 import app.simple.peri.utils.WallpaperSort
 import java.io.File
@@ -70,6 +71,10 @@ class Wallpaper() : Comparable<Wallpaper>, Serializable, Parcelable {
         size = parcel.readLong()
         folderUriHashcode = parcel.readInt()
         isSelected = parcel.readByte() != 0.toByte()
+    }
+
+    fun getFile(): File {
+        return filePath.toFile()
     }
 
     override fun toString(): String {
