@@ -397,7 +397,7 @@ fun Wallpaper(context: Context, navController: NavHostController) {
                                     .weight(1F)
                                     .padding(start = 16.dp, bottom = 16.dp, end = 16.dp),
                                 colors = ButtonDefaults.buttonColors(
-                                        containerColor = Color.Unspecified.copy(alpha = 0.25F),
+                                        containerColor = Color.Unspecified,
                                 )
                         ) {
                             Text(
