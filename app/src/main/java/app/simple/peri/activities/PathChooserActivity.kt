@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,6 +26,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
@@ -34,7 +36,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowInsetsCompat
 import app.simple.peri.R
+import app.simple.peri.compose.commons.COMMON_PADDING
 import app.simple.peri.compose.theme.PeristyleTheme
+import app.simple.peri.preferences.SharedPreferences
+import app.simple.peri.utils.FileUtils.toSize
 import java.io.File
 
 class PathChooserActivity : ComponentActivity() {
@@ -42,6 +47,7 @@ class PathChooserActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        SharedPreferences.init(applicationContext)
 
         setContent {
             var selectedPath by remember { mutableStateOf(Environment.getExternalStorageDirectory().absolutePath) }
@@ -92,11 +98,32 @@ class PathChooserActivity : ComponentActivity() {
                                 .fillMaxSize()
                                 .padding(start = 16.dp, end = 16.dp)
                     ) {
+                        Text(
+                                text = stringResource(id = R.string.select_folder),
+                                modifier = Modifier
+                                    .wrapContentHeight()
+                                    .padding(start = 8.dp, end = 8.dp),
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 32.sp
+                        )
+
+                        Text(
+                                text = selectedPath,
+                                modifier = Modifier
+                                    .wrapContentHeight()
+                                    .padding(start = 8.dp, end = 8.dp),
+                                fontWeight = FontWeight.Normal,
+                                fontSize = 16.sp
+                        )
+
                         DirectoryList(
-                                modifier = Modifier.weight(1f),
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .padding(top = COMMON_PADDING, bottom = COMMON_PADDING),
                                 directories = (selectedPath.takeIf { it.isNotEmpty() }
                                     ?.let { File(it).listFiles()?.toList() }
-                                    ?: getInternalStorageDirectories()).sortedBy { it.name },
+                                    ?: getInternalStorageDirectories())
+                                    .sortedWith(compareBy<File> { !it.isDirectory }.thenBy { it.name }),
                                 selectedPath = selectedPath,
                                 onDirectorySelected = { path ->
                                     selectedPath = path
@@ -108,17 +135,25 @@ class PathChooserActivity : ComponentActivity() {
                         ) {
                             Button(
                                     modifier = Modifier
-                                        .padding(8.dp)
+                                        .padding(COMMON_PADDING)
                                         .weight(1f),
                                     onClick = { finish() }) {
-                                Text(stringResource(id = R.string.cancel))
+                                Text(
+                                        text = stringResource(id = R.string.cancel),
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 18.sp,
+                                        modifier = Modifier.padding(12.dp))
                             }
                             Button(
                                     modifier = Modifier
-                                        .padding(8.dp)
+                                        .padding(COMMON_PADDING)
                                         .weight(1f),
                                     onClick = { onPathChosen(selectedPath) }) {
-                                Text(stringResource(id = R.string.select))
+                                Text(
+                                        text = stringResource(id = R.string.select),
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 18.sp,
+                                        modifier = Modifier.padding(12.dp))
                             }
                         }
                     }
@@ -138,59 +173,62 @@ class PathChooserActivity : ComponentActivity() {
         setResult(RESULT_OK, resultIntent)
         finish()
     }
-}
 
-@Composable
-fun DirectoryList(directories: List<File>, onDirectorySelected: (String) -> Unit, modifier: Modifier, selectedPath: String) {
-    LazyColumn(
-            modifier = modifier
-    ) {
-        item {
-            Text(
-                    text = stringResource(id = R.string.select_folder),
-                    modifier = Modifier
-                        .wrapContentHeight()
-                        .padding(top = 8.dp, start = 8.dp, end = 8.dp),
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 32.sp
-            )
-
-            Text(
-                    text = selectedPath,
-                    modifier = Modifier
-                        .wrapContentHeight()
-                        .padding(bottom = 8.dp, start = 8.dp, end = 8.dp),
-                    fontWeight = FontWeight.Normal,
-                    fontSize = 16.sp
-            )
-        }
-        items(directories.size) { index ->
-            val directory = directories[index]
-            Row(modifier = Modifier
-                .wrapContentHeight()
-                .clickable {
-                    if (directory.isDirectory) {
-                        onDirectorySelected(directory.absolutePath)
-                    }
-                }
-            ) {
-                Text(
-                        text = directory.name,
+    @Composable
+    fun DirectoryList(directories: List<File>, onDirectorySelected: (String) -> Unit, modifier: Modifier, selectedPath: String) {
+        LazyColumn(
+                modifier = modifier
+        ) {
+            items(directories.size) { index ->
+                val directory = directories[index]
+                Row(
                         modifier = Modifier
-                            .weight(1F)
-                            .padding(8.dp),
-                        fontWeight = FontWeight.Medium,
-                        fontSize = 18.sp
-                )
-                if (directory.isDirectory) {
+                            .wrapContentHeight()
+                            .then(
+                                    if (directory.isDirectory) {
+                                        Modifier.clickable {
+                                            onDirectorySelected(directory.absolutePath)
+                                        }
+                                    } else {
+                                        Modifier
+                                    }
+                            ),
+                        verticalAlignment = Alignment.CenterVertically
+                ) {
                     Text(
-                            text = directory.listFiles()?.size.toString(),
+                            text = directory.name,
                             modifier = Modifier
-                                .wrapContentWidth()
-                                .padding(8.dp),
-                            fontWeight = FontWeight.Normal,
-                            fontSize = 16.sp
+                                .weight(1F)
+                                .padding(16.dp),
+                            fontWeight = FontWeight.Medium,
+                            fontSize = 22.sp,
+                            color = if (directory.isDirectory) {
+                                MaterialTheme.colorScheme.onSurface
+                            } else {
+                                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                            }
                     )
+                    if (directory.isDirectory) {
+                        Text(
+                                text = directory.listFiles()?.size.toString(),
+                                modifier = Modifier
+                                    .wrapContentWidth()
+                                    .padding(8.dp),
+                                fontWeight = FontWeight.Normal,
+                                fontSize = 16.sp,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                        )
+                    } else {
+                        Text(
+                                text = directory.length().toSize(),
+                                modifier = Modifier
+                                    .wrapContentWidth()
+                                    .padding(8.dp),
+                                fontWeight = FontWeight.Normal,
+                                fontSize = 16.sp,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                        )
+                    }
                 }
             }
         }
