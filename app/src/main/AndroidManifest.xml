@@ -84,6 +84,10 @@
             android:exported="true"
             tools:ignore="LockedOrientationActivity" />
 
+        <activity
+            android:name=".activities.PathChooserActivity"
+            android:exported="false" />
+
         <service
             android:name=".services.AutoWallpaperService"
             android:exported="true"

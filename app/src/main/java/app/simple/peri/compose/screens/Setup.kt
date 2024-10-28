@@ -59,6 +59,7 @@ import app.simple.peri.compose.commons.RequestDirectoryPermission
 import app.simple.peri.compose.commons.TopHeader
 import app.simple.peri.compose.dialogs.common.ShowWarningDialog
 import app.simple.peri.compose.nav.Routes
+import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.utils.PermissionUtils
 import app.simple.peri.utils.PermissionUtils.isBatteryOptimizationDisabled
 import app.simple.peri.utils.PermissionUtils.requestIgnoreBatteryOptimizations
@@ -299,6 +300,7 @@ fun Permissions(modifier: Modifier, context: Context, navController: NavControll
 fun Folder(modifier: Modifier, context: Context, navController: NavController? = null) {
     var launchDirectoryPermission by remember { mutableStateOf(false) }
     var showDirectoryPermissionDialog by remember { mutableStateOf(false) }
+    var directories by remember { mutableStateOf(MainComposePreferences.getAllWallpaperPaths().joinToString("\n")) }
 
     if (launchDirectoryPermission) {
         RequestDirectoryPermission(
@@ -308,6 +310,7 @@ fun Folder(modifier: Modifier, context: Context, navController: NavController? =
                 onStorageGranted = {
                     launchDirectoryPermission = false
                     showDirectoryPermissionDialog = true
+                    directories = MainComposePreferences.getAllWallpaperPaths().joinToString("\n")
                 }
         )
     }
@@ -315,7 +318,7 @@ fun Folder(modifier: Modifier, context: Context, navController: NavController? =
     if (showDirectoryPermissionDialog) {
         ShowWarningDialog(
                 title = context.getString(R.string.folder),
-                warning = context.contentResolver.persistedUriPermissions.first().uri.toString(),
+                warning = MainComposePreferences.getAllWallpaperPaths().joinToString("\n"),
                 onDismiss = {
                     showDirectoryPermissionDialog = false
                 }

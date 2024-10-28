@@ -13,7 +13,7 @@ import java.util.Stack
 
 object FileUtils {
 
-    private val imageExtensions = arrayOf(".jpg", ".jpeg", ".png", ".webp")
+    val imageExtensions = arrayOf(".jpg", ".jpeg", ".png", ".webp")
 
     fun DocumentFile.isImageFile(): Boolean {
         return this.name!!.lowercase().endsWithAny(*imageExtensions)

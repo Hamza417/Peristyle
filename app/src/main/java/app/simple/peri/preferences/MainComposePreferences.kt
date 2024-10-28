@@ -45,6 +45,7 @@ object MainComposePreferences {
     private const val BOTTOM_HEADER = "bottom_header"
     private const val ORIGINAL_ASPECT_RATIO = "original_aspect_ratio"
     private const val AUTO_WALLPAPER_NOTIFICATION = "auto_wallpaper_notification"
+    private const val ALL_WALLPAPER_PATHS = "all_wallpaper_paths"
 
     // ----------------------------------------------------------------------------------------------------- //
 
@@ -467,5 +468,31 @@ object MainComposePreferences {
 
     fun setAutoWallpaperNotification(value: Boolean) {
         getSharedPreferences().edit().putBoolean(AUTO_WALLPAPER_NOTIFICATION, value).apply()
+    }
+
+    // ----------------------------------------------------------------------------------------------------- //
+
+    fun getAllWallpaperPaths(): Set<String> {
+        return getSharedPreferences().getStringSet(ALL_WALLPAPER_PATHS, setOf())!!
+    }
+
+    fun setWallpapersPaths(value: Set<String>): Boolean {
+        return getSharedPreferences().edit().putStringSet(ALL_WALLPAPER_PATHS, value).commit()
+    }
+
+    fun removeWallpaperPath(path: String) {
+        val paths = getAllWallpaperPaths().toMutableSet()
+        paths.remove(path)
+        setWallpapersPaths(paths)
+    }
+
+    fun clearWallpaperPaths() {
+        getSharedPreferences().edit().remove(ALL_WALLPAPER_PATHS).apply()
+    }
+
+    fun addWallpaperPath(path: String) {
+        val paths = getAllWallpaperPaths().toMutableSet()
+        paths.add(path)
+        setWallpapersPaths(paths)
     }
 }
