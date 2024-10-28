@@ -13,6 +13,7 @@ import app.simple.peri.models.Wallpaper
 import app.simple.peri.utils.FileUtils.toUri
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.io.File
 
 class TagsViewModel(application: Application, private val md5: String? = null, private val tag: String? = null) :
     CompressorViewModel(application) {
@@ -150,12 +151,12 @@ class TagsViewModel(application: Application, private val md5: String? = null, p
         }
     }
 
-    override fun onCompressionDone(wallpaper: Wallpaper, documentFile: DocumentFile): Wallpaper {
-        return postNewWallpaper(documentFile, wallpaper)
+    override fun onCompressionDone(wallpaper: Wallpaper, file: File): Wallpaper {
+        return postNewWallpaper(file, wallpaper)
     }
 
-    private fun postNewWallpaper(documentFile: DocumentFile, previousWallpaper: Wallpaper): Wallpaper {
-        val wallpaper = Wallpaper.createFromUri(documentFile.uri.toString(), getApplication())
+    private fun postNewWallpaper(file: File, previousWallpaper: Wallpaper): Wallpaper {
+        val wallpaper = Wallpaper.createFromFile(file)
         wallpaper.md5 = previousWallpaper.md5
         wallpaper.folderUriHashcode = previousWallpaper.folderUriHashcode
         wallpaper.dateModified = previousWallpaper.dateModified

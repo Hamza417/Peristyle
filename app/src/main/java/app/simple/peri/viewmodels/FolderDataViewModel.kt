@@ -3,7 +3,6 @@ package app.simple.peri.viewmodels
 import android.app.Application
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
-import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.viewModelScope
 import app.simple.peri.database.instances.WallpaperDatabase
 import app.simple.peri.extensions.CompressorViewModel
@@ -18,6 +17,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.io.File
 
 class FolderDataViewModel(application: Application, private val folder: Folder) :
         CompressorViewModel(application), OnSharedPreferenceChangeListener {
@@ -43,12 +43,12 @@ class FolderDataViewModel(application: Application, private val folder: Folder) 
         }
     }
 
-    override fun onCompressionDone(wallpaper: Wallpaper, documentFile: DocumentFile): Wallpaper {
-        return postNewWallpaper(documentFile, wallpaper)
+    override fun onCompressionDone(wallpaper: Wallpaper, file: File): Wallpaper {
+        return postNewWallpaper(file, wallpaper)
     }
 
-    private fun postNewWallpaper(documentFile: DocumentFile, previousWallpaper: Wallpaper): Wallpaper {
-        val wallpaper = Wallpaper.createFromUri(documentFile.uri.toString(), getApplication())
+    private fun postNewWallpaper(file: File, previousWallpaper: Wallpaper): Wallpaper {
+        val wallpaper = Wallpaper.createFromFile(file)
         wallpaper.md5 = previousWallpaper.md5
         wallpaper.folderUriHashcode = previousWallpaper.folderUriHashcode
         wallpaper.dateModified = previousWallpaper.dateModified
