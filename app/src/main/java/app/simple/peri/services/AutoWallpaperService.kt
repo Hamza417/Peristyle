@@ -326,7 +326,10 @@ class AutoWallpaperService : Service() {
                                 saturation = MainComposePreferences.getAutoWallpaperHomeSaturation(),
                                 hueRed = MainComposePreferences.getAutoWallpaperHomeHueRed(),
                                 hueGreen = MainComposePreferences.getAutoWallpaperHomeHueGreen(),
-                                hueBlue = MainComposePreferences.getAutoWallpaperHomeHueBlue()
+                                hueBlue = MainComposePreferences.getAutoWallpaperHomeHueBlue(),
+                                scaleRed = MainComposePreferences.getAutoWallpaperHomeScaleRed(),
+                                scaleGreen = MainComposePreferences.getAutoWallpaperHomeScaleGreen(),
+                                scaleBlue = MainComposePreferences.getAutoWallpaperHomeScaleBlue()
                         )
 
                         wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_SYSTEM)
@@ -345,7 +348,10 @@ class AutoWallpaperService : Service() {
                                 saturation = MainComposePreferences.getAutoWallpaperLockSaturation(),
                                 hueRed = MainComposePreferences.getAutoWallpaperLockHueRed(),
                                 hueGreen = MainComposePreferences.getAutoWallpaperLockHueGreen(),
-                                hueBlue = MainComposePreferences.getAutoWallpaperLockHueBlue()
+                                hueBlue = MainComposePreferences.getAutoWallpaperLockHueBlue(),
+                                scaleRed = MainComposePreferences.getAutoWallpaperLockScaleRed(),
+                                scaleGreen = MainComposePreferences.getAutoWallpaperLockScaleGreen(),
+                                scaleBlue = MainComposePreferences.getAutoWallpaperLockScaleBlue()
                         )
 
                         wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_LOCK)
@@ -367,7 +373,10 @@ class AutoWallpaperService : Service() {
                                     saturation = MainComposePreferences.getAutoWallpaperSaturation(),
                                     hueRed = MainComposePreferences.getAutoWallpaperHueRed(),
                                     hueGreen = MainComposePreferences.getAutoWallpaperHueGreen(),
-                                    hueBlue = MainComposePreferences.getAutoWallpaperHueBlue()
+                                    hueBlue = MainComposePreferences.getAutoWallpaperHueBlue(),
+                                    scaleRed = MainComposePreferences.getAutoWallpaperScaleRed(),
+                                    scaleGreen = MainComposePreferences.getAutoWallpaperScaleGreen(),
+                                    scaleBlue = MainComposePreferences.getAutoWallpaperScaleBlue()
                             )
 
                             if (MainPreferences.isSettingForHomeScreen()) {
@@ -399,7 +408,10 @@ class AutoWallpaperService : Service() {
                                         saturation = MainComposePreferences.getAutoWallpaperSaturation(),
                                         hueRed = MainComposePreferences.getAutoWallpaperHueRed(),
                                         hueGreen = MainComposePreferences.getAutoWallpaperHueGreen(),
-                                        hueBlue = MainComposePreferences.getAutoWallpaperHueBlue()
+                                        hueBlue = MainComposePreferences.getAutoWallpaperHueBlue(),
+                                        scaleRed = MainComposePreferences.getAutoWallpaperScaleRed(),
+                                        scaleGreen = MainComposePreferences.getAutoWallpaperScaleGreen(),
+                                        scaleBlue = MainComposePreferences.getAutoWallpaperScaleBlue()
                                 )
 
                                 wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_LOCK)
@@ -421,7 +433,10 @@ class AutoWallpaperService : Service() {
                                         saturation = MainComposePreferences.getAutoWallpaperSaturation(),
                                         hueRed = MainComposePreferences.getAutoWallpaperHueRed(),
                                         hueGreen = MainComposePreferences.getAutoWallpaperHueGreen(),
-                                        hueBlue = MainComposePreferences.getAutoWallpaperHueBlue()
+                                        hueBlue = MainComposePreferences.getAutoWallpaperHueBlue(),
+                                        scaleRed = MainComposePreferences.getAutoWallpaperScaleRed(),
+                                        scaleGreen = MainComposePreferences.getAutoWallpaperScaleGreen(),
+                                        scaleBlue = MainComposePreferences.getAutoWallpaperScaleBlue()
                                 )
 
                                 wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_SYSTEM)

@@ -24,7 +24,10 @@ class EffectsFetcher(private val effect: Effect) : DataFetcher<Bitmap> {
                 effect.effect.saturationValue,
                 effect.effect.hueRedValue,
                 effect.effect.hueGreenValue,
-                effect.effect.hueBlueValue))
+                effect.effect.hueBlueValue,
+                effect.effect.scaleRedValue,
+                effect.effect.scaleGreenValue,
+                effect.effect.scaleBlueValue))
 
         Glide.with(effect.context).clear(bitmap)
     }

@@ -25,6 +25,9 @@ class StateViewModel(application: Application) : AndroidViewModel(application) {
     var hueValueRed by mutableFloatStateOf(0f) // 0F..360F
     var hueValueGreen by mutableFloatStateOf(0f) // 0F..360F
     var hueValueBlue by mutableFloatStateOf(0f) // 0F..360F
+    var scaleValueRed by mutableFloatStateOf(1f) // 0F..1F
+    var scaleValueGreen by mutableFloatStateOf(1f) // 0F..1F
+    var scaleValueBlue by mutableFloatStateOf(1f) // 0F..1F
 
     fun saveEffectInDatabase(effect: Effect, onEffectSaved: () -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {

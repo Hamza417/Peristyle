@@ -28,12 +28,12 @@ object BitmapUtils {
     fun Bitmap.changeBitmapContrastBrightness(contrast: Float, brightness: Float, saturation: Float, hue: Float): Bitmap {
         val colorMatrix = ColorMatrix().apply {
             set(
-                floatArrayOf(
-                    contrast, 0f, 0f, 0f, brightness,
-                    0f, contrast, 0f, 0f, brightness,
-                    0f, 0f, contrast, 0f, brightness,
-                    0f, 0f, 0f, 1f, 0f
-                )
+                    floatArrayOf(
+                            contrast, 0f, 0f, 0f, brightness,
+                            0f, contrast, 0f, 0f, brightness,
+                            0f, 0f, contrast, 0f, brightness,
+                            0f, 0f, 0f, 1f, 0f
+                    )
             )
         }
 
@@ -58,12 +58,12 @@ object BitmapUtils {
     fun Bitmap.applyEffects(brightness: Float, contrast: Float) {
         val colorMatrix = ColorMatrix().apply {
             set(
-                floatArrayOf(
-                    contrast, 0f, 0f, 0f, brightness,
-                    0f, contrast, 0f, 0f, brightness,
-                    0f, 0f, contrast, 0f, brightness,
-                    0f, 0f, 0f, 1f, 0f
-                )
+                    floatArrayOf(
+                            contrast, 0f, 0f, 0f, brightness,
+                            0f, contrast, 0f, 0f, brightness,
+                            0f, 0f, contrast, 0f, brightness,
+                            0f, 0f, 0f, 1f, 0f
+                    )
             )
         }
 
@@ -76,7 +76,17 @@ object BitmapUtils {
     /**
      * For compose interface only
      */
-    fun Bitmap.applyEffects(blur: Float, brightness: Float, contrast: Float, saturation: Float, hueRed: Float, hueGreen: Float, hueBlue: Float): Bitmap {
+    fun Bitmap.applyEffects(
+            blur: Float,
+            brightness: Float,
+            contrast: Float,
+            saturation: Float,
+            hueRed: Float,
+            hueGreen: Float,
+            hueBlue: Float,
+            scaleRed: Float,
+            scaleGreen: Float,
+            scaleBlue: Float): Bitmap {
         // Initialize the main color matrix
         val colorMatrix = ComposeUiGraphicsColorMatrix()
 
@@ -85,6 +95,7 @@ object BitmapUtils {
         val rotateGreenMatrix = ComposeUiGraphicsColorMatrix().apply { setToRotateGreen(hueGreen) }
         val rotateBlueMatrix = ComposeUiGraphicsColorMatrix().apply { setToRotateBlue(hueBlue) }
         val saturationMatrix = ComposeUiGraphicsColorMatrix().apply { setToSaturation(saturation) }
+        val scaleMatrix = ComposeUiGraphicsColorMatrix().apply { setToScale(scaleRed, scaleGreen, scaleBlue, 1F) }
         val translate = (-0.5f * contrast + 0.5f + brightness / 255f) * 255f
         val contrastMatrix = androidx.compose.ui.graphics.ColorMatrix(
                 floatArrayOf(
@@ -108,11 +119,14 @@ object BitmapUtils {
         // Multiply the result with the saturation matrix and store in tempMatrix
         multiplyMatrices(combinedMatrix, saturationMatrix.values, tempMatrix)
 
-        // Multiply the result with the contrast matrix and store in combinedMatrix
-        multiplyMatrices(tempMatrix, contrastMatrix.values, combinedMatrix)
+        // Multiply the result with the scale matrix and store in combinedMatrix
+        multiplyMatrices(tempMatrix, scaleMatrix.values, combinedMatrix)
+
+        // Multiply the result with the contrast matrix and store in tempMatrix
+        multiplyMatrices(combinedMatrix, contrastMatrix.values, tempMatrix)
 
         // Set the combined matrix to the main color matrix
-        colorMatrix.set(ComposeUiGraphicsColorMatrix(combinedMatrix))
+        colorMatrix.set(ComposeUiGraphicsColorMatrix(tempMatrix))
 
         // Apply the combined color matrix to the bitmap
         val paint = Paint()
@@ -185,12 +199,12 @@ object BitmapUtils {
     fun Bitmap.applyBrightness(brightness: Float): Bitmap {
         val cm = ColorMatrix()
         cm.set(
-            floatArrayOf(
-                1f, 0f, 0f, 0f, brightness,
-                0f, 1f, 0f, 0f, brightness,
-                0f, 0f, 1f, 0f, brightness,
-                0f, 0f, 0f, 1f, 0f
-            )
+                floatArrayOf(
+                        1f, 0f, 0f, 0f, brightness,
+                        0f, 1f, 0f, 0f, brightness,
+                        0f, 0f, 1f, 0f, brightness,
+                        0f, 0f, 0f, 1f, 0f
+                )
         )
         val paint = Paint()
         paint.colorFilter = ColorMatrixColorFilter(cm)
@@ -203,12 +217,12 @@ object BitmapUtils {
     fun Bitmap.applyContrast(contrast: Float): Bitmap {
         val cm = ColorMatrix()
         cm.set(
-            floatArrayOf(
-                contrast, 0f, 0f, 0f, 0f,
-                0f, contrast, 0f, 0f, 0f,
-                0f, 0f, contrast, 0f, 0f,
-                0f, 0f, 0f, 1f, 0f
-            )
+                floatArrayOf(
+                        contrast, 0f, 0f, 0f, 0f,
+                        0f, contrast, 0f, 0f, 0f,
+                        0f, 0f, contrast, 0f, 0f,
+                        0f, 0f, 0f, 1f, 0f
+                )
         )
         val paint = Paint()
         paint.colorFilter = ColorMatrixColorFilter(cm)

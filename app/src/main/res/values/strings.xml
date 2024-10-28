@@ -204,4 +204,5 @@
     <string name="saved_effects">Saved Effects</string>
     <string name="save">Save</string>
     <string name="no_effects_summary">Any effects saved will appear here as preview on the wallpaper you are currently viewing.</string>
+    <string name="scale">Scale</string>
 </resources>

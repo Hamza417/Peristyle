@@ -106,6 +106,9 @@ fun Wallpaper(context: Context, navController: NavHostController) {
     var hueValueRed by remember { stateViewModel::hueValueRed } // 0F..360F
     var hueValueGreen by remember { stateViewModel::hueValueGreen } // 0F..360F
     var hueValueBlue by remember { stateViewModel::hueValueBlue } // 0F..360F
+    var scaleValueRed by remember { stateViewModel::scaleValueRed } // 0F..1F
+    var scaleValueGreen by remember { stateViewModel::scaleValueGreen } // 0F..1F
+    var scaleValueBlue by remember { stateViewModel::scaleValueBlue } // 0F..1F
     var tags by remember { mutableStateOf(emptyList<String>()) }
     val coroutineScope = rememberCoroutineScope()
     val graphicsLayer = rememberGraphicsLayer()
@@ -120,7 +123,6 @@ fun Wallpaper(context: Context, navController: NavHostController) {
 
     if (showEditDialog.value) {
         EffectsDialog(
-                showDialog = showEditDialog.value,
                 setShowDialog = {
                     showEditDialog.value = it
                     showDetailsCard.value = !it
@@ -132,7 +134,10 @@ fun Wallpaper(context: Context, navController: NavHostController) {
                 initialHueRedValue = hueValueRed,
                 initialHueGreenValue = hueValueGreen,
                 initialHueBlueValue = hueValueBlue,
-                onApplyEffects = { blur, brightness, contrast, saturation, hueRed, hueGreen, hueBlue ->
+                initialScaleRedValue = scaleValueRed,
+                initialScaleGreenValue = scaleValueGreen,
+                initialScaleBlueValue = scaleValueBlue,
+                onApplyEffects = { blur, brightness, contrast, saturation, hueRed, hueGreen, hueBlue, scaleRed, scaleGreen, scaleBlue ->
                     blurValue = blur
                     brightnessValue = brightness
                     contrastValue = contrast
@@ -140,9 +145,13 @@ fun Wallpaper(context: Context, navController: NavHostController) {
                     hueValueRed = hueRed
                     hueValueGreen = hueGreen
                     hueValueBlue = hueBlue
+                    scaleValueRed = scaleRed
+                    scaleValueGreen = scaleGreen
+                    scaleValueBlue = scaleBlue
                 },
-                onSaveEffects = { blur, brightness, contrast, saturation, hueRed, hueGreen, hueBlue ->
-                    stateViewModel.saveEffectInDatabase(Effect(blur, brightness, contrast, saturation, hueRed, hueGreen, hueBlue)) {
+                onSaveEffects = { blur, brightness, contrast, saturation, hueRed, hueGreen, hueBlue, scaleRed, scaleGreen, scaleBlue ->
+                    stateViewModel.saveEffectInDatabase(
+                            Effect(blur, brightness, contrast, saturation, hueRed, hueGreen, hueBlue, scaleRed, scaleGreen, scaleBlue)) {
                         Log.i("Wallpaper", "Effect saved")
                     }
                 }
@@ -161,6 +170,10 @@ fun Wallpaper(context: Context, navController: NavHostController) {
                         hueValueRed = effect.hueRedValue
                         hueValueGreen = effect.hueGreenValue
                         hueValueBlue = effect.hueBlueValue
+                        scaleValueRed = effect.scaleRedValue
+                        scaleValueGreen = effect.scaleGreenValue
+                        scaleValueBlue = effect.scaleBlueValue
+                        Log.i("Wallpaper", "Effect launched: $effect")
                         launchEffectActivity.value = false
                     },
                     onCanceled = {
@@ -193,6 +206,7 @@ fun Wallpaper(context: Context, navController: NavHostController) {
         val rotateGreenMatrix = ColorMatrix().apply { setToRotateGreen(hueValueGreen) }
         val rotateBlueMatrix = ColorMatrix().apply { setToRotateBlue(hueValueBlue) }
         val saturationMatrix = ColorMatrix().apply { setToSaturation(saturationValue) }
+        val scaleMatrix = ColorMatrix().apply { setToScale(scaleValueRed, scaleValueGreen, scaleValueBlue, 1F) }
         val scale = contrastValue
         val translate = (-0.5f * scale + 0.5f + brightnessValue / 255f) * 255f
         val contrastMatrix = ColorMatrix(
@@ -204,7 +218,6 @@ fun Wallpaper(context: Context, navController: NavHostController) {
                 )
         )
 
-        // Manually combine the matrices
         val combinedMatrix = FloatArray(20) // Array to hold the combined matrix
         val tempMatrix = FloatArray(20) // Temporary array for intermediate results
 
@@ -217,11 +230,14 @@ fun Wallpaper(context: Context, navController: NavHostController) {
         // Multiply the result with the saturation matrix and store in tempMatrix
         multiplyMatrices(combinedMatrix, saturationMatrix.values, tempMatrix)
 
-        // Multiply the result with the contrast matrix and store in combinedMatrix
-        multiplyMatrices(tempMatrix, contrastMatrix.values, combinedMatrix)
+        // Multiply the result with the scale matrix and store in combinedMatrix
+        multiplyMatrices(tempMatrix, scaleMatrix.values, combinedMatrix)
+
+        // Multiply the result with the contrast matrix and store in tempMatrix
+        multiplyMatrices(combinedMatrix, contrastMatrix.values, tempMatrix)
 
         // Set the combined matrix to the main color matrix
-        colorMatrix.set(ColorMatrix(combinedMatrix))
+        colorMatrix.set(ColorMatrix(tempMatrix))
 
         Box(
                 modifier = Modifier

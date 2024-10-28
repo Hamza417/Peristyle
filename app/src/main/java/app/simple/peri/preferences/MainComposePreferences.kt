@@ -26,6 +26,9 @@ object MainComposePreferences {
     private const val AUTO_WALLPAPER_HUE_RED = "auto_wallpaper_hue_red"
     private const val AUTO_WALLPAPER_HUE_GREEN = "auto_wallpaper_hue_green"
     private const val AUTO_WALLPAPER_HUE_BLUE = "auto_wallpaper_hue_blue"
+    private const val AUTO_WALLPAPER_SCALE_RED = "auto_wallpaper_scale_red"
+    private const val AUTO_WALLPAPER_SCALE_GREEN = "auto_wallpaper_scale_green"
+    private const val AUTO_WALLPAPER_SCALE_BLUE = "auto_wallpaper_scale_blue"
     private const val AUTO_WALLPAPER_HOME_BLUR = "auto_wallpaper_home_blur"
     private const val AUTO_WALLPAPER_HOME_BRIGHTNESS = "auto_wallpaper_home_brightness"
     private const val AUTO_WALLPAPER_HOME_CONTRAST = "auto_wallpaper_home_contrast"
@@ -33,6 +36,9 @@ object MainComposePreferences {
     private const val AUTO_WALLPAPER_HOME_HUE_RED = "auto_wallpaper_home_hue_red"
     private const val AUTO_WALLPAPER_HOME_HUE_GREEN = "auto_wallpaper_home_hue_green"
     private const val AUTO_WALLPAPER_HOME_HUE_BLUE = "auto_wallpaper_home_hue_blue"
+    private const val AUTO_WALLPAPER_HOME_SCALE_RED = "auto_wallpaper_scale_red"
+    private const val AUTO_WALLPAPER_HOME_SCALE_GREEN = "auto_wallpaper_scale_green"
+    private const val AUTO_WALLPAPER_HOME_SCALE_BLUE = "auto_wallpaper_scale_blue"
     private const val AUTO_WALLPAPER_LOCK_BLUR = "auto_wallpaper_lock_blur"
     private const val AUTO_WALLPAPER_LOCK_BRIGHTNESS = "auto_wallpaper_lock_brightness"
     private const val AUTO_WALLPAPER_LOCK_CONTRAST = "auto_wallpaper_lock_contrast"
@@ -40,6 +46,9 @@ object MainComposePreferences {
     private const val AUTO_WALLPAPER_LOCK_HUE_RED = "auto_wallpaper_lock_hue_red"
     private const val AUTO_WALLPAPER_LOCK_HUE_GREEN = "auto_wallpaper_lock_hue_green"
     private const val AUTO_WALLPAPER_LOCK_HUE_BLUE = "auto_wallpaper_lock_hue_blue"
+    private const val AUTO_WALLPAPER_LOCK_SCALE_RED = "auto_wallpaper_lock_scale_red"
+    private const val AUTO_WALLPAPER_LOCK_SCALE_GREEN = "auto_wallpaper_lock_scale_green"
+    private const val AUTO_WALLPAPER_LOCK_SCALE_BLUE = "auto_wallpaper_lock_scale_blue"
     private const val DEVICE_WIDTH = "device_width"
     private const val DEVICE_HEIGHT = "device_height"
     private const val BOTTOM_HEADER = "bottom_header"
@@ -264,6 +273,32 @@ object MainComposePreferences {
 
     // ----------------------------------------------------------------------------------------------------- //
 
+    fun getAutoWallpaperScaleRed(): Float {
+        return getSharedPreferences().getFloat(AUTO_WALLPAPER_SCALE_RED, 1f)
+    }
+
+    fun setAutoWallpaperScaleRed(value: Float) {
+        getSharedPreferences().edit().putFloat(AUTO_WALLPAPER_SCALE_RED, value).apply()
+    }
+
+    fun getAutoWallpaperScaleGreen(): Float {
+        return getSharedPreferences().getFloat(AUTO_WALLPAPER_SCALE_GREEN, 1f)
+    }
+
+    fun setAutoWallpaperScaleGreen(value: Float) {
+        getSharedPreferences().edit().putFloat(AUTO_WALLPAPER_SCALE_GREEN, value).apply()
+    }
+
+    fun getAutoWallpaperScaleBlue(): Float {
+        return getSharedPreferences().getFloat(AUTO_WALLPAPER_SCALE_BLUE, 1f)
+    }
+
+    fun setAutoWallpaperScaleBlue(value: Float) {
+        getSharedPreferences().edit().putFloat(AUTO_WALLPAPER_SCALE_BLUE, value).apply()
+    }
+
+    // ----------------------------------------------------------------------------------------------------- //
+
     fun getAutoWallpaperHomeBlur(): Float {
         return getSharedPreferences().getFloat(AUTO_WALLPAPER_HOME_BLUR, 0f)
     }
@@ -326,6 +361,32 @@ object MainComposePreferences {
 
     fun setAutoWallpaperHomeHueBlue(value: Float) {
         getSharedPreferences().edit().putFloat(AUTO_WALLPAPER_HOME_HUE_BLUE, value).apply()
+    }
+
+    // ----------------------------------------------------------------------------------------------------- //
+
+    fun getAutoWallpaperHomeScaleRed(): Float {
+        return getSharedPreferences().getFloat(AUTO_WALLPAPER_HOME_SCALE_RED, 1f)
+    }
+
+    fun setAutoWallpaperHomeScaleRed(value: Float) {
+        getSharedPreferences().edit().putFloat(AUTO_WALLPAPER_HOME_SCALE_RED, value).apply()
+    }
+
+    fun getAutoWallpaperHomeScaleGreen(): Float {
+        return getSharedPreferences().getFloat(AUTO_WALLPAPER_HOME_SCALE_GREEN, 1f)
+    }
+
+    fun setAutoWallpaperHomeScaleGreen(value: Float) {
+        getSharedPreferences().edit().putFloat(AUTO_WALLPAPER_HOME_SCALE_GREEN, value).apply()
+    }
+
+    fun getAutoWallpaperHomeScaleBlue(): Float {
+        return getSharedPreferences().getFloat(AUTO_WALLPAPER_HOME_SCALE_BLUE, 1f)
+    }
+
+    fun setAutoWallpaperHomeScaleBlue(value: Float) {
+        getSharedPreferences().edit().putFloat(AUTO_WALLPAPER_HOME_SCALE_BLUE, value).apply()
     }
 
     // ----------------------------------------------------------------------------------------------------- //
@@ -396,6 +457,32 @@ object MainComposePreferences {
 
     // ----------------------------------------------------------------------------------------------------- //
 
+    fun getAutoWallpaperLockScaleRed(): Float {
+        return getSharedPreferences().getFloat(AUTO_WALLPAPER_LOCK_SCALE_RED, 1f)
+    }
+
+    fun setAutoWallpaperLockScaleRed(value: Float) {
+        getSharedPreferences().edit().putFloat(AUTO_WALLPAPER_LOCK_SCALE_RED, value).apply()
+    }
+
+    fun getAutoWallpaperLockScaleGreen(): Float {
+        return getSharedPreferences().getFloat(AUTO_WALLPAPER_LOCK_SCALE_GREEN, 1f)
+    }
+
+    fun setAutoWallpaperLockScaleGreen(value: Float) {
+        getSharedPreferences().edit().putFloat(AUTO_WALLPAPER_LOCK_SCALE_GREEN, value).apply()
+    }
+
+    fun getAutoWallpaperLockScaleBlue(): Float {
+        return getSharedPreferences().getFloat(AUTO_WALLPAPER_LOCK_SCALE_BLUE, 1f)
+    }
+
+    fun setAutoWallpaperLockScaleBlue(value: Float) {
+        getSharedPreferences().edit().putFloat(AUTO_WALLPAPER_LOCK_SCALE_BLUE, value).apply()
+    }
+
+    // ----------------------------------------------------------------------------------------------------- //
+
     fun clearAutoWallpaperValues() {
         getSharedPreferences().edit().remove(AUTO_WALLPAPER_BLUR).apply()
         getSharedPreferences().edit().remove(AUTO_WALLPAPER_BRIGHTNESS).apply()
@@ -406,6 +493,27 @@ object MainComposePreferences {
         getSharedPreferences().edit().remove(AUTO_WALLPAPER_LOCK_BLUR).apply()
         getSharedPreferences().edit().remove(AUTO_WALLPAPER_LOCK_BRIGHTNESS).apply()
         getSharedPreferences().edit().remove(AUTO_WALLPAPER_LOCK_CONTRAST).apply()
+        getSharedPreferences().edit().remove(AUTO_WALLPAPER_SATURATION).apply()
+        getSharedPreferences().edit().remove(AUTO_WALLPAPER_HUE_RED).apply()
+        getSharedPreferences().edit().remove(AUTO_WALLPAPER_HUE_GREEN).apply()
+        getSharedPreferences().edit().remove(AUTO_WALLPAPER_HUE_BLUE).apply()
+        getSharedPreferences().edit().remove(AUTO_WALLPAPER_SCALE_RED).apply()
+        getSharedPreferences().edit().remove(AUTO_WALLPAPER_SCALE_GREEN).apply()
+        getSharedPreferences().edit().remove(AUTO_WALLPAPER_SCALE_BLUE).apply()
+        getSharedPreferences().edit().remove(AUTO_WALLPAPER_HOME_SATURATION).apply()
+        getSharedPreferences().edit().remove(AUTO_WALLPAPER_HOME_HUE_RED).apply()
+        getSharedPreferences().edit().remove(AUTO_WALLPAPER_HOME_HUE_GREEN).apply()
+        getSharedPreferences().edit().remove(AUTO_WALLPAPER_HOME_HUE_BLUE).apply()
+        getSharedPreferences().edit().remove(AUTO_WALLPAPER_HOME_SCALE_RED).apply()
+        getSharedPreferences().edit().remove(AUTO_WALLPAPER_HOME_SCALE_GREEN).apply()
+        getSharedPreferences().edit().remove(AUTO_WALLPAPER_HOME_SCALE_BLUE).apply()
+        getSharedPreferences().edit().remove(AUTO_WALLPAPER_LOCK_SATURATION).apply()
+        getSharedPreferences().edit().remove(AUTO_WALLPAPER_LOCK_HUE_RED).apply()
+        getSharedPreferences().edit().remove(AUTO_WALLPAPER_LOCK_HUE_GREEN).apply()
+        getSharedPreferences().edit().remove(AUTO_WALLPAPER_LOCK_HUE_BLUE).apply()
+        getSharedPreferences().edit().remove(AUTO_WALLPAPER_LOCK_SCALE_RED).apply()
+        getSharedPreferences().edit().remove(AUTO_WALLPAPER_LOCK_SCALE_GREEN).apply()
+        getSharedPreferences().edit().remove(AUTO_WALLPAPER_LOCK_SCALE_BLUE).apply()
     }
 
     // ----------------------------------------------------------------------------------------------------- //

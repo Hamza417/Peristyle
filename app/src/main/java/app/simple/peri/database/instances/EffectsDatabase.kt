@@ -8,7 +8,7 @@ import app.simple.peri.database.dao.EffectsDao
 import app.simple.peri.models.Effect
 import app.simple.peri.utils.ConditionUtils.invert
 
-@Database(entities = [Effect::class], version = 1)
+@Database(entities = [Effect::class], version = 2)
 abstract class EffectsDatabase : RoomDatabase() {
     abstract fun effectsDao(): EffectsDao
 
