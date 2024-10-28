@@ -9,6 +9,7 @@ import app.simple.peri.database.instances.EffectsDatabase
 import app.simple.peri.models.Effect
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class EffectsViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -23,5 +24,17 @@ class EffectsViewModel(application: Application) : AndroidViewModel(application)
 
     fun getEffects(): LiveData<List<Effect>> {
         return effects
+    }
+
+    fun deleteEffect(effect: Effect, onDeleted: () -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val effectsDatabase = EffectsDatabase.getInstance(getApplication())!!
+            effectsDatabase.effectsDao().deleteEffect(effect)
+            effects.postValue(effectsDatabase.effectsDao().getAllEffects())
+
+            withContext(Dispatchers.Main) {
+                onDeleted()
+            }
+        }
     }
 }

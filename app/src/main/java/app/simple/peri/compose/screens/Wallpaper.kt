@@ -171,7 +171,7 @@ fun Wallpaper(context: Context, navController: NavHostController) {
 
     if (showSavedEffects.value) {
         ShowWarningDialog(
-                title = context.getString(R.string.saved_effects),
+                title = context.getString(R.string.effects),
                 warning = context.getString(R.string.saved_summary),
                 onDismiss = {
                     showSavedEffects.value = false
