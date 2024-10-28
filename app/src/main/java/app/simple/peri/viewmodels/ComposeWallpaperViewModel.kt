@@ -154,6 +154,8 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
 
                     if (folder.count > 0) {
                         folders.add(folder)
+                    } else {
+                        Log.i(TAG, "loadFolders: folder is empty: ${folder.name}")
                     }
                 }
             }
@@ -197,7 +199,8 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
                     MainComposePreferences.getAllWallpaperPaths().forEach { path ->
                         val pickedDirectory = File(path)
                         if (pickedDirectory.exists()) {
-                            val files = pickedDirectory.getFiles().dotFilter()
+                            val files = pickedDirectory.getFiles()
+                            Log.d(TAG, "loadWallpaperImages: files count: ${files.size}")
                             val total = files.size
                             var count = 0
                             setFolderLoadingState(getApplication<Application>().getString(app.simple.peri.R.string.preparing))
@@ -240,6 +243,8 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
                                 wallpapers.forEach { it.isSelected = false }
                                 wallpapersData.postValue(wallpapers)
                             }
+                        } else {
+                            Log.e(TAG, "loadWallpaperImages: directory does not exist: $path")
                         }
                     }
 
@@ -431,9 +436,11 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
 
     private fun File.getFiles(): List<File> {
         return if (MainPreferences.isTweakOptionSelected(MainPreferences.IGNORE_SUB_DIRS)) {
-            listCompleteFiles()
-        } else {
+            Log.i(TAG, "getFiles: listing only first level files")
             listOnlyFirstLevelFiles()
+        } else {
+            Log.i(TAG, "getFiles: listing all files")
+            listCompleteFiles()
         }
     }
 
@@ -504,7 +511,7 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
     }
 
     companion object {
-        private const val TAG = "WallpaperViewModel"
+        private const val TAG = "ComposeWallpaperViewModel"
         private const val SYSTEM_WALLPAPER = "system_wallpaper_$.png"
         private const val LOCK_WALLPAPER = "lock_wallpaper_$.png"
     }

@@ -118,8 +118,7 @@ fun Setup(context: Context, navController: NavController? = null) {
                 Permissions(context = context, navController = navController, modifier = Modifier
                     .wrapContentHeight())
 
-                Folder(context = context, navController = navController, modifier = Modifier
-                )
+                Folder(context = context, navController = navController, modifier = Modifier)
             }
         }
 
@@ -314,7 +313,7 @@ fun Folder(modifier: Modifier, context: Context, navController: NavController? =
                     launchDirectoryPermission = false
                     showDirectoryPermissionDialog = true
                     directories = MainComposePreferences.getAllWallpaperPaths().joinToString("\n")
-                    composeWallpaperViewModel.refresh()
+                    composeWallpaperViewModel.refresh(true)
                 }
         )
     }
@@ -336,11 +335,7 @@ fun Folder(modifier: Modifier, context: Context, navController: NavController? =
 
         Card(
                 onClick = {
-                    if (context.contentResolver.persistedUriPermissions.isEmpty()) {
-                        launchDirectoryPermission = true
-                    } else {
-                        showDirectoryPermissionDialog = true
-                    }
+                    launchDirectoryPermission = true
                 },
                 colors = CardDefaults.cardColors(
                         containerColor = Color.Transparent

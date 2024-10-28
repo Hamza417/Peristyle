@@ -63,7 +63,7 @@ object FileUtils {
                     }
 
                     child.isFile -> {
-                        if (child.extension.lowercase() in imageExtensions) {
+                        if (child.name.endsWithAny(*imageExtensions)) {
                             allFiles.add(child)
                         }
                     }

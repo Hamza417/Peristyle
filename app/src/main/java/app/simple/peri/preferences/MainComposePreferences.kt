@@ -476,7 +476,7 @@ object MainComposePreferences {
         return getSharedPreferences().getStringSet(ALL_WALLPAPER_PATHS, setOf())!!
     }
 
-    fun setWallpapersPaths(value: Set<String>): Boolean {
+    private fun setWallpapersPaths(value: Set<String>): Boolean {
         return getSharedPreferences().edit().putStringSet(ALL_WALLPAPER_PATHS, value).commit()
     }
 
