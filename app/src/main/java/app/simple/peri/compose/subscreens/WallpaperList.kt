@@ -44,19 +44,23 @@ import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.utils.ConditionUtils.invert
 import app.simple.peri.utils.FileUtils.toSize
 import app.simple.peri.viewmodels.FolderDataViewModel
+import app.simple.peri.viewmodels.StateViewModel
 import app.simple.peri.viewmodels.WallpaperListViewModel
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
 
 @Composable
 fun WallpaperList(navController: NavController? = null) {
+    val stateViewModel: StateViewModel = viewModel()
+
     val folder =
-        navController?.previousBackStackEntry?.savedStateHandle?.get<Folder>(Routes.FOLDER_ARG)
+        navController?.previousBackStackEntry?.savedStateHandle?.get<Folder>(Routes.FOLDER_ARG) ?: stateViewModel.folder
 
     if (folder != null) {
         val folderDataViewModel: FolderDataViewModel = viewModel(
                 factory = FolderViewModelFactory(hashCode = folder)
         )
+        stateViewModel.folder = folder
 
         var wallpapers = remember { mutableStateListOf<Wallpaper>() }
         val updatedWallpapers by folderDataViewModel.getWallpapers().collectAsState()
