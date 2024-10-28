@@ -48,22 +48,22 @@ object FileUtils {
         return String.format("%.1f %cB", bytes / 1000.0, ci.current())
     }
 
-    fun DocumentFile.listCompleteFiles(): List<DocumentFile> {
-        val allFiles = mutableListOf<DocumentFile>()
-        val stack = Stack<DocumentFile>()
+    fun File.listCompleteFiles(): List<File> {
+        val allFiles = mutableListOf<File>()
+        val stack = Stack<File>()
         stack.push(this)
 
         while (stack.isNotEmpty()) {
             val currentFile = stack.pop()
 
-            currentFile.listFiles().forEach { child ->
+            currentFile.listFiles()?.forEach { child ->
                 when {
                     child.isDirectory -> {
                         stack.push(child)
                     }
 
                     child.isFile -> {
-                        if (child.isImageFile()) {
+                        if (child.extension.lowercase() in imageExtensions) {
                             allFiles.add(child)
                         }
                     }
@@ -74,11 +74,11 @@ object FileUtils {
         return allFiles
     }
 
-    fun DocumentFile.listOnlyFirstLevelFiles(): List<DocumentFile> {
-        val allFiles = mutableListOf<DocumentFile>()
-        this.listFiles().forEach { child ->
+    fun File.listOnlyFirstLevelFiles(): List<File> {
+        val allFiles = mutableListOf<File>()
+        this.listFiles()?.forEach { child ->
             if (child.isFile) {
-                if (child.isImageFile()) {
+                if (child.extension.lowercase() in imageExtensions) {
                     allFiles.add(child)
                 }
             }
@@ -87,8 +87,8 @@ object FileUtils {
         return allFiles
     }
 
-    fun List<DocumentFile>.filterDotFiles(): ArrayList<DocumentFile> {
-        return this.filter { !it.name!!.startsWith(".") } as ArrayList<DocumentFile>
+    fun List<File>.filterDotFiles(): ArrayList<File> {
+        return this.filter { !it.name.startsWith(".") } as ArrayList<File>
     }
 
     fun InputStream.generateMD5(): String {

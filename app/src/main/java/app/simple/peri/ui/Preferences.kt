@@ -37,7 +37,7 @@ import app.simple.peri.database.instances.WallpaperDatabase
 import app.simple.peri.databinding.DialogDeleteBinding
 import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.utils.ConditionUtils.invert
-import app.simple.peri.utils.FileUtils.listCompleteFiles
+import app.simple.peri.utils.DocumentFileUtils.listCompleteFiles
 import app.simple.peri.utils.FileUtils.toSize
 import app.simple.peri.utils.PermissionUtils
 import app.simple.peri.utils.PermissionUtils.isBatteryOptimizationDisabled

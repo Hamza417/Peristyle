@@ -23,9 +23,9 @@ import app.simple.peri.database.instances.WallpaperDatabase
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.utils.ConditionUtils.invert
-import app.simple.peri.utils.FileUtils.filterDotFiles
-import app.simple.peri.utils.FileUtils.listCompleteFiles
-import app.simple.peri.utils.FileUtils.listOnlyFirstLevelFiles
+import app.simple.peri.utils.DocumentFileUtils.filterDotFiles
+import app.simple.peri.utils.DocumentFileUtils.listCompleteFiles
+import app.simple.peri.utils.DocumentFileUtils.listOnlyFirstLevelFiles
 import app.simple.peri.utils.FileUtils.toUri
 import app.simple.peri.utils.PermissionUtils
 import app.simple.peri.utils.WallpaperSort.getSortedList

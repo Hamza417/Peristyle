@@ -12,7 +12,6 @@ import android.os.Build
 import android.util.Log
 import androidx.core.content.FileProvider
 import androidx.core.graphics.drawable.toBitmap
-import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -198,7 +197,7 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
                     MainComposePreferences.getAllWallpaperPaths().forEach { path ->
                         val pickedDirectory = File(path)
                         if (pickedDirectory.exists()) {
-                            val files = pickedDirectory.listFiles() ?: emptyArray()
+                            val files = pickedDirectory.getFiles().dotFilter()
                             val total = files.size
                             var count = 0
                             setFolderLoadingState(getApplication<Application>().getString(app.simple.peri.R.string.preparing))
@@ -285,6 +284,7 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
 
         isDatabaseLoaded.postValue(true)
         Log.d(TAG, "database loaded")
+        wallpaperDao?.sanitizeEntries()
     }
 
     private fun getCurrentSystemWallpaper(): ArrayList<Wallpaper> {
@@ -429,7 +429,7 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
         }
     }
 
-    private fun DocumentFile.getFiles(): List<DocumentFile> {
+    private fun File.getFiles(): List<File> {
         return if (MainPreferences.isTweakOptionSelected(MainPreferences.IGNORE_SUB_DIRS)) {
             listCompleteFiles()
         } else {
@@ -437,7 +437,7 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
         }
     }
 
-    private fun List<DocumentFile>.dotFilter(): List<DocumentFile> {
+    private fun List<File>.dotFilter(): List<File> {
         return if (MainPreferences.isTweakOptionSelected(MainPreferences.IGNORE_DOT_FILES)) {
             filterDotFiles()
         } else {
