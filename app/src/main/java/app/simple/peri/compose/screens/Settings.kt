@@ -116,6 +116,23 @@ fun Settings(navController: NavController? = null) {
             ) {
                 MainComposePreferences.setShowImageShadow(it)
             }
+
+            SwitchPreference(
+                    title = context.getString(R.string.original_aspect_ratio),
+                    description = context.getString(R.string.original_aspect_ratio_summary),
+                    checked = MainComposePreferences.isOriginalAspectRatio(),
+                    topPadding = 8.dp
+            ) {
+                MainComposePreferences.setOriginalAspectRatio(it)
+            }
+
+            SwitchPreference(
+                    title = context.getString(R.string.bottom_bar),
+                    description = context.getString(R.string.bottom_bar_summary),
+                    checked = MainComposePreferences.getBottomHeader()
+            ) {
+                MainComposePreferences.setBottomHeader(it)
+            }
         }
         item { // Data
             val showSortDialog = remember { mutableStateOf(false) }
@@ -197,15 +214,6 @@ fun Settings(navController: NavController? = null) {
                 MainPreferences.setIgnoreSubDirs(it)
             }
 
-            SwitchPreference(
-                    title = context.getString(R.string.original_aspect_ratio),
-                    description = context.getString(R.string.original_aspect_ratio_summary),
-                    checked = MainComposePreferences.isOriginalAspectRatio(),
-                    topPadding = 8.dp
-            ) {
-                MainComposePreferences.setOriginalAspectRatio(it)
-            }
-
             ClickablePreference(
                     title = context.getString(R.string.clear_cache),
             ) {
@@ -236,14 +244,6 @@ fun Settings(navController: NavController? = null) {
 
                 context.packageManager.setComponentEnabledSetting(
                         ComponentName(context, MainComposeActivity::class.java), composeState, PackageManager.DONT_KILL_APP)
-            }
-
-            SwitchPreference(
-                    title = context.getString(R.string.bottom_bar),
-                    description = context.getString(R.string.bottom_bar_summary),
-                    checked = MainComposePreferences.getBottomHeader()
-            ) {
-                MainComposePreferences.setBottomHeader(it)
             }
         }
         item {
