@@ -18,6 +18,7 @@ import android.os.IBinder
 import android.util.Log
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
+import androidx.core.content.FileProvider
 import androidx.core.net.toUri
 import app.simple.peri.R
 import app.simple.peri.activities.LegacyActivity
@@ -35,12 +36,14 @@ import app.simple.peri.utils.BitmapUtils.cropBitmap
 import app.simple.peri.utils.ConditionUtils.invert
 import app.simple.peri.utils.ConditionUtils.isNotNull
 import app.simple.peri.utils.ConditionUtils.isNull
+import app.simple.peri.utils.FileUtils.toFile
 import app.simple.peri.utils.ScreenUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayInputStream
+import java.io.File
 
 class AutoWallpaperService : Service() {
 
@@ -314,7 +317,7 @@ class AutoWallpaperService : Service() {
 
                 if (homeWallpaper.isNotNull()) {
                     Log.d(TAG, "Home wallpaper found: ${homeWallpaper?.uri}")
-                    getBitmapFromUri(homeWallpaper!!) {
+                    getBitmapFromFile(homeWallpaper!!) {
                         var bitmap = it.copy(it.config ?: Bitmap.Config.ARGB_8888, true)
                         bitmap = bitmap.applyEffects(
                                 brightness = MainComposePreferences.getAutoWallpaperHomeBrightness(),
@@ -327,13 +330,13 @@ class AutoWallpaperService : Service() {
                         )
 
                         wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_SYSTEM)
-                        showWallpaperChangedNotification(true, homeWallpaper.uri.toUri())
+                        showWallpaperChangedNotification(true, homeWallpaper.uri.toFile())
                     }
                 }
 
                 if (lockWallpaper.isNotNull()) {
                     Log.d(TAG, "Lock wallpaper found: ${lockWallpaper?.uri}")
-                    getBitmapFromUri(lockWallpaper!!) {
+                    getBitmapFromFile(lockWallpaper!!) {
                         var bitmap = it.copy(it.config ?: Bitmap.Config.ARGB_8888, true)
                         bitmap = bitmap.applyEffects(
                                 brightness = MainComposePreferences.getAutoWallpaperLockBrightness(),
@@ -346,7 +349,7 @@ class AutoWallpaperService : Service() {
                         )
 
                         wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_LOCK)
-                        showWallpaperChangedNotification(false, lockWallpaper.uri.toUri())
+                        showWallpaperChangedNotification(false, lockWallpaper.uri.toFile())
                     }
                 }
 
@@ -355,7 +358,7 @@ class AutoWallpaperService : Service() {
                         Log.d(TAG, "No wallpapers found, setting random wallpaper")
                         wallpaper = getWallpapersFromDatabase()?.random()
 
-                        getBitmapFromUri(wallpaper!!) {
+                        getBitmapFromFile(wallpaper!!) {
                             var bitmap = it.copy(it.config ?: Bitmap.Config.ARGB_8888, true)
                             bitmap = bitmap.applyEffects(
                                     brightness = MainComposePreferences.getAutoWallpaperBrightness(),
@@ -369,14 +372,14 @@ class AutoWallpaperService : Service() {
 
                             if (MainPreferences.isSettingForHomeScreen()) {
                                 wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_SYSTEM)
-                                showWallpaperChangedNotification(true, wallpaper.uri.toUri())
+                                showWallpaperChangedNotification(true, wallpaper.filePath.toFile())
                             } else {
                                 Log.i(TAG, "No home wallpaper, skipping")
                             }
 
                             if (MainPreferences.isSettingForLockScreen()) {
                                 wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_LOCK)
-                                showWallpaperChangedNotification(false, wallpaper.uri.toUri())
+                                showWallpaperChangedNotification(false, wallpaper.filePath.toFile())
                             } else {
                                 Log.i(TAG, "No lock wallpaper, skipping")
                             }
@@ -387,7 +390,7 @@ class AutoWallpaperService : Service() {
                         Log.d(TAG, "No lock wallpaper found, setting random wallpaper")
                         if (MainPreferences.isSettingForLockScreen()) {
                             val randomWallpaper = getWallpapersFromDatabase()?.random()!!
-                            getBitmapFromUri(randomWallpaper) {
+                            getBitmapFromFile(randomWallpaper) {
                                 var bitmap = it.copy(it.config ?: Bitmap.Config.ARGB_8888, true)
                                 bitmap = bitmap.applyEffects(
                                         brightness = MainComposePreferences.getAutoWallpaperBrightness(),
@@ -400,7 +403,7 @@ class AutoWallpaperService : Service() {
                                 )
 
                                 wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_LOCK)
-                                showWallpaperChangedNotification(false, randomWallpaper.uri.toUri())
+                                showWallpaperChangedNotification(false, randomWallpaper.filePath.toFile())
                             }
                         }
                     }
@@ -409,7 +412,7 @@ class AutoWallpaperService : Service() {
                         Log.d(TAG, "No home wallpaper found, setting random wallpaper")
                         if (MainPreferences.isSettingForHomeScreen()) {
                             val randomWallpaper = getWallpapersFromDatabase()?.random()!!
-                            getBitmapFromUri(randomWallpaper) {
+                            getBitmapFromFile(randomWallpaper) {
                                 var bitmap = it.copy(it.config ?: Bitmap.Config.ARGB_8888, true)
                                 bitmap = bitmap.applyEffects(
                                         brightness = MainComposePreferences.getAutoWallpaperBrightness(),
@@ -422,7 +425,7 @@ class AutoWallpaperService : Service() {
                                 )
 
                                 wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_SYSTEM)
-                                showWallpaperChangedNotification(true, randomWallpaper.uri.toUri())
+                                showWallpaperChangedNotification(true, randomWallpaper.uri.toFile())
                             }
                         }
                     }
@@ -438,8 +441,8 @@ class AutoWallpaperService : Service() {
         }
     }
 
-    private fun getBitmapFromUri(wallpaper: Wallpaper, onBitmap: (Bitmap) -> Unit) {
-        contentResolver.openInputStream(wallpaper.uri.toUri())?.use { stream ->
+    private fun getBitmapFromFile(wallpaper: Wallpaper, onBitmap: (Bitmap) -> Unit) {
+        wallpaper.filePath.toFile().inputStream().use { stream ->
             val byteArray = stream.readBytes()
             Log.i(TAG, "Compose Wallpaper URI Decoding: ${wallpaper.uri}")
             var bitmap = decodeBitmap(byteArray)
@@ -620,7 +623,7 @@ class AutoWallpaperService : Service() {
         }
     }
 
-    private fun showWallpaperChangedNotification(isHomeScreen: Boolean, uri: Uri) {
+    private fun showWallpaperChangedNotification(isHomeScreen: Boolean, file: File) {
         if (MainComposePreferences.getAutoWallpaperNotification().invert()) {
             return
         }
@@ -634,15 +637,11 @@ class AutoWallpaperService : Service() {
         val deleteIntent = Intent(this, WallpaperActionReceiver::class.java).apply {
             action = if (isHomeScreen) ACTION_DELETE_WALLPAPER_HOME else ACTION_DELETE_WALLPAPER_LOCK
             putExtra(EXTRA_IS_HOME_SCREEN, isHomeScreen)
-            putExtra(EXTRA_WALLPAPER_URI, uri.toString())
+            putExtra(EXTRA_WALLPAPER_PATH, file.absolutePath)
             putExtra(EXTRA_NOTIFICATION_ID, notificationId)
         }
 
-        val sendIntent = Intent(Intent.ACTION_SEND).apply {
-            type = "image/*"
-            action = Intent.ACTION_SEND
-            putExtra(Intent.EXTRA_STREAM, uri)
-        }
+        val sendIntent = createSendIntent(file, this)
 
         val deletePendingIntent: PendingIntent = PendingIntent.getBroadcast(
                 this, notificationId, deleteIntent, PendingIntent.FLAG_IMMUTABLE)
@@ -663,6 +662,15 @@ class AutoWallpaperService : Service() {
         notificationManager.notify(notificationId, notification)
     }
 
+    private fun createSendIntent(file: File, context: Context): Intent {
+        val uri: Uri = FileProvider.getUriForFile(context, "${context.packageName}.provider", file)
+        return Intent(Intent.ACTION_SEND).apply {
+            type = "image/*"
+            putExtra(Intent.EXTRA_STREAM, uri)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+    }
+
     companion object {
         const val ACTION_NEXT_WALLPAPER: String = "app.simple.peri.services.action.NEXT_WALLPAPER"
         const val ACTION_DELETE_WALLPAPER_HOME = "app.simple.peri.services.action.DELETE_WALLPAPER_HOME"
@@ -670,6 +678,7 @@ class AutoWallpaperService : Service() {
 
         const val EXTRA_IS_HOME_SCREEN = "app.simple.peri.services.extra.IS_HOME_SCREEN"
         const val EXTRA_WALLPAPER_URI = "app.simple.peri.services.extra.URI"
+        const val EXTRA_WALLPAPER_PATH = "app.simple.peri.services.extra.PATH"
         const val EXTRA_NOTIFICATION_ID = "app.simple.peri.services.extra.NOTIFICATION_ID"
 
         private const val TAG = "AutoWallpaperService"

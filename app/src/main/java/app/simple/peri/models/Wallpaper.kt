@@ -30,7 +30,7 @@ class Wallpaper() : Comparable<Wallpaper>, Serializable, Parcelable {
     @NonNull
     var uri: String = ""
 
-    @ColumnInfo(name = "file")
+    @ColumnInfo(name = "file_path")
     var filePath: String = ""
 
     @PrimaryKey

@@ -83,6 +83,12 @@ interface WallpaperDao {
     fun deleteByUri(uri: String)
 
     /**
+     * Delete wallpaper by File
+     */
+    @Query("DELETE FROM wallpapers WHERE file_path = :path")
+    fun deleteByFile(path: String)
+
+    /**
      * Update a wallpaper from the database
      */
     @Update
