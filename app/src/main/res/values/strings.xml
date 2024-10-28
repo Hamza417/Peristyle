@@ -201,4 +201,7 @@
     <string name="delete_current_wallpaper">Delete Current Wallpaper</string>
     <string name="notifications">Post Notifications</string>
     <string name="notifications_summary">Allows the app to post auto wallpaper related notification.</string>
+    <string name="saved_effects">Saved Effects</string>
+    <string name="save">Save</string>
+    <string name="saved_summary">Saved successfully!</string>
 </resources>

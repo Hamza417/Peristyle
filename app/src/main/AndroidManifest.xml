@@ -88,6 +88,10 @@
             android:name=".activities.PathChooserActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".activities.EffectsActivity"
+            android:exported="false" />
+
         <service
             android:name=".services.AutoWallpaperService"
             android:exported="true"

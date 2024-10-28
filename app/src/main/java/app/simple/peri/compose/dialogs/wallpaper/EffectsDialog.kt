@@ -31,10 +31,9 @@ fun EffectsDialog(
         initialHueRedValue: Float = 0f,
         initialHueGreenValue: Float = 0f,
         initialHueBlueValue: Float = 0f,
+        onSaveEffects: (Float, Float, Float, Float, Float, Float, Float) -> Unit,
         onApplyEffects: (Float, Float, Float, Float, Float, Float, Float) -> Unit
 ) {
-    val space = 16.dp
-
     if (showDialog) {
         val blurValue = remember { mutableFloatStateOf(initialBlurValue) }
         val brightnessValue = remember { mutableFloatStateOf(initialBrightnessValue) }
@@ -186,8 +185,19 @@ fun EffectsDialog(
                     }
                 },
                 confirmButton = {
-                    Button(onClick = { setShowDialog(false) }) {
-                        Text(stringResource(id = R.string.close))
+                    Button(onClick = {
+                        onSaveEffects(
+                                blurValue.floatValue,
+                                brightnessValue.floatValue,
+                                contrastValue.floatValue,
+                                saturationValue.floatValue,
+                                hueRedValue.floatValue,
+                                hueGreenValue.floatValue,
+                                hueBlueValue.floatValue
+                        )
+                        setShowDialog(false)
+                    }) {
+                        Text(stringResource(id = R.string.save))
                     }
                 },
                 dismissButton = {

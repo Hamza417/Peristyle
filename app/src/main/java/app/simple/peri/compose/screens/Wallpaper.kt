@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Label
+import androidx.compose.material.icons.rounded.Bookmarks
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -66,6 +67,7 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import app.simple.peri.R
+import app.simple.peri.compose.commons.LaunchEffectActivity
 import app.simple.peri.compose.constants.DIALOG_OPTION_FONT_SIZE
 import app.simple.peri.compose.constants.DIALOG_TITLE_FONT_SIZE
 import app.simple.peri.compose.dialogs.common.ShowWarningDialog
@@ -73,9 +75,11 @@ import app.simple.peri.compose.dialogs.wallpaper.EffectsDialog
 import app.simple.peri.compose.nav.Routes
 import app.simple.peri.constants.Misc
 import app.simple.peri.factories.TagsViewModelFactory
+import app.simple.peri.models.Effect
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.utils.BitmapUtils.applyEffects
 import app.simple.peri.utils.BitmapUtils.multiplyMatrices
+import app.simple.peri.utils.ConditionUtils.isNotNull
 import app.simple.peri.utils.FileUtils.toFile
 import app.simple.peri.utils.FileUtils.toSize
 import app.simple.peri.viewmodels.StateViewModel
@@ -111,6 +115,8 @@ fun Wallpaper(context: Context, navController: NavHostController) {
     var displayHeight by remember { mutableIntStateOf(0) }
     val showEditDialog = remember { mutableStateOf(false) }
     val showDetailsCard = remember { mutableStateOf(true) }
+    val launchEffectActivity = remember { mutableStateOf(false) }
+    val showSavedEffects = remember { mutableStateOf(false) }
 
     if (showEditDialog.value) {
         EffectsDialog(
@@ -134,6 +140,41 @@ fun Wallpaper(context: Context, navController: NavHostController) {
                     hueValueRed = hueRed
                     hueValueGreen = hueGreen
                     hueValueBlue = hueBlue
+                },
+                onSaveEffects = { blur, brightness, contrast, saturation, hueRed, hueGreen, hueBlue ->
+                    stateViewModel.saveEffectInDatabase(Effect(blur, brightness, contrast, saturation, hueRed, hueGreen, hueBlue)) {
+                        showSavedEffects.value = true
+                    }
+                }
+        )
+    }
+
+    if (launchEffectActivity.value) {
+        if (wallpaper.isNotNull()) {
+            LaunchEffectActivity(
+                    wallpaper = wallpaper!!,
+                    onEffect = { effect ->
+                        blurValue = effect.blurValue
+                        brightnessValue = effect.brightnessValue
+                        contrastValue = effect.contrastValue
+                        saturationValue = effect.saturationValue
+                        hueValueRed = effect.hueRedValue
+                        hueValueGreen = effect.hueGreenValue
+                        hueValueBlue = effect.hueBlueValue
+                        launchEffectActivity.value = false
+                    },
+                    onCanceled = {
+                        launchEffectActivity.value = false
+                    })
+        }
+    }
+
+    if (showSavedEffects.value) {
+        ShowWarningDialog(
+                title = context.getString(R.string.saved_effects),
+                warning = context.getString(R.string.saved_summary),
+                onDismiss = {
+                    showSavedEffects.value = false
                 }
         )
     }
@@ -297,7 +338,7 @@ fun Wallpaper(context: Context, navController: NavHostController) {
                     Spacer(modifier = Modifier.height(16.dp))
                 }
 
-                Row {
+                Column {
                     val showLaunchedEffect = remember { mutableStateOf(false) }
 
                     if (showLaunchedEffect.value) {
@@ -316,34 +357,65 @@ fun Wallpaper(context: Context, navController: NavHostController) {
                         }
                     }
 
-                    Button(
-                            onClick = {
-                                showEditDialog.value = true
-                                showDetailsCard.value = false
-                            },
-                            shape = RoundedCornerShape(20.dp),
-                            modifier = Modifier
-                                .wrapContentWidth()
-                                .padding(start = 16.dp, bottom = 16.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color.Unspecified,
-                            )
-                    ) {
-                        Text(
-                                text = context.getString(R.string.edit),
-                                fontSize = 18.sp,
-                                modifier = Modifier.padding(12.dp),
-                                fontWeight = FontWeight.SemiBold
-                        )
-
-                        Icon(
-                                imageVector = Icons.Rounded.Edit,
-                                contentDescription = "",
+                    Row {
+                        Button(
+                                onClick = {
+                                    showEditDialog.value = true
+                                    showDetailsCard.value = false
+                                },
+                                shape = RoundedCornerShape(20.dp),
                                 modifier = Modifier
-                                    .width(24.dp)
-                                    .height(24.dp)
-                                    .padding(end = 8.dp)
-                        )
+                                    .wrapContentWidth()
+                                    .padding(start = 16.dp, bottom = 16.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                        containerColor = Color.Unspecified,
+                                )
+                        ) {
+                            Text(
+                                    text = context.getString(R.string.edit),
+                                    fontSize = 18.sp,
+                                    modifier = Modifier.padding(12.dp),
+                                    fontWeight = FontWeight.SemiBold
+                            )
+
+                            Icon(
+                                    imageVector = Icons.Rounded.Edit,
+                                    contentDescription = "",
+                                    modifier = Modifier
+                                        .width(24.dp)
+                                        .height(24.dp)
+                                        .padding(end = 8.dp)
+                            )
+                        }
+
+                        Button(
+                                onClick = {
+                                    launchEffectActivity.value = true
+                                },
+                                shape = RoundedCornerShape(20.dp),
+                                modifier = Modifier
+                                    .weight(1F)
+                                    .padding(start = 16.dp, bottom = 16.dp, end = 16.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                        containerColor = Color.Unspecified.copy(alpha = 0.25F),
+                                )
+                        ) {
+                            Text(
+                                    text = context.getString(R.string.saved_effects),
+                                    fontSize = 18.sp,
+                                    modifier = Modifier.padding(12.dp),
+                                    fontWeight = FontWeight.SemiBold
+                            )
+
+                            Icon(
+                                    imageVector = Icons.Rounded.Bookmarks,
+                                    contentDescription = "",
+                                    modifier = Modifier
+                                        .width(24.dp)
+                                        .height(24.dp)
+                                        .padding(end = 8.dp)
+                            )
+                        }
                     }
 
                     Button(
@@ -352,7 +424,8 @@ fun Wallpaper(context: Context, navController: NavHostController) {
                             },
                             shape = RoundedCornerShape(20.dp),
                             modifier = Modifier
-                                .weight(0.5F)
+                                .wrapContentHeight()
+                                .fillMaxWidth()
                                 .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
                             colors = ButtonDefaults.buttonColors(
                                     containerColor = Color.White,

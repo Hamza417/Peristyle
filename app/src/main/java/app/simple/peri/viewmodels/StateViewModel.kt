@@ -6,8 +6,14 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
+import app.simple.peri.database.instances.EffectsDatabase
+import app.simple.peri.models.Effect
 import app.simple.peri.models.Folder
 import app.simple.peri.models.Tag
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class StateViewModel(application: Application) : AndroidViewModel(application) {
     var tag by mutableStateOf<Tag?>(null)
@@ -19,4 +25,15 @@ class StateViewModel(application: Application) : AndroidViewModel(application) {
     var hueValueRed by mutableFloatStateOf(0f) // 0F..360F
     var hueValueGreen by mutableFloatStateOf(0f) // 0F..360F
     var hueValueBlue by mutableFloatStateOf(0f) // 0F..360F
+
+    fun saveEffectInDatabase(effect: Effect, onEffectSaved: () -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val effectDao = EffectsDatabase.getInstance(getApplication())?.effectsDao()
+            effectDao?.insertEffect(effect)
+
+            withContext(Dispatchers.Main) {
+                onEffectSaved()
+            }
+        }
+    }
 }
