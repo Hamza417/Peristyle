@@ -5,12 +5,11 @@ import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import app.simple.peri.database.instances.WallpaperDatabase
 import app.simple.peri.models.Wallpaper
-import app.simple.peri.utils.FileUtils.toUri
+import app.simple.peri.utils.FileUtils.toFile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -47,7 +46,7 @@ class WallpaperListViewModel(application: Application) : AndroidViewModel(applic
 
             list.forEach {
                 if (it.isSelected) {
-                    if (DocumentFile.fromSingleUri(getApplication(), it.uri.toUri())?.delete() == true) {
+                    if (it.filePath.toFile().delete()) {
                         _selectedWallpapers.value--
                         wallpaperDao?.delete(it)
                     }

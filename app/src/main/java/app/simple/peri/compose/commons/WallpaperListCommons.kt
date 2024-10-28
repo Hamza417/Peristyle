@@ -81,7 +81,6 @@ import app.simple.peri.models.Wallpaper
 import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.utils.FileUtils.toFile
 import app.simple.peri.utils.FileUtils.toSize
-import app.simple.peri.utils.FileUtils.toUri
 import app.simple.peri.viewmodels.ComposeWallpaperViewModel
 import app.simple.peri.viewmodels.TagsViewModel
 import app.simple.peri.viewmodels.WallpaperListViewModel
@@ -422,7 +421,14 @@ fun SelectionMenu(
             }
             IconButton(
                     onClick = {
-                        val filesUri = list.filter { it.isSelected }.map { it.uri.toUri() }
+                        val files = list.filter { it.isSelected }.map { it.filePath.toFile() }
+                        val filesUri = files.map {
+                            FileProvider.getUriForFile(
+                                    context,
+                                    context.packageName + ".provider",
+                                    it
+                            )
+                        }
                         val intent = Intent(Intent.ACTION_SEND_MULTIPLE)
                         intent.type = "image/*"
                         intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, ArrayList(filesUri))
