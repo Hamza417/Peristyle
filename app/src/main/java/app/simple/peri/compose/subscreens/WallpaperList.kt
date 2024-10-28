@@ -52,149 +52,145 @@ import dev.chrisbanes.haze.haze
 @Composable
 fun WallpaperList(navController: NavController? = null) {
     val stateViewModel: StateViewModel = viewModel()
+    val folder = navController?.previousBackStackEntry?.savedStateHandle?.get<Folder>(Routes.FOLDER_ARG)
+        ?: stateViewModel.folder
+        ?: return
+    stateViewModel.folder = folder // Save the state
 
-    val folder =
-        navController?.previousBackStackEntry?.savedStateHandle?.get<Folder>(Routes.FOLDER_ARG) ?: stateViewModel.folder
+    val folderDataViewModel: FolderDataViewModel = viewModel(
+            factory = FolderViewModelFactory(hashCode = folder)
+    )
 
-    if (folder != null) {
-        val folderDataViewModel: FolderDataViewModel = viewModel(
-                factory = FolderViewModelFactory(hashCode = folder)
-        )
-        stateViewModel.folder = folder
+    var wallpapers = remember { mutableStateListOf<Wallpaper>() }
+    val updatedWallpapers by folderDataViewModel.getWallpapers().collectAsState()
 
-        var wallpapers = remember { mutableStateListOf<Wallpaper>() }
-        val updatedWallpapers by folderDataViewModel.getWallpapers().collectAsState()
+    // Update the wallpapers list
+    wallpapers.clear()
+    wallpapers = updatedWallpapers.toMutableStateList()
+    Log.d("WallpaperList", "Updated wallpapers: ${updatedWallpapers.size}")
 
-        // Update the wallpapers list
-        wallpapers.clear()
-        wallpapers = updatedWallpapers.toMutableStateList()
-        Log.d("WallpaperList", "Updated wallpapers: ${updatedWallpapers.size}")
+    if (wallpapers.isEmpty()) { // TODO = list doesn't update with this
+        Log.e("WallpaperList", "Wallpapers list is empty")
+        return
+    }
 
-        if (wallpapers.isEmpty()) { // TODO = list doesn't update with this
-            Log.e("WallpaperList", "Wallpapers list is empty")
-            return
-        }
+    val wallpaperListViewModel: WallpaperListViewModel = viewModel() // We should use a dedicated ViewModel for this
+    val isSelectionMode by wallpaperListViewModel.isSelectionMode.collectAsState()
+    val selectionCount by wallpaperListViewModel.selectedWallpapers.collectAsState()
+    var statusBarHeight by remember { mutableIntStateOf(0) }
+    var navigationBarHeight by remember { mutableIntStateOf(0) }
+    var showPleaseWaitDialog by remember { mutableStateOf(false) }
+    val hazeState = remember { HazeState() }
+    val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
 
-        val wallpaperListViewModel: WallpaperListViewModel = viewModel() // We should use a dedicated ViewModel for this
-        val isSelectionMode by wallpaperListViewModel.isSelectionMode.collectAsState()
-        val selectionCount by wallpaperListViewModel.selectedWallpapers.collectAsState()
-        var statusBarHeight by remember { mutableIntStateOf(0) }
-        var navigationBarHeight by remember { mutableIntStateOf(0) }
-        var showPleaseWaitDialog by remember { mutableStateOf(false) }
-        val hazeState = remember { HazeState() }
-        val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+    statusBarHeight = WindowInsetsCompat.toWindowInsetsCompat(LocalView.current.rootWindowInsets)
+        .getInsets(WindowInsetsCompat.Type.statusBars()).top
+    navigationBarHeight = WindowInsetsCompat.toWindowInsetsCompat(LocalView.current.rootWindowInsets)
+        .getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
 
-        statusBarHeight = WindowInsetsCompat.toWindowInsetsCompat(LocalView.current.rootWindowInsets)
-            .getInsets(WindowInsetsCompat.Type.statusBars()).top
-        navigationBarHeight = WindowInsetsCompat.toWindowInsetsCompat(LocalView.current.rootWindowInsets)
-            .getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
+    val statusBarHeightPx = statusBarHeight
+    val statusBarHeightDp = with(LocalDensity.current) { statusBarHeightPx.toDp() }
+    val navigationBarHeightPx = navigationBarHeight
+    val navigationBarHeightDp = with(LocalDensity.current) { navigationBarHeightPx.toDp() }
+    var bottomHeaderHeight by remember { mutableStateOf(0.dp) }
 
-        val statusBarHeightPx = statusBarHeight
-        val statusBarHeightDp = with(LocalDensity.current) { statusBarHeightPx.toDp() }
-        val navigationBarHeightPx = navigationBarHeight
-        val navigationBarHeightDp = with(LocalDensity.current) { navigationBarHeightPx.toDp() }
-        var bottomHeaderHeight by remember { mutableStateOf(0.dp) }
-
-        val topPadding = 8.dp + statusBarHeightDp
-        val bottomPadding = 8.dp + if (MainComposePreferences.getBottomHeader()) {
-            bottomHeaderHeight
-        } else {
-            navigationBarHeightDp
-        }
-
-        if (showPleaseWaitDialog) {
-            PleaseWaitDialog {
-                Log.i("WallpaperList", "Please wait dialog dismissed")
-            }
-        }
-
-        Box(
-                modifier = Modifier.fillMaxSize()
-                // Uncomment this line if blurring is needed
-                // .then(if (showPleaseWaitDialog) Modifier.blur(8.dp) else Modifier)
-        ) {
-            LazyVerticalStaggeredGrid(
-                    columns = StaggeredGridCells.Fixed(MainComposePreferences.getGridSpanCount(isLandscape)),
-                    state = wallpaperListViewModel.lazyGridState,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .haze(state = hazeState),
-                    contentPadding = PaddingValues(
-                            top = topPadding,
-                            start = 8.dp,
-                            end = 8.dp,
-                            bottom = bottomPadding
-                    )
-            ) {
-                if (MainComposePreferences.getBottomHeader().invert()) {
-                    item(span = StaggeredGridItemSpan.FullLine) {
-                        TopHeader(
-                                title = folder.name ?: stringResource(R.string.unknown),
-                                count = wallpapers.size,
-                                modifier = Modifier.padding(COMMON_PADDING),
-                                navController = navController
-                        )
-                    }
-                }
-                items(wallpapers.size, key = { wallpapers[it].hashCode() }) { index ->
-                    WallpaperItem(
-                            wallpaper = wallpapers[index],
-                            navController = navController,
-                            onDelete = { deletedWallpaper ->
-                                folderDataViewModel.deleteWallpaper(deletedWallpaper)
-                            },
-                            onCompress = {
-                                showPleaseWaitDialog = true
-                                folderDataViewModel.compressWallpaper(wallpapers[index]) {
-                                    showPleaseWaitDialog = false
-                                    Log.d("WallpaperList", "Compressed wallpaper: ${wallpapers[index].size.toSize()} -> ${it.size.toSize()}")
-                                }
-                            },
-                            onReduceResolution = {
-                                showPleaseWaitDialog = true
-                                folderDataViewModel.reduceResolution(wallpapers[index]) {
-                                    showPleaseWaitDialog = false
-                                    Log.d("WallpaperList", "Reduced wallpaper: ${it.size.toSize()}, ${it.height}x${it.width}")
-                                }
-                            },
-                            isSelectionMode = isSelectionMode,
-                            wallpaperListViewModel = wallpaperListViewModel,
-                            list = wallpapers
-                    )
-                }
-            }
-
-            if (isSelectionMode) {
-                SelectionMenu(
-                        list = wallpapers,
-                        count = selectionCount,
-                        modifier = Modifier
-                            .align(Alignment.BottomCenter),
-                        hazeState = hazeState,
-                        wallpaperListViewModel = wallpaperListViewModel,
-                        navigationBarHeight = bottomPadding
-                )
-            }
-
-            if (MainComposePreferences.getBottomHeader()) {
-                val density = LocalDensity.current
-
-                BottomHeader(
-                        title = folder.name ?: stringResource(R.string.unknown),
-                        count = wallpapers.size,
-                        modifier = Modifier
-                            .align(Alignment.BottomCenter)
-                            .onGloballyPositioned {
-                                bottomHeaderHeight = with(density) { it.size.height.toDp() }
-                            },
-                        navController = navController,
-                        hazeState = hazeState,
-                        navigationBarHeight = navigationBarHeightDp,
-                        statusBarHeight = statusBarHeightDp
-                )
-            }
-        }
+    val topPadding = 8.dp + statusBarHeightDp
+    val bottomPadding = 8.dp + if (MainComposePreferences.getBottomHeader()) {
+        bottomHeaderHeight
     } else {
-        Log.e("WallpaperList", "Folder is null")
+        navigationBarHeightDp
+    }
+
+    if (showPleaseWaitDialog) {
+        PleaseWaitDialog {
+            Log.i("WallpaperList", "Please wait dialog dismissed")
+        }
+    }
+
+    Box(
+            modifier = Modifier.fillMaxSize()
+            // Uncomment this line if blurring is needed
+            // .then(if (showPleaseWaitDialog) Modifier.blur(8.dp) else Modifier)
+    ) {
+        LazyVerticalStaggeredGrid(
+                columns = StaggeredGridCells.Fixed(MainComposePreferences.getGridSpanCount(isLandscape)),
+                state = wallpaperListViewModel.lazyGridState,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .haze(state = hazeState),
+                contentPadding = PaddingValues(
+                        top = topPadding,
+                        start = 8.dp,
+                        end = 8.dp,
+                        bottom = bottomPadding
+                )
+        ) {
+            if (MainComposePreferences.getBottomHeader().invert()) {
+                item(span = StaggeredGridItemSpan.FullLine) {
+                    TopHeader(
+                            title = folder.name ?: stringResource(R.string.unknown),
+                            count = wallpapers.size,
+                            modifier = Modifier.padding(COMMON_PADDING),
+                            navController = navController
+                    )
+                }
+            }
+            items(wallpapers.size, key = { wallpapers[it].hashCode() }) { index ->
+                WallpaperItem(
+                        wallpaper = wallpapers[index],
+                        navController = navController,
+                        onDelete = { deletedWallpaper ->
+                            folderDataViewModel.deleteWallpaper(deletedWallpaper)
+                        },
+                        onCompress = {
+                            showPleaseWaitDialog = true
+                            folderDataViewModel.compressWallpaper(wallpapers[index]) {
+                                showPleaseWaitDialog = false
+                                Log.d("WallpaperList", "Compressed wallpaper: ${wallpapers[index].size.toSize()} -> ${it.size.toSize()}")
+                            }
+                        },
+                        onReduceResolution = {
+                            showPleaseWaitDialog = true
+                            folderDataViewModel.reduceResolution(wallpapers[index]) {
+                                showPleaseWaitDialog = false
+                                Log.d("WallpaperList", "Reduced wallpaper: ${it.size.toSize()}, ${it.height}x${it.width}")
+                            }
+                        },
+                        isSelectionMode = isSelectionMode,
+                        wallpaperListViewModel = wallpaperListViewModel,
+                        list = wallpapers
+                )
+            }
+        }
+
+        if (isSelectionMode) {
+            SelectionMenu(
+                    list = wallpapers,
+                    count = selectionCount,
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter),
+                    hazeState = hazeState,
+                    wallpaperListViewModel = wallpaperListViewModel,
+                    navigationBarHeight = bottomPadding
+            )
+        }
+
+        if (MainComposePreferences.getBottomHeader()) {
+            val density = LocalDensity.current
+
+            BottomHeader(
+                    title = folder.name ?: stringResource(R.string.unknown),
+                    count = wallpapers.size,
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .onGloballyPositioned {
+                            bottomHeaderHeight = with(density) { it.size.height.toDp() }
+                        },
+                    navController = navController,
+                    hazeState = hazeState,
+                    navigationBarHeight = navigationBarHeightDp,
+                    statusBarHeight = statusBarHeightDp
+            )
+        }
     }
 }

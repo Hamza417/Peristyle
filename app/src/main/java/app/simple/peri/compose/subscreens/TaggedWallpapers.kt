@@ -40,6 +40,7 @@ import app.simple.peri.factories.TagsViewModelFactory
 import app.simple.peri.models.Tag
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.preferences.MainComposePreferences
+import app.simple.peri.viewmodels.StateViewModel
 import app.simple.peri.viewmodels.TagsViewModel
 import app.simple.peri.viewmodels.WallpaperListViewModel
 import dev.chrisbanes.haze.HazeState
@@ -47,8 +48,9 @@ import dev.chrisbanes.haze.haze
 
 @Composable
 fun TaggedWallpapers(navController: NavController? = null) {
-    val tag =
-        navController?.previousBackStackEntry?.savedStateHandle?.get<Tag>(Routes.TAG_ARG) ?: return
+    val stateViewModel: StateViewModel = viewModel()
+    val tag = navController?.previousBackStackEntry?.savedStateHandle?.get<Tag>(Routes.TAG_ARG) ?: stateViewModel.tag ?: return
+    stateViewModel.tag = tag
 
     val tagsViewModel: TagsViewModel = viewModel(
             factory = TagsViewModelFactory(

@@ -7,8 +7,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import app.simple.peri.models.Folder
+import app.simple.peri.models.Tag
 
 class StateViewModel(application: Application) : AndroidViewModel(application) {
+    var tag by mutableStateOf<Tag?>(null)
     var folder by mutableStateOf<Folder?>(null)
     var blurValue by mutableFloatStateOf(0f) // 0F..25F
     var brightnessValue by mutableFloatStateOf(0f) // -255F..255F
