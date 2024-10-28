@@ -206,14 +206,6 @@ fun Settings(navController: NavController? = null) {
                 MainComposePreferences.setOriginalAspectRatio(it)
             }
 
-            SwitchPreference(
-                    title = context.getString(R.string.generate_md5),
-                    description = context.getString(R.string.generate_md5_summary),
-                    checked = MainComposePreferences.getGenerateMD5(),
-            ) {
-                MainComposePreferences.setGenerateMD5(it)
-            }
-
             ClickablePreference(
                     title = context.getString(R.string.clear_cache),
             ) {

@@ -189,8 +189,6 @@
     <string name="add_nomedia">إضافة .nomedia</string>
     <string name="remove_nomedia">إزالة .nomedia</string>
     <string name="nomedia_remove_success">تمت إزالة .nomedia. سيكون المجلد ظاهرًا مجددًا.</string>
-    <string name="generate_md5">إنشاء تدقيق مجموع</string>
-    <string name="generate_md5_summary">استخدام تدقيق مجاميع بخوارزمية هضم الرسالة الخامسة (MD5 checksums) لمعرفات الخلفيات بدلًا من رموز تلبيد معرفات الموارد الموحدة (URI hashcodes).</string>
     <string name="linear_auto_wallpaper_summary">اختيار الخلفيات بالترتيب الخطي. استخدام هذا المفتاح لتطبيق نفس الخلفية على الشاشتين إذا تم تحديد نفس الوسم أو المجلد.</string>
     <string name="compress">الضغط</string>
     <string name="reduce_resolution">تقليل الدقة</string>

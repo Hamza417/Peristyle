@@ -7,17 +7,13 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.Parcel
 import android.os.Parcelable
-import android.util.Log
 import androidx.annotation.NonNull
 import androidx.documentfile.provider.DocumentFile
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.utils.BitmapUtils.generatePalette
-import app.simple.peri.utils.ConditionUtils.invert
-import app.simple.peri.utils.FileUtils.generateMD5
 import app.simple.peri.utils.FileUtils.toUri
 import app.simple.peri.utils.WallpaperSort
 import java.io.Serializable
@@ -163,17 +159,7 @@ class Wallpaper() : Comparable<Wallpaper>, Serializable, Parcelable {
                 wallpaper.width = options.outWidth
                 wallpaper.height = options.outHeight
                 wallpaper.prominentColor = bitmap?.generatePalette()?.vibrantSwatch?.rgb ?: 0
-
-                if (MainComposePreferences.getGenerateMD5().invert()) {
-                    wallpaper.md5 = uri.hashCode().toString()
-                }
-            }
-
-            if (MainComposePreferences.getGenerateMD5()) {
-                context.contentResolver.openInputStream(uri.toUri())?.use { inputStream ->
-                    wallpaper.md5 = inputStream.generateMD5()
-                    Log.i(TAG, "loadWallpaperImages: ${wallpaper.name} - ${wallpaper.md5}")
-                }
+                wallpaper.md5 = uri.hashCode().toString()
             }
 
             return wallpaper

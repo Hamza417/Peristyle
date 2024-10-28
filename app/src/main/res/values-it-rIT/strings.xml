@@ -189,8 +189,6 @@
     <string name="add_nomedia">Aggiungi .nomedia</string>
     <string name="remove_nomedia">Rimuovi .nomedia</string>
     <string name="nomedia_remove_success">.nomedia è stato rimosso. La cartella sarà nuovamente visibile.</string>
-    <string name="generate_md5">Genera controllo somma</string>
-    <string name="generate_md5_summary">Usa controllo somma MD5 per gli ID degli sfondi invece che del codice URI.</string>
     <string name="linear_auto_wallpaper_summary">Seleziona sfondi in ordine lineare. Attivalo per applicare lo stesso sfondo su entrambe le schermata se la stessa cartella o etichetta è stata selezionata.</string>
     <string name="compress">Comprimi</string>
     <string name="reduce_resolution">Riduci risoluzione</string>

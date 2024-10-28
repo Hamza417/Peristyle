@@ -189,8 +189,6 @@
     <string name="add_nomedia">.nomedia ekle</string>
     <string name="remove_nomedia">.nomedia\'yı kaldır</string>
     <string name="nomedia_remove_success">.nomedia kaldırılmıştır. Klasör tekrar görünür olacaktır.</string>
-    <string name="generate_md5">Checksum Üret</string>
-    <string name="generate_md5_summary">Duvar kağıdı kimlikleri için URI hashcode\'ları yerine MD5 checksum\'larını kullanın.</string>
     <string name="linear_auto_wallpaper_summary">Duvar kağıtlarını doğrusal sırada seçin. Aynı etiket veya klasör seçiliyse, aynı duvar kağıdını her iki ekrana da uygulamak için bu geçişi kullanın.</string>
     <string name="compress">Sıkıştır</string>
     <string name="reduce_resolution">Çözünürlüğü Azalt</string>

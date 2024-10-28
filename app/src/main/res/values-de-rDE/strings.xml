@@ -189,8 +189,6 @@
     <string name="add_nomedia">.nomedia hinzufügen</string>
     <string name="remove_nomedia">.nomedia entfernen</string>
     <string name="nomedia_remove_success">.nomedia wurde entfernt. Der Ordner wird wieder sichtbar sein.</string>
-    <string name="generate_md5">Prüfsumme generieren</string>
-    <string name="generate_md5_summary">MD5-Prüfsummen für Hintergrundbild-IDs anstelle von URI-Hashcodes verwenden.</string>
     <string name="linear_auto_wallpaper_summary">Wählen Sie Hintergrundbilder in linearer Reihenfolge. Benutzen Sie diesen Schalter um das selbe Hintergrundbild auf beiden Bildschirmen anzuwenden, wenn der gleiche Tag oder Ordner ausgewählt ist.</string>
     <string name="compress">Komprimieren</string>
     <string name="reduce_resolution">Auflösung verringern</string>
