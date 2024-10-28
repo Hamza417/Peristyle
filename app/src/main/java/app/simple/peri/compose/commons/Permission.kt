@@ -12,7 +12,7 @@ import app.simple.peri.activities.PathChooserActivity
 import app.simple.peri.preferences.MainComposePreferences
 
 @Composable
-fun RequestDirectoryPermission(onCancel: () -> Unit, onStorageGranted: () -> Unit) {
+fun FolderBrowser(onCancel: () -> Unit, onStorageGranted: () -> Unit) {
     val context = LocalContext.current
     val launcher = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.StartActivityForResult()

@@ -49,8 +49,8 @@ class FolderDataViewModel(application: Application, private val folder: Folder) 
 
     private fun postNewWallpaper(file: File, previousWallpaper: Wallpaper): Wallpaper {
         val wallpaper = Wallpaper.createFromFile(file)
-        wallpaper.md5 = previousWallpaper.md5
-        wallpaper.folderUriHashcode = previousWallpaper.folderUriHashcode
+        wallpaper.id = previousWallpaper.id
+        wallpaper.folderID = previousWallpaper.folderID
         wallpaper.dateModified = previousWallpaper.dateModified
         val wallpaperDatabase = WallpaperDatabase.getInstance(getApplication())
         val wallpaperDao = wallpaperDatabase?.wallpaperDao()
@@ -62,7 +62,7 @@ class FolderDataViewModel(application: Application, private val folder: Folder) 
     private fun loadWallpapers() {
         viewModelScope.launch {
             wallpaperRepository.getAllWallpapers().collect { updatedWallpapers ->
-                val filteredWallpapers = updatedWallpapers.filter { it.folderUriHashcode == folder.hashcode }
+                val filteredWallpapers = updatedWallpapers.filter { it.folderID == folder.hashcode }
                 _wallpapers.value = filteredWallpapers.getSortedList()
             }
         }

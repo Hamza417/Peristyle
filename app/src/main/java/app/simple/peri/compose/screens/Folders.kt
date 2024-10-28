@@ -61,7 +61,7 @@ import androidx.navigation.NavController
 import app.simple.peri.R
 import app.simple.peri.compose.commons.BottomHeader
 import app.simple.peri.compose.commons.COMMON_PADDING
-import app.simple.peri.compose.commons.RequestDirectoryPermission
+import app.simple.peri.compose.commons.FolderBrowser
 import app.simple.peri.compose.commons.TopHeader
 import app.simple.peri.compose.constants.DIALOG_OPTION_FONT_SIZE
 import app.simple.peri.compose.constants.DIALOG_TITLE_FONT_SIZE
@@ -115,11 +115,11 @@ fun Folders(navController: NavController? = null) {
     }
 
     if (requestPermission) {
-        RequestDirectoryPermission(
+        FolderBrowser(
                 onCancel = { requestPermission = false },
                 onStorageGranted = {
-                    requestPermission = false
                     composeWallpaperViewModel.refresh(isForced = true)
+                    requestPermission = false
                 }
         )
     }

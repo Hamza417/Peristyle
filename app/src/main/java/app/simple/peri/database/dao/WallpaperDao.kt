@@ -36,26 +36,26 @@ interface WallpaperDao {
     /**
      * Get wallpaper by MD5
      */
-    @Query("SELECT * FROM wallpapers WHERE md5 = :md5")
-    fun getWallpaperByMD5(md5: String): Wallpaper?
+    @Query("SELECT * FROM wallpapers WHERE id = :id")
+    fun getWallpaperByMD5(id: String): Wallpaper?
 
     /**
      * Get wallpapers by the matching all the MD% in the HashSet
      */
-    @Query("SELECT * FROM wallpapers WHERE md5 IN (:md5s)")
-    fun getWallpapersByMD5s(md5s: Set<String>): List<Wallpaper>
+    @Query("SELECT * FROM wallpapers WHERE id IN (:ids)")
+    fun getWallpapersByMD5s(ids: Set<String>): List<Wallpaper>
 
     /**
-     * Get wallpapers by the matching the [Wallpaper.folderUriHashcode]
-     * with the specified [uriHashcode]
+     * Get wallpapers by the matching the [Wallpaper.folderID]
+     * with the specified [hashcode]
      */
-    @Query("SELECT * FROM wallpapers WHERE uri_hashcode = :uriHashcode")
-    fun getWallpapersByUriHashcode(uriHashcode: Int): List<Wallpaper>
+    @Query("SELECT * FROM wallpapers WHERE folder_id = :hashcode")
+    fun getWallpapersByPathHashcode(hashcode: Int): List<Wallpaper>
 
     /**
      * Get count of wallpapers of the specified [uriHashcode]
      */
-    @Query("SELECT COUNT(*) FROM wallpapers WHERE uri_hashcode = :uriHashcode")
+    @Query("SELECT COUNT(*) FROM wallpapers WHERE folder_id = :uriHashcode")
     fun getWallpapersCountByPathHashcode(uriHashcode: Int): Int
 
     /**
@@ -104,10 +104,10 @@ interface WallpaperDao {
 
     @Transaction
     fun insertWithConflictHandling(wallpaper: Wallpaper) {
-        val existingWallpaper = getWallpaperByMD5(wallpaper.md5)
+        val existingWallpaper = getWallpaperByMD5(wallpaper.id)
         if (existingWallpaper != null) {
-            wallpaper.md5 += "duplicate"
-            Log.i("WallpaperDao", "Duplicate wallpaper found: ${wallpaper.md5}")
+            wallpaper.id += "duplicate"
+            Log.i("WallpaperDao", "Duplicate wallpaper found: ${wallpaper.id}")
         }
 
         insert(wallpaper)
@@ -120,11 +120,11 @@ interface WallpaperDao {
     fun nukeTable()
 
     /**
-     * Delete wallpaper by the matching the [Wallpaper.folderUriHashcode]
+     * Delete all wallpapers by the matching the [Wallpaper.folderID]
      * with the specified [hashcode]
      */
-    @Query("DELETE FROM wallpapers WHERE uri_hashcode = :hashcode")
-    fun deleteByUriHashcode(hashcode: Int)
+    @Query("DELETE FROM wallpapers WHERE folder_id = :hashcode")
+    fun deleteByPathHashcode(hashcode: Int)
 
     fun purgeNonExistingWallpapers() {
         Log.i("WallpaperDao", "Purged non-existing wallpapers in: ${

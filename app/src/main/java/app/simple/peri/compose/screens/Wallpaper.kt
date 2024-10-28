@@ -113,7 +113,7 @@ fun Wallpaper(context: Context, navController: NavHostController) {
     val coroutineScope = rememberCoroutineScope()
     val graphicsLayer = rememberGraphicsLayer()
     val tagsViewModel: TagsViewModel = viewModel(
-            factory = TagsViewModelFactory(wallpaper?.md5 ?: "")
+            factory = TagsViewModelFactory(wallpaper?.id ?: "")
     )
     var displayWidth by remember { mutableIntStateOf(0) }
     var displayHeight by remember { mutableIntStateOf(0) }

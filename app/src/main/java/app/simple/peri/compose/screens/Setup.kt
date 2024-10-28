@@ -56,7 +56,7 @@ import androidx.navigation.NavController
 import app.simple.peri.BuildConfig
 import app.simple.peri.R
 import app.simple.peri.compose.commons.COMMON_PADDING
-import app.simple.peri.compose.commons.RequestDirectoryPermission
+import app.simple.peri.compose.commons.FolderBrowser
 import app.simple.peri.compose.commons.TopHeader
 import app.simple.peri.compose.dialogs.common.ShowWarningDialog
 import app.simple.peri.compose.nav.Routes
@@ -305,7 +305,7 @@ fun Folder(modifier: Modifier, context: Context, navController: NavController? =
     var directories by remember { mutableStateOf(MainComposePreferences.getAllWallpaperPaths().joinToString("\n")) }
 
     if (launchDirectoryPermission) {
-        RequestDirectoryPermission(
+        FolderBrowser(
                 onCancel = {
                     launchDirectoryPermission = false
                 },

@@ -90,10 +90,10 @@ class TagsViewModel(application: Application, private val md5: String? = null, p
 
             if (tagsDao?.isTagExists(tagName.trim())!!) {
                 val tag = tagsDao.getTagById(tagName.trim())
-                tag.addSum(wallpaper.md5)
+                tag.addSum(wallpaper.id)
                 tagsDao.insertTag(tag)
             } else {
-                val tag = Tag(tagName.trim(), hashSetOf(wallpaper.md5))
+                val tag = Tag(tagName.trim(), hashSetOf(wallpaper.id))
                 tagsDao.insertTag(tag)
             }
 
@@ -121,7 +121,7 @@ class TagsViewModel(application: Application, private val md5: String? = null, p
 
             randomTags.forEach { tagName ->
                 val randomWallpapers = wallpapers?.shuffled()?.take(random.nextInt(10) + 6) ?: emptyList()
-                val tag = Tag(tagName, randomWallpapers.map { it.md5 }.toHashSet())
+                val tag = Tag(tagName, randomWallpapers.map { it.id }.toHashSet())
                 tagsDao?.insertTag(tag)
             }
 
@@ -136,8 +136,8 @@ class TagsViewModel(application: Application, private val md5: String? = null, p
             val tags = tagsDao?.getAllTags()
 
             tags?.forEach { tag ->
-                if (tag.sum.contains(deletedWallpaper.md5)) {
-                    tag.sum.remove(deletedWallpaper.md5)
+                if (tag.sum.contains(deletedWallpaper.id)) {
+                    tag.sum.remove(deletedWallpaper.id)
                     tagsDao.insertTag(tag)
                 }
             }
@@ -157,8 +157,8 @@ class TagsViewModel(application: Application, private val md5: String? = null, p
 
     private fun postNewWallpaper(file: File, previousWallpaper: Wallpaper): Wallpaper {
         val wallpaper = Wallpaper.createFromFile(file)
-        wallpaper.md5 = previousWallpaper.md5
-        wallpaper.folderUriHashcode = previousWallpaper.folderUriHashcode
+        wallpaper.id = previousWallpaper.id
+        wallpaper.folderID = previousWallpaper.folderID
         wallpaper.dateModified = previousWallpaper.dateModified
         val wallpaperDatabase = WallpaperDatabase.getInstance(getApplication())
         val wallpaperDao = wallpaperDatabase?.wallpaperDao()

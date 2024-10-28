@@ -35,8 +35,8 @@ class Wallpaper() : Comparable<Wallpaper>, Serializable, Parcelable {
     var filePath: String = ""
 
     @PrimaryKey
-    @ColumnInfo(name = "md5")
-    var md5: String = ""
+    @ColumnInfo(name = "id")
+    var id: String = ""
 
     @ColumnInfo(name = "prominentColor")
     var prominentColor: Int = Color.TRANSPARENT
@@ -53,8 +53,8 @@ class Wallpaper() : Comparable<Wallpaper>, Serializable, Parcelable {
     @ColumnInfo(name = "size")
     var size: Long = 0
 
-    @ColumnInfo(name = "uri_hashcode")
-    var folderUriHashcode: Int = 0
+    @ColumnInfo(name = "folder_id")
+    var folderID: Int = 0
 
     @ColumnInfo
     var isSelected: Boolean = false
@@ -63,13 +63,13 @@ class Wallpaper() : Comparable<Wallpaper>, Serializable, Parcelable {
         name = parcel.readString()
         uri = parcel.readString().toString()
         filePath = parcel.readString().toString()
-        md5 = parcel.readString().toString()
+        id = parcel.readString().toString()
         prominentColor = parcel.readInt()
         width = parcel.readValue(Int::class.java.classLoader) as? Int
         height = parcel.readValue(Int::class.java.classLoader) as? Int
         dateModified = parcel.readLong()
         size = parcel.readLong()
-        folderUriHashcode = parcel.readInt()
+        folderID = parcel.readInt()
         isSelected = parcel.readByte() != 0.toByte()
     }
 
@@ -96,7 +96,7 @@ class Wallpaper() : Comparable<Wallpaper>, Serializable, Parcelable {
         if (this === other) return true
         if (other !is Wallpaper) return false
 
-        return md5 == other.md5
+        return id == other.id
     }
 
     override fun hashCode(): Int {
@@ -107,9 +107,9 @@ class Wallpaper() : Comparable<Wallpaper>, Serializable, Parcelable {
         result = 31 * result + dateModified.hashCode()
         result = 31 * result + size.hashCode()
         result = 31 * result + isSelected.hashCode()
-        result = 31 * result + md5.hashCode()
+        result = 31 * result + id.hashCode()
         result = 31 * result + prominentColor
-        result = 31 * result + folderUriHashcode
+        result = 31 * result + folderID
         return result
     }
 
@@ -121,13 +121,13 @@ class Wallpaper() : Comparable<Wallpaper>, Serializable, Parcelable {
         parcel.writeString(name)
         parcel.writeString(uri)
         parcel.writeString(filePath)
-        parcel.writeString(md5)
+        parcel.writeString(id)
         parcel.writeInt(prominentColor)
         parcel.writeValue(width)
         parcel.writeValue(height)
         parcel.writeLong(dateModified)
         parcel.writeLong(size)
-        parcel.writeInt(folderUriHashcode)
+        parcel.writeInt(folderID)
         parcel.writeByte(if (isSelected) 1 else 0)
     }
 
@@ -151,7 +151,7 @@ class Wallpaper() : Comparable<Wallpaper>, Serializable, Parcelable {
          * that doesn't exist in the database and are not required to be associated
          * with a specific folder.
          *
-         * [folderUriHashcode] will return null
+         * [folderID] will return null
          *
          * @param uri The URI of the file
          */
@@ -170,7 +170,7 @@ class Wallpaper() : Comparable<Wallpaper>, Serializable, Parcelable {
                 wallpaper.width = options.outWidth
                 wallpaper.height = options.outHeight
                 wallpaper.prominentColor = bitmap?.generatePalette()?.vibrantSwatch?.rgb ?: 0
-                wallpaper.md5 = uri.hashCode().toString()
+                wallpaper.id = uri.hashCode().toString()
             }
 
             return wallpaper
@@ -199,7 +199,7 @@ class Wallpaper() : Comparable<Wallpaper>, Serializable, Parcelable {
                 wallpaper.width = options.outWidth
                 wallpaper.height = options.outHeight
                 wallpaper.prominentColor = bitmap?.generatePalette()?.vibrantSwatch?.rgb ?: 0
-                wallpaper.md5 = file.hashCode().toString()
+                wallpaper.id = file.hashCode().toString()
             }
 
             return wallpaper

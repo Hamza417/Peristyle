@@ -2,11 +2,11 @@
     "formatVersion": 1,
     "database": {
         "version": 8,
-        "identityHash": "d45d49a129290a341adad9c7e350569e",
+        "identityHash": "c119ac5fab1f40ad7d352c977c29c77d",
         "entities": [
             {
                 "tableName": "wallpapers",
-                "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT, `uri` TEXT NOT NULL, `file_path` TEXT NOT NULL, `md5` TEXT NOT NULL, `prominentColor` INTEGER NOT NULL, `width` INTEGER, `height` INTEGER, `dateModified` INTEGER NOT NULL, `size` INTEGER NOT NULL, `uri_hashcode` INTEGER NOT NULL, `isSelected` INTEGER NOT NULL, PRIMARY KEY(`md5`))",
+                "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT, `uri` TEXT NOT NULL, `file_path` TEXT NOT NULL, `id` TEXT NOT NULL, `prominentColor` INTEGER NOT NULL, `width` INTEGER, `height` INTEGER, `dateModified` INTEGER NOT NULL, `size` INTEGER NOT NULL, `folder_id` INTEGER NOT NULL, `isSelected` INTEGER NOT NULL, PRIMARY KEY(`id`))",
                 "fields": [
                     {
                         "fieldPath": "name",
@@ -27,8 +27,8 @@
                         "notNull": true
                     },
                     {
-                        "fieldPath": "md5",
-                        "columnName": "md5",
+                        "fieldPath": "id",
+                        "columnName": "id",
                         "affinity": "TEXT",
                         "notNull": true
                     },
@@ -63,8 +63,8 @@
                         "notNull": true
                     },
                     {
-                        "fieldPath": "folderUriHashcode",
-                        "columnName": "uri_hashcode",
+                        "fieldPath": "folderID",
+                        "columnName": "folder_id",
                         "affinity": "INTEGER",
                         "notNull": true
                     },
@@ -78,7 +78,7 @@
                 "primaryKey": {
                     "autoGenerate": false,
                     "columnNames": [
-                        "md5"
+                        "id"
                     ]
                 },
                 "indices": [],
@@ -88,7 +88,7 @@
         "views": [],
         "setupQueries": [
             "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-            "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd45d49a129290a341adad9c7e350569e')"
+            "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c119ac5fab1f40ad7d352c977c29c77d')"
         ]
     }
 }

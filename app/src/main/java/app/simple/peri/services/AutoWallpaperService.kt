@@ -518,7 +518,7 @@ class AutoWallpaperService : Service() {
 
             MainComposePreferences.getHomeFolderName().isNotNull() -> {
                 val wallpapers =
-                    wallpaperDao?.getWallpapersByUriHashcode(MainComposePreferences.getHomeFolderId())
+                    wallpaperDao?.getWallpapersByPathHashcode(MainComposePreferences.getHomeFolderId())
 
                 if (MainPreferences.isLinearAutoWallpaper()) {
                     try {
@@ -586,7 +586,7 @@ class AutoWallpaperService : Service() {
 
             MainComposePreferences.getLockFolderName().isNotNull() -> {
                 val wallpapers =
-                    wallpaperDao?.getWallpapersByUriHashcode(MainComposePreferences.getLockFolderId())
+                    wallpaperDao?.getWallpapersByPathHashcode(MainComposePreferences.getLockFolderId())
                 wallpaper = if (MainPreferences.isLinearAutoWallpaper()) {
                     try {
                         wallpapers?.get(

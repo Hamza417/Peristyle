@@ -16,7 +16,7 @@ import com.bumptech.glide.request.FutureTarget
 class FolderFetcher(val folder: Folder) : DataFetcher<Bitmap> {
     override fun loadData(priority: Priority, callback: DataFetcher.DataCallback<in Bitmap>) {
         val wallpaperDatabase = WallpaperDatabase.getInstance(folder.context)!!
-        val wallpaperList = wallpaperDatabase.wallpaperDao().getWallpapersByUriHashcode(folder.hashCode)
+        val wallpaperList = wallpaperDatabase.wallpaperDao().getWallpapersByPathHashcode(folder.hashCode)
         val bitmapList = mutableListOf<FutureTarget<Bitmap>>()
         Log.i(TAG, "Loading wallpapers from folder: ${wallpaperList.size}")
 

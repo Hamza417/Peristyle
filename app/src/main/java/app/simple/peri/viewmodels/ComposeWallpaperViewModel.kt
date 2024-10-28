@@ -152,11 +152,7 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
                         isNomedia = pickedDirectory.listFiles()?.any { it.name == ".nomedia" } == true
                     }
 
-                    if (folder.count > 0) {
-                        folders.add(folder)
-                    } else {
-                        Log.i(TAG, "loadFolders: folder is empty: ${folder.name}")
-                    }
+                    folders.add(folder)
                 }
             }
 
@@ -222,7 +218,7 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
                                     if (alreadyLoaded?.containsKey(file.absolutePath.toString()) == false) {
                                         Log.i(TAG, "loadWallpaperImages: loading ${file.absolutePath}")
                                         val wallpaper = Wallpaper.createFromFile(file)
-                                        wallpaper.folderUriHashcode = path.hashCode()
+                                        wallpaper.folderID = path.hashCode()
                                         wallpapers.add(wallpaper)
                                         newWallpapersData.postValue(wallpaper)
                                         WallpaperDatabase.getInstance(getApplication())
@@ -426,7 +422,7 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
         viewModelScope.launch(Dispatchers.IO) {
             val wallpaperDatabase = WallpaperDatabase.getInstance(getApplication())
             val updatedWallpaper = Wallpaper.createFromFile(wallpaper.filePath.toFile())
-            updatedWallpaper.folderUriHashcode = wallpaper.folderUriHashcode
+            updatedWallpaper.folderID = wallpaper.folderID
             wallpaperDatabase?.wallpaperDao()?.update(updatedWallpaper)
 
             withContext(Dispatchers.Main) {
@@ -465,12 +461,12 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
         loadWallpaperImages()
     }
 
-    fun deleteFolder(it: Folder) {
+    fun deleteFolder(folder: Folder) {
         viewModelScope.launch(Dispatchers.IO) {
-            MainComposePreferences.removeWallpaperPath(it.path)
+            MainComposePreferences.removeWallpaperPath(folder.path)
             val wallpaperDatabase = WallpaperDatabase.getInstance(getApplication())
             val wallpaperDao = wallpaperDatabase?.wallpaperDao()
-            wallpaperDao?.deleteByUriHashcode(it.hashcode)
+            wallpaperDao?.deleteByPathHashcode(folder.hashcode)
             loadWallpaperDatabase()
             loadFolders()
         }
