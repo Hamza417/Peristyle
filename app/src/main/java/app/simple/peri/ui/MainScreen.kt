@@ -68,7 +68,7 @@ import java.util.concurrent.Executor
 
 class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListener {
 
-    private val wallpaperViewModel: WallpaperViewModel by viewModels({ requireActivity() })
+    private val composeWallpaperViewModel: WallpaperViewModel by viewModels({ requireActivity() })
     private var adapterWallpaper: AdapterWallpaper? = null
     private var systemWallpaperAdapter: AdapterSystemWallpaper? = null
     private var staggeredGridLayoutManager: StaggeredGridLayoutManager? = null
@@ -215,7 +215,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                                                             dialogDeleteBinding.progress.text =
                                                                 getString(R.string.delete_progress, deleteCount, totalWallpapers, wallpaper.name)
                                                             adapterWallpaper?.removeWallpaper(wallpaper)
-                                                            wallpaperViewModel.removeWallpaper(wallpaper)
+                                                            composeWallpaperViewModel.removeWallpaper(wallpaper)
                                                         }
                                                     }
                                                 }
@@ -243,7 +243,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                             }
                             .show()
                     } else {
-                        if (this.wallpaperViewModel.getWallpapersLiveData().value?.isNotEmpty() == true) {
+                        if (this.composeWallpaperViewModel.getWallpapersLiveData().value?.isNotEmpty() == true) {
                             MaterialAlertDialogBuilder(requireContext())
                                 .setTitle(R.string.delete)
                                 .setMessage(R.string.no_wallpaper_selected)
@@ -328,7 +328,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
             true
         }
 
-        wallpaperViewModel.getWallpapersLiveData().observe(requireActivity()) { wallpapers ->
+        composeWallpaperViewModel.getWallpapersLiveData().observe(requireActivity()) { wallpapers ->
             if (wallpapers.isNotEmpty()) {
                 binding?.loadingStatus?.visibility = View.GONE
             }
@@ -407,21 +407,21 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
             }
         }
 
-        wallpaperViewModel.getNewWallpapersLiveData().observe(viewLifecycleOwner) { wallpaper ->
+        composeWallpaperViewModel.getNewWallpapersLiveData().observe(viewLifecycleOwner) { wallpaper ->
             if (wallpaper.isNotNull()) {
                 adapterWallpaper?.addWallpaper(wallpaper)
-                wallpaperViewModel.getNewWallpapersLiveData().value = null
+                composeWallpaperViewModel.getNewWallpapersLiveData().value = null
             }
         }
 
-        wallpaperViewModel.getRemovedWallpapersLiveData().observe(viewLifecycleOwner) { wallpaper ->
+        composeWallpaperViewModel.getRemovedWallpapersLiveData().observe(viewLifecycleOwner) { wallpaper ->
             if (wallpaper.isNotNull()) {
                 adapterWallpaper?.removeWallpaper(wallpaper)
-                wallpaperViewModel.getRemovedWallpapersLiveData().value = null
+                composeWallpaperViewModel.getRemovedWallpapersLiveData().value = null
             }
         }
 
-        wallpaperViewModel.getLoadingStatusLiveData().observe(viewLifecycleOwner) { status ->
+        composeWallpaperViewModel.getLoadingStatusLiveData().observe(viewLifecycleOwner) { status ->
             if (status == "Done") {
                 binding?.loadingStatus?.visibility = View.GONE
             } else {
@@ -429,7 +429,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
             }
         }
 
-        wallpaperViewModel.getDatabaseLoaded().observe(viewLifecycleOwner) {
+        composeWallpaperViewModel.getDatabaseLoaded().observe(viewLifecycleOwner) {
             if (it) {
                 binding?.progressIndicator?.animate()
                     ?.alpha(0F)
@@ -449,7 +449,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
             }
         }
 
-        wallpaperViewModel.getIsNomediaDirectoryLiveData().observe(viewLifecycleOwner) {
+        composeWallpaperViewModel.getIsNomediaDirectoryLiveData().observe(viewLifecycleOwner) {
             if (MainPreferences.getShowNomediaDialog()) {
                 if (it) {
                     blurRoot()
@@ -491,7 +491,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
             }
         }
 
-        wallpaperViewModel.getFailedURIs().observe(viewLifecycleOwner) { uris ->
+        composeWallpaperViewModel.getFailedURIs().observe(viewLifecycleOwner) { uris ->
             if (uris.isNotNull()) {
                 MaterialAlertDialogBuilder(requireContext())
                     .setTitle(R.string.failed_files)
@@ -516,7 +516,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
             }
         }
 
-        wallpaperViewModel.getSystemWallpaper().observe(viewLifecycleOwner) { systemWallpapers ->
+        composeWallpaperViewModel.getSystemWallpaper().observe(viewLifecycleOwner) { systemWallpapers ->
             systemWallpaperAdapter = AdapterSystemWallpaper(systemWallpapers, -1)
             systemWallpaperAdapter?.setWallpaperCallbacks(object : WallpaperCallbacks {
                 override fun onWallpaperClicked(wallpaper: Wallpaper?, position: Int, constraintLayout: ConstraintLayout?) {
@@ -604,7 +604,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                             if (DocumentFile.fromSingleUri(requireContext(), wallpaper.uri.toUri())?.delete() == true) {
                                 withContext(Dispatchers.Main) {
                                     adapterWallpaper?.removeWallpaper(wallpaper)
-                                    wallpaperViewModel.removeWallpaper(wallpaper)
+                                    composeWallpaperViewModel.removeWallpaper(wallpaper)
                                     invalidateLayoutManager()
                                 }
                             }
@@ -773,7 +773,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
                                     if (DocumentFile.fromSingleUri(requireContext(), wallpaper.uri.toUri())?.delete() == true) {
                                         withContext(Dispatchers.Main) {
                                             adapterWallpaper?.removeWallpaper(wallpaper)
-                                            wallpaperViewModel.removeWallpaper(wallpaper)
+                                            composeWallpaperViewModel.removeWallpaper(wallpaper)
                                             invalidateLayoutManager()
                                         }
                                     }
@@ -794,7 +794,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
 
                     R.id.reload_metadata -> {
                         // Reload Metadata
-                        wallpaperViewModel.reloadMetadata(wallpaper) {
+                        composeWallpaperViewModel.reloadMetadata(wallpaper) {
                             adapterWallpaper?.updateWallpaper(wallpaper, position)
                         }
                     }
@@ -839,7 +839,7 @@ class MainScreen : Fragment(), SharedPreferences.OnSharedPreferenceChangeListene
         super.onResume()
         registerSharedPreferenceChangeListener()
         if (requireArguments().getBoolean(SHOULD_REFRESH, false)) {
-            wallpaperViewModel.refreshWallpapers {
+            composeWallpaperViewModel.refreshWallpapers {
                 Log.d(TAG, "Wallpapers are already refreshing")
             }
         } else {

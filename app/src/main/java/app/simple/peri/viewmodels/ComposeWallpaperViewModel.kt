@@ -37,7 +37,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 
-class WallpaperViewModel(application: Application) : AndroidViewModel(application) {
+class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(application) {
 
     private var loadDatabaseJob: Job? = null
     private var isWallpaperLoading: MutableStateFlow<Boolean> = MutableStateFlow(false)

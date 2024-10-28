@@ -19,11 +19,11 @@ import app.simple.peri.compose.theme.PeristyleTheme
 import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.preferences.SharedPreferences
 import app.simple.peri.services.AutoWallpaperService
-import app.simple.peri.viewmodels.WallpaperViewModel
+import app.simple.peri.viewmodels.ComposeWallpaperViewModel
 
 class MainComposeActivity : ComponentActivity(), OnSharedPreferenceChangeListener {
 
-    private val wallpaperViewModel: WallpaperViewModel by viewModels()
+    private val composeWallpaperViewModel: ComposeWallpaperViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,7 +75,7 @@ class MainComposeActivity : ComponentActivity(), OnSharedPreferenceChangeListene
     override fun onResume() {
         super.onResume()
         SharedPreferences.registerSharedPreferencesListener(this)
-        wallpaperViewModel.refresh()
+        composeWallpaperViewModel.refresh()
     }
 
     override fun onPause() {

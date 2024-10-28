@@ -22,14 +22,14 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import app.simple.peri.R
 import app.simple.peri.models.Folder
-import app.simple.peri.viewmodels.WallpaperViewModel
+import app.simple.peri.viewmodels.ComposeWallpaperViewModel
 
 @Composable
 fun FoldersDialog(selected: Int, setShowing: (Boolean) -> Unit, onFolder: (Folder) -> Unit) {
-    val wallpaperViewModel: WallpaperViewModel = viewModel()
+    val composeWallpaperViewModel: ComposeWallpaperViewModel = viewModel()
     val folders = remember { mutableStateOf(emptyList<Folder>()) }
 
-    wallpaperViewModel.getFoldersLiveData().observeAsState().value?.let {
+    composeWallpaperViewModel.getFoldersLiveData().observeAsState().value?.let {
         folders.value = it
     }
 

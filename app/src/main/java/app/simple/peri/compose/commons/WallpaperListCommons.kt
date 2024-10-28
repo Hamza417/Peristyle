@@ -81,9 +81,9 @@ import app.simple.peri.models.Wallpaper
 import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.utils.FileUtils.toSize
 import app.simple.peri.utils.FileUtils.toUri
+import app.simple.peri.viewmodels.ComposeWallpaperViewModel
 import app.simple.peri.viewmodels.TagsViewModel
 import app.simple.peri.viewmodels.WallpaperListViewModel
-import app.simple.peri.viewmodels.WallpaperViewModel
 import com.bumptech.glide.integration.compose.CrossFade
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
@@ -486,7 +486,7 @@ fun WallpaperMenu(
     val tagsViewModel: TagsViewModel = viewModel(
             factory = TagsViewModelFactory()
     )
-    val wallpaperViewModel: WallpaperViewModel = viewModel()
+    val composeWallpaperViewModel: ComposeWallpaperViewModel = viewModel()
     val showTagDialog = remember { mutableStateOf(false) }
 
     if (showTagDialog.value) {
@@ -546,7 +546,7 @@ fun WallpaperMenu(
                                                     ?.delete() == true
                                         ) {
                                             withContext(Dispatchers.Main) {
-                                                wallpaperViewModel.removeWallpaper(wallpaper)
+                                                composeWallpaperViewModel.removeWallpaper(wallpaper)
                                                 onDelete(wallpaper)
                                                 setShowDialog(false)
                                             }
@@ -681,7 +681,7 @@ fun WallpaperMenu(
 
                         Button(
                                 onClick = {
-                                    wallpaperViewModel.reloadMetadata(wallpaper) {
+                                    composeWallpaperViewModel.reloadMetadata(wallpaper) {
                                         Log.i("WallpaperMenu", "Metadata reloaded: $it")
                                         Log.i("WallpaperMenu", "for wallpaper: $wallpaper")
                                         setShowDialog(false)

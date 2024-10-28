@@ -66,7 +66,7 @@ class WallpaperScreen : Fragment() {
     private var wallpaper: Wallpaper? = null
     private var drawable: Drawable? = null
     private var bitmap: Bitmap? = null
-    private var wallpaperViewModel: WallpaperViewModel? = null
+    private var composeWallpaperViewModel: WallpaperViewModel? = null
 
     private var wallpaperExportLauncher = registerForActivityResult(ActivityResultContracts.CreateDocument("image/x-png")) { uri ->
         uri?.let {
@@ -100,7 +100,7 @@ class WallpaperScreen : Fragment() {
 
         wallpaper = requireArguments().parcelable(BundleConstants.WALLPAPER)
         binding?.composeView?.transitionName = wallpaper?.uri
-        wallpaperViewModel = ViewModelProvider(requireActivity())[WallpaperViewModel::class.java]
+        composeWallpaperViewModel = ViewModelProvider(requireActivity())[WallpaperViewModel::class.java]
 
         binding?.composeView?.apply {
             // Dispose of the Composition when the view's LifecycleOwner

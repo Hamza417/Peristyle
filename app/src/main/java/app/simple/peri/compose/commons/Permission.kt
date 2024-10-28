@@ -10,12 +10,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import app.simple.peri.preferences.MainPreferences
-import app.simple.peri.viewmodels.WallpaperViewModel
+import app.simple.peri.viewmodels.ComposeWallpaperViewModel
 
 @Composable
 fun RequestDirectoryPermission(onCancel: () -> Unit, onStorageGranted: () -> Unit) {
     val context = LocalContext.current
-    val wallpaperViewModel: WallpaperViewModel = viewModel()
+    val composeWallpaperViewModel: ComposeWallpaperViewModel = viewModel()
 
     val storageResult = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.StartActivityForResult()
@@ -27,7 +27,7 @@ fun RequestDirectoryPermission(onCancel: () -> Unit, onStorageGranted: () -> Uni
                 val modeFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
                 context.contentResolver.takePersistableUriPermission(uri, modeFlags)
                 MainPreferences.setStorageUri(uri.toString())
-                wallpaperViewModel.refresh(true)
+                composeWallpaperViewModel.refresh(true)
                 Log.d("Setup", "Storage Uri: $uri")
                 onStorageGranted()
             } else {

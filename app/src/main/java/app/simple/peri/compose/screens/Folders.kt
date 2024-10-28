@@ -70,7 +70,7 @@ import app.simple.peri.compose.nav.Routes
 import app.simple.peri.models.Folder
 import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.utils.ConditionUtils.invert
-import app.simple.peri.viewmodels.WallpaperViewModel
+import app.simple.peri.viewmodels.ComposeWallpaperViewModel
 import com.bumptech.glide.integration.compose.CrossFade
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
@@ -82,12 +82,12 @@ import dev.chrisbanes.haze.hazeChild
 
 @Composable
 fun Folders(navController: NavController? = null) {
-    val wallpaperViewModel: WallpaperViewModel = viewModel()
-    val folders by wallpaperViewModel.getFoldersLiveData().observeAsState(emptyList())
+    val composeWallpaperViewModel: ComposeWallpaperViewModel = viewModel()
+    val folders by composeWallpaperViewModel.getFoldersLiveData().observeAsState(emptyList())
     var requestPermission by remember { mutableStateOf(false) }
     var statusBarHeight by remember { mutableIntStateOf(0) }
     var navigationBarHeight by remember { mutableIntStateOf(0) }
-    val currentLoadingState = wallpaperViewModel.getLoadingImage().collectAsState().value
+    val currentLoadingState = composeWallpaperViewModel.getLoadingImage().collectAsState().value
     val hazeState = remember { HazeState() }
 
     if (currentLoadingState.isBlank()) {
@@ -164,9 +164,9 @@ fun Folders(navController: NavController? = null) {
                 FolderItem(
                         folder = folders[index],
                         navController = navController,
-                        wallpaperViewModel = wallpaperViewModel
+                        composeWallpaperViewModel = composeWallpaperViewModel
                 ) {
-                    wallpaperViewModel.deleteFolder(it)
+                    composeWallpaperViewModel.deleteFolder(it)
                 }
             }
             item {
@@ -214,7 +214,7 @@ fun Folders(navController: NavController? = null) {
 
 @OptIn(ExperimentalGlideComposeApi::class, ExperimentalFoundationApi::class)
 @Composable
-fun FolderItem(folder: Folder, navController: NavController? = null, wallpaperViewModel: WallpaperViewModel, onDelete: (Folder) -> Unit) {
+fun FolderItem(folder: Folder, navController: NavController? = null, composeWallpaperViewModel: ComposeWallpaperViewModel, onDelete: (Folder) -> Unit) {
     val hazeState = remember { HazeState() }
     val context = LocalContext.current
     var showFolderMenu by remember { mutableStateOf(false) }
@@ -232,14 +232,14 @@ fun FolderItem(folder: Folder, navController: NavController? = null, wallpaperVi
                         }
 
                         context.getString(R.string.add_nomedia) -> {
-                            wallpaperViewModel.addNoMediaFile(folder) {
+                            composeWallpaperViewModel.addNoMediaFile(folder) {
                                 showNomediaSuccess = true
                             }
                         }
 
                         context.getString(R.string.remove_nomedia) -> {
                             Log.d("FolderItem", "Remove nomedia")
-                            wallpaperViewModel.removeNoMediaFile(folder) {
+                            composeWallpaperViewModel.removeNoMediaFile(folder) {
                                 Log.d("FolderItem", "Remove nomedia success")
                                 showNomediaRemoveSuccess = true
                             }
