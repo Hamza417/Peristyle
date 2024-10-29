@@ -36,6 +36,7 @@ import app.simple.peri.compose.commons.COMMON_PADDING
 import app.simple.peri.compose.commons.TopHeader
 import app.simple.peri.compose.dialogs.common.ShowWarningDialog
 import app.simple.peri.compose.dialogs.settings.CacheDirectoryDialog
+import app.simple.peri.compose.dialogs.settings.ConcurrencyDialog
 import app.simple.peri.compose.dialogs.settings.DeveloperProfileDialog
 import app.simple.peri.compose.dialogs.settings.OrderDialog
 import app.simple.peri.compose.dialogs.settings.ShowInureAppManagerDialog
@@ -140,6 +141,7 @@ fun Settings(navController: NavController? = null) {
             val showClearCacheDialog = remember { mutableStateOf(false) }
             val showCacheListDialog = remember { mutableStateOf(false) }
             val totalCache = remember { mutableLongStateOf(0L) }
+            val showConcurrencyDialog = remember { mutableStateOf(false) }
 
             if (showSortDialog.value) {
                 SortDialog {
@@ -180,6 +182,12 @@ fun Settings(navController: NavController? = null) {
                 )
             }
 
+            if (showConcurrencyDialog.value) {
+                ConcurrencyDialog {
+                    showConcurrencyDialog.value = false
+                }
+            }
+
             SecondaryHeader(title = context.getString(R.string.data))
 
             // Sort
@@ -218,6 +226,13 @@ fun Settings(navController: NavController? = null) {
                     title = context.getString(R.string.clear_cache),
             ) {
                 showCacheListDialog.value = true
+            }
+
+            ClickablePreference(
+                    title = context.getString(R.string.max_process),
+                    description = context.getString(R.string.max_process_summary),
+            ) {
+                showConcurrencyDialog.value = true
             }
         }
         item { // Accessibility

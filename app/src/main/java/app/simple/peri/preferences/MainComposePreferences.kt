@@ -55,6 +55,7 @@ object MainComposePreferences {
     private const val ORIGINAL_ASPECT_RATIO = "original_aspect_ratio"
     private const val AUTO_WALLPAPER_NOTIFICATION = "auto_wallpaper_notification"
     private const val ALL_WALLPAPER_PATHS = "all_wallpaper_paths"
+    private const val SEMAPHORE_COUNT = "semaphore_count"
 
     // ----------------------------------------------------------------------------------------------------- //
 
@@ -602,5 +603,19 @@ object MainComposePreferences {
         val paths = getAllWallpaperPaths().toMutableSet()
         paths.add(path)
         setWallpapersPaths(paths)
+    }
+
+    // ----------------------------------------------------------------------------------------------------- //
+
+    fun getSemaphoreCount(): Int {
+        return getSharedPreferences().getInt(SEMAPHORE_COUNT, 1)
+            .coerceAtLeast(1)
+            .coerceAtMost(20)
+    }
+
+    fun setSemaphoreCount(value: Int) {
+        getSharedPreferences().edit().putInt(SEMAPHORE_COUNT, value
+            .coerceAtLeast(1).coerceAtMost(20))
+            .apply()
     }
 }

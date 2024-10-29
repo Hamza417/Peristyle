@@ -68,7 +68,7 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
         return foldersData
     }
 
-    private fun refreshFolders() {
+    private fun refreshFolders(shouldPurge: Boolean = true) {
         viewModelScope.launch(Dispatchers.IO) {
             val folders = ArrayList<Folder>()
             WallpaperDatabase.getInstance(getApplication())?.let { database ->
@@ -88,14 +88,16 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
                 }
 
                 foldersData.postValue(folders)
-                database.wallpaperDao().purgeNonExistingWallpapers(database)
+                if (shouldPurge) {
+                    database.wallpaperDao().purgeNonExistingWallpapers(database)
+                }
             }
         }
     }
 
     private fun loadWallpaperImages() {
         Log.i(TAG, "loadWallpaperImages: starting to load wallpaper images")
-        val semaphore = Semaphore(1) // Limit to 5 concurrent tasks
+        val semaphore = Semaphore(MainComposePreferences.getSemaphoreCount()) // Limit the number of concurrent jobs
         val wallpaperImageJob = viewModelScope.launch(Dispatchers.IO) {
             runCatching {
                 alreadyLoaded = WallpaperDatabase.getInstance(getApplication())
@@ -108,7 +110,9 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
                         val files = pickedDirectory.getFiles().dotFilter()
 
                         files.map { file ->
+                            ensureActive()
                             async {
+                                ensureActive()
                                 semaphore.withPermit {
                                     ensureActive()
 
@@ -116,14 +120,15 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
                                         if (alreadyLoaded?.containsKey(file.absolutePath.toString()) == false) {
                                             val wallpaper = Wallpaper.createFromFile(file)
                                             wallpaper.folderID = folderPath.hashCode()
+                                            ensureActive()
                                             WallpaperDatabase.getInstance(getApplication())
                                                 ?.wallpaperDao()?.insert(wallpaper)
-                                            refreshFolders()
+                                            refreshFolders(shouldPurge = false)
                                         } else {
                                             Log.i(TAG, "loadWallpaperImages: already loaded ${file.absolutePath}")
                                         }
                                     } catch (e: IllegalStateException) {
-                                        e.printStackTrace()
+                                        Log.e(TAG, "Error loading wallpaper from file: ${file.absolutePath}", e)
                                     }
                                 }
                             }
