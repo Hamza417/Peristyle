@@ -208,4 +208,5 @@
     <string name="max_process">Max Concurrent Processes</string>
     <string name="max_process_summary">Select the maximum number of concurrent processes allowed.</string>
     <string name="max_process_desc">Only change this settings if your device can handle it, setting value beyond the capability can render the app unusable and in some cases may freeze or crash the device.</string>
+    <string name="no_sd_card_found">No SDCard Found!</string>
 </resources>

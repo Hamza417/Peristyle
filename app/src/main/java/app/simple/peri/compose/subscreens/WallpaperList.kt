@@ -67,7 +67,6 @@ fun WallpaperList(navController: NavController? = null) {
     // Update the wallpapers list
     wallpapers.clear()
     wallpapers = updatedWallpapers.toMutableStateList()
-    Log.d("WallpaperList", "Updated wallpapers: ${updatedWallpapers.size}")
 
     if (wallpapers.isEmpty()) { // TODO = list doesn't update with this
         Log.e("WallpaperList", "Wallpapers list is empty")
