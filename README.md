@@ -25,6 +25,7 @@ from there? then Peristyle is for you :)
 - Dark mode support.
 - Glassmorphic UI based on realtime blur effects and caustic shadows.
 - Material You themes and colors.
+- Fully reproducible build.
 
 ## Stats
 
