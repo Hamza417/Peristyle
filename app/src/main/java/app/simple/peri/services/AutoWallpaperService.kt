@@ -325,9 +325,8 @@ class AutoWallpaperService : Service() {
         CoroutineScope(Dispatchers.IO).launch {
             runCatching {
                 val wallpaperManager = WallpaperManager.getInstance(applicationContext)
-                val wallpaper: Wallpaper?
-                val homeWallpaper: Wallpaper? = getHomeScreenWallpaper()
-                val lockWallpaper: Wallpaper? = getLockScreenWallpaper()
+                var homeWallpaper: Wallpaper? = getHomeScreenWallpaper()
+                var lockWallpaper: Wallpaper? = getLockScreenWallpaper()
 
                 if (homeWallpaper.isNotNull()) {
                     Log.d(TAG, "Home wallpaper found: ${homeWallpaper?.filePath}")
@@ -347,7 +346,7 @@ class AutoWallpaperService : Service() {
                         )
 
                         wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_SYSTEM)
-                        showWallpaperChangedNotification(true, homeWallpaper.filePath.toFile())
+                        showWallpaperChangedNotification(true, homeWallpaper!!.filePath.toFile())
                     }
                 }
 
@@ -369,42 +368,66 @@ class AutoWallpaperService : Service() {
                         )
 
                         wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_LOCK)
-                        showWallpaperChangedNotification(false, lockWallpaper.filePath.toFile())
+                        showWallpaperChangedNotification(false, lockWallpaper!!.filePath.toFile())
                     }
                 }
 
                 when {
                     lockWallpaper.isNull() && homeWallpaper.isNull() -> {
                         Log.d(TAG, "No wallpapers found, setting random wallpaper")
-                        wallpaper = getWallpapersFromDatabase()?.random()
+                        homeWallpaper = getWallpapersFromDatabase()?.random()
+                        lockWallpaper = if (MainPreferences.isLinearAutoWallpaper()) {
+                            homeWallpaper
+                        } else {
+                            getWallpapersFromDatabase()?.random()
+                        }
 
-                        getBitmapFromFile(wallpaper!!) {
-                            var bitmap = it.copy(it.config ?: Bitmap.Config.ARGB_8888, true)
-                            bitmap = bitmap.applyEffects(
-                                    brightness = MainComposePreferences.getAutoWallpaperBrightness(),
-                                    contrast = MainComposePreferences.getAutoWallpaperContrast(),
-                                    blur = MainComposePreferences.getAutoWallpaperBlur(),
-                                    saturation = MainComposePreferences.getAutoWallpaperSaturation(),
-                                    hueRed = MainComposePreferences.getAutoWallpaperHueRed(),
-                                    hueGreen = MainComposePreferences.getAutoWallpaperHueGreen(),
-                                    hueBlue = MainComposePreferences.getAutoWallpaperHueBlue(),
-                                    scaleRed = MainComposePreferences.getAutoWallpaperScaleRed(),
-                                    scaleGreen = MainComposePreferences.getAutoWallpaperScaleGreen(),
-                                    scaleBlue = MainComposePreferences.getAutoWallpaperScaleBlue()
-                            )
+                        if (MainPreferences.isSettingForHomeScreen()) {
+                            getBitmapFromFile(homeWallpaper!!) {
+                                var bitmap = it.copy(it.config ?: Bitmap.Config.ARGB_8888, true)
+                                bitmap = bitmap.applyEffects(
+                                        brightness = MainComposePreferences.getAutoWallpaperBrightness(),
+                                        contrast = MainComposePreferences.getAutoWallpaperContrast(),
+                                        blur = MainComposePreferences.getAutoWallpaperBlur(),
+                                        saturation = MainComposePreferences.getAutoWallpaperSaturation(),
+                                        hueRed = MainComposePreferences.getAutoWallpaperHueRed(),
+                                        hueGreen = MainComposePreferences.getAutoWallpaperHueGreen(),
+                                        hueBlue = MainComposePreferences.getAutoWallpaperHueBlue(),
+                                        scaleRed = MainComposePreferences.getAutoWallpaperScaleRed(),
+                                        scaleGreen = MainComposePreferences.getAutoWallpaperScaleGreen(),
+                                        scaleBlue = MainComposePreferences.getAutoWallpaperScaleBlue()
+                                )
 
-                            if (MainPreferences.isSettingForHomeScreen()) {
                                 wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_SYSTEM)
-                                showWallpaperChangedNotification(true, wallpaper.filePath.toFile())
-                            } else {
-                                Log.i(TAG, "No home wallpaper, skipping")
-                            }
+                                showWallpaperChangedNotification(true, homeWallpaper.filePath.toFile())
 
+                                if (MainPreferences.isLinearAutoWallpaper().invert()) {
+                                    wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_LOCK)
+                                    showWallpaperChangedNotification(false, homeWallpaper.filePath.toFile())
+                                }
+                            }
+                        }
+
+                        if (MainPreferences.isLinearAutoWallpaper().invert()) {
                             if (MainPreferences.isSettingForLockScreen()) {
-                                wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_LOCK)
-                                showWallpaperChangedNotification(false, wallpaper.filePath.toFile())
-                            } else {
-                                Log.i(TAG, "No lock wallpaper, skipping")
+                                getBitmapFromFile(lockWallpaper!!) {
+                                    var bitmap = it.copy(it.config ?: Bitmap.Config.ARGB_8888, true)
+                                    bitmap = bitmap.applyEffects(
+                                            brightness = MainComposePreferences.getAutoWallpaperBrightness(),
+                                            contrast = MainComposePreferences.getAutoWallpaperContrast(),
+                                            blur = MainComposePreferences.getAutoWallpaperBlur(),
+                                            saturation = MainComposePreferences.getAutoWallpaperSaturation(),
+                                            hueRed = MainComposePreferences.getAutoWallpaperHueRed(),
+                                            hueGreen = MainComposePreferences.getAutoWallpaperHueGreen(),
+                                            hueBlue = MainComposePreferences.getAutoWallpaperHueBlue(),
+                                            scaleRed = MainComposePreferences.getAutoWallpaperScaleRed(),
+                                            scaleGreen = MainComposePreferences.getAutoWallpaperScaleGreen(),
+                                            scaleBlue = MainComposePreferences.getAutoWallpaperScaleBlue()
+                                    )
+
+                                    wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_LOCK)
+                                    showWallpaperChangedNotification(false, lockWallpaper.filePath.toFile())
+                                }
                             }
                         }
                     }
