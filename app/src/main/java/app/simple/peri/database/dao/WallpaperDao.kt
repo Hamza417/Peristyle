@@ -39,7 +39,7 @@ interface WallpaperDao {
      * Get wallpaper by MD5
      */
     @Query("SELECT * FROM wallpapers WHERE id = :id")
-    fun getWallpaperByMD5(id: String): Wallpaper?
+    fun getWallpaperByID(id: String): Wallpaper?
 
     /**
      * Get wallpapers by the matching all the MD% in the HashSet
@@ -106,7 +106,7 @@ interface WallpaperDao {
 
     @Transaction
     fun insertWithConflictHandling(wallpaper: Wallpaper) {
-        val existingWallpaper = getWallpaperByMD5(wallpaper.id)
+        val existingWallpaper = getWallpaperByID(wallpaper.id)
         if (existingWallpaper != null) {
             wallpaper.id += "duplicate"
             Log.i("WallpaperDao", "Duplicate wallpaper found: ${wallpaper.id}")

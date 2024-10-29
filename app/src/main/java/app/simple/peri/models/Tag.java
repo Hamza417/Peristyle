@@ -11,7 +11,7 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
-import app.simple.peri.database.converters.MD5ListConverter;
+import app.simple.peri.database.converters.IDListConverter;
 
 @Entity (tableName = "tags")
 public class Tag implements Parcelable {
@@ -20,8 +20,8 @@ public class Tag implements Parcelable {
     @ColumnInfo (name = "name")
     private String name;
     
-    @ColumnInfo (name = "sum")
-    @TypeConverters (MD5ListConverter.class)
+    @ColumnInfo (name = "ids")
+    @TypeConverters (IDListConverter.class)
     private HashSet <String> sum;
     
     public Tag(@NonNull String name, HashSet <String> sum) {
@@ -30,7 +30,7 @@ public class Tag implements Parcelable {
     }
     
     protected Tag(Parcel in) {
-        name = in.readString();
+        name = Objects.requireNonNull(in.readString());
     }
     
     @Override

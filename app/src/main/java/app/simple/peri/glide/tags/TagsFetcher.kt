@@ -20,7 +20,7 @@ class TagsFetcher(private val tag: Tag) : DataFetcher<Bitmap> {
         val bitmapList = mutableListOf<FutureTarget<Bitmap>>()
 
         tag.tag?.sum?.forEach {
-            wallpaperList.add(wallpaperDatabase.wallpaperDao().getWallpaperByMD5(it)!!)
+            wallpaperList.add(wallpaperDatabase.wallpaperDao().getWallpaperByID(it)!!)
         }
 
         // Fetch top 6 wallpapers
@@ -33,7 +33,7 @@ class TagsFetcher(private val tag: Tag) : DataFetcher<Bitmap> {
              */
             val bitmap = Glide.with(tag.context)
                 .asBitmap()
-                .load(wallpaper.uri)
+                .load(wallpaper.filePath)
                 .centerCrop()
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .submit(displayDimension.getReducedWidth(), displayDimension.getReducedHeight())

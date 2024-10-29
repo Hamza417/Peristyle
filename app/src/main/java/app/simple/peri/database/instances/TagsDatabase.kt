@@ -8,7 +8,7 @@ import app.simple.peri.database.dao.TagsDao
 import app.simple.peri.models.Tag
 import app.simple.peri.utils.ConditionUtils.invert
 
-@Database(entities = [Tag::class], version = 1)
+@Database(entities = [Tag::class], version = 2)
 abstract class TagsDatabase : RoomDatabase() {
     abstract fun tagsDao(): TagsDao
 

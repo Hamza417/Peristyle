@@ -531,7 +531,7 @@ class AutoWallpaperService : Service() {
             MainComposePreferences.getHomeTagId().isNotNull() -> {
                 val tagsDatabase = TagsDatabase.getInstance(applicationContext)
                 val tagsDao = tagsDatabase?.tagsDao()
-                val tag = tagsDao?.getTagById(MainComposePreferences.getHomeTagId()!!)
+                val tag = tagsDao?.getTagByID(MainComposePreferences.getHomeTagId()!!)
                 if (MainPreferences.isLinearAutoWallpaper()) {
                     val wallpapers = wallpaperDao?.getWallpapersByMD5s(tag?.sum!!)
                     try {
@@ -599,7 +599,7 @@ class AutoWallpaperService : Service() {
             MainComposePreferences.getLockTagId().isNotNull() -> {
                 val tagsDatabase = TagsDatabase.getInstance(applicationContext)
                 val tagsDao = tagsDatabase?.tagsDao()
-                val tag = tagsDao?.getTagById(MainComposePreferences.getLockTagId()!!)
+                val tag = tagsDao?.getTagByID(MainComposePreferences.getLockTagId()!!)
                 val wallpapers = wallpaperDao?.getWallpapersByMD5s(tag?.sum!!)
                 wallpaper = if (MainPreferences.isLinearAutoWallpaper()) {
                     try {

@@ -15,7 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
 
-class TagsViewModel(application: Application, private val md5: String? = null, private val tag: String? = null) :
+class TagsViewModel(application: Application, private val id: String? = null, private val tag: String? = null) :
     CompressorViewModel(application) {
 
     private val tags: MutableLiveData<List<Tag>> by lazy {
@@ -26,8 +26,8 @@ class TagsViewModel(application: Application, private val md5: String? = null, p
 
     private val wallpaperTags: MutableLiveData<List<String>> by lazy {
         MutableLiveData<List<String>>().also {
-            if (md5 != null) {
-                loadWallpaperTags(md5)
+            if (id != null) {
+                loadWallpaperTags(id)
             }
         }
     }
@@ -67,7 +67,7 @@ class TagsViewModel(application: Application, private val md5: String? = null, p
         viewModelScope.launch(Dispatchers.IO) {
             val database = TagsDatabase.getInstance(getApplication())
             val tagsDao = database?.tagsDao()
-            val tags = tagsDao?.getTagNamesByMD5(md5)
+            val tags = tagsDao?.getTagNamesByID(md5)
             wallpaperTags.postValue(tags)
         }
     }
@@ -77,7 +77,7 @@ class TagsViewModel(application: Application, private val md5: String? = null, p
             val tagsDatabase = TagsDatabase.getInstance(getApplication())
             val wallpaperDatabase = WallpaperDatabase.getInstance(getApplication())
             val tagsDao = tagsDatabase?.tagsDao()
-            val tag = tagsDao?.getTagById(factoryTag)
+            val tag = tagsDao?.getTagByID(factoryTag)
             val wallpapers = wallpaperDatabase?.wallpaperDao()?.getWallpapersByMD5s(tag?.sum!!)
             this@TagsViewModel.wallpapers.postValue(wallpapers)
         }
@@ -89,7 +89,7 @@ class TagsViewModel(application: Application, private val md5: String? = null, p
             val tagsDao = database?.tagsDao()
 
             if (tagsDao?.isTagExists(tagName.trim())!!) {
-                val tag = tagsDao.getTagById(tagName.trim())
+                val tag = tagsDao.getTagByID(tagName.trim())
                 tag.addSum(wallpaper.id)
                 tagsDao.insertTag(tag)
             } else {
