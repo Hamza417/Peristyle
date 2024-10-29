@@ -8,9 +8,11 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
+import app.simple.peri.database.instances.WallpaperDatabase
 import app.simple.peri.models.Wallpaper
-import app.simple.peri.utils.ConditionUtils.invert
+import app.simple.peri.preferences.MainComposePreferences
 import kotlinx.coroutines.flow.Flow
+import java.io.File
 import kotlin.system.measureTimeMillis
 
 @Dao
@@ -55,8 +57,8 @@ interface WallpaperDao {
     /**
      * Get count of wallpapers of the specified [uriHashcode]
      */
-    @Query("SELECT COUNT(*) FROM wallpapers WHERE folder_id = :uriHashcode")
-    fun getWallpapersCountByPathHashcode(uriHashcode: Int): Int
+    @Query("SELECT COUNT(*) FROM wallpapers WHERE folder_id = :hashcode")
+    fun getWallpapersCountByPathHashcode(hashcode: Int): Int
 
     /**
      * Clean any entry that doesn't have any of the
@@ -126,12 +128,18 @@ interface WallpaperDao {
     @Query("DELETE FROM wallpapers WHERE folder_id = :hashcode")
     fun deleteByPathHashcode(hashcode: Int)
 
-    fun purgeNonExistingWallpapers() {
-        Log.i("WallpaperDao", "Purged non-existing wallpapers in: ${
+    fun purgeNonExistingWallpapers(wallpaperDatabase: WallpaperDatabase) {
+        Log.i("WallpaperDao", "Purged non-existing or non-permitted wallpapers in: ${
             measureTimeMillis {
-                getWallpapers().forEach {
-                    if (it.getFile().exists().invert()) {
-                        delete(it)
+                val allPaths = MainComposePreferences.getAllWallpaperPaths()
+                val validHashcodes = allPaths.map { it.hashCode() }.toSet()
+
+                val wallpaperDao = wallpaperDatabase.wallpaperDao()
+                val allWallpapers = wallpaperDao.getWallpapers() ?: emptyList()
+
+                allWallpapers.forEach { wallpaper ->
+                    if (wallpaper.folderID !in validHashcodes || !File(wallpaper.filePath).exists()) {
+                        wallpaperDao.delete(wallpaper)
                     }
                 }
             }

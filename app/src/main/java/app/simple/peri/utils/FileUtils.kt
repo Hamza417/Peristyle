@@ -63,7 +63,7 @@ object FileUtils {
                     }
 
                     child.isFile -> {
-                        if (child.name.endsWithAny(*imageExtensions)) {
+                        if (child.name.lowercase().endsWithAny(*imageExtensions)) {
                             allFiles.add(child)
                         }
                     }
@@ -78,7 +78,7 @@ object FileUtils {
         val allFiles = mutableListOf<File>()
         this.listFiles()?.forEach { child ->
             if (child.isFile) {
-                if (child.extension.lowercase() in imageExtensions) {
+                if (child.name.lowercase().endsWithAny(*imageExtensions)) {
                     allFiles.add(child)
                 }
             }
