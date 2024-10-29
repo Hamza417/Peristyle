@@ -22,26 +22,23 @@ import app.simple.peri.models.Folder
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.preferences.MainPreferences
-import app.simple.peri.utils.CommonUtils.withBooleanScope
 import app.simple.peri.utils.FileUtils.filterDotFiles
 import app.simple.peri.utils.FileUtils.listCompleteFiles
 import app.simple.peri.utils.FileUtils.listOnlyFirstLevelFiles
 import app.simple.peri.utils.FileUtils.toFile
 import app.simple.peri.utils.PermissionUtils
+import app.simple.peri.utils.ProcessUtils.cancelAll
 import app.simple.peri.utils.WallpaperSort.getSortedList
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 
 class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(application) {
 
-    private var loadDatabaseJob: Job? = null
-    private var isWallpaperLoading: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    private var shouldThrowError: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    private var loadWallpaperImagesJobs: MutableSet<Job> = mutableSetOf()
     private var broadcastReceiver: BroadcastReceiver? = null
     private val intentFilter = IntentFilter().apply {
         addAction(BundleConstants.INTENT_RECREATE_DATABASE)
@@ -51,8 +48,6 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
     private var alreadyLoaded: Map<String, Wallpaper>? = null
 
     private var isDatabaseLoaded: MutableLiveData<Boolean> = MutableLiveData(false)
-
-    private var _folderLoadingState = MutableStateFlow("")
 
     init {
         broadcastReceiver = object : BroadcastReceiver() {
@@ -70,26 +65,10 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
             .registerReceiver(broadcastReceiver!!, intentFilter)
     }
 
-    fun getLoadingImage(): MutableStateFlow<String> {
-        return _folderLoadingState
-    }
-
-    private fun setFolderLoadingState(loadingImage: String) {
-        _folderLoadingState.value = loadingImage
-    }
-
     private val wallpapersData: MutableLiveData<ArrayList<Wallpaper>> by lazy {
         MutableLiveData<ArrayList<Wallpaper>>().also {
             loadWallpaperDatabase()
         }
-    }
-
-    private val newWallpapersData: MutableLiveData<Wallpaper> by lazy {
-        MutableLiveData<Wallpaper>()
-    }
-
-    private val removedWallpapersData: MutableLiveData<Wallpaper> by lazy {
-        MutableLiveData<Wallpaper>()
     }
 
     private val systemWallpaperData: MutableLiveData<ArrayList<Wallpaper>> by lazy {
@@ -104,24 +83,8 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
         }
     }
 
-    private val loadingStatus: MutableLiveData<String> by lazy {
-        MutableLiveData<String>()
-    }
-
     fun getWallpapersLiveData(): MutableLiveData<ArrayList<Wallpaper>> {
         return wallpapersData
-    }
-
-    fun getNewWallpapersLiveData(): MutableLiveData<Wallpaper> {
-        return newWallpapersData
-    }
-
-    fun getRemovedWallpapersLiveData(): MutableLiveData<Wallpaper> {
-        return removedWallpapersData
-    }
-
-    fun getLoadingStatusLiveData(): MutableLiveData<String> {
-        return loadingStatus
     }
 
     fun getDatabaseLoaded(): MutableLiveData<Boolean> {
@@ -161,10 +124,11 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
     }
 
     private fun loadWallpaperDatabase() {
-        loadDatabaseJob = viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.IO) {
             val wallpaperDatabase = WallpaperDatabase.getInstance(getApplication())
             val wallpaperDao = wallpaperDatabase?.wallpaperDao()
-            wallpaperDao?.sanitizeEntries() // Sanitize the database
+            wallpaperDao?.sanitizeEntries()
+            wallpaperDao?.purgeNonExistingWallpapers()
             val wallpaperList = wallpaperDao?.getWallpapers()
             (wallpaperList as ArrayList<Wallpaper>).getSortedList()
 
@@ -174,91 +138,66 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
 
             @Suppress("UNCHECKED_CAST")
             wallpapersData.postValue(wallpaperList.clone() as ArrayList<Wallpaper>)
-            wallpaperDao.purgeNonExistingWallpapers()
-
-            loadWallpaperImages()
         }
+
+        loadWallpaperImages()
     }
 
     private fun loadWallpaperImages() {
-        if (isWallpaperLoading.value) {
-            Log.d(TAG, "loadWallpaperImages: previous session is still loading, skipping...")
-            return
-        }
+        Log.i(TAG, "loadWallpaperImages: starting to load wallpaper images")
+        val wallpaperImageJob = viewModelScope.launch(Dispatchers.IO) {
+            runCatching {
+                alreadyLoaded = WallpaperDatabase.getInstance(getApplication())
+                    ?.wallpaperDao()?.getWallpapers()?.associateBy { it.filePath }
+                isDatabaseLoaded.postValue(false)
 
-        viewModelScope.launch(Dispatchers.IO) {
-            withBooleanScope(isWallpaperLoading) {
-                runCatching {
-                    alreadyLoaded = WallpaperDatabase.getInstance(getApplication())
-                        ?.wallpaperDao()?.getWallpapers()?.associateBy { it.filePath }
-                    isDatabaseLoaded.postValue(false)
+                MainComposePreferences.getAllWallpaperPaths().forEach { path ->
+                    val pickedDirectory = File(path)
+                    ensureActive()
+                    if (pickedDirectory.exists()) {
+                        val files = pickedDirectory.getFiles()
+                        Log.d(TAG, "loadWallpaperImages: files count: ${files.size}")
 
-                    MainComposePreferences.getAllWallpaperPaths().forEach { path ->
-                        val pickedDirectory = File(path)
-                        if (pickedDirectory.exists()) {
-                            val files = pickedDirectory.getFiles()
-                            Log.d(TAG, "loadWallpaperImages: files count: ${files.size}")
-                            val total = files.size
-                            var count = 0
-                            setFolderLoadingState(getApplication<Application>().getString(app.simple.peri.R.string.preparing))
+                        files.forEach { file ->
+                            ensureActive()
 
-                            if (wallpapersData.value.isNullOrEmpty()) {
-                                loadingStatus.postValue(getApplication<Application>().getString(app.simple.peri.R.string.preparing))
-                            }
-
-                            files.forEach { file ->
-                                count = count.inc()
-                                if (shouldThrowError.value) {
-                                    Log.e(TAG, "loadWallpaperImages: job cancelled")
-                                    shouldThrowError.value = false
-                                    throw CancellationException("Job cancelled")
+                            try {
+                                if (alreadyLoaded?.containsKey(file.absolutePath.toString()) == false) {
+                                    Log.i(TAG, "loadWallpaperImages: loading ${file.absolutePath}")
+                                    val wallpaper = Wallpaper.createFromFile(file)
+                                    wallpaper.folderID = path.hashCode()
+                                    wallpapers.add(wallpaper)
+                                    WallpaperDatabase.getInstance(getApplication())
+                                        ?.wallpaperDao()?.insert(wallpaper)
+                                    loadFolders()
+                                } else {
+                                    Log.i(TAG, "loadWallpaperImages: already loaded ${file.absolutePath}")
                                 }
-
-                                try {
-                                    if (alreadyLoaded?.containsKey(file.absolutePath.toString()) == false) {
-                                        Log.i(TAG, "loadWallpaperImages: loading ${file.absolutePath}")
-                                        val wallpaper = Wallpaper.createFromFile(file)
-                                        wallpaper.folderID = path.hashCode()
-                                        wallpapers.add(wallpaper)
-                                        newWallpapersData.postValue(wallpaper)
-                                        WallpaperDatabase.getInstance(getApplication())
-                                            ?.wallpaperDao()?.insert(wallpaper)
-                                        updateLoadingStatus(count, total)
-                                        setFolderLoadingState("$count / $total")
-                                    } else {
-                                        Log.i(TAG, "loadWallpaperImages: already loaded ${file.absolutePath}")
-                                        updateLoadingStatus(count, total)
-                                        setFolderLoadingState("$count / $total")
-                                    }
-                                } catch (e: IllegalStateException) {
-                                    e.printStackTrace()
-                                }
+                            } catch (e: IllegalStateException) {
+                                e.printStackTrace()
                             }
-
-                            if (alreadyLoaded.isNullOrEmpty()) {
-                                wallpapers.getSortedList()
-                                wallpapers.forEach { it.isSelected = false }
-                                wallpapersData.postValue(wallpapers)
-                            }
-                        } else {
-                            Log.e(TAG, "loadWallpaperImages: directory does not exist: $path")
                         }
-                    }
 
-                    initDatabase()
-                    loadingStatus.postValue("")
-                    setFolderLoadingState("")
-                    loadFolders()
-                }.getOrElse {
-                    it.printStackTrace()
+                        ensureActive()
+
+                        if (alreadyLoaded.isNullOrEmpty()) {
+                            wallpapers.getSortedList()
+                            wallpapers.forEach { it.isSelected = false }
+                            wallpapersData.postValue(wallpapers)
+                        }
+                    } else {
+                        Log.e(TAG, "loadWallpaperImages: directory does not exist: $path")
+                    }
                 }
+
+                initDatabase()
+                loadFolders()
+            }.getOrElse {
+                it.printStackTrace()
             }
         }
-    }
 
-    private fun updateLoadingStatus(count: Int, total: Int) {
-        val progress = (count / total.toFloat() * 100).toInt()
-        loadingStatus.postValue("$count : $progress%")
+        loadWallpaperImagesJobs.add(wallpaperImageJob)
     }
 
     private fun initDatabase() {
@@ -269,7 +208,6 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
             try {
                 if (File(it.filePath).exists().not()) {
                     wallpaperDao.delete(it)
-                    removedWallpapersData.postValue(it)
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -449,26 +387,22 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
         }
     }
 
-    fun refresh(isForced: Boolean = false) {
+    fun refresh() {
         Log.i(TAG, "refresh: refreshing wallpapers")
-
-        if (isForced) {
-            isWallpaperLoading.value = false
-            shouldThrowError.value = true
-        }
-
+        loadWallpaperImagesJobs.cancelAll("refreshing wallpapers")
         loadFolders()
         loadWallpaperImages()
     }
 
     fun deleteFolder(folder: Folder) {
         viewModelScope.launch(Dispatchers.IO) {
+            loadWallpaperImagesJobs.cancelAll("deleting folder")
             MainComposePreferences.removeWallpaperPath(folder.path)
             val wallpaperDatabase = WallpaperDatabase.getInstance(getApplication())
             val wallpaperDao = wallpaperDatabase?.wallpaperDao()
             wallpaperDao?.deleteByPathHashcode(folder.hashcode)
-            loadWallpaperDatabase()
             loadFolders()
+            loadWallpaperDatabase()
         }
     }
 

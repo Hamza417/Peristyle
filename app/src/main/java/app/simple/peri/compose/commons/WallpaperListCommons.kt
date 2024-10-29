@@ -3,6 +3,7 @@ package app.simple.peri.compose.commons
 import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.util.Log
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -491,7 +492,7 @@ fun WallpaperMenu(
     val tagsViewModel: TagsViewModel = viewModel(
             factory = TagsViewModelFactory()
     )
-    val composeWallpaperViewModel: ComposeWallpaperViewModel = viewModel()
+    val composeWallpaperViewModel: ComposeWallpaperViewModel = viewModel(LocalContext.current as ComponentActivity)
     val showTagDialog = remember { mutableStateOf(false) }
 
     if (showTagDialog.value) {

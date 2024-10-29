@@ -12,6 +12,7 @@ import android.os.Build
 import android.os.Environment
 import android.provider.Settings
 import android.util.Log
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -43,6 +44,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
@@ -301,7 +303,7 @@ fun Permissions(modifier: Modifier, context: Context, navController: NavControll
 fun Folder(modifier: Modifier, context: Context, navController: NavController? = null) {
     var launchDirectoryPermission by remember { mutableStateOf(false) }
     var showDirectoryPermissionDialog by remember { mutableStateOf(false) }
-    val composeWallpaperViewModel: ComposeWallpaperViewModel = viewModel()
+    val composeWallpaperViewModel: ComposeWallpaperViewModel = viewModel(LocalContext.current as ComponentActivity)
     var directories by remember { mutableStateOf(MainComposePreferences.getAllWallpaperPaths().joinToString("\n")) }
 
     if (launchDirectoryPermission) {
@@ -313,7 +315,7 @@ fun Folder(modifier: Modifier, context: Context, navController: NavController? =
                     launchDirectoryPermission = false
                     showDirectoryPermissionDialog = true
                     directories = MainComposePreferences.getAllWallpaperPaths().joinToString("\n")
-                    composeWallpaperViewModel.refresh(true)
+                    composeWallpaperViewModel.refresh()
                 }
         )
     }

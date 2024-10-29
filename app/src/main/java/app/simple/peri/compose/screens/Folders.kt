@@ -1,6 +1,7 @@
 package app.simple.peri.compose.screens
 
 import android.util.Log
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -32,7 +33,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
@@ -82,17 +82,12 @@ import dev.chrisbanes.haze.hazeChild
 
 @Composable
 fun Folders(navController: NavController? = null) {
-    val composeWallpaperViewModel: ComposeWallpaperViewModel = viewModel()
+    val composeWallpaperViewModel: ComposeWallpaperViewModel = viewModel(LocalContext.current as ComponentActivity)
     val folders by composeWallpaperViewModel.getFoldersLiveData().observeAsState(emptyList())
     var requestPermission by remember { mutableStateOf(false) }
     var statusBarHeight by remember { mutableIntStateOf(0) }
     var navigationBarHeight by remember { mutableIntStateOf(0) }
-    val currentLoadingState = composeWallpaperViewModel.getLoadingImage().collectAsState().value
     val hazeState = remember { HazeState() }
-
-    if (currentLoadingState.isBlank()) {
-        Log.i("Folders", "Loading image is blank")
-    }
 
     statusBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
             LocalView.current.rootWindowInsets
@@ -118,7 +113,7 @@ fun Folders(navController: NavController? = null) {
         FolderBrowser(
                 onCancel = { requestPermission = false },
                 onStorageGranted = {
-                    composeWallpaperViewModel.refresh(isForced = true)
+                    composeWallpaperViewModel.refresh()
                     requestPermission = false
                 }
         )
@@ -144,22 +139,6 @@ fun Folders(navController: NavController? = null) {
                             count = folders.size,
                             modifier = Modifier.padding(COMMON_PADDING),
                             navController = navController
-                    )
-                }
-            }
-            if (currentLoadingState.isBlank().invert()) {
-                item(span = StaggeredGridItemSpan.FullLine) {
-                    Text(
-                            text = currentLoadingState,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(start = 16.dp, bottom = 16.dp, end = 16.dp),
-                            textAlign = TextAlign.Start,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurface,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
                     )
                 }
             }

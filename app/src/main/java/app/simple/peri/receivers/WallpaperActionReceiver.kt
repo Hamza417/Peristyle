@@ -33,7 +33,6 @@ class WallpaperActionReceiver : BroadcastReceiver() {
                 val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
                 Log.i(TAG, "Notification ID: $notificationID")
                 notificationManager.cancel(AutoWallpaperService.HOME_NOTIFICATION_ID)
-                updateDatabase(file, context)
             }
             AutoWallpaperService.ACTION_DELETE_WALLPAPER_LOCK -> {
                 val wallpaperManager = WallpaperManager.getInstance(context)
@@ -51,7 +50,6 @@ class WallpaperActionReceiver : BroadcastReceiver() {
                 val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
                 Log.i(TAG, "Notification ID: $notificationID")
                 notificationManager.cancel(AutoWallpaperService.LOCK_NOTIFICATION_ID)
-                updateDatabase(file, context)
             }
         }
     }
