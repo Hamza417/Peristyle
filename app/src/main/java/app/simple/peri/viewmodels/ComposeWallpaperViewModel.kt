@@ -31,8 +31,12 @@ import app.simple.peri.utils.ProcessUtils.cancelAll
 import app.simple.peri.utils.WallpaperSort.getSortedList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 import kotlinx.coroutines.withContext
 import java.io.File
 
@@ -145,6 +149,7 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
 
     private fun loadWallpaperImages() {
         Log.i(TAG, "loadWallpaperImages: starting to load wallpaper images")
+        val semaphore = Semaphore(5) // Limit to 5 concurrent tasks
         val wallpaperImageJob = viewModelScope.launch(Dispatchers.IO) {
             runCatching {
                 alreadyLoaded = WallpaperDatabase.getInstance(getApplication())
@@ -158,33 +163,28 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
                         val files = pickedDirectory.getFiles()
                         Log.d(TAG, "loadWallpaperImages: files count: ${files.size}")
 
-                        files.forEach { file ->
-                            ensureActive()
-
-                            try {
-                                if (alreadyLoaded?.containsKey(file.absolutePath.toString()) == false) {
-                                    Log.i(TAG, "loadWallpaperImages: loading ${file.absolutePath}")
-                                    val wallpaper = Wallpaper.createFromFile(file)
-                                    wallpaper.folderID = path.hashCode()
-                                    wallpapers.add(wallpaper)
-                                    WallpaperDatabase.getInstance(getApplication())
-                                        ?.wallpaperDao()?.insert(wallpaper)
-                                    loadFolders()
-                                } else {
-                                    Log.i(TAG, "loadWallpaperImages: already loaded ${file.absolutePath}")
+                        files.map { file ->
+                            async {
+                                semaphore.withPermit {
+                                    ensureActive()
+                                    try {
+                                        if (alreadyLoaded?.containsKey(file.absolutePath.toString()) == false) {
+                                            Log.i(TAG, "loadWallpaperImages: loading ${file.absolutePath}")
+                                            val wallpaper = Wallpaper.createFromFile(file)
+                                            wallpaper.folderID = path.hashCode()
+                                            wallpapers.add(wallpaper)
+                                            WallpaperDatabase.getInstance(getApplication())
+                                                ?.wallpaperDao()?.insert(wallpaper)
+                                            loadFolders()
+                                        } else {
+                                            Log.i(TAG, "loadWallpaperImages: already loaded ${file.absolutePath}")
+                                        }
+                                    } catch (e: IllegalStateException) {
+                                        e.printStackTrace()
+                                    }
                                 }
-                            } catch (e: IllegalStateException) {
-                                e.printStackTrace()
                             }
-                        }
-
-                        ensureActive()
-
-                        if (alreadyLoaded.isNullOrEmpty()) {
-                            wallpapers.getSortedList()
-                            wallpapers.forEach { it.isSelected = false }
-                            wallpapersData.postValue(wallpapers)
-                        }
+                        }.awaitAll()
                     } else {
                         Log.e(TAG, "loadWallpaperImages: directory does not exist: $path")
                     }
