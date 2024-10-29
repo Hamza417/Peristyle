@@ -1,6 +1,6 @@
 ---
 name: Bug report
-about: Create a report
+about: Create a bug report. Do not write your feature requests here, I'm not accepting any.
 title: ''
 labels: bug, error
 assignees: Hamza417
