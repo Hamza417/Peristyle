@@ -73,23 +73,37 @@ class AutoWallpaperService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.d(TAG, "Service started")
 
-        if (intent?.action == ACTION_NEXT_WALLPAPER) {
-            Log.d(TAG, "Next wallpaper action received")
-            if (!isNextWallpaperActionRunning) {
-                isNextWallpaperActionRunning = true
-                runCatching {
-                    Toast.makeText(applicationContext, R.string.changing_wallpaper, Toast.LENGTH_SHORT)
+        when (intent?.action) {
+            ACTION_NEXT_WALLPAPER -> {
+                Log.d(TAG, "Next wallpaper action received")
+                if (!isNextWallpaperActionRunning) {
+                    isNextWallpaperActionRunning = true
+                    runCatching {
+                        Toast.makeText(applicationContext, R.string.changing_wallpaper, Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                    init()
+                    isNextWallpaperActionRunning = false
+                } else {
+                    Log.d(TAG, "Next wallpaper action already running, ignoring")
+                    Toast.makeText(applicationContext, R.string.next_wallpaper_already_running, Toast.LENGTH_SHORT)
                         .show()
                 }
-                init()
-                isNextWallpaperActionRunning = false
-            } else {
-                Log.d(TAG, "Next wallpaper action already running, ignoring")
-                Toast.makeText(applicationContext, R.string.next_wallpaper_already_running, Toast.LENGTH_SHORT)
-                    .show()
             }
-        } else {
-            init()
+            ACTION_DELETE_WALLPAPER -> {
+                val file = File(intent.getStringExtra(EXTRA_WALLPAPER_PATH)!!)
+                Log.i(TAG, "Deleting wallpaper: ${file.absolutePath}")
+                if (file.exists()) {
+                    Log.i(TAG, "File exists, deleting")
+                    file.delete()
+                    Log.i(TAG, "File deleted")
+                } else {
+                    Log.e(TAG, "File does not exist, skipping")
+                }
+            }
+            else -> {
+                init()
+            }
         }
 
         return super.onStartCommand(intent, flags, startId)
@@ -316,7 +330,7 @@ class AutoWallpaperService : Service() {
                 val lockWallpaper: Wallpaper? = getLockScreenWallpaper()
 
                 if (homeWallpaper.isNotNull()) {
-                    Log.d(TAG, "Home wallpaper found: ${homeWallpaper?.uri}")
+                    Log.d(TAG, "Home wallpaper found: ${homeWallpaper?.filePath}")
                     getBitmapFromFile(homeWallpaper!!) {
                         var bitmap = it.copy(it.config ?: Bitmap.Config.ARGB_8888, true)
                         bitmap = bitmap.applyEffects(
@@ -333,12 +347,12 @@ class AutoWallpaperService : Service() {
                         )
 
                         wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_SYSTEM)
-                        showWallpaperChangedNotification(true, homeWallpaper.uri.toFile())
+                        showWallpaperChangedNotification(true, homeWallpaper.filePath.toFile())
                     }
                 }
 
                 if (lockWallpaper.isNotNull()) {
-                    Log.d(TAG, "Lock wallpaper found: ${lockWallpaper?.uri}")
+                    Log.d(TAG, "Lock wallpaper found: ${lockWallpaper?.filePath}")
                     getBitmapFromFile(lockWallpaper!!) {
                         var bitmap = it.copy(it.config ?: Bitmap.Config.ARGB_8888, true)
                         bitmap = bitmap.applyEffects(
@@ -355,7 +369,7 @@ class AutoWallpaperService : Service() {
                         )
 
                         wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_LOCK)
-                        showWallpaperChangedNotification(false, lockWallpaper.uri.toFile())
+                        showWallpaperChangedNotification(false, lockWallpaper.filePath.toFile())
                     }
                 }
 
@@ -440,7 +454,7 @@ class AutoWallpaperService : Service() {
                                 )
 
                                 wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_SYSTEM)
-                                showWallpaperChangedNotification(true, randomWallpaper.uri.toFile())
+                                showWallpaperChangedNotification(true, randomWallpaper.filePath.toFile())
                             }
                         }
                     }
@@ -639,6 +653,7 @@ class AutoWallpaperService : Service() {
     }
 
     private fun showWallpaperChangedNotification(isHomeScreen: Boolean, file: File) {
+        Log.i(TAG, "Showing notification for wallpaper change for file: ${file.absolutePath}")
         if (MainComposePreferences.getAutoWallpaperNotification().invert()) {
             return
         }
@@ -659,10 +674,10 @@ class AutoWallpaperService : Service() {
         val sendIntent = createSendIntent(file, this)
 
         val deletePendingIntent: PendingIntent = PendingIntent.getBroadcast(
-                this, notificationId, deleteIntent, PendingIntent.FLAG_IMMUTABLE)
+                this, notificationId, deleteIntent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
 
         val sendPendingIntent: PendingIntent = PendingIntent.getActivity(
-                this, notificationId, Intent.createChooser(sendIntent, null), PendingIntent.FLAG_IMMUTABLE)
+                this, notificationId, Intent.createChooser(sendIntent, null), PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
 
         val notification = NotificationCompat.Builder(this, channelId)
             .setSmallIcon(R.drawable.ic_peristyle)
@@ -688,11 +703,11 @@ class AutoWallpaperService : Service() {
 
     companion object {
         const val ACTION_NEXT_WALLPAPER: String = "app.simple.peri.services.action.NEXT_WALLPAPER"
+        const val ACTION_DELETE_WALLPAPER: String = "app.simple.peri.services.action.DELETE_WALLPAPER"
         const val ACTION_DELETE_WALLPAPER_HOME = "app.simple.peri.services.action.DELETE_WALLPAPER_HOME"
         const val ACTION_DELETE_WALLPAPER_LOCK = "app.simple.peri.services.action.DELETE_WALLPAPER_LOCK"
 
         const val EXTRA_IS_HOME_SCREEN = "app.simple.peri.services.extra.IS_HOME_SCREEN"
-        const val EXTRA_WALLPAPER_URI = "app.simple.peri.services.extra.URI"
         const val EXTRA_WALLPAPER_PATH = "app.simple.peri.services.extra.PATH"
         const val EXTRA_NOTIFICATION_ID = "app.simple.peri.services.extra.NOTIFICATION_ID"
 
