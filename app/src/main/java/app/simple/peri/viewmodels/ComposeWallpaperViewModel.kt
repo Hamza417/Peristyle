@@ -40,7 +40,6 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
         addAction(BundleConstants.INTENT_RECREATE_DATABASE)
     }
 
-    private var wallpapers: ArrayList<Wallpaper> = ArrayList()
     private var alreadyLoaded: Map<String, Wallpaper>? = null
 
     init {
@@ -72,14 +71,14 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
     private fun refreshFolders() {
         viewModelScope.launch(Dispatchers.IO) {
             val folders = ArrayList<Folder>()
-            WallpaperDatabase.getInstance(getApplication())?.let {
+            WallpaperDatabase.getInstance(getApplication())?.let { database ->
                 MainComposePreferences.getAllWallpaperPaths().forEach { path ->
                     val pickedDirectory = File(path)
                     if (pickedDirectory.exists()) {
                         val folder = Folder().apply {
                             name = pickedDirectory.name
                             this.path = path
-                            count = it.wallpaperDao().getWallpapersCountByPathHashcode(path.hashCode())
+                            count = database.wallpaperDao().getWallpapersCountByPathHashcode(path.hashCode())
                             hashcode = path.hashCode()
                             isNomedia = pickedDirectory.listFiles()?.any { it.name == ".nomedia" } == true
                         }
@@ -89,14 +88,14 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
                 }
 
                 foldersData.postValue(folders)
-                it.wallpaperDao().purgeNonExistingWallpapers(it)
+                database.wallpaperDao().purgeNonExistingWallpapers(database)
             }
         }
     }
 
     private fun loadWallpaperImages() {
         Log.i(TAG, "loadWallpaperImages: starting to load wallpaper images")
-        val semaphore = Semaphore(5) // Limit to 5 concurrent tasks
+        val semaphore = Semaphore(1) // Limit to 5 concurrent tasks
         val wallpaperImageJob = viewModelScope.launch(Dispatchers.IO) {
             runCatching {
                 alreadyLoaded = WallpaperDatabase.getInstance(getApplication())
@@ -107,20 +106,16 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
                     ensureActive()
                     if (pickedDirectory.exists()) {
                         val files = pickedDirectory.getFiles().dotFilter()
-                        Log.d(TAG, "loadWallpaperImages: files count: ${files.size}")
-                        var count = 0
+
                         files.map { file ->
                             async {
                                 semaphore.withPermit {
-                                    count++
                                     ensureActive()
 
                                     try {
                                         if (alreadyLoaded?.containsKey(file.absolutePath.toString()) == false) {
-                                            Log.i(TAG, "loadWallpaperImages: loading ${file.absolutePath} count: $count")
                                             val wallpaper = Wallpaper.createFromFile(file)
                                             wallpaper.folderID = folderPath.hashCode()
-                                            wallpapers.add(wallpaper)
                                             WallpaperDatabase.getInstance(getApplication())
                                                 ?.wallpaperDao()?.insert(wallpaper)
                                             refreshFolders()
@@ -133,8 +128,6 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
                                 }
                             }
                         }.awaitAll()
-
-                        Log.i(TAG, "loadWallpaperImages: total files processed: ${wallpapers.size}")
                     } else {
                         Log.e(TAG, "loadWallpaperImages: directory does not exist: $folderPath")
                     }
@@ -157,7 +150,6 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
             val wallpaperDatabase = WallpaperDatabase.getInstance(getApplication())
             val wallpaperDao = wallpaperDatabase?.wallpaperDao()
             wallpaperDao?.delete(wallpaper)
-            wallpapers.remove(wallpaper)
         }
     }
 
@@ -165,7 +157,6 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
         viewModelScope.launch(Dispatchers.IO) {
             Log.d(TAG, "recreateDatabase: recreating database")
             loadWallpaperImagesJobs.cancelAll("recreating database")
-            wallpapers.clear()
             val wallpaperDatabase = WallpaperDatabase.getInstance(getApplication())
             val wallpaperDao = wallpaperDatabase?.wallpaperDao()
             wallpaperDao?.nukeTable()
@@ -266,7 +257,5 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
 
     companion object {
         private const val TAG = "ComposeWallpaperViewModel"
-        private const val SYSTEM_WALLPAPER = "system_wallpaper_$.png"
-        private const val LOCK_WALLPAPER = "lock_wallpaper_$.png"
     }
 }
