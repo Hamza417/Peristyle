@@ -69,6 +69,29 @@ The `REQUEST_IGNORE_BATTERY_OPTIMIZATIONS` is used to run Auto Wallpaper service
 
 And an access to all the wallpaper directories whichever the user specifies.
 
+## v5.0.0 and Destructive Changes in the App
+- **Removed MD5 for IDs, app will generate IDs from file location now.**
+  - To make sure duplicate files are included.
+- **Fixed empty screen when using predictive back gesture to peek the list.**
+- **Migrated the whole app to [Files API](https://docs.oracle.com/javase/8/docs/api/?java/io/File.html). _(destructive change)_**
+  - This will increase the performance of the app multifold and in my test I found the app to be loading data 10 to 50 times faster depending on the concurrency configuration and how much process that app running. Earlier, the app relied on [Scoped Storage](https://source.android.com/docs/core/storage/scoped) to fetch the wallpapers from the storage, which was severely limiting and extremely slow. The scoped storage takes more than 3–8 seconds to just traverse the list, and then processing the files is even slower. In the Files API which runs natively on the file system can traverse the whole internal storage in less than a second. **Yep, that fast!!**. If you felt the app loading really slow in the past or very sluggish performance, this was the reason, Google really did force it to be this way.
+  - **Warning:** _This change is destructive, meaning the whole database structure of the app has changed and upon updating any of the previous app data will be lost and anything the app requires will be recreated with new IDs and structure. Your data can't be backed up and restored since the whole backend has changed. If the app data is important, don't update to this release._
+- **Whole app loading framework is now utilizing the queue based concurrency.**
+  - Earlier the app is utilizing the linear loading approach because of the Scoped Storage which made things even worse, it was already slow and loading the images one by one was a cherry on top. Since via Files API, it is possible to directly access the files, loading multiple of them at once. Although to prevent a system hazard, it's disabled by default and can be changed based on how many files you want to load at once from settings.
+- **Added option to save your each effects and load them in real-time to any wallpaper in the app.**
+  - All the effects will be saved as global effect parameters and can be previewed on any wallpaper being loaded in the app. The screen will show the currently opened wallpaper will all the effects applied on it in the list format, it's really cool and one of my coolest technical achievements so far. The effects can easily be applied in real-time with just a single tap, no loading no fuss everything is done dynamically. ([Screenshot](https://github.com/Hamza417/Peristyle/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/11.png))
+- **Added adjustment sliders to _Scale RGB_ channels in the _Effects_ dialog.**
+  - Same as Hue, but controls the intensity of each color channels individually.
+- **Huge improvements in the **Loader** framework, fixing a lot of data inconsistency issues.**
+  - Rewrote the whole loader framework, removing a lot of garbage logic and fixed a lot of issues, simultaneously fixing a lot of data inconsistency in the app. I have also fixed a lot of mishandled orphan processes in the loader, overwhelming the data feeder from all sides.
+- **Added a better real-time loading framework.**
+  - All files will now be loaded in real-time and on app level, meaning any changes in the database will be reflected in the app live including folder count, wallpaper list and any other transactions.
+- **Fixed files not deleting from notifications.**
+- **Added option to recreate the database in the Settings.**
+- **Fixed a few issues in Auto Wallpaper framework.**
+
+**And, I did all of that in less than 24 hours. Enjoy!! 🎉🎉😄**
+
 ## Translate
 
 [![Crowdin](https://badges.crowdin.net/peristyle/localized.svg)](https://crowdin.com/project/peristyle)
