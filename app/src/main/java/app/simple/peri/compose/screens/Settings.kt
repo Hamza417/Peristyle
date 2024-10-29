@@ -10,6 +10,7 @@ import android.content.ComponentName
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -27,6 +28,7 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import app.simple.peri.BuildConfig
 import app.simple.peri.R
@@ -35,6 +37,7 @@ import app.simple.peri.activities.MainComposeActivity
 import app.simple.peri.compose.commons.COMMON_PADDING
 import app.simple.peri.compose.commons.TopHeader
 import app.simple.peri.compose.dialogs.common.ShowWarningDialog
+import app.simple.peri.compose.dialogs.common.SureDialog
 import app.simple.peri.compose.dialogs.settings.CacheDirectoryDialog
 import app.simple.peri.compose.dialogs.settings.ConcurrencyDialog
 import app.simple.peri.compose.dialogs.settings.DeveloperProfileDialog
@@ -46,6 +49,7 @@ import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.utils.ConditionUtils.invert
 import app.simple.peri.utils.FileUtils.toSize
+import app.simple.peri.viewmodels.ComposeWallpaperViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -56,6 +60,7 @@ fun Settings(navController: NavController? = null) {
     val context = LocalContext.current
     var statusBarHeight by remember { mutableIntStateOf(0) }
     var navigationBarHeight by remember { mutableIntStateOf(0) }
+    val composeWallpaperViewModel: ComposeWallpaperViewModel = viewModel(LocalContext.current as ComponentActivity)
 
     statusBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
             LocalView.current.rootWindowInsets).getInsets(WindowInsetsCompat.Type.statusBars()).top
@@ -142,6 +147,7 @@ fun Settings(navController: NavController? = null) {
             val showCacheListDialog = remember { mutableStateOf(false) }
             val totalCache = remember { mutableLongStateOf(0L) }
             val showConcurrencyDialog = remember { mutableStateOf(false) }
+            val showRecreateDatabaseDialog = remember { mutableStateOf(false) }
 
             if (showSortDialog.value) {
                 SortDialog {
@@ -188,6 +194,20 @@ fun Settings(navController: NavController? = null) {
                 }
             }
 
+            if (showRecreateDatabaseDialog.value) {
+                SureDialog(
+                        title = context.getString(R.string.recreate_database),
+                        message = context.getString(R.string.recreate_database_message),
+                        onSure = {
+                            composeWallpaperViewModel.recreateDatabase()
+                            showRecreateDatabaseDialog.value = false
+                        },
+                        onDismissRequest = {
+                            showRecreateDatabaseDialog.value = false
+                        }
+                )
+            }
+
             SecondaryHeader(title = context.getString(R.string.data))
 
             // Sort
@@ -223,16 +243,22 @@ fun Settings(navController: NavController? = null) {
             }
 
             ClickablePreference(
+                    title = context.getString(R.string.max_process),
+                    description = context.getString(R.string.max_process_summary),
+            ) {
+                showConcurrencyDialog.value = true
+            }
+
+            ClickablePreference(
                     title = context.getString(R.string.clear_cache),
             ) {
                 showCacheListDialog.value = true
             }
 
             ClickablePreference(
-                    title = context.getString(R.string.max_process),
-                    description = context.getString(R.string.max_process_summary),
+                    title = context.getString(R.string.recreate_database),
             ) {
-                showConcurrencyDialog.value = true
+                showRecreateDatabaseDialog.value = true
             }
         }
         item { // Accessibility

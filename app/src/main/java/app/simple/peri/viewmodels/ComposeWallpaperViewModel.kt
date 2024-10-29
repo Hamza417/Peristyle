@@ -1,16 +1,10 @@
 package app.simple.peri.viewmodels
 
 import android.app.Application
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import app.simple.peri.constants.BundleConstants
 import app.simple.peri.database.instances.WallpaperDatabase
 import app.simple.peri.models.Folder
 import app.simple.peri.models.Wallpaper
@@ -35,28 +29,7 @@ import java.io.File
 class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(application) {
 
     private var loadWallpaperImagesJobs: MutableSet<Job> = mutableSetOf()
-    private var broadcastReceiver: BroadcastReceiver? = null
-    private val intentFilter = IntentFilter().apply {
-        addAction(BundleConstants.INTENT_RECREATE_DATABASE)
-    }
-
     private var alreadyLoaded: Map<String, Wallpaper>? = null
-
-    init {
-        broadcastReceiver = object : BroadcastReceiver() {
-            override fun onReceive(context: Context?, intent: Intent?) {
-                if (intent?.action == BundleConstants.INTENT_RECREATE_DATABASE) {
-                    Log.d(TAG, "onReceive: recreating database")
-                    recreateDatabase()
-                } else {
-                    Log.d(TAG, "onReceive: unsupported action: ${intent?.action ?: "unknown"}")
-                }
-            }
-        }
-
-        LocalBroadcastManager.getInstance(application)
-            .registerReceiver(broadcastReceiver!!, intentFilter)
-    }
 
     private val foldersData: MutableLiveData<ArrayList<Folder>> by lazy {
         MutableLiveData<ArrayList<Folder>>().also {
@@ -155,6 +128,7 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
             val wallpaperDatabase = WallpaperDatabase.getInstance(getApplication())
             val wallpaperDao = wallpaperDatabase?.wallpaperDao()
             wallpaperDao?.delete(wallpaper)
+            refreshFolders()
         }
     }
 
@@ -170,11 +144,6 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
                 refresh()
             }
         }
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        LocalBroadcastManager.getInstance(getApplication()).unregisterReceiver(broadcastReceiver!!)
     }
 
     fun reloadMetadata(wallpaper: Wallpaper, func: (Wallpaper) -> Unit) {
