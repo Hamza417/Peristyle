@@ -68,7 +68,7 @@ fun Tags(navController: NavController? = null) {
     val tagsViewModel: TagsViewModel = viewModel(
             factory = TagsViewModelFactory()
     )
-    var tags = remember { mutableListOf<Tag>() }
+    val tags = remember { mutableListOf<Tag>() }
     var statusBarHeight by remember { mutableIntStateOf(0) }
     var navigationBarHeight by remember { mutableIntStateOf(0) }
     val hazeState = remember { HazeState() }
@@ -133,9 +133,7 @@ fun Tags(navController: NavController? = null) {
                 TagItem(
                         tag = tags[index],
                         navController = navController
-                ) {
-                    tags = tags.filter { tag -> tag.name != it.name }.toMutableList()
-                }
+                )
             }
         }
 
@@ -161,18 +159,14 @@ fun Tags(navController: NavController? = null) {
 
 @OptIn(ExperimentalGlideComposeApi::class, ExperimentalFoundationApi::class)
 @Composable
-fun TagItem(tag: Tag, navController: NavController? = null, onDelete: (Tag) -> Unit) {
+fun TagItem(tag: Tag, navController: NavController? = null) {
     var showDialog by remember { mutableStateOf(false) }
     val hazeState = remember { HazeState() }
 
     if (showDialog) {
         TagsMenu(
                 setShowDialog = { showDialog = it },
-                tag = tag,
-                onDelete = { tag ->
-                    onDelete(tag)
-                    showDialog = false
-                }
+                tag = tag
         )
     }
 
@@ -232,8 +226,7 @@ fun TagItem(tag: Tag, navController: NavController? = null, onDelete: (Tag) -> U
 
 @Composable
 fun TagsMenu(setShowDialog: (Boolean) -> Unit,
-             tag: Tag,
-             onDelete: (Tag) -> Unit) {
+             tag: Tag) {
 
     val context = LocalContext.current
     val tagsViewModel: TagsViewModel = viewModel(
@@ -260,6 +253,7 @@ fun TagsMenu(setShowDialog: (Boolean) -> Unit,
                         Button(
                                 onClick = {
                                     tagsViewModel.deleteTag(tag)
+                                    setShowDialog(false)
                                 },
                                 colors = ButtonDefaults.buttonColors(
                                         containerColor = Color.Transparent,
