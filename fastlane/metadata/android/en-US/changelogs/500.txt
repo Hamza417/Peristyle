@@ -1,0 +1,4 @@
+This is a destructive update meaning after update any of the previous data will be lost. If you want to keep the
+previous data, please do not update to this version.
+
+Read why? here: https://github.com/Hamza417/Peristyle/releases/tag/v5.0.0
