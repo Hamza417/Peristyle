@@ -61,7 +61,7 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
 
     private val foldersData: MutableLiveData<ArrayList<Folder>> by lazy {
         MutableLiveData<ArrayList<Folder>>().also {
-            loadFolders()
+            refreshFolders()
         }
     }
 
@@ -69,7 +69,7 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
         return foldersData
     }
 
-    private fun loadFolders() {
+    private fun refreshFolders() {
         viewModelScope.launch(Dispatchers.IO) {
             val folders = ArrayList<Folder>()
             WallpaperDatabase.getInstance(getApplication())?.let {
@@ -123,7 +123,7 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
                                             wallpapers.add(wallpaper)
                                             WallpaperDatabase.getInstance(getApplication())
                                                 ?.wallpaperDao()?.insert(wallpaper)
-                                            loadFolders()
+                                            refreshFolders()
                                         } else {
                                             Log.i(TAG, "loadWallpaperImages: already loaded ${file.absolutePath}")
                                         }
@@ -140,7 +140,7 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
                     }
                 }
 
-                loadFolders()
+                refreshFolders() // Refresh folders after loading all wallpapers just to avoid any inconsistency
             }.getOrElse { throwable ->
                 throwable.printStackTrace()
                 WallpaperDatabase.getInstance(getApplication())?.let {
@@ -171,7 +171,7 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
             wallpaperDao?.nukeTable()
 
             withContext(Dispatchers.Main) {
-                loadWallpaperImages()
+                refresh()
             }
         }
     }
@@ -213,9 +213,8 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
     }
 
     fun refresh() {
-        Log.i(TAG, "refresh: refreshing wallpapers")
         loadWallpaperImagesJobs.cancelAll("refreshing wallpapers")
-        loadFolders()
+        refreshFolders()
         loadWallpaperImages()
     }
 
@@ -226,7 +225,7 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
             val wallpaperDatabase = WallpaperDatabase.getInstance(getApplication())
             val wallpaperDao = wallpaperDatabase?.wallpaperDao()
             wallpaperDao?.deleteByPathHashcode(folder.path.hashCode())
-            loadFolders()
+            refresh()
         }
     }
 
@@ -239,7 +238,7 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
                     pickedDirectory.resolve(".nomedia").createNewFile()
                     withContext(Dispatchers.Main) {
                         onSuccess()
-                        loadFolders()
+                        refreshFolders()
                     }
                 }
             }
@@ -259,7 +258,7 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
 
                 withContext(Dispatchers.Main) {
                     onSuccess()
-                    loadFolders()
+                    refreshFolders()
                 }
             }
         }
