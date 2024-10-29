@@ -401,7 +401,7 @@ class AutoWallpaperService : Service() {
                                 wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_SYSTEM)
                                 showWallpaperChangedNotification(true, homeWallpaper.filePath.toFile())
 
-                                if (MainPreferences.isLinearAutoWallpaper().invert()) {
+                                if (MainPreferences.isLinearAutoWallpaper()) {
                                     wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_LOCK)
                                     showWallpaperChangedNotification(false, homeWallpaper.filePath.toFile())
                                 }
