@@ -24,8 +24,9 @@ from there? then Peristyle is for you :)
 - Built-in live wallpaper picker.
 - Dark mode support.
 - Glassmorphic UI based on realtime blur effects and caustic shadows.
-- Material You themes and colors.
+- Material You color theme.
 - Fully reproducible build.
+- Zero loading software architecture.
 
 ## Stats
 
@@ -78,7 +79,7 @@ And an access to all the wallpaper directories whichever the user specifies.
   - This will increase the performance of the app multifold and in my test I found the app to be loading data 10 to 50 times faster depending on the concurrency configuration and how much process that app running. Earlier, the app relied on [Scoped Storage](https://source.android.com/docs/core/storage/scoped) to fetch the wallpapers from the storage, which was severely limiting and extremely slow. The scoped storage takes more than 3–8 seconds to just traverse the list, and then processing the files is even slower. In the Files API which runs natively on the file system can traverse the whole internal storage in less than a second. **Yep, that fast!!**. If you felt the app loading really slow in the past or very sluggish performance, this was the reason, Google really did force it to be this way.
   - **Warning:** _This change is destructive, meaning the whole database structure of the app has changed and upon updating any of the previous app data will be lost and anything the app requires will be recreated with new IDs and structure. Your data can't be backed up and restored since the whole backend has changed. If the app data is important, don't update to this release._
 - **Whole app loading framework is now utilizing the queue based concurrency.**
-  - Earlier the app is utilizing the linear loading approach because of the Scoped Storage which made things even worse, it was already slow and loading the images one by one was a cherry on top. Since via Files API, it is possible to directly access the files, loading multiple of them at once. Although to prevent a system hazard, it's disabled by default and can be changed based on how many files you want to load at once from settings.
+  - Earlier the app is utilizing the linear loading approach because of the Scoped Storage which made things even worse, it was already slow and loading the images one by one was a cherry on top. Since via Files API, it is possible to directly access the files, loading multiple of them at once. Although to prevent a system hazard, it's disabled by default and can be changed based on how many files you want to load at once from settings. I'm calling it **_highway toll plaza queue_** because it works something like that.
 - **Added option to save your each effects and load them in real-time to any wallpaper in the app.**
   - All the effects will be saved as global effect parameters and can be previewed on any wallpaper being loaded in the app. The screen will show the currently opened wallpaper will all the effects applied on it in the list format, it's really cool and one of my coolest technical achievements so far. The effects can easily be applied in real-time with just a single tap, no loading no fuss everything is done dynamically. ([Screenshot](https://github.com/Hamza417/Peristyle/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/11.png))
 - **Added adjustment sliders to _Scale RGB_ channels in the _Effects_ dialog.**
