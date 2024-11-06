@@ -45,7 +45,7 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
         viewModelScope.launch(Dispatchers.IO) {
             val folders = ArrayList<Folder>()
             WallpaperDatabase.getInstance(getApplication())?.let { database ->
-                MainComposePreferences.getAllWallpaperPaths().forEach { path ->
+                MainComposePreferences.getAllowedPaths().forEach { path ->
                     val pickedDirectory = File(path)
                     if (pickedDirectory.exists()) {
                         val folder = Folder().apply {
@@ -76,7 +76,7 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
                 alreadyLoaded = WallpaperDatabase.getInstance(getApplication())
                     ?.wallpaperDao()?.getWallpapers()?.associateBy { it.filePath }
 
-                MainComposePreferences.getAllWallpaperPaths().forEach { folderPath ->
+                MainComposePreferences.getAllowedPaths().forEach { folderPath ->
                     val pickedDirectory = File(folderPath)
                     ensureActive()
                     if (pickedDirectory.exists()) {

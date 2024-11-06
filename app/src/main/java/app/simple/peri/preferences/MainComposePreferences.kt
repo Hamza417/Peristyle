@@ -629,7 +629,7 @@ object MainComposePreferences {
 
     // ----------------------------------------------------------------------------------------------------- //
 
-    fun getAllWallpaperPaths(): Set<String> {
+    fun getAllowedPaths(): Set<String> {
         return getSharedPreferences().getStringSet(ALL_WALLPAPER_PATHS, setOf())!!
     }
 
@@ -638,7 +638,7 @@ object MainComposePreferences {
     }
 
     fun removeWallpaperPath(path: String) {
-        val paths = getAllWallpaperPaths().toMutableSet()
+        val paths = getAllowedPaths().toMutableSet()
         paths.remove(path)
         setWallpapersPaths(paths)
     }
@@ -648,7 +648,7 @@ object MainComposePreferences {
     }
 
     fun addWallpaperPath(path: String) {
-        val paths = getAllWallpaperPaths().toMutableSet()
+        val paths = getAllowedPaths().toMutableSet()
         paths.add(path)
         setWallpapersPaths(paths)
     }

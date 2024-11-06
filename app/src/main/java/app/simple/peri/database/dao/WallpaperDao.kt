@@ -131,7 +131,7 @@ interface WallpaperDao {
     fun purgeNonExistingWallpapers(wallpaperDatabase: WallpaperDatabase) {
         Log.i("WallpaperDao", "Purged non-existing or non-permitted wallpapers in: ${
             measureTimeMillis {
-                val allPaths = MainComposePreferences.getAllWallpaperPaths()
+                val allPaths = MainComposePreferences.getAllowedPaths()
                 val validHashcodes = allPaths.map { it.hashCode() }.toSet()
 
                 val wallpaperDao = wallpaperDatabase.wallpaperDao()

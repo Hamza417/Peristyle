@@ -10,6 +10,7 @@ import app.simple.peri.R
 import app.simple.peri.abstraction.AbstractComposeAutoWallpaperService
 import app.simple.peri.activities.LegacyActivity
 import app.simple.peri.activities.MainComposeActivity
+import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.preferences.SharedPreferences
 import app.simple.peri.utils.ScreenUtils
@@ -48,14 +49,20 @@ class AutoWallpaperService : AbstractComposeAutoWallpaperService() {
                 }
             }
             ACTION_DELETE_WALLPAPER -> {
-                val file = File(intent.getStringExtra(EXTRA_WALLPAPER_PATH)!!)
-                Log.i(TAG, "Deleting wallpaper: ${file.absolutePath}")
-                if (file.exists()) {
-                    Log.i(TAG, "File exists, deleting")
-                    file.delete()
-                    Log.i(TAG, "File deleted")
+                val wallpaperPath = intent.getStringExtra(EXTRA_WALLPAPER_PATH)
+                if (wallpaperPath != null) {
+                    val file = File(wallpaperPath)
+                    val allowedPaths = MainComposePreferences.getAllowedPaths()
+
+                    if (file.exists() && allowedPaths.any { file.canonicalPath.startsWith(it) }) {
+                        Log.i(TAG, "Deleting wallpaper: ${file.absolutePath}")
+                        file.delete()
+                        Log.i(TAG, "File deleted")
+                    } else {
+                        Log.e(TAG, "File does not exist or is outside the allowed paths, skipping")
+                    }
                 } else {
-                    Log.e(TAG, "File does not exist, skipping")
+                    Log.e(TAG, "No wallpaper path provided, skipping")
                 }
             }
             else -> {
