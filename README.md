@@ -60,6 +60,8 @@ It can be toggled from the app settings.
 Peristyle supports triggering the AutoWallpaperService from other apps using the following
 intent: `app.peristyle.START_AUTO_WALLPAPER_SERVICE`
 
+**_You can use any automation or scheduling tool and create your own scenario to change wallpaper for any custom event such as locking/unlocking or as you need._**
+
 ## Permission Usage
 
 Peristyle needs `MANAGE_EXTERNAL_STORAGE` and `READ_MEDIA_IMAGES` to be allowed to show the system
