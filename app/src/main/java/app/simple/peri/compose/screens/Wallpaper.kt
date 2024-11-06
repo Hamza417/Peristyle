@@ -57,6 +57,7 @@ import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -94,8 +95,9 @@ import kotlinx.coroutines.launch
 import me.saket.telephoto.zoomable.glide.ZoomableGlideImage
 
 @Composable
-fun Wallpaper(context: Context, navController: NavHostController) {
-    val wallpaper = navController.previousBackStackEntry?.savedStateHandle?.get<Wallpaper>(Routes.WALLPAPER_ARG)
+fun Wallpaper(navController: NavHostController, wallpaper: Wallpaper? = null) {
+    val context = LocalContext.current
+    val wallpaper = navController.previousBackStackEntry?.savedStateHandle?.get<Wallpaper>(Routes.WALLPAPER_ARG) ?: wallpaper
     val stateViewModel: StateViewModel = viewModel()
     var showDialog by remember { mutableStateOf(false) }
     var drawable by remember { mutableStateOf<Drawable?>(null) }

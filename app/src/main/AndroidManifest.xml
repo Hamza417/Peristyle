@@ -71,6 +71,7 @@
             android:icon="@mipmap/ic_launcher"
             android:label="@string/set_as_wallpaper"
             android:roundIcon="@mipmap/ic_launcher_round"
+            android:documentLaunchMode="always"
             tools:ignore="AppLinkUrlError">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />

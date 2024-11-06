@@ -1,71 +1,74 @@
 package app.simple.peri.activities.association
 
 import android.graphics.BitmapFactory
-import android.graphics.Color
-import android.os.Build
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.WindowCompat
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Surface
+import androidx.compose.ui.Modifier
 import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.lifecycleScope
-import app.simple.peri.R
-import app.simple.peri.databinding.ActivityMainBinding
-import app.simple.peri.models.Wallpaper
+import androidx.navigation.compose.rememberNavController
+import app.simple.peri.compose.screens.Wallpaper
+import app.simple.peri.compose.theme.PeristyleTheme
 import app.simple.peri.preferences.SharedPreferences
-import app.simple.peri.ui.WallpaperScreen
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
+import java.io.FileOutputStream
+import java.io.InputStream
+import app.simple.peri.models.Wallpaper as ModelWallpaper
 
-class WallpaperAssociationActivity : AppCompatActivity() {
-
-    private var activityMainBinding: ActivityMainBinding? = null
+class WallpaperAssociationActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         SharedPreferences.init(this)
-        activityMainBinding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(activityMainBinding?.root)
-        makeAppFullScreen()
 
         lifecycleScope.launch(Dispatchers.IO) {
-            val wallpaper = Wallpaper()
-            val documentFile = DocumentFile.fromSingleUri(this@WallpaperAssociationActivity, intent.data!!)
-
-            wallpaper.uri = intent.data.toString()
-            wallpaper.name = documentFile?.name
-            wallpaper.dateModified = documentFile?.lastModified()!!
-            wallpaper.size = documentFile.length()
-
-            contentResolver.openInputStream(documentFile.uri)?.use { inputStream ->
-                val options = BitmapFactory.Options()
-                options.inJustDecodeBounds = true
-                BitmapFactory.decodeStream(inputStream, null, options)
-                wallpaper.width = options.outWidth
-                wallpaper.height = options.outHeight
+            val wallpaper = ModelWallpaper()
+            contentResolver.openInputStream(intent.data!!)?.use { inputStream ->
+                val documentFile = DocumentFile.fromSingleUri(this@WallpaperAssociationActivity, intent.data!!)
+                wallpaper.filePath = copyFileToCache(inputStream, documentFile!!.name!!).absolutePath
             }
 
+            wallpaper.uri = intent.data.toString()
+            wallpaper.name = wallpaper.getFile().name
+            wallpaper.dateModified = wallpaper.getFile().lastModified()
+            wallpaper.size = wallpaper.getFile().length()
+
+            val options = BitmapFactory.Options()
+            options.inJustDecodeBounds = true
+            BitmapFactory.decodeFile(wallpaper.filePath, options)
+            wallpaper.width = options.outWidth
+            wallpaper.height = options.outHeight
+
             withContext(Dispatchers.Main) {
-                supportFragmentManager.beginTransaction()
-                    .add(R.id.mainContainer, WallpaperScreen.newInstance(wallpaper), WallpaperScreen.TAG)
-                    .commit()
+                setContent {
+                    val navController = rememberNavController()
+                    PeristyleTheme {
+                        Surface(
+                                modifier = Modifier.fillMaxSize()
+                        ) {
+                            Wallpaper(navController, wallpaper)
+                        }
+                    }
+                }
             }
         }
     }
 
-    private fun makeAppFullScreen() {
-        WindowCompat.setDecorFitsSystemWindows(window, false)
-        window.statusBarColor = Color.TRANSPARENT
-        window.navigationBarColor = Color.TRANSPARENT
-
-        // Disable navigation bar contrast
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            window.isNavigationBarContrastEnforced = false
-            window.isStatusBarContrastEnforced = false
+    private fun copyFileToCache(inputStream: InputStream, fileName: String): File {
+        val cacheDir = cacheDir
+        val cacheFile = File(cacheDir, fileName)
+        inputStream.use { input ->
+            FileOutputStream(cacheFile).use { output ->
+                input.copyTo(output)
+            }
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            window.navigationBarDividerColor = Color.TRANSPARENT
-        }
+        return cacheFile
     }
 }

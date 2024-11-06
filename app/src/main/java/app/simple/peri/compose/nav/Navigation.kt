@@ -47,7 +47,7 @@ fun PeristyleNavigation(context: Context) {
         }
 
         composableWithTransitions(Routes.WALLPAPER) {
-            Wallpaper(context, navController)
+            Wallpaper(navController)
         }
 
         composableWithTransitions(Routes.WALLPAPERS_LIST) {
