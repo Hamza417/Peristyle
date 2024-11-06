@@ -43,7 +43,7 @@
             android:value="Apache License, Version 2.0" />
 
         <activity
-            android:name=".activities.MainComposeActivity"
+            android:name=".activities.main.MainComposeActivity"
             android:exported="true"
             tools:ignore="LockedOrientationActivity">
             <intent-filter>
@@ -54,7 +54,7 @@
         </activity>
 
         <activity
-            android:name=".activities.LegacyActivity"
+            android:name=".activities.main.LegacyActivity"
             android:enabled="false"
             android:exported="true"
             tools:ignore="LockedOrientationActivity">
@@ -66,7 +66,7 @@
         </activity>
 
         <activity
-            android:name=".activities.WallpaperAssociationActivity"
+            android:name=".activities.association.WallpaperAssociationActivity"
             android:exported="true"
             android:icon="@mipmap/ic_launcher"
             android:label="@string/set_as_wallpaper"
@@ -80,17 +80,27 @@
         </activity>
 
         <activity
-            android:name=".activities.SettingsActivity"
+            android:name=".activities.main.SettingsActivity"
             android:exported="true"
             tools:ignore="LockedOrientationActivity" />
 
         <activity
-            android:name=".activities.PathChooserActivity"
+            android:name=".activities.main.PathChooserActivity"
             android:exported="false" />
 
         <activity
-            android:name=".activities.EffectsActivity"
+            android:name=".activities.main.EffectsActivity"
             android:exported="false" />
+
+        <activity
+            android:name=".activities.main.ComposePreferencesActivity"
+            android:label="@string/settings"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.APPLICATION_PREFERENCES" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
 
         <service
             android:name=".services.AutoWallpaperService"
