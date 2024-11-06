@@ -173,6 +173,10 @@ object MainPreferences {
         return getWallpaperSetFor() == LOCK || getWallpaperSetFor() == BOTH
     }
 
+    fun isSettingForBoth(): Boolean {
+        return getWallpaperSetFor() == BOTH
+    }
+
     fun setWallpaperSetFor(wallpaperSetFor: String) {
         SharedPreferences.getSharedPreferences().edit().putString(WALLPAPER_SET_FOR, wallpaperSetFor).apply()
     }

@@ -5,6 +5,7 @@ import android.app.WallpaperManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import app.simple.peri.abstraction.AbstractComposeAutoWallpaperService
 import app.simple.peri.database.instances.WallpaperDatabase
 import app.simple.peri.services.AutoWallpaperService
 import app.simple.peri.utils.FileUtils.toFile
@@ -16,23 +17,23 @@ import java.io.File
 class WallpaperActionReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         when (intent.action) {
-            AutoWallpaperService.ACTION_DELETE_WALLPAPER_HOME -> {
+            AbstractComposeAutoWallpaperService.ACTION_DELETE_WALLPAPER_HOME -> {
                 val wallpaperManager = WallpaperManager.getInstance(context)
-                val file = intent.getStringExtra(AutoWallpaperService.EXTRA_WALLPAPER_PATH)!!.toFile()
+                val file = intent.getStringExtra(AbstractComposeAutoWallpaperService.EXTRA_WALLPAPER_PATH)!!.toFile()
                 val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
                 wallpaperManager.clear(WallpaperManager.FLAG_SYSTEM)
                 launchDeleteService(file, context)
-                notificationManager.cancel(AutoWallpaperService.HOME_NOTIFICATION_ID)
+                notificationManager.cancel(AbstractComposeAutoWallpaperService.HOME_NOTIFICATION_ID)
             }
-            AutoWallpaperService.ACTION_DELETE_WALLPAPER_LOCK -> {
+            AbstractComposeAutoWallpaperService.ACTION_DELETE_WALLPAPER_LOCK -> {
                 val wallpaperManager = WallpaperManager.getInstance(context)
-                val file = intent.getStringExtra(AutoWallpaperService.EXTRA_WALLPAPER_PATH)!!.toFile()
+                val file = intent.getStringExtra(AbstractComposeAutoWallpaperService.EXTRA_WALLPAPER_PATH)!!.toFile()
                 val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
                 wallpaperManager.clear(WallpaperManager.FLAG_LOCK)
                 launchDeleteService(file, context)
-                notificationManager.cancel(AutoWallpaperService.LOCK_NOTIFICATION_ID)
+                notificationManager.cancel(AbstractComposeAutoWallpaperService.LOCK_NOTIFICATION_ID)
             }
         }
     }

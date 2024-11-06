@@ -24,7 +24,6 @@ import app.simple.peri.utils.BitmapUtils.applyEffects
 import app.simple.peri.utils.BitmapUtils.cropBitmap
 import app.simple.peri.utils.ConditionUtils.invert
 import app.simple.peri.utils.ConditionUtils.isNotNull
-import app.simple.peri.utils.ConditionUtils.isNull
 import app.simple.peri.utils.FileUtils.toFile
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -40,165 +39,72 @@ abstract class AbstractComposeAutoWallpaperService : AbstractLegacyAutoWallpaper
         createNotificationChannels()
     }
 
-    protected fun setWallpaperCompose() {
+    private fun setHomeScreenWallpaper() {
+        val homeWallpaper: Wallpaper? = getHomeScreenWallpaper()
+
+        if (homeWallpaper.isNotNull()) {
+            Log.d(TAG, "Home wallpaper found: ${homeWallpaper?.filePath}")
+            getBitmapFromFile(homeWallpaper!!) {
+                var bitmap = it.copy(it.config ?: Bitmap.Config.ARGB_8888, true)
+                bitmap = bitmap.applyEffects(MainComposePreferences.getHomeScreenEffects())
+
+                wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_SYSTEM)
+                showWallpaperChangedNotification(true, homeWallpaper.filePath.toFile())
+            }
+        }
+    }
+
+    private fun setLockScreenWallpaper() {
+        val lockWallpaper: Wallpaper? = getLockScreenWallpaper()
+
+        if (lockWallpaper.isNotNull()) {
+            Log.d(TAG, "Lock wallpaper found: ${lockWallpaper?.filePath}")
+            getBitmapFromFile(lockWallpaper!!) {
+                var bitmap = it.copy(it.config ?: Bitmap.Config.ARGB_8888, true)
+                bitmap = bitmap.applyEffects(MainComposePreferences.getLockScreenEffects())
+
+                wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_LOCK)
+                showWallpaperChangedNotification(false, lockWallpaper.filePath.toFile())
+            }
+        }
+    }
+
+    private fun setSameWallpaper() {
+        val wallpaper: Wallpaper? = getHomeScreenWallpaper()
+        MainComposePreferences.setLastLockWallpaperPosition(MainComposePreferences.getLastHomeWallpaperPosition())
+
+        if (wallpaper.isNotNull()) {
+            Log.d(TAG, "Wallpaper found: ${wallpaper?.filePath}")
+            getBitmapFromFile(wallpaper!!) {
+                var homeBitmap = it.copy(it.config ?: Bitmap.Config.ARGB_8888, true)
+                var lockBitmap = it.copy(it.config ?: Bitmap.Config.ARGB_8888, true)
+
+                homeBitmap = homeBitmap.applyEffects(MainComposePreferences.getHomeScreenEffects())
+                lockBitmap = lockBitmap.applyEffects(MainComposePreferences.getLockScreenEffects())
+
+                wallpaperManager.setBitmap(homeBitmap, null, true, WallpaperManager.FLAG_SYSTEM)
+                wallpaperManager.setBitmap(lockBitmap, null, true, WallpaperManager.FLAG_LOCK)
+                showWallpaperChangedNotification(true, wallpaper.filePath.toFile())
+            }
+        }
+    }
+
+    protected fun setComposeWallpaper() {
         CoroutineScope(Dispatchers.IO).launch {
             runCatching {
-                val wallpaperManager = WallpaperManager.getInstance(applicationContext)
-                var homeWallpaper: Wallpaper? = getHomeScreenWallpaper()
-                var lockWallpaper: Wallpaper? = getLockScreenWallpaper()
-
-                if (homeWallpaper.isNotNull()) {
-                    Log.d(TAG, "Home wallpaper found: ${homeWallpaper?.filePath}")
-                    getBitmapFromFile(homeWallpaper!!) {
-                        var bitmap = it.copy(it.config ?: Bitmap.Config.ARGB_8888, true)
-                        bitmap = bitmap.applyEffects(
-                                brightness = MainComposePreferences.getAutoWallpaperHomeBrightness(),
-                                contrast = MainComposePreferences.getAutoWallpaperHomeContrast(),
-                                blur = MainComposePreferences.getAutoWallpaperHomeBlur(),
-                                saturation = MainComposePreferences.getAutoWallpaperHomeSaturation(),
-                                hueRed = MainComposePreferences.getAutoWallpaperHomeHueRed(),
-                                hueGreen = MainComposePreferences.getAutoWallpaperHomeHueGreen(),
-                                hueBlue = MainComposePreferences.getAutoWallpaperHomeHueBlue(),
-                                scaleRed = MainComposePreferences.getAutoWallpaperHomeScaleRed(),
-                                scaleGreen = MainComposePreferences.getAutoWallpaperHomeScaleGreen(),
-                                scaleBlue = MainComposePreferences.getAutoWallpaperHomeScaleBlue()
-                        )
-
-                        wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_SYSTEM)
-                        showWallpaperChangedNotification(true, homeWallpaper!!.filePath.toFile())
-                    }
-                }
-
-                if (lockWallpaper.isNotNull()) {
-                    Log.d(TAG, "Lock wallpaper found: ${lockWallpaper?.filePath}")
-                    getBitmapFromFile(lockWallpaper!!) {
-                        var bitmap = it.copy(it.config ?: Bitmap.Config.ARGB_8888, true)
-                        bitmap = bitmap.applyEffects(
-                                brightness = MainComposePreferences.getAutoWallpaperLockBrightness(),
-                                contrast = MainComposePreferences.getAutoWallpaperLockContrast(),
-                                blur = MainComposePreferences.getAutoWallpaperLockBlur(),
-                                saturation = MainComposePreferences.getAutoWallpaperLockSaturation(),
-                                hueRed = MainComposePreferences.getAutoWallpaperLockHueRed(),
-                                hueGreen = MainComposePreferences.getAutoWallpaperLockHueGreen(),
-                                hueBlue = MainComposePreferences.getAutoWallpaperLockHueBlue(),
-                                scaleRed = MainComposePreferences.getAutoWallpaperLockScaleRed(),
-                                scaleGreen = MainComposePreferences.getAutoWallpaperLockScaleGreen(),
-                                scaleBlue = MainComposePreferences.getAutoWallpaperLockScaleBlue()
-                        )
-
-                        wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_LOCK)
-                        showWallpaperChangedNotification(false, lockWallpaper!!.filePath.toFile())
-                    }
-                }
-
                 when {
-                    lockWallpaper.isNull() && homeWallpaper.isNull() -> {
-                        Log.d(TAG, "No wallpapers found, setting random wallpaper")
-                        homeWallpaper = getWallpapersFromDatabase()?.random()
-                        lockWallpaper = if (MainPreferences.isLinearAutoWallpaper()) {
-                            homeWallpaper
-                        } else {
-                            getWallpapersFromDatabase()?.random()
-                        }
-
-                        if (MainPreferences.isSettingForHomeScreen()) {
-                            getBitmapFromFile(homeWallpaper!!) {
-                                var bitmap = it.copy(it.config ?: Bitmap.Config.ARGB_8888, true)
-                                bitmap = bitmap.applyEffects(
-                                        brightness = MainComposePreferences.getAutoWallpaperBrightness(),
-                                        contrast = MainComposePreferences.getAutoWallpaperContrast(),
-                                        blur = MainComposePreferences.getAutoWallpaperBlur(),
-                                        saturation = MainComposePreferences.getAutoWallpaperSaturation(),
-                                        hueRed = MainComposePreferences.getAutoWallpaperHueRed(),
-                                        hueGreen = MainComposePreferences.getAutoWallpaperHueGreen(),
-                                        hueBlue = MainComposePreferences.getAutoWallpaperHueBlue(),
-                                        scaleRed = MainComposePreferences.getAutoWallpaperScaleRed(),
-                                        scaleGreen = MainComposePreferences.getAutoWallpaperScaleGreen(),
-                                        scaleBlue = MainComposePreferences.getAutoWallpaperScaleBlue()
-                                )
-
-                                wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_SYSTEM)
-                                showWallpaperChangedNotification(true, homeWallpaper.filePath.toFile())
-
-                                if (MainPreferences.isLinearAutoWallpaper()) {
-                                    wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_LOCK)
-                                    showWallpaperChangedNotification(false, homeWallpaper.filePath.toFile())
-                                }
-                            }
-                        }
-
-                        if (MainPreferences.isLinearAutoWallpaper().invert()) {
-                            if (MainPreferences.isSettingForLockScreen()) {
-                                getBitmapFromFile(lockWallpaper!!) {
-                                    var bitmap = it.copy(it.config ?: Bitmap.Config.ARGB_8888, true)
-                                    bitmap = bitmap.applyEffects(
-                                            brightness = MainComposePreferences.getAutoWallpaperBrightness(),
-                                            contrast = MainComposePreferences.getAutoWallpaperContrast(),
-                                            blur = MainComposePreferences.getAutoWallpaperBlur(),
-                                            saturation = MainComposePreferences.getAutoWallpaperSaturation(),
-                                            hueRed = MainComposePreferences.getAutoWallpaperHueRed(),
-                                            hueGreen = MainComposePreferences.getAutoWallpaperHueGreen(),
-                                            hueBlue = MainComposePreferences.getAutoWallpaperHueBlue(),
-                                            scaleRed = MainComposePreferences.getAutoWallpaperScaleRed(),
-                                            scaleGreen = MainComposePreferences.getAutoWallpaperScaleGreen(),
-                                            scaleBlue = MainComposePreferences.getAutoWallpaperScaleBlue()
-                                    )
-
-                                    wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_LOCK)
-                                    showWallpaperChangedNotification(false, lockWallpaper.filePath.toFile())
-                                }
-                            }
-                        }
+                    shouldSetSameWallpaper() -> {
+                        setSameWallpaper()
                     }
-
-                    lockWallpaper.isNull() -> {
-                        Log.d(TAG, "No lock wallpaper found, setting random wallpaper")
-                        if (MainPreferences.isSettingForLockScreen()) {
-                            val randomWallpaper = getWallpapersFromDatabase()?.random()!!
-                            getBitmapFromFile(randomWallpaper) {
-                                var bitmap = it.copy(it.config ?: Bitmap.Config.ARGB_8888, true)
-                                bitmap = bitmap.applyEffects(
-                                        brightness = MainComposePreferences.getAutoWallpaperBrightness(),
-                                        contrast = MainComposePreferences.getAutoWallpaperContrast(),
-                                        blur = MainComposePreferences.getAutoWallpaperBlur(),
-                                        saturation = MainComposePreferences.getAutoWallpaperSaturation(),
-                                        hueRed = MainComposePreferences.getAutoWallpaperHueRed(),
-                                        hueGreen = MainComposePreferences.getAutoWallpaperHueGreen(),
-                                        hueBlue = MainComposePreferences.getAutoWallpaperHueBlue(),
-                                        scaleRed = MainComposePreferences.getAutoWallpaperScaleRed(),
-                                        scaleGreen = MainComposePreferences.getAutoWallpaperScaleGreen(),
-                                        scaleBlue = MainComposePreferences.getAutoWallpaperScaleBlue()
-                                )
-
-                                wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_LOCK)
-                                showWallpaperChangedNotification(false, randomWallpaper.filePath.toFile())
-                            }
-                        }
+                    MainPreferences.isSettingForBoth() -> {
+                        setHomeScreenWallpaper()
+                        setLockScreenWallpaper()
                     }
-
-                    homeWallpaper.isNull() -> {
-                        Log.d(TAG, "No home wallpaper found, setting random wallpaper")
-                        if (MainPreferences.isSettingForHomeScreen()) {
-                            val randomWallpaper = getWallpapersFromDatabase()?.random()!!
-                            getBitmapFromFile(randomWallpaper) {
-                                var bitmap = it.copy(it.config ?: Bitmap.Config.ARGB_8888, true)
-                                bitmap = bitmap.applyEffects(
-                                        brightness = MainComposePreferences.getAutoWallpaperBrightness(),
-                                        contrast = MainComposePreferences.getAutoWallpaperContrast(),
-                                        blur = MainComposePreferences.getAutoWallpaperBlur(),
-                                        saturation = MainComposePreferences.getAutoWallpaperSaturation(),
-                                        hueRed = MainComposePreferences.getAutoWallpaperHueRed(),
-                                        hueGreen = MainComposePreferences.getAutoWallpaperHueGreen(),
-                                        hueBlue = MainComposePreferences.getAutoWallpaperHueBlue(),
-                                        scaleRed = MainComposePreferences.getAutoWallpaperScaleRed(),
-                                        scaleGreen = MainComposePreferences.getAutoWallpaperScaleGreen(),
-                                        scaleBlue = MainComposePreferences.getAutoWallpaperScaleBlue()
-                                )
-
-                                wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_SYSTEM)
-                                showWallpaperChangedNotification(true, randomWallpaper.filePath.toFile())
-                            }
-                        }
+                    MainPreferences.isSettingForHomeScreen() -> {
+                        setHomeScreenWallpaper()
+                    }
+                    MainPreferences.isSettingForLockScreen() -> {
+                        setLockScreenWallpaper()
                     }
                 }
 
@@ -210,6 +116,27 @@ abstract class AbstractComposeAutoWallpaperService : AbstractLegacyAutoWallpaper
                 Log.e(TAG, "Error setting wallpaper: $it")
             }
         }
+    }
+
+    private fun shouldSetSameWallpaper(): Boolean {
+        if (!MainPreferences.isSettingForHomeScreen() || !MainPreferences.isSettingForLockScreen()) {
+            return false
+        }
+
+        return isSameFolderOrTagUsed() && MainPreferences.isLinearAutoWallpaper()
+    }
+
+    private fun isSameFolderOrTagUsed(): Boolean {
+        if (MainComposePreferences.isHomeSourceSet() && MainComposePreferences.isLockSourceSet()) {
+            if (MainComposePreferences.getHomeTagId() == MainComposePreferences.getLockTagId()) {
+                return true
+            }
+            if (MainComposePreferences.getHomeFolderId() == MainComposePreferences.getLockFolderId()) {
+                return true
+            }
+        }
+
+        return false
     }
 
     private fun getBitmapFromFile(wallpaper: Wallpaper, onBitmap: (Bitmap) -> Unit) {
@@ -423,8 +350,14 @@ abstract class AbstractComposeAutoWallpaperService : AbstractLegacyAutoWallpaper
 
         val notification = NotificationCompat.Builder(this, channelId)
             .setSmallIcon(R.drawable.ic_peristyle)
-            .setContentTitle(if (isHomeScreen) applicationContext.getString(R.string.home_screen) else applicationContext.getString(R.string.lock_screen))
-            .setContentText(applicationContext.getString(R.string.wallpaper_changed))
+            .setContentTitle(applicationContext.getString(R.string.auto_wallpaper))
+            .setContentText(applicationContext.getString(
+                    R.string.wallpaper_changed,
+                    if (isHomeScreen) {
+                        applicationContext.getString(R.string.home_screen)
+                    } else {
+                        applicationContext.getString(R.string.lock_screen)
+                    }))
             .addAction(R.drawable.ic_delete, applicationContext.getString(R.string.delete_current_wallpaper), deletePendingIntent)
             .addAction(R.drawable.ic_share, applicationContext.getString(R.string.send), sendPendingIntent)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)

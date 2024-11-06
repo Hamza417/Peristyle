@@ -1,6 +1,7 @@
 package app.simple.peri.abstraction
 
 import android.app.Service
+import android.app.WallpaperManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Rect
@@ -16,6 +17,10 @@ import kotlinx.coroutines.withContext
 import java.io.ByteArrayInputStream
 
 abstract class AbstractAutoWallpaperService : Service() {
+
+    protected val wallpaperManager: WallpaperManager by lazy {
+        WallpaperManager.getInstance(applicationContext)
+    }
 
     private val displayWidth: Int by lazy {
         ScreenUtils.getScreenSize(applicationContext).width

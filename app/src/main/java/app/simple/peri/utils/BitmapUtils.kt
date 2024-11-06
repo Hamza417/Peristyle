@@ -14,6 +14,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.palette.graphics.Palette
 import app.simple.peri.constants.Misc
+import app.simple.peri.models.Effect
 import app.simple.peri.tools.StackBlur
 import java.io.InputStream
 import androidx.compose.ui.graphics.ColorMatrix as ComposeUiGraphicsColorMatrix
@@ -71,6 +72,20 @@ object BitmapUtils {
         paint.colorFilter = ColorMatrixColorFilter(colorMatrix)
         val canvas = Canvas(this)
         canvas.drawBitmap(this, 0f, 0f, paint)
+    }
+
+    fun Bitmap.applyEffects(effect: Effect): Bitmap {
+        return this.applyEffects(
+                effect.blurValue,
+                effect.brightnessValue,
+                effect.contrastValue,
+                effect.saturationValue,
+                effect.hueRedValue,
+                effect.hueGreenValue,
+                effect.hueBlueValue,
+                effect.scaleRedValue,
+                effect.scaleGreenValue,
+                effect.scaleBlueValue)
     }
 
     /**

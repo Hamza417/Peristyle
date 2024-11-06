@@ -51,7 +51,6 @@ abstract class AbstractLegacyAutoWallpaperService : AbstractAutoWallpaperService
 
     private suspend fun setWallpaperFromUri(uri: Uri, files: List<Wallpaper>) {
         withContext(Dispatchers.IO) {
-            val wallpaperManager = WallpaperManager.getInstance(applicationContext)
             contentResolver.openInputStream(uri)?.use { stream ->
                 val byteArray = stream.readBytes()
                 var bitmap = decodeBitmap(byteArray)
@@ -65,7 +64,7 @@ abstract class AbstractLegacyAutoWallpaperService : AbstractAutoWallpaperService
                     bitmap = bitmap.cropBitmap(visibleCropHint)
                 }
 
-                setWallpaperBasedOnPreference(bitmap, wallpaperManager, files)
+                setWallpaperBasedOnPreference(bitmap, files)
 
                 bitmap.recycle()
 
@@ -76,7 +75,7 @@ abstract class AbstractLegacyAutoWallpaperService : AbstractAutoWallpaperService
         }
     }
 
-    private fun setWallpaperBasedOnPreference(bitmap: Bitmap, wallpaperManager: WallpaperManager, files: List<Wallpaper>) {
+    private fun setWallpaperBasedOnPreference(bitmap: Bitmap, files: List<Wallpaper>) {
         when (MainPreferences.getWallpaperSetFor()) {
             MainPreferences.BOTH -> {
                 if (MainPreferences.isDifferentWallpaperForLockScreen()) {
@@ -114,7 +113,6 @@ abstract class AbstractLegacyAutoWallpaperService : AbstractAutoWallpaperService
     }
 
     private fun setLockScreenWallpaperFromUri(uri: Uri) {
-        val wallpaperManager = WallpaperManager.getInstance(applicationContext)
         contentResolver.openInputStream(uri)?.use { stream ->
             val byteArray = stream.readBytes()
             var bitmap = decodeBitmap(byteArray)

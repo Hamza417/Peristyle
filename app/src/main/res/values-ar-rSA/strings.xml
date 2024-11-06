@@ -198,7 +198,6 @@
     <string name="bottom_bar_summary">نقل الترويسة إلى الجزء السفلي من التطبيق.</string>
     <string name="original_aspect_ratio">نسبة الجوانب الأصلية</string>
     <string name="original_aspect_ratio_summary">عرض صور الخلفيات المصغرة في نسب جوانبها الأصلية.</string>
-    <string name="wallpaper_changed">تم تغيير خلفيتك.</string>
     <string name="delete_current_wallpaper">حذف الخلفية الحالية</string>
     <string name="notifications">إرسال إشعارات</string>
     <string name="notifications_summary">السماح للتطبيق بنشر إشعار متعلق بأتمتة الخلفيات.</string>

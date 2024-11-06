@@ -8,6 +8,7 @@ import android.content.Intent
 import android.util.Log
 import android.widget.RemoteViews
 import app.simple.peri.R
+import app.simple.peri.abstraction.AbstractComposeAutoWallpaperService
 import app.simple.peri.services.AutoWallpaperService
 
 open class NextWallpaper : AppWidgetProvider() {
@@ -19,7 +20,7 @@ open class NextWallpaper : AppWidgetProvider() {
         // Loop through all widget instances
         appWidgetIds?.forEach { appWidgetId ->
             val intent = Intent(context, AutoWallpaperService::class.java)
-            intent.action = AutoWallpaperService.ACTION_NEXT_WALLPAPER
+            intent.action = AbstractComposeAutoWallpaperService.ACTION_NEXT_WALLPAPER
             val pendingIntent = PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
 
             // Get the layout for the App Widget and attach an on-click listener to the button

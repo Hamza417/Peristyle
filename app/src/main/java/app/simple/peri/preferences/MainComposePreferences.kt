@@ -1,6 +1,7 @@
 package app.simple.peri.preferences
 
 import android.util.Log
+import app.simple.peri.models.Effect
 import app.simple.peri.preferences.SharedPreferences.getSharedPreferences
 
 object MainComposePreferences {
@@ -197,8 +198,8 @@ object MainComposePreferences {
         return getSharedPreferences().getInt(LAST_HOME_WALLPAPER_POSITION, 0)
     }
 
-    fun setLastHomeWallpaperPosition(value: Int) {
-        getSharedPreferences().edit().putInt(LAST_HOME_WALLPAPER_POSITION, value).apply()
+    fun setLastHomeWallpaperPosition(value: Int): Boolean {
+        return getSharedPreferences().edit().putInt(LAST_HOME_WALLPAPER_POSITION, value).commit()
     }
 
     fun resetLastWallpaperPositions() {
@@ -308,8 +309,6 @@ object MainComposePreferences {
         getSharedPreferences().edit().putFloat(AUTO_WALLPAPER_HOME_BLUR, value).apply()
     }
 
-    // ----------------------------------------------------------------------------------------------------- //
-
     fun getAutoWallpaperHomeBrightness(): Float {
         return getSharedPreferences().getFloat(AUTO_WALLPAPER_HOME_BRIGHTNESS, 0f)
     }
@@ -317,8 +316,6 @@ object MainComposePreferences {
     fun setAutoWallpaperHomeBrightness(value: Float) {
         getSharedPreferences().edit().putFloat(AUTO_WALLPAPER_HOME_BRIGHTNESS, value).apply()
     }
-
-    // ----------------------------------------------------------------------------------------------------- //
 
     fun getAutoWallpaperHomeContrast(): Float {
         return getSharedPreferences().getFloat(AUTO_WALLPAPER_HOME_CONTRAST, 1f)
@@ -328,8 +325,6 @@ object MainComposePreferences {
         getSharedPreferences().edit().putFloat(AUTO_WALLPAPER_HOME_CONTRAST, value).apply()
     }
 
-    // ----------------------------------------------------------------------------------------------------- //
-
     fun getAutoWallpaperHomeSaturation(): Float {
         return getSharedPreferences().getFloat(AUTO_WALLPAPER_HOME_SATURATION, 1f)
     }
@@ -337,8 +332,6 @@ object MainComposePreferences {
     fun setAutoWallpaperHomeSaturation(value: Float) {
         getSharedPreferences().edit().putFloat(AUTO_WALLPAPER_HOME_SATURATION, value).apply()
     }
-
-    // ----------------------------------------------------------------------------------------------------- //
 
     fun getAutoWallpaperHomeHueRed(): Float {
         return getSharedPreferences().getFloat(AUTO_WALLPAPER_HOME_HUE_RED, 0f)
@@ -364,8 +357,6 @@ object MainComposePreferences {
         getSharedPreferences().edit().putFloat(AUTO_WALLPAPER_HOME_HUE_BLUE, value).apply()
     }
 
-    // ----------------------------------------------------------------------------------------------------- //
-
     fun getAutoWallpaperHomeScaleRed(): Float {
         return getSharedPreferences().getFloat(AUTO_WALLPAPER_HOME_SCALE_RED, 1f)
     }
@@ -390,6 +381,21 @@ object MainComposePreferences {
         getSharedPreferences().edit().putFloat(AUTO_WALLPAPER_HOME_SCALE_BLUE, value).apply()
     }
 
+    fun getHomeScreenEffects(): Effect {
+        return Effect(
+                getAutoWallpaperHomeBlur(),
+                getAutoWallpaperHomeBrightness(),
+                getAutoWallpaperHomeContrast(),
+                getAutoWallpaperHomeSaturation(),
+                getAutoWallpaperHomeHueRed(),
+                getAutoWallpaperHomeHueGreen(),
+                getAutoWallpaperHomeHueBlue(),
+                getAutoWallpaperHomeScaleRed(),
+                getAutoWallpaperHomeScaleGreen(),
+                getAutoWallpaperHomeScaleBlue()
+        )
+    }
+
     // ----------------------------------------------------------------------------------------------------- //
 
     fun getAutoWallpaperLockBlur(): Float {
@@ -400,8 +406,6 @@ object MainComposePreferences {
         getSharedPreferences().edit().putFloat(AUTO_WALLPAPER_LOCK_BLUR, value).apply()
     }
 
-    // ----------------------------------------------------------------------------------------------------- //
-
     fun getAutoWallpaperLockBrightness(): Float {
         return getSharedPreferences().getFloat(AUTO_WALLPAPER_LOCK_BRIGHTNESS, 0f)
     }
@@ -409,8 +413,6 @@ object MainComposePreferences {
     fun setAutoWallpaperLockBrightness(value: Float) {
         getSharedPreferences().edit().putFloat(AUTO_WALLPAPER_LOCK_BRIGHTNESS, value).apply()
     }
-
-    // ----------------------------------------------------------------------------------------------------- //
 
     fun getAutoWallpaperLockContrast(): Float {
         return getSharedPreferences().getFloat(AUTO_WALLPAPER_LOCK_CONTRAST, 1f)
@@ -420,8 +422,6 @@ object MainComposePreferences {
         getSharedPreferences().edit().putFloat(AUTO_WALLPAPER_LOCK_CONTRAST, value).apply()
     }
 
-    // ----------------------------------------------------------------------------------------------------- //
-
     fun getAutoWallpaperLockSaturation(): Float {
         return getSharedPreferences().getFloat(AUTO_WALLPAPER_LOCK_SATURATION, 1f)
     }
@@ -429,8 +429,6 @@ object MainComposePreferences {
     fun setAutoWallpaperLockSaturation(value: Float) {
         getSharedPreferences().edit().putFloat(AUTO_WALLPAPER_LOCK_SATURATION, value).apply()
     }
-
-    // ----------------------------------------------------------------------------------------------------- //
 
     fun getAutoWallpaperLockHueRed(): Float {
         return getSharedPreferences().getFloat(AUTO_WALLPAPER_LOCK_HUE_RED, 0f)
@@ -456,8 +454,6 @@ object MainComposePreferences {
         getSharedPreferences().edit().putFloat(AUTO_WALLPAPER_LOCK_HUE_BLUE, value).apply()
     }
 
-    // ----------------------------------------------------------------------------------------------------- //
-
     fun getAutoWallpaperLockScaleRed(): Float {
         return getSharedPreferences().getFloat(AUTO_WALLPAPER_LOCK_SCALE_RED, 1f)
     }
@@ -480,6 +476,21 @@ object MainComposePreferences {
 
     fun setAutoWallpaperLockScaleBlue(value: Float) {
         getSharedPreferences().edit().putFloat(AUTO_WALLPAPER_LOCK_SCALE_BLUE, value).apply()
+    }
+
+    fun getLockScreenEffects(): Effect {
+        return Effect(
+                getAutoWallpaperLockBlur(),
+                getAutoWallpaperLockBrightness(),
+                getAutoWallpaperLockContrast(),
+                getAutoWallpaperLockSaturation(),
+                getAutoWallpaperLockHueRed(),
+                getAutoWallpaperLockHueGreen(),
+                getAutoWallpaperLockHueBlue(),
+                getAutoWallpaperLockScaleRed(),
+                getAutoWallpaperLockScaleGreen(),
+                getAutoWallpaperLockScaleBlue()
+        )
     }
 
     // ----------------------------------------------------------------------------------------------------- //

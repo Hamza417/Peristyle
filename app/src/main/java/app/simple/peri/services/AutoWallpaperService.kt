@@ -88,7 +88,7 @@ class AutoWallpaperService : AbstractComposeAutoWallpaperService() {
             }
         } else {
             Log.i(TAG, "Compose interface detected, switching to new approach")
-            setWallpaperCompose()
+            setComposeWallpaper()
         }
     }
 

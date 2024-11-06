@@ -198,7 +198,6 @@
     <string name="bottom_bar_summary">Başlığı uygulamanın alt kısmına taşı.</string>
     <string name="original_aspect_ratio">Orijinal En Boy Oranı</string>
     <string name="original_aspect_ratio_summary">Duvar kağıdı küçük resimlerini orijinal en-boy oranında göster.</string>
-    <string name="wallpaper_changed">Duvar kağıdınız değiştirildi.</string>
     <string name="delete_current_wallpaper">Mevcut Duvar Kağıdını Sil</string>
     <string name="notifications">Bildirim Gönder</string>
     <string name="notifications_summary">Uygulamanın otomatik duvar kağıdı ile ilgili bildirimler göndermesine izin verin.</string>
