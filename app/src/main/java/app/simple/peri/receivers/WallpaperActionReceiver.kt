@@ -18,24 +18,31 @@ class WallpaperActionReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         when (intent.action) {
             AbstractComposeAutoWallpaperService.ACTION_DELETE_WALLPAPER_HOME -> {
-                val wallpaperManager = WallpaperManager.getInstance(context)
-                val file = intent.getStringExtra(AbstractComposeAutoWallpaperService.EXTRA_WALLPAPER_PATH)!!.toFile()
-                val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-                wallpaperManager.clear(WallpaperManager.FLAG_SYSTEM)
-                launchDeleteService(file, context)
-                notificationManager.cancel(AbstractComposeAutoWallpaperService.HOME_NOTIFICATION_ID)
+                handleWallpaperAction(
+                        context,
+                        intent,
+                        WallpaperManager.FLAG_SYSTEM,
+                        AbstractComposeAutoWallpaperService.HOME_NOTIFICATION_ID)
             }
             AbstractComposeAutoWallpaperService.ACTION_DELETE_WALLPAPER_LOCK -> {
-                val wallpaperManager = WallpaperManager.getInstance(context)
-                val file = intent.getStringExtra(AbstractComposeAutoWallpaperService.EXTRA_WALLPAPER_PATH)!!.toFile()
-                val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-                wallpaperManager.clear(WallpaperManager.FLAG_LOCK)
-                launchDeleteService(file, context)
-                notificationManager.cancel(AbstractComposeAutoWallpaperService.LOCK_NOTIFICATION_ID)
+                handleWallpaperAction(
+                        context,
+                        intent,
+                        WallpaperManager.FLAG_LOCK,
+                        AbstractComposeAutoWallpaperService.LOCK_NOTIFICATION_ID)
             }
         }
+    }
+
+    private fun handleWallpaperAction(context: Context, intent: Intent, flag: Int, notificationId: Int) {
+        val wallpaperManager = WallpaperManager.getInstance(context)
+        val file = intent.getStringExtra(AbstractComposeAutoWallpaperService.EXTRA_WALLPAPER_PATH)!!.toFile()
+        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        wallpaperManager.clear(flag)
+        launchDeleteService(file, context)
+        notificationManager.cancel(notificationId)
+        sendNextWallpaperIntent(context)
     }
 
     private fun launchDeleteService(file: File, context: Context) {
@@ -54,6 +61,12 @@ class WallpaperActionReceiver : BroadcastReceiver() {
             wallpaperDao.deleteByFile(file.absolutePath.toString())
             wallpaperDatabase.close()
         }
+    }
+
+    private fun sendNextWallpaperIntent(context: Context) {
+        val intent = Intent(context, AutoWallpaperService::class.java)
+        intent.action = AutoWallpaperService.ACTION_NEXT_WALLPAPER
+        context.startService(intent)
     }
 
     companion object {

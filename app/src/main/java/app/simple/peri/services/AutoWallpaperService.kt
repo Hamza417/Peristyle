@@ -106,4 +106,8 @@ class AutoWallpaperService : AbstractComposeAutoWallpaperService() {
                 ComponentName(applicationContext, MainComposeActivity::class.java)
         ) == PackageManager.COMPONENT_ENABLED_STATE_DISABLED
     }
+
+    companion object {
+        const val ACTION_NEXT_WALLPAPER: String = "app.simple.peri.services.action.NEXT_WALLPAPER"
+    }
 }
