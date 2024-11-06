@@ -76,7 +76,7 @@ abstract class AbstractComposeAutoWallpaperService : AbstractLegacyAutoWallpaper
                 val modifiedBitmap = bitmap.copy(bitmap.config ?: Bitmap.Config.ARGB_8888, true)
                     .applyEffects(MainComposePreferences.getHomeScreenEffects())
                 wallpaperManager.setBitmap(modifiedBitmap, null, true, WallpaperManager.FLAG_SYSTEM)
-                showWallpaperChangedNotification(true, it.filePath.toFile())
+                showWallpaperChangedNotification(true, it.filePath.toFile(), bitmap)
             }
         }
     }
@@ -88,7 +88,7 @@ abstract class AbstractComposeAutoWallpaperService : AbstractLegacyAutoWallpaper
                 val modifiedBitmap = bitmap.copy(bitmap.config ?: Bitmap.Config.ARGB_8888, true)
                     .applyEffects(MainComposePreferences.getLockScreenEffects())
                 wallpaperManager.setBitmap(modifiedBitmap, null, true, WallpaperManager.FLAG_LOCK)
-                showWallpaperChangedNotification(false, it.filePath.toFile())
+                showWallpaperChangedNotification(false, it.filePath.toFile(), bitmap)
             }
         }
     }
@@ -105,8 +105,10 @@ abstract class AbstractComposeAutoWallpaperService : AbstractLegacyAutoWallpaper
                 lockBitmap = lockBitmap.applyEffects(MainComposePreferences.getWallpaperEffects())
 
                 wallpaperManager.setBitmap(homeBitmap, null, true, WallpaperManager.FLAG_SYSTEM)
+                showWallpaperChangedNotification(true, wallpaper.filePath.toFile(), bitmap)
+
                 wallpaperManager.setBitmap(lockBitmap, null, true, WallpaperManager.FLAG_LOCK)
-                showWallpaperChangedNotification(true, wallpaper.filePath.toFile())
+                showWallpaperChangedNotification(false, wallpaper.filePath.toFile(), bitmap)
             }
         }
     }
@@ -257,7 +259,7 @@ abstract class AbstractComposeAutoWallpaperService : AbstractLegacyAutoWallpaper
         }
     }
 
-    private fun showWallpaperChangedNotification(isHomeScreen: Boolean, file: File) {
+    private fun showWallpaperChangedNotification(isHomeScreen: Boolean, file: File, bitmap: Bitmap) {
         Log.i(TAG, "Showing notification for wallpaper change for file: ${file.absolutePath}")
         if (MainComposePreferences.getAutoWallpaperNotification().invert()) {
             return
@@ -298,6 +300,7 @@ abstract class AbstractComposeAutoWallpaperService : AbstractLegacyAutoWallpaper
             .addAction(R.drawable.ic_share, applicationContext.getString(R.string.send), sendPendingIntent)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setSilent(true)
+            .setStyle(NotificationCompat.BigPictureStyle().bigPicture(bitmap))
             .build()
 
         notificationManager.notify(notificationId, notification)
