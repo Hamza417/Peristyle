@@ -1,4 +1,4 @@
-package app.simple.peri.activities
+package app.simple.peri.activities.main
 
 import android.content.res.Configuration
 import android.graphics.Color

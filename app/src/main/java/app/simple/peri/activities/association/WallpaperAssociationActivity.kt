@@ -1,4 +1,4 @@
-package app.simple.peri.activities
+package app.simple.peri.activities.association
 
 import android.graphics.BitmapFactory
 import android.graphics.Color

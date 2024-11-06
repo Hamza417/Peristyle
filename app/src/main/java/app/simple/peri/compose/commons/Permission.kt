@@ -8,7 +8,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
-import app.simple.peri.activities.PathChooserActivity
+import app.simple.peri.activities.main.PathChooserActivity
 import app.simple.peri.preferences.MainComposePreferences
 
 @Composable

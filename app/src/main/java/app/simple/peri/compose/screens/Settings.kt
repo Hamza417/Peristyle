@@ -32,8 +32,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import app.simple.peri.BuildConfig
 import app.simple.peri.R
-import app.simple.peri.activities.LegacyActivity
-import app.simple.peri.activities.MainComposeActivity
+import app.simple.peri.activities.main.LegacyActivity
+import app.simple.peri.activities.main.MainComposeActivity
 import app.simple.peri.compose.commons.COMMON_PADDING
 import app.simple.peri.compose.commons.TopHeader
 import app.simple.peri.compose.dialogs.common.ShowWarningDialog

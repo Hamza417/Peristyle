@@ -36,7 +36,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import app.simple.peri.R
-import app.simple.peri.activities.SettingsActivity
+import app.simple.peri.activities.main.SettingsActivity
 import app.simple.peri.adapters.AdapterSystemWallpaper
 import app.simple.peri.adapters.AdapterWallpaper
 import app.simple.peri.constants.BundleConstants

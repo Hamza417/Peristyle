@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/transparent"
-    tools:context=".activities.MainComposeActivity">
+    tools:context=".activities.main.MainComposeActivity">
 
     <app.simple.peri.decorations.views.ItemZoomRecycleView
         android:id="@+id/recyclerView"

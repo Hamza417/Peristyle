@@ -8,8 +8,8 @@ import android.util.Log
 import android.widget.Toast
 import app.simple.peri.R
 import app.simple.peri.abstraction.AbstractComposeAutoWallpaperService
-import app.simple.peri.activities.LegacyActivity
-import app.simple.peri.activities.MainComposeActivity
+import app.simple.peri.activities.main.LegacyActivity
+import app.simple.peri.activities.main.MainComposeActivity
 import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.preferences.SharedPreferences

@@ -30,8 +30,8 @@ import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreferenceCompat
 import app.simple.peri.BuildConfig
 import app.simple.peri.R
-import app.simple.peri.activities.LegacyActivity
-import app.simple.peri.activities.MainComposeActivity
+import app.simple.peri.activities.main.LegacyActivity
+import app.simple.peri.activities.main.MainComposeActivity
 import app.simple.peri.constants.BundleConstants
 import app.simple.peri.database.instances.WallpaperDatabase
 import app.simple.peri.databinding.DialogDeleteBinding
@@ -359,11 +359,11 @@ class Preferences : PreferenceFragmentCompat(), SharedPreferences.OnSharedPrefer
                 }
 
                 requireContext().packageManager.setComponentEnabledSetting(
-                    ComponentName(requireContext(), LegacyActivity::class.java), newState, PackageManager.DONT_KILL_APP
+                        ComponentName(requireContext(), LegacyActivity::class.java), newState, PackageManager.DONT_KILL_APP
                 )
 
                 requireContext().packageManager.setComponentEnabledSetting(
-                    ComponentName(requireContext(), MainComposeActivity::class.java), composeState, PackageManager.DONT_KILL_APP
+                        ComponentName(requireContext(), MainComposeActivity::class.java), composeState, PackageManager.DONT_KILL_APP
                 )
 
                 true
