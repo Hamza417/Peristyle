@@ -288,7 +288,6 @@ abstract class AbstractComposeAutoWallpaperService : AbstractLegacyAutoWallpaper
 
         val notification = NotificationCompat.Builder(this, channelId)
             .setSmallIcon(R.drawable.ic_peristyle)
-            .setContentTitle(applicationContext.getString(R.string.auto_wallpaper))
             .setContentText(applicationContext.getString(
                     R.string.wallpaper_changed,
                     if (isHomeScreen) {
