@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import app.simple.peri.BuildConfig
 import app.simple.peri.compose.nav.PeristyleNavigation
 import app.simple.peri.compose.theme.PeristyleTheme
+import app.simple.peri.crash.CrashReport
 import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.preferences.SharedPreferences
 import app.simple.peri.services.AutoWallpaperService
@@ -29,6 +30,7 @@ class MainComposeActivity : ComponentActivity(), OnSharedPreferenceChangeListene
         super.onCreate(savedInstanceState)
         SharedPreferences.init(applicationContext)
         keepScreenOn()
+        CrashReport(this).initialize()
 
         setContent {
             PeristyleTheme {
