@@ -141,16 +141,16 @@ fun WallpaperList(navController: NavController? = null) {
                         onDelete = { deletedWallpaper ->
                             folderDataViewModel.deleteWallpaper(deletedWallpaper)
                         },
-                        onCompress = { percentage ->
+                        onCompress = {
                             showPleaseWaitDialog = true
-                            folderDataViewModel.compressWallpaper(wallpapers[index], percentage) {
+                            folderDataViewModel.compressWallpaper(wallpapers[index]) {
                                 showPleaseWaitDialog = false
                                 Log.d("WallpaperList", "Compressed wallpaper: ${wallpapers[index].size.toSize()} -> ${it.size.toSize()}")
                             }
                         },
-                        onReduceResolution = { percentage ->
+                        onReduceResolution = {
                             showPleaseWaitDialog = true
-                            folderDataViewModel.reduceResolution(wallpapers[index], percentage) {
+                            folderDataViewModel.reduceResolution(wallpapers[index]) {
                                 showPleaseWaitDialog = false
                                 Log.d("WallpaperList", "Reduced wallpaper: ${it.size.toSize()}, ${it.height}x${it.width}")
                             }

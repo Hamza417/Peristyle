@@ -17,14 +17,14 @@ import kotlinx.coroutines.withContext
 import java.io.File
 
 abstract class CompressorViewModel(application: Application) : AndroidViewModel(application) {
-    fun compressWallpaper(wallpaper: Wallpaper, percentage: Int, onSuccess: (Wallpaper) -> Unit) {
+    fun compressWallpaper(wallpaper: Wallpaper, onSuccess: (Wallpaper) -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             val file = wallpaper.filePath.toFile()
 
             // Compress the file
             Compressor.compress(getApplication(), file) {
                 destination(file)
-                quality((100).minus(percentage))
+                quality(60)
                 resolution(wallpaper.width!!, wallpaper.height!!)
                 format(getFormat(wallpaper.name!!))
             }
@@ -37,7 +37,7 @@ abstract class CompressorViewModel(application: Application) : AndroidViewModel(
         }
     }
 
-    fun reduceResolution(wallpaper: Wallpaper, percentage: Int, onSuccess: (Wallpaper) -> Unit) {
+    fun reduceResolution(wallpaper: Wallpaper, onSuccess: (Wallpaper) -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             val context = getApplication<Application>()
             val file = wallpaper.filePath.toFile()
@@ -46,10 +46,7 @@ abstract class CompressorViewModel(application: Application) : AndroidViewModel(
             Compressor.compress(context, file) {
                 destination(file)
                 quality(100)
-                resolution(
-                        wallpaper.width!! * percentage / 100,
-                        wallpaper.height!! * percentage / 100
-                )
+                resolution(wallpaper.width!!.div(2), wallpaper.height!!.div(2))
                 format(getFormat(wallpaper.name!!))
             }
 

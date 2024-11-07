@@ -61,7 +61,6 @@ import androidx.core.content.FileProvider
 import androidx.navigation.NavController
 import app.simple.peri.R
 import app.simple.peri.compose.dialogs.common.AddTagDialog
-import app.simple.peri.compose.dialogs.menus.CompressOptions
 import app.simple.peri.compose.dialogs.menus.WallpaperMenu
 import app.simple.peri.compose.dialogs.settings.SureDialog
 import app.simple.peri.compose.nav.Routes
@@ -91,8 +90,8 @@ fun WallpaperItem(
         wallpaper: Wallpaper,
         navController: NavController? = null,
         onDelete: (Wallpaper) -> Unit,
-        onCompress: (Int) -> Unit,
-        onReduceResolution: (Int) -> Unit,
+        onCompress: () -> Unit,
+        onReduceResolution: () -> Unit,
         isSelectionMode: Boolean,
         wallpaperListViewModel: WallpaperListViewModel,
         list: List<Wallpaper>
@@ -101,8 +100,6 @@ fun WallpaperItem(
     var showDialog by remember { mutableStateOf(false) }
     var isSelected by remember { mutableStateOf(wallpaper.isSelected) }
     val showTagDialog = remember { mutableStateOf(false) }
-    val showCompressDialog = remember { mutableStateOf(false) }
-    val showReduceResolutionDialog = remember { mutableStateOf(false) }
 
     var displayWidth by remember { mutableIntStateOf(0) }
     var displayHeight by remember { mutableIntStateOf(0) }
@@ -139,30 +136,11 @@ fun WallpaperItem(
                           showTagDialog.value = true
                       },
                       onCompress = {
-                          showCompressDialog.value = true
+                          onCompress()
                       },
                       onReduceResolution = {
-                          showReduceResolutionDialog.value = true
+                          onReduceResolution()
                       })
-    }
-
-    if (showCompressDialog.value) {
-        CompressOptions(
-                onDismiss = { showCompressDialog.value = false },
-                onPercentage = { percentage ->
-                    onCompress(percentage)
-                }
-        )
-    }
-
-    if (showReduceResolutionDialog.value) {
-        CompressOptions(
-                isCompress = false,
-                onDismiss = { showReduceResolutionDialog.value = false },
-                onPercentage = { percentage ->
-                    onReduceResolution(percentage)
-                }
-        )
     }
 
     if (showTagDialog.value) {
