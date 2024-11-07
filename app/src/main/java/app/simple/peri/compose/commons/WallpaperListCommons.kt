@@ -60,6 +60,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.FileProvider
 import androidx.navigation.NavController
 import app.simple.peri.R
+import app.simple.peri.compose.dialogs.common.AddTagDialog
 import app.simple.peri.compose.dialogs.menus.WallpaperMenu
 import app.simple.peri.compose.dialogs.settings.SureDialog
 import app.simple.peri.compose.nav.Routes
@@ -98,6 +99,7 @@ fun WallpaperItem(
     val hazeState = remember { HazeState() }
     var showDialog by remember { mutableStateOf(false) }
     var isSelected by remember { mutableStateOf(wallpaper.isSelected) }
+    val showTagDialog = remember { mutableStateOf(false) }
 
     var displayWidth by remember { mutableIntStateOf(0) }
     var displayHeight by remember { mutableIntStateOf(0) }
@@ -130,12 +132,22 @@ fun WallpaperItem(
                           wallpaperListViewModel.setSelectionMode(list.any { it.isSelected })
                           wallpaperListViewModel.setSelectedWallpapers(list.count { it.isSelected })
                       },
+                      onAddTag = {
+                          showTagDialog.value = true
+                      },
                       onCompress = { percentage ->
                           onCompress(percentage)
                       },
                       onReduceResolution = { percentage ->
                           onReduceResolution(percentage)
                       })
+    }
+
+    if (showTagDialog.value) {
+        AddTagDialog(
+                wallpaper = wallpaper,
+                onDismiss = { showTagDialog.value = false }
+        )
     }
 
     Box {

@@ -35,12 +35,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import app.simple.peri.R
 import app.simple.peri.compose.constants.DIALOG_OPTION_FONT_SIZE
 import app.simple.peri.compose.constants.DIALOG_TITLE_FONT_SIZE
-import app.simple.peri.compose.dialogs.common.AddTagDialog
-import app.simple.peri.factories.TagsViewModelFactory
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.utils.FileUtils.toFile
 import app.simple.peri.viewmodels.ComposeWallpaperViewModel
-import app.simple.peri.viewmodels.TagsViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -57,11 +54,7 @@ fun WallpaperMenu(
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
-    val tagsViewModel: TagsViewModel = viewModel(
-            factory = TagsViewModelFactory()
-    )
     val composeWallpaperViewModel: ComposeWallpaperViewModel = viewModel(LocalContext.current as ComponentActivity)
-    val showTagDialog = remember { mutableStateOf(false) }
     val showCompressDialog = remember { mutableStateOf(false) }
     val showReduceResolutionDialog = remember { mutableStateOf(false) }
 
@@ -82,16 +75,6 @@ fun WallpaperMenu(
                 onPercentage = { percentage ->
                     onReduceResolution(percentage)
                     setShowDialog(false)
-                }
-        )
-    }
-
-    if (showTagDialog.value) {
-        AddTagDialog(
-                onDismiss = { showTagDialog.value = false },
-                onAdd = { tagName ->
-                    tagsViewModel.addTag(tagName, wallpaper)
-                    showTagDialog.value = false
                 }
         )
     }
@@ -171,7 +154,9 @@ fun WallpaperMenu(
 
                         Button(
                                 onClick = {
-                                    showTagDialog.value = true
+                                    onAddTag().also {
+                                        setShowDialog(false)
+                                    }
                                 },
                                 colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
                                 shape = RoundedCornerShape(12.dp),

@@ -24,12 +24,16 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import app.simple.peri.R
 import app.simple.peri.compose.constants.DIALOG_TITLE_FONT_SIZE
+import app.simple.peri.factories.TagsViewModelFactory
 import app.simple.peri.models.Tag
+import app.simple.peri.models.Wallpaper
 import app.simple.peri.viewmodels.TagsViewModel
 
 @Composable
-fun AddTagDialog(onDismiss: () -> Unit, onAdd: (String) -> Unit) {
-    val tagsViewModel: TagsViewModel = viewModel()
+fun AddTagDialog(wallpaper: Wallpaper, onDismiss: () -> Unit) {
+    val tagsViewModel: TagsViewModel = viewModel(
+            factory = TagsViewModelFactory()
+    )
     val tags = remember { mutableListOf<Tag>() }
     val tag = remember { mutableStateOf("") }
 
@@ -76,8 +80,9 @@ fun AddTagDialog(onDismiss: () -> Unit, onAdd: (String) -> Unit) {
             confirmButton = {
                 Button(
                         onClick = {
-                            onAdd(tag.value)
-                            onDismiss()
+                            tagsViewModel.addTag(tag.value, wallpaper) {
+                                onDismiss()
+                            }
                         })
                 {
                     Text(stringResource(id = R.string.add))

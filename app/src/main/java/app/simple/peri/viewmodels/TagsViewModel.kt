@@ -13,6 +13,7 @@ import app.simple.peri.models.Wallpaper
 import app.simple.peri.utils.FileUtils.toUri
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 
 class TagsViewModel(application: Application, private val id: String? = null, private val tag: String? = null) :
@@ -83,7 +84,7 @@ class TagsViewModel(application: Application, private val id: String? = null, pr
         }
     }
 
-    fun addTag(tagName: String, wallpaper: Wallpaper) {
+    fun addTag(tagName: String, wallpaper: Wallpaper, onSuccess: () -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             val database = TagsDatabase.getInstance(getApplication())
             val tagsDao = database?.tagsDao()
@@ -98,6 +99,10 @@ class TagsViewModel(application: Application, private val id: String? = null, pr
             }
 
             loadTags()
+
+            withContext(Dispatchers.Main) {
+                onSuccess()
+            }
         }
     }
 
