@@ -2,8 +2,6 @@ package app.simple.peri.compose.commons
 
 import android.content.Intent
 import android.graphics.drawable.Drawable
-import android.util.Log
-import androidx.activity.ComponentActivity
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -26,16 +24,11 @@ import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material.icons.rounded.Warning
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
@@ -44,7 +37,6 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -59,31 +51,22 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.app.ShareCompat
 import androidx.core.content.FileProvider
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import app.simple.peri.R
-import app.simple.peri.compose.constants.DIALOG_OPTION_FONT_SIZE
-import app.simple.peri.compose.constants.DIALOG_TITLE_FONT_SIZE
-import app.simple.peri.compose.dialogs.common.AddTagDialog
+import app.simple.peri.compose.dialogs.menus.WallpaperMenu
 import app.simple.peri.compose.dialogs.settings.SureDialog
 import app.simple.peri.compose.nav.Routes
-import app.simple.peri.factories.TagsViewModelFactory
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.utils.FileUtils.toFile
 import app.simple.peri.utils.FileUtils.toSize
-import app.simple.peri.viewmodels.ComposeWallpaperViewModel
-import app.simple.peri.viewmodels.TagsViewModel
 import app.simple.peri.viewmodels.WallpaperListViewModel
 import com.bumptech.glide.integration.compose.CrossFade
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
@@ -99,9 +82,6 @@ import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.hazeChild
 import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
 import dev.chrisbanes.haze.materials.HazeMaterials
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalGlideComposeApi::class, ExperimentalFoundationApi::class)
 @Composable
@@ -109,8 +89,8 @@ fun WallpaperItem(
         wallpaper: Wallpaper,
         navController: NavController? = null,
         onDelete: (Wallpaper) -> Unit,
-        onCompress: () -> Unit,
-        onReduceResolution: () -> Unit,
+        onCompress: (Int) -> Unit,
+        onReduceResolution: (Int) -> Unit,
         isSelectionMode: Boolean,
         wallpaperListViewModel: WallpaperListViewModel,
         list: List<Wallpaper>
@@ -150,11 +130,11 @@ fun WallpaperItem(
                           wallpaperListViewModel.setSelectionMode(list.any { it.isSelected })
                           wallpaperListViewModel.setSelectedWallpapers(list.count { it.isSelected })
                       },
-                      onCompress = {
-                          onCompress()
+                      onCompress = { percentage ->
+                          onCompress(percentage)
                       },
-                      onReduceResolution = {
-                          onReduceResolution()
+                      onReduceResolution = { percentage ->
+                          onReduceResolution(percentage)
                       })
     }
 
@@ -475,257 +455,4 @@ fun SelectionMenu(
             }
         }
     }
-}
-
-@Composable
-fun WallpaperMenu(
-        setShowDialog: (Boolean) -> Unit,
-        wallpaper: Wallpaper,
-        onDelete: (Wallpaper) -> Unit,
-        onSelect: () -> Unit = {},
-        onAddTag: () -> Unit = {},
-        onCompress: () -> Unit = {},
-        onReduceResolution: () -> Unit = {}
-) {
-    val context = LocalContext.current
-    val coroutineScope = rememberCoroutineScope()
-    val tagsViewModel: TagsViewModel = viewModel(
-            factory = TagsViewModelFactory()
-    )
-    val composeWallpaperViewModel: ComposeWallpaperViewModel = viewModel(LocalContext.current as ComponentActivity)
-    val showTagDialog = remember { mutableStateOf(false) }
-
-    if (showTagDialog.value) {
-        AddTagDialog(
-                onDismiss = { showTagDialog.value = false },
-                onAdd = { tagName ->
-                    tagsViewModel.addTag(tagName, wallpaper)
-                    showTagDialog.value = false
-                }
-        )
-    }
-
-    AlertDialog(
-            onDismissRequest = { setShowDialog(false) },
-            title = {
-                Text(
-                        text = wallpaper.name ?: "",
-                        style = TextStyle(
-                                fontFamily = FontFamily.SansSerif,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = DIALOG_TITLE_FONT_SIZE
-                        )
-                )
-            },
-            text = {
-                Box(
-                        contentAlignment = Alignment.Center
-                ) {
-                    Column {
-                        Button(
-                                onClick = {
-                                    val uri = FileProvider.getUriForFile(
-                                            context,
-                                            context.packageName + ".provider",
-                                            wallpaper.filePath.toFile()
-                                    )
-
-                                    ShareCompat.IntentBuilder(context)
-                                        .setType("image/*")
-                                        .setChooserTitle("Share Wallpaper")
-                                        .setStream(uri)
-                                        .startChooser()
-                                },
-                                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
-                                shape = RoundedCornerShape(12.dp),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                        ) {
-                            Text(
-                                    text = context.getString(R.string.send),
-                                    color = MaterialTheme.colorScheme.onSurface,
-                                    fontSize = DIALOG_OPTION_FONT_SIZE,
-                                    fontWeight = FontWeight.SemiBold
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.height(5.dp))
-
-                        Button(
-                                onClick = {
-                                    coroutineScope.launch(Dispatchers.IO) {
-                                        if (wallpaper.filePath.toFile().delete()) {
-                                            withContext(Dispatchers.Main) {
-                                                composeWallpaperViewModel.removeWallpaper(wallpaper)
-                                                onDelete(wallpaper)
-                                                setShowDialog(false)
-                                            }
-                                        }
-                                    }
-                                },
-                                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
-                                shape = RoundedCornerShape(12.dp),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                        ) {
-                            Text(
-                                    text = context.getString(R.string.delete),
-                                    color = MaterialTheme.colorScheme.onSurface,
-                                    fontSize = DIALOG_OPTION_FONT_SIZE,
-                                    fontWeight = FontWeight.SemiBold
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.height(5.dp))
-
-                        Button(
-                                onClick = {
-                                    showTagDialog.value = true
-                                },
-                                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
-                                shape = RoundedCornerShape(12.dp),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                        ) {
-                            Text(
-                                    text = context.getString(R.string.add_tag),
-                                    color = MaterialTheme.colorScheme.onSurface,
-                                    fontSize = DIALOG_OPTION_FONT_SIZE,
-                                    fontWeight = FontWeight.SemiBold
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.height(5.dp))
-
-                        Button(
-                                onClick = {
-                                    val uri = FileProvider.getUriForFile(
-                                            context,
-                                            context.packageName + ".provider",
-                                            wallpaper.filePath.toFile()
-                                    )
-
-                                    val intent = Intent(Intent.ACTION_EDIT)
-                                    intent.setDataAndType(uri, "image/*")
-                                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                                    context.startActivity(
-                                            Intent.createChooser(
-                                                    intent,
-                                                    context.getString(R.string.edit)
-                                            )
-                                    )
-                                    setShowDialog(false)
-                                },
-                                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
-                                shape = RoundedCornerShape(12.dp),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                        ) {
-                            Text(
-                                    text = context.getString(R.string.edit),
-                                    color = MaterialTheme.colorScheme.onSurface,
-                                    fontSize = DIALOG_OPTION_FONT_SIZE,
-                                    fontWeight = FontWeight.SemiBold
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.height(5.dp))
-
-                        Button(
-                                onClick = {
-                                    onSelect()
-                                    setShowDialog(false)
-                                },
-                                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
-                                shape = RoundedCornerShape(12.dp),
-                                modifier = Modifier
-                                    .fillMaxWidth(),
-                        ) {
-                            Text(
-                                    text = context.getString(R.string.select),
-                                    fontSize = DIALOG_OPTION_FONT_SIZE,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = MaterialTheme.colorScheme.onSurface
-                            )
-                        }
-
-                        HorizontalDivider(
-                                modifier = Modifier
-                                    .padding(top = 5.dp, bottom = 5.dp)
-                                    .fillMaxWidth()
-                        )
-
-                        Button(
-                                onClick = {
-                                    onCompress()
-                                    setShowDialog(false)
-                                },
-                                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
-                                shape = RoundedCornerShape(12.dp),
-                                modifier = Modifier
-                                    .fillMaxWidth(),
-                        ) {
-                            Text(
-                                    text = context.getString(R.string.compress),
-                                    fontSize = DIALOG_OPTION_FONT_SIZE,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = MaterialTheme.colorScheme.onSurface
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.height(5.dp))
-
-                        Button(
-                                onClick = {
-                                    onReduceResolution()
-                                    setShowDialog(false)
-                                },
-                                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
-                                shape = RoundedCornerShape(12.dp),
-                                modifier = Modifier
-                                    .fillMaxWidth(),
-                        ) {
-                            Text(
-                                    text = context.getString(R.string.reduce_resolution),
-                                    fontSize = DIALOG_OPTION_FONT_SIZE,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = MaterialTheme.colorScheme.onSurface
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.height(5.dp))
-
-                        Button(
-                                onClick = {
-                                    composeWallpaperViewModel.reloadMetadata(wallpaper) {
-                                        Log.i("WallpaperMenu", "Metadata reloaded: $it")
-                                        Log.i("WallpaperMenu", "for wallpaper: $wallpaper")
-                                        setShowDialog(false)
-                                    }
-                                },
-                                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
-                                shape = RoundedCornerShape(12.dp),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                        ) {
-                            Text(
-                                    text = context.getString(R.string.reload_metadata),
-                                    color = MaterialTheme.colorScheme.onSurface,
-                                    fontSize = DIALOG_OPTION_FONT_SIZE,
-                                    fontWeight = FontWeight.SemiBold
-                            )
-                        }
-                    }
-                }
-            },
-            confirmButton = {
-                Button(
-                        onClick = { setShowDialog(false) },
-                ) {
-                    Text(
-                            text = stringResource(R.string.close),
-                    )
-                }
-            },
-    )
 }

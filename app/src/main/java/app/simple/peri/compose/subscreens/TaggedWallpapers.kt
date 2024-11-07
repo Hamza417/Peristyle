@@ -133,16 +133,16 @@ fun TaggedWallpapers(navController: NavController? = null) {
                         onDelete = { deletedWallpaper ->
                             tagsViewModel.deleteWallpaper(deletedWallpaper)
                         },
-                        onCompress = {
+                        onCompress = { percentage ->
                             showPleaseWaitDialog = true
-                            tagsViewModel.compressWallpaper(wallpapers[index]) { wallpaper ->
+                            tagsViewModel.compressWallpaper(wallpapers[index], percentage) { wallpaper ->
                                 showPleaseWaitDialog = false
                                 Log.i("TaggedWallpapers", "Compressed wallpaper: $wallpaper")
                             }
                         },
-                        onReduceResolution = {
+                        onReduceResolution = { percentage ->
                             showPleaseWaitDialog = true
-                            tagsViewModel.reduceResolution(wallpapers[index]) { wallpaper ->
+                            tagsViewModel.reduceResolution(wallpapers[index], percentage) { wallpaper ->
                                 showPleaseWaitDialog = false
                                 Log.i("TaggedWallpapers", "Reduced resolution wallpaper: $wallpaper")
                             }
