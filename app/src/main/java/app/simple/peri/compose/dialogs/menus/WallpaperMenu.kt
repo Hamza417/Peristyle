@@ -17,8 +17,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,35 +47,12 @@ fun WallpaperMenu(
         onDelete: (Wallpaper) -> Unit,
         onSelect: () -> Unit = {},
         onAddTag: () -> Unit = {},
-        onCompress: (Int) -> Unit = {},
-        onReduceResolution: (Int) -> Unit = {}
+        onCompress: () -> Unit = {},
+        onReduceResolution: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val composeWallpaperViewModel: ComposeWallpaperViewModel = viewModel(LocalContext.current as ComponentActivity)
-    val showCompressDialog = remember { mutableStateOf(false) }
-    val showReduceResolutionDialog = remember { mutableStateOf(false) }
-
-    if (showCompressDialog.value) {
-        CompressOptions(
-                onDismiss = { showCompressDialog.value = false },
-                onPercentage = { percentage ->
-                    onCompress(percentage)
-                    setShowDialog(false)
-                }
-        )
-    }
-
-    if (showReduceResolutionDialog.value) {
-        CompressOptions(
-                isCompress = false,
-                onDismiss = { showReduceResolutionDialog.value = false },
-                onPercentage = { percentage ->
-                    onReduceResolution(percentage)
-                    setShowDialog(false)
-                }
-        )
-    }
 
     AlertDialog(
             onDismissRequest = { setShowDialog(false) },
@@ -233,7 +208,9 @@ fun WallpaperMenu(
 
                         Button(
                                 onClick = {
-                                    showCompressDialog.value = true
+                                    onCompress().also {
+                                        setShowDialog(false)
+                                    }
                                 },
                                 colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
                                 shape = RoundedCornerShape(12.dp),
@@ -252,7 +229,9 @@ fun WallpaperMenu(
 
                         Button(
                                 onClick = {
-                                    showReduceResolutionDialog.value = true
+                                    onReduceResolution().also {
+                                        setShowDialog(false)
+                                    }
                                 },
                                 colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
                                 shape = RoundedCornerShape(12.dp),

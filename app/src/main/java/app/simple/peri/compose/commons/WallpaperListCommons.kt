@@ -61,6 +61,7 @@ import androidx.core.content.FileProvider
 import androidx.navigation.NavController
 import app.simple.peri.R
 import app.simple.peri.compose.dialogs.common.AddTagDialog
+import app.simple.peri.compose.dialogs.menus.CompressOptions
 import app.simple.peri.compose.dialogs.menus.WallpaperMenu
 import app.simple.peri.compose.dialogs.settings.SureDialog
 import app.simple.peri.compose.nav.Routes
@@ -100,6 +101,8 @@ fun WallpaperItem(
     var showDialog by remember { mutableStateOf(false) }
     var isSelected by remember { mutableStateOf(wallpaper.isSelected) }
     val showTagDialog = remember { mutableStateOf(false) }
+    val showCompressDialog = remember { mutableStateOf(false) }
+    val showReduceResolutionDialog = remember { mutableStateOf(false) }
 
     var displayWidth by remember { mutableIntStateOf(0) }
     var displayHeight by remember { mutableIntStateOf(0) }
@@ -135,12 +138,31 @@ fun WallpaperItem(
                       onAddTag = {
                           showTagDialog.value = true
                       },
-                      onCompress = { percentage ->
-                          onCompress(percentage)
+                      onCompress = {
+                          showCompressDialog.value = true
                       },
-                      onReduceResolution = { percentage ->
-                          onReduceResolution(percentage)
+                      onReduceResolution = {
+                          showReduceResolutionDialog.value = true
                       })
+    }
+
+    if (showCompressDialog.value) {
+        CompressOptions(
+                onDismiss = { showCompressDialog.value = false },
+                onPercentage = { percentage ->
+                    onCompress(percentage)
+                }
+        )
+    }
+
+    if (showReduceResolutionDialog.value) {
+        CompressOptions(
+                isCompress = false,
+                onDismiss = { showReduceResolutionDialog.value = false },
+                onPercentage = { percentage ->
+                    onReduceResolution(percentage)
+                }
+        )
     }
 
     if (showTagDialog.value) {
