@@ -25,6 +25,7 @@ import app.simple.peri.utils.BitmapUtils.cropBitmap
 import app.simple.peri.utils.ConditionUtils.invert
 import app.simple.peri.utils.ConditionUtils.isNotNull
 import app.simple.peri.utils.FileUtils.toFile
+import app.simple.peri.utils.PermissionUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -76,7 +77,7 @@ abstract class AbstractComposeAutoWallpaperService : AbstractLegacyAutoWallpaper
                 val modifiedBitmap = bitmap.copy(bitmap.config ?: Bitmap.Config.ARGB_8888, true)
                     .applyEffects(MainComposePreferences.getHomeScreenEffects())
                 wallpaperManager.setBitmap(modifiedBitmap, null, true, WallpaperManager.FLAG_SYSTEM)
-                showWallpaperChangedNotification(true, it.filePath.toFile(), bitmap)
+                showWallpaperChangedNotification(true, it.filePath.toFile(), modifiedBitmap)
             }
         }
     }
@@ -88,7 +89,7 @@ abstract class AbstractComposeAutoWallpaperService : AbstractLegacyAutoWallpaper
                 val modifiedBitmap = bitmap.copy(bitmap.config ?: Bitmap.Config.ARGB_8888, true)
                     .applyEffects(MainComposePreferences.getLockScreenEffects())
                 wallpaperManager.setBitmap(modifiedBitmap, null, true, WallpaperManager.FLAG_LOCK)
-                showWallpaperChangedNotification(false, it.filePath.toFile(), bitmap)
+                showWallpaperChangedNotification(false, it.filePath.toFile(), modifiedBitmap)
             }
         }
     }
@@ -101,14 +102,14 @@ abstract class AbstractComposeAutoWallpaperService : AbstractLegacyAutoWallpaper
                 var homeBitmap = bitmap.copy(bitmap.config ?: Bitmap.Config.ARGB_8888, true)
                 var lockBitmap = bitmap.copy(bitmap.config ?: Bitmap.Config.ARGB_8888, true)
 
-                homeBitmap = homeBitmap.applyEffects(MainComposePreferences.getWallpaperEffects())
-                lockBitmap = lockBitmap.applyEffects(MainComposePreferences.getWallpaperEffects())
+                homeBitmap = homeBitmap.applyEffects(MainComposePreferences.getHomeScreenEffects())
+                lockBitmap = lockBitmap.applyEffects(MainComposePreferences.getLockScreenEffects())
 
                 wallpaperManager.setBitmap(homeBitmap, null, true, WallpaperManager.FLAG_SYSTEM)
-                showWallpaperChangedNotification(true, wallpaper.filePath.toFile(), bitmap)
+                showWallpaperChangedNotification(true, wallpaper.filePath.toFile(), homeBitmap)
 
                 wallpaperManager.setBitmap(lockBitmap, null, true, WallpaperManager.FLAG_LOCK)
-                showWallpaperChangedNotification(false, wallpaper.filePath.toFile(), bitmap)
+                showWallpaperChangedNotification(false, wallpaper.filePath.toFile(), lockBitmap)
             }
         }
     }
@@ -261,6 +262,13 @@ abstract class AbstractComposeAutoWallpaperService : AbstractLegacyAutoWallpaper
 
     private fun showWallpaperChangedNotification(isHomeScreen: Boolean, file: File, bitmap: Bitmap) {
         Log.i(TAG, "Showing notification for wallpaper change for file: ${file.absolutePath}")
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (PermissionUtils.checkNotificationPermission(applicationContext).invert()) {
+                Log.i(TAG, "Notification permission not granted, skipping notification")
+                return
+            }
+        }
+
         if (MainComposePreferences.getAutoWallpaperNotification().invert()) {
             return
         }
@@ -281,10 +289,10 @@ abstract class AbstractComposeAutoWallpaperService : AbstractLegacyAutoWallpaper
         val sendIntent = createSendIntent(file, this)
 
         val deletePendingIntent: PendingIntent = PendingIntent.getBroadcast(
-                this, notificationId, deleteIntent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
+                this, notificationId, deleteIntent, PENDING_INTENT_FLAGS)
 
         val sendPendingIntent: PendingIntent = PendingIntent.getActivity(
-                this, notificationId, Intent.createChooser(sendIntent, null), PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
+                this, notificationId, Intent.createChooser(sendIntent, null), PENDING_INTENT_FLAGS)
 
         val notification = NotificationCompat.Builder(this, channelId)
             .setSmallIcon(R.drawable.ic_peristyle)
@@ -329,5 +337,7 @@ abstract class AbstractComposeAutoWallpaperService : AbstractLegacyAutoWallpaper
 
         const val HOME_NOTIFICATION_ID = 1234
         const val LOCK_NOTIFICATION_ID = 5367
+
+        private const val PENDING_INTENT_FLAGS = PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
     }
 }
