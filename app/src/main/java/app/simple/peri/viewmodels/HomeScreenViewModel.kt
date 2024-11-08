@@ -3,12 +3,10 @@ package app.simple.peri.viewmodels
 import android.app.Application
 import android.app.WallpaperManager
 import android.graphics.Bitmap
-import android.net.Uri
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import androidx.core.content.FileProvider
 import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
@@ -60,6 +58,7 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
     }
 
     private fun getCurrentSystemWallpaper(): ArrayList<Wallpaper> {
+        clearResidualFiles()
         val wallpaperManager = WallpaperManager.getInstance(getApplication())
         val systemBitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             wallpaperManager.getDrawable(WallpaperManager.FLAG_SYSTEM)?.toBitmap()
@@ -95,18 +94,28 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
     }
 
     private fun createTempFile(fileName: String): File {
-        val file = File(
-                getApplication<Application>().filesDir,
-                fileName.replace("$", System.currentTimeMillis().div(1000).toString())
-        )
+        val file = File(getApplication<Application>().cacheDir, fileName)
         if (file.exists()) file.delete()
         return file
     }
 
-    private fun getFileUri(file: File): Uri {
-        return FileProvider.getUriForFile(
-                getApplication(), "${getApplication<Application>().packageName}.provider", file
-        )
+    private fun clearResidualFiles() {
+        val filesDir = getApplication<Application>().filesDir
+        val cacheDir = getApplication<Application>().cacheDir
+
+        filesDir.listFiles()?.forEach {
+            if (it.name.startsWith("system_wallpaper_")
+                    || it.name.startsWith("lock_wallpaper_")) {
+                it.delete()
+            }
+        }
+
+        cacheDir.listFiles()?.forEach {
+            if (it.name.startsWith("system_wallpaper_")
+                    || it.name.startsWith("lock_wallpaper_")) {
+                it.delete()
+            }
+        }
     }
 
     @Throws(NoSuchElementException::class)
