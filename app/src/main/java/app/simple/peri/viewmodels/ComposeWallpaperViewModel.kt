@@ -14,6 +14,7 @@ import app.simple.peri.utils.FileUtils.filterDotFiles
 import app.simple.peri.utils.FileUtils.listCompleteFiles
 import app.simple.peri.utils.FileUtils.listOnlyFirstLevelFiles
 import app.simple.peri.utils.FileUtils.toFile
+import app.simple.peri.utils.FileUtils.toFileUri
 import app.simple.peri.utils.ProcessUtils.cancelAll
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -93,6 +94,8 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
                                         if (alreadyLoaded?.containsKey(file.absolutePath.toString()) == false) {
                                             val wallpaper = Wallpaper.createFromFile(file)
                                             wallpaper.folderID = folderPath.hashCode()
+                                            // Make sure legacy interface stays compatible
+                                            wallpaper.uri = file.toFileUri(getApplication()).toString()
                                             ensureActive()
                                             WallpaperDatabase.getInstance(getApplication())
                                                 ?.wallpaperDao()?.insert(wallpaper)

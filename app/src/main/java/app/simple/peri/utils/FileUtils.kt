@@ -1,6 +1,8 @@
 package app.simple.peri.utils
 
+import android.content.Context
 import android.net.Uri
+import androidx.core.content.FileProvider
 import androidx.documentfile.provider.DocumentFile
 import app.simple.peri.utils.StringUtils.endsWithAny
 import java.io.File
@@ -95,5 +97,13 @@ object FileUtils {
         val md = MessageDigest.getInstance("MD5")
         return BigInteger(1, md.digest(this.readBytes()))
             .toString(16).padStart(32, '0')
+    }
+
+    fun File.toFileUri(context: Context): Uri {
+        return FileProvider.getUriForFile(context, context.packageName + ".provider", this)
+    }
+
+    fun String.toFileUri(context: Context): Uri {
+        return FileProvider.getUriForFile(context, context.packageName + ".provider", File(this))
     }
 }

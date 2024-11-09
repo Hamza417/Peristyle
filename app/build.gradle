@@ -18,8 +18,8 @@ android {
         applicationId "app.simple.peri"
         minSdk 24
         targetSdk 35
-        versionCode 520
-        versionName "v5.2.0"
+        versionCode 530
+        versionName "v5.3.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
