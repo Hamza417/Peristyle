@@ -47,9 +47,7 @@ from there? then Peristyle is for you :)
 | ![07](./fastlane/metadata/android/en-US/images/phoneScreenshots/07.png) | ![08](./fastlane/metadata/android/en-US/images/phoneScreenshots/08.png) | ![09](./fastlane/metadata/android/en-US/images/phoneScreenshots/09.png) |
 | ![10](./fastlane/metadata/android/en-US/images/phoneScreenshots/10.png) | ![11](./fastlane/metadata/android/en-US/images/phoneScreenshots/11.png) | ![12](./fastlane/metadata/android/en-US/images/phoneScreenshots/12.png) |
 
-### Peristyle also has a totally different UI based on Material You
-
-It can be toggled from the app settings.
+### Peristyle also has a separate UI based on Material You
 
 | ![001](./screenshots/01.png) | ![002](./screenshots/02.png) | ![003](./screenshots/03.png) |
 |:----------------------------:|:----------------------------:|:----------------------------:|
