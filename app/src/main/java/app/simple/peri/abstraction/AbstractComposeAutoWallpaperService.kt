@@ -41,7 +41,7 @@ abstract class AbstractComposeAutoWallpaperService : AbstractLegacyAutoWallpaper
         createNotificationChannels()
     }
 
-    protected fun setComposeWallpaper() {
+    protected fun setComposeWallpaper(onComplete: () -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
             runCatching {
                 when {
@@ -62,6 +62,7 @@ abstract class AbstractComposeAutoWallpaperService : AbstractLegacyAutoWallpaper
                 }
 
                 withContext(Dispatchers.Main) {
+                    onComplete()
                     stopSelf()
                 }
             }.getOrElse {
@@ -70,6 +71,7 @@ abstract class AbstractComposeAutoWallpaperService : AbstractLegacyAutoWallpaper
 
                 withContext(Dispatchers.Main) {
                     showErrorNotification(it.stackTraceToString())
+                    onComplete
                     stopSelf()
                 }
             }

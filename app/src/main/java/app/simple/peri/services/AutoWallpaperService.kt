@@ -41,7 +41,6 @@ class AutoWallpaperService : AbstractComposeAutoWallpaperService() {
                             .show()
                     }
                     init()
-                    isNextWallpaperActionRunning = false
                 } else {
                     Log.d(TAG, "Next wallpaper action already running, ignoring")
                     Toast.makeText(applicationContext, R.string.next_wallpaper_already_running, Toast.LENGTH_SHORT)
@@ -95,7 +94,9 @@ class AutoWallpaperService : AbstractComposeAutoWallpaperService() {
             }
         } else {
             Log.i(TAG, "Compose interface detected, switching to new approach")
-            setComposeWallpaper()
+            setComposeWallpaper {
+                isNextWallpaperActionRunning = false
+            }
         }
     }
 

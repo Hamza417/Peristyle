@@ -241,7 +241,7 @@ fun DescriptionPreference(description: String) {
 }
 
 @Composable
-fun ButtonPreferences(title: String, onClick: () -> Unit) {
+fun ButtonPreference(title: String, description: String = "", onClick: () -> Unit) {
     Button(
             modifier = Modifier
                 .wrapContentWidth()
@@ -252,11 +252,22 @@ fun ButtonPreferences(title: String, onClick: () -> Unit) {
             shape = RoundedCornerShape(PREF_HORIZONTAL_PADDING),
             onClick = onClick
     ) {
-        Text(
-                text = title,
-                fontWeight = FontWeight.Bold,
-                fontSize = PREFERENCE_TITLE_SIZE,
+        Column(
                 modifier = Modifier.padding(4.dp)
-        )
+        ) {
+            Text(
+                    text = title,
+                    fontWeight = FontWeight.Medium,
+                    fontSize = PREFERENCE_TITLE_SIZE,
+            )
+            if (description.isNotEmpty()) {
+                Text(
+                        text = description,
+                        fontWeight = FontWeight.Normal,
+                        fontSize = PREFERENCE_DESCRIPTION_SIZE,
+                        modifier = Modifier.padding(top = 4.dp)
+                )
+            }
+        }
     }
 }

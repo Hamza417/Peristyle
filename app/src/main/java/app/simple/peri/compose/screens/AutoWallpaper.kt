@@ -1,6 +1,6 @@
 package app.simple.peri.compose.screens
 
-import ButtonPreferences
+import ButtonPreference
 import ClickablePreference
 import DescriptionPreference
 import SecondaryClickablePreference
@@ -89,8 +89,8 @@ fun AutoWallpaper(navController: NavController? = null) {
             val screenSelectionDialog = remember { mutableStateOf(false) }
             val autoWallpaperDialog = remember { mutableStateOf(false) }
 
-            ButtonPreferences(
-                    stringResource(R.string.next_wallpaper),
+            ButtonPreference(
+                    title = stringResource(R.string.next_wallpaper),
                     onClick = {
                         Intent(context, AutoWallpaperService::class.java).also { intent ->
                             intent.action = AutoWallpaperService.ACTION_NEXT_WALLPAPER
