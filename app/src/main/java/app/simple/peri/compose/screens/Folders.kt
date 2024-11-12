@@ -23,9 +23,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Visibility
 import androidx.compose.material.icons.rounded.VisibilityOff
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
@@ -47,14 +44,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.DialogProperties
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -63,9 +57,8 @@ import app.simple.peri.compose.commons.BottomHeader
 import app.simple.peri.compose.commons.COMMON_PADDING
 import app.simple.peri.compose.commons.FolderBrowser
 import app.simple.peri.compose.commons.TopHeader
-import app.simple.peri.compose.constants.DIALOG_OPTION_FONT_SIZE
-import app.simple.peri.compose.constants.DIALOG_TITLE_FONT_SIZE
 import app.simple.peri.compose.dialogs.common.ShowWarningDialog
+import app.simple.peri.compose.dialogs.folders.FolderMenu
 import app.simple.peri.compose.nav.Routes
 import app.simple.peri.models.Folder
 import app.simple.peri.preferences.MainComposePreferences
@@ -330,63 +323,4 @@ fun FolderItem(folder: Folder, navController: NavController? = null, composeWall
             }
         }
     }
-}
-
-@Composable
-fun FolderMenu(folder: Folder? = null, onDismiss: () -> Unit, onOptionSelected: (String) -> Unit) {
-    val options = listOf(
-            stringResource(R.string.delete),
-            when (folder?.isNomedia?.invert()) {
-                true -> stringResource(R.string.add_nomedia)
-                else -> stringResource(R.string.remove_nomedia)
-            },
-    )
-
-    AlertDialog(
-            title = {
-                Text(
-                        text = folder?.name ?: "",
-                        fontSize = DIALOG_TITLE_FONT_SIZE,
-                        fontWeight = FontWeight.Bold,
-                        fontFamily = FontFamily.SansSerif,
-                        style = TextStyle.Default,
-                )
-            },
-            onDismissRequest = { onDismiss() },
-            text = {
-                Column {
-                    options.forEach { option ->
-                        Button(
-                                onClick = {
-                                    onOptionSelected(option)
-                                    onDismiss()
-                                },
-                                colors = ButtonDefaults.buttonColors(
-                                        containerColor = Color.Transparent,
-                                ),
-                                modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Text(
-                                    text = option,
-                                    color = MaterialTheme.colorScheme.onSurface,
-                                    modifier = Modifier.fillMaxWidth(),
-                                    textAlign = TextAlign.Center,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = DIALOG_OPTION_FONT_SIZE,
-                            )
-                        }
-                    }
-                }
-            },
-            confirmButton = {
-                Button(
-                        onClick = {
-                            onDismiss()
-                        }
-                ) {
-                    Text(text = stringResource(R.string.close))
-                }
-            },
-            properties = DialogProperties(dismissOnClickOutside = true)
-    )
 }

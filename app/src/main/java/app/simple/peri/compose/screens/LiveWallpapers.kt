@@ -24,12 +24,8 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -49,11 +45,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowInsetsCompat
@@ -63,8 +55,7 @@ import app.simple.peri.R
 import app.simple.peri.compose.commons.BottomHeader
 import app.simple.peri.compose.commons.COMMON_PADDING
 import app.simple.peri.compose.commons.TopHeader
-import app.simple.peri.compose.constants.DIALOG_OPTION_FONT_SIZE
-import app.simple.peri.compose.constants.DIALOG_TITLE_FONT_SIZE
+import app.simple.peri.compose.dialogs.livewallpapers.LiveWallpapersMenu
 import app.simple.peri.models.LiveWallpaperInfo
 import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.viewmodels.LiveWallpapersViewModel
@@ -160,7 +151,6 @@ fun LiveWallpapers(navController: NavHostController) {
                     LiveWallpapersMenu(
                             liveWallpaperInfo = liveWallpaperInfo,
                             onDismiss = { showWallpaperMenu = false },
-                            wallpaper = liveWallpaperInfo,
                             onOptionSelected = { option ->
                                 when (option) {
                                     context.getString(R.string.delete) -> {
@@ -213,7 +203,7 @@ fun LiveWallpapers(navController: NavHostController) {
                                 pressedElevation = 16.dp
                         ),
                 ) {
-                    val hazeState = remember { HazeState() }
+                    val localHazeState = remember { HazeState() }
 
                     Box(modifier = Modifier.padding(0.dp)) {
                         Image(
@@ -221,7 +211,7 @@ fun LiveWallpapers(navController: NavHostController) {
                                 contentDescription = liveWallpaperInfo.name,
                                 modifier = Modifier
                                     .fillMaxSize()
-                                    .haze(hazeState),
+                                    .haze(localHazeState),
                                 contentScale = ContentScale.Crop
                         )
                         Column(
@@ -229,7 +219,7 @@ fun LiveWallpapers(navController: NavHostController) {
                                     .wrapContentHeight()
                                     .fillMaxWidth()
                                     .hazeChild(
-                                            state = hazeState,
+                                            state = localHazeState,
                                             style = HazeDefaults.style(backgroundColor = Color(0x50000000), blurRadius = 25.dp)
                                     )
                                     .align(Alignment.BottomCenter)
@@ -265,63 +255,6 @@ fun LiveWallpapers(navController: NavHostController) {
             )
         }
     }
-}
-
-@Composable
-fun LiveWallpapersMenu(liveWallpaperInfo: LiveWallpaperInfo? = null, onDismiss: () -> Unit, onOptionSelected: (String) -> Unit, wallpaper: LiveWallpaperInfo) {
-    val options = listOf(
-            stringResource(R.string.delete)
-    )
-
-    AlertDialog(
-            title = {
-                Text(
-                        text = liveWallpaperInfo?.name ?: "",
-                        fontSize = DIALOG_TITLE_FONT_SIZE,
-                        fontWeight = FontWeight.Bold,
-                        fontFamily = FontFamily.SansSerif,
-                        style = TextStyle.Default,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        textAlign = TextAlign.Center
-                )
-            },
-            onDismissRequest = { onDismiss() },
-            text = {
-                Column {
-                    options.forEach { option ->
-                        Button(
-                                onClick = {
-                                    onOptionSelected(option)
-                                    onDismiss()
-                                },
-                                colors = ButtonDefaults.buttonColors(
-                                        containerColor = Color.Transparent,
-                                ),
-                                modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Text(
-                                    text = option,
-                                    color = MaterialTheme.colorScheme.onSurface,
-                                    modifier = Modifier.fillMaxWidth(),
-                                    textAlign = TextAlign.Center,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = DIALOG_OPTION_FONT_SIZE
-                            )
-                        }
-                    }
-                }
-            },
-            confirmButton = {
-                Button(
-                        onClick = {
-                            onDismiss()
-                        }
-                ) {
-                    Text(text = stringResource(R.string.close))
-                }
-            },
-    )
 }
 
 @Composable

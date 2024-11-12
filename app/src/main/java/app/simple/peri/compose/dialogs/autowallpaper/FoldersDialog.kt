@@ -48,7 +48,10 @@ fun FoldersDialog(selected: Int, setShowing: (Boolean) -> Unit, onFolder: (Folde
                                         colors = if (folder.hashcode == selected) {
                                             ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                                         } else {
-                                            ButtonDefaults.buttonColors(containerColor = Color.Transparent)
+                                            ButtonDefaults.buttonColors(
+                                                    containerColor = Color.Transparent,
+                                                    contentColor = MaterialTheme.colorScheme.onSurface
+                                            )
                                         },
                                         modifier = Modifier
                                             .weight(1f)

@@ -48,6 +48,7 @@ fun ScreenSelectionDialog(onDismiss: () -> Unit, onOptionSelected: (String) -> U
                                     else -> {
                                         ButtonDefaults.buttonColors(
                                                 containerColor = Color.Transparent,
+                                                contentColor = MaterialTheme.colorScheme.onSurface
                                         )
                                     }
                                 },

@@ -57,6 +57,7 @@ fun TimeSelectionDialog(onDismiss: () -> Unit, onOptionSelected: (Pair<String, L
                                     else -> {
                                         ButtonDefaults.buttonColors(
                                                 containerColor = Color.Transparent,
+                                                contentColor = MaterialTheme.colorScheme.onSurface
                                         )
                                     }
                                 },

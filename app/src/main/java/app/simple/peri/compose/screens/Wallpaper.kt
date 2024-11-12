@@ -1,13 +1,9 @@
 package app.simple.peri.compose.screens
 
-import android.app.WallpaperManager
-import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.util.Log
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,13 +24,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Label
 import androidx.compose.material.icons.rounded.Bookmarks
 import androidx.compose.material.icons.rounded.Edit
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -59,21 +53,15 @@ import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import app.simple.peri.R
 import app.simple.peri.compose.commons.LaunchEffectActivity
-import app.simple.peri.compose.constants.DIALOG_OPTION_FONT_SIZE
-import app.simple.peri.compose.constants.DIALOG_TITLE_FONT_SIZE
-import app.simple.peri.compose.dialogs.common.ShowWarningDialog
 import app.simple.peri.compose.dialogs.wallpaper.EffectsDialog
+import app.simple.peri.compose.dialogs.wallpaper.ScreenSelectionDialog
 import app.simple.peri.compose.nav.Routes
 import app.simple.peri.constants.Misc
 import app.simple.peri.factories.TagsViewModelFactory
@@ -95,9 +83,11 @@ import kotlinx.coroutines.launch
 import me.saket.telephoto.zoomable.glide.ZoomableGlideImage
 
 @Composable
-fun Wallpaper(navController: NavHostController, wallpaper: Wallpaper? = null) {
+fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? = null) {
     val context = LocalContext.current
-    val wallpaper = navController.previousBackStackEntry?.savedStateHandle?.get<Wallpaper>(Routes.WALLPAPER_ARG) ?: wallpaper
+    val wallpaper = navController.previousBackStackEntry?.savedStateHandle
+        ?.get<Wallpaper>(Routes.WALLPAPER_ARG)
+        ?: associatedWallpaper
     val stateViewModel: StateViewModel = viewModel()
     var showDialog by remember { mutableStateOf(false) }
     var drawable by remember { mutableStateOf<Drawable?>(null) }
@@ -301,8 +291,8 @@ fun Wallpaper(navController: NavHostController, wallpaper: Wallpaper? = null) {
                         text = wallpaper?.name ?: "",
                         fontWeight = FontWeight.Bold,
                         color = Color.White,
-                        modifier = Modifier.padding(top = 16.dp, start = 16.dp),
-                        fontSize = 22.sp
+                        modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp),
+                        fontSize = 20.sp
                 )
 
                 Text(
@@ -459,165 +449,5 @@ fun Wallpaper(navController: NavHostController, wallpaper: Wallpaper? = null) {
                     wallpaper = wallpaper!!
             )
         }
-    }
-}
-
-@Composable
-fun ScreenSelectionDialog(setShowDialog: (Boolean) -> Unit, context: Context, drawable: Drawable?, wallpaper: Wallpaper) {
-    val shouldExport = remember { mutableStateOf(false) }
-    val showDoneDialog = remember { mutableStateOf(false) }
-
-    if (shouldExport.value) {
-        ExportWallpaper(context, drawable!!, wallpaper) {
-            shouldExport.value = false
-            showDoneDialog.value = true
-        }
-    }
-
-    if (showDoneDialog.value) {
-        ShowWarningDialog(
-                title = context.getString(R.string.exported),
-                warning = wallpaper.name!!.substringBeforeLast(".") + "_edited.png",
-                onDismiss = {
-                    setShowDialog(false)
-                    showDoneDialog.value = false
-                }
-        )
-    }
-
-    AlertDialog(
-            onDismissRequest = { setShowDialog(false) },
-            title = {
-                Text(
-                        text = stringResource(id = R.string.set_as_wallpaper),
-                        fontSize = DIALOG_TITLE_FONT_SIZE,
-                        fontWeight = FontWeight.Bold,
-                        fontFamily = FontFamily.SansSerif,
-                        style = TextStyle.Default,
-                )
-            },
-            text = {
-                Column {
-                    Button(
-                            onClick = {
-                                setWallpaper(context, WallpaperManager.FLAG_LOCK, drawable!!)
-                                setShowDialog(false)
-                            },
-                            colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color.Transparent,
-                            ),
-                            shape = RoundedCornerShape(12.dp),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                    ) {
-                        Text(
-                                text = context.getString(R.string.lock_screen),
-                                fontSize = DIALOG_OPTION_FONT_SIZE,
-                                color = MaterialTheme.colorScheme.onSurface,
-                                fontWeight = FontWeight.Bold
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(5.dp))
-
-                    Button(
-                            onClick = {
-                                setWallpaper(context, WallpaperManager.FLAG_SYSTEM, drawable!!)
-                                setShowDialog(false)
-                            },
-                            colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color.Transparent,
-                            ),
-                            shape = RoundedCornerShape(12.dp),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                    ) {
-                        Text(
-                                text = context.getString(R.string.home_screen),
-                                fontSize = DIALOG_OPTION_FONT_SIZE,
-                                color = MaterialTheme.colorScheme.onSurface,
-                                fontWeight = FontWeight.Bold
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(5.dp))
-
-                    Button(
-                            onClick = {
-                                setWallpaper(context, WallpaperManager.FLAG_SYSTEM or WallpaperManager.FLAG_LOCK, drawable!!)
-                                setShowDialog(false)
-                            },
-                            colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color.Transparent,
-                            ),
-                            shape = RoundedCornerShape(12.dp),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                    ) {
-                        Text(
-                                text = context.getString(R.string.both),
-                                color = MaterialTheme.colorScheme.onSurface,
-                                fontSize = DIALOG_OPTION_FONT_SIZE,
-                                fontWeight = FontWeight.Bold
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(5.dp))
-
-                    Button(
-                            onClick = {
-                                shouldExport.value = true
-                            },
-                            colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color.Transparent,
-                            ),
-                            shape = RoundedCornerShape(12.dp),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                    ) {
-                        Text(
-                                text = context.getString(R.string.export),
-                                color = MaterialTheme.colorScheme.onSurface,
-                                fontSize = DIALOG_OPTION_FONT_SIZE,
-                                fontWeight = FontWeight.Bold
-                        )
-                    }
-                }
-            },
-            confirmButton = {
-                Button(
-                        onClick = {
-                            setShowDialog(false)
-                        })
-                {
-                    Text(stringResource(id = R.string.cancel))
-                }
-            },
-    )
-}
-
-fun setWallpaper(context: Context, flags: Int, drawable: Drawable) {
-    val wallpaperManager = WallpaperManager.getInstance(context)
-    wallpaperManager.setWallpaperOffsetSteps(0F, 0F)
-    wallpaperManager.setBitmap(drawable.toBitmap(), null, true, flags)
-}
-
-@Composable
-fun ExportWallpaper(context: Context, drawable: Drawable, wallpaper: Wallpaper, onExport: () -> Unit = {}) {
-    val wallpaperExportLauncher = rememberLauncherForActivityResult(
-            ActivityResultContracts.CreateDocument("image/x-png")) { uri ->
-        uri?.let {
-            context.contentResolver.openOutputStream(it)?.use { outputStream ->
-                drawable.toBitmap().compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-            }
-
-            onExport()
-        }
-    }
-
-    LaunchedEffect(Unit) {
-        val extension = wallpaper.name?.substringAfterLast(".")
-        val fileName = wallpaper.name?.replace(extension!!, "_edited.png") ?: "edited.png"
-        wallpaperExportLauncher.launch(fileName)
     }
 }

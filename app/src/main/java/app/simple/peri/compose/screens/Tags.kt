@@ -7,19 +7,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -36,8 +30,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -48,8 +40,7 @@ import app.simple.peri.R
 import app.simple.peri.compose.commons.BottomHeader
 import app.simple.peri.compose.commons.COMMON_PADDING
 import app.simple.peri.compose.commons.TopHeader
-import app.simple.peri.compose.constants.DIALOG_OPTION_FONT_SIZE
-import app.simple.peri.compose.constants.DIALOG_TITLE_FONT_SIZE
+import app.simple.peri.compose.dialogs.tags.TagsMenu
 import app.simple.peri.compose.nav.Routes
 import app.simple.peri.factories.TagsViewModelFactory
 import app.simple.peri.models.Tag
@@ -222,65 +213,4 @@ fun TagItem(tag: Tag, navController: NavController? = null) {
             }
         }
     }
-}
-
-@Composable
-fun TagsMenu(setShowDialog: (Boolean) -> Unit,
-             tag: Tag) {
-
-    val context = LocalContext.current
-    val tagsViewModel: TagsViewModel = viewModel(
-            factory = TagsViewModelFactory()
-    )
-
-    AlertDialog(
-            onDismissRequest = { setShowDialog(false) },
-            title = {
-                Text(
-                        text = tag.name,
-                        style = TextStyle(
-                                fontFamily = FontFamily.SansSerif,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = DIALOG_TITLE_FONT_SIZE
-                        )
-                )
-            },
-            text = {
-                Box(
-                        contentAlignment = Alignment.Center
-                ) {
-                    Column {
-                        Button(
-                                onClick = {
-                                    tagsViewModel.deleteTag(tag)
-                                    setShowDialog(false)
-                                },
-                                colors = ButtonDefaults.buttonColors(
-                                        containerColor = Color.Transparent,
-                                ),
-                                shape = RoundedCornerShape(12.dp),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(50.dp),
-                        ) {
-                            Text(
-                                    text = context.getString(R.string.delete),
-                                    color = MaterialTheme.colorScheme.onSurface,
-                                    fontSize = DIALOG_OPTION_FONT_SIZE,
-                                    fontWeight = FontWeight.SemiBold
-                            )
-                        }
-                    }
-                }
-            },
-            confirmButton = {
-                Button(
-                        onClick = { setShowDialog(false) },
-                ) {
-                    Text(
-                            text = stringResource(R.string.close),
-                    )
-                }
-            },
-    )
 }

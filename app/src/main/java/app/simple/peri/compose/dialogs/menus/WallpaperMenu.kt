@@ -59,11 +59,6 @@ fun WallpaperMenu(
             title = {
                 Text(
                         text = wallpaper.name ?: "",
-                        style = TextStyle(
-                                fontFamily = FontFamily.SansSerif,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = DIALOG_TITLE_FONT_SIZE
-                        )
                 )
             },
             text = {
@@ -85,8 +80,10 @@ fun WallpaperMenu(
                                         .setStream(uri)
                                         .startChooser()
                                 },
-                                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
-                                shape = RoundedCornerShape(12.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                        containerColor = Color.Transparent,
+                                        contentColor = MaterialTheme.colorScheme.onSurface
+                                ),
                                 modifier = Modifier
                                     .fillMaxWidth()
                         ) {
@@ -112,8 +109,10 @@ fun WallpaperMenu(
                                         }
                                     }
                                 },
-                                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
-                                shape = RoundedCornerShape(12.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                        containerColor = Color.Transparent,
+                                        contentColor = MaterialTheme.colorScheme.onSurface
+                                ),
                                 modifier = Modifier
                                     .fillMaxWidth()
                         ) {
@@ -133,8 +132,10 @@ fun WallpaperMenu(
                                         setShowDialog(false)
                                     }
                                 },
-                                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
-                                shape = RoundedCornerShape(12.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                        containerColor = Color.Transparent,
+                                        contentColor = MaterialTheme.colorScheme.onSurface
+                                ),
                                 modifier = Modifier
                                     .fillMaxWidth()
                         ) {
@@ -167,8 +168,10 @@ fun WallpaperMenu(
                                     )
                                     setShowDialog(false)
                                 },
-                                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
-                                shape = RoundedCornerShape(12.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                        containerColor = Color.Transparent,
+                                        contentColor = MaterialTheme.colorScheme.onSurface
+                                ),
                                 modifier = Modifier
                                     .fillMaxWidth()
                         ) {
@@ -187,8 +190,10 @@ fun WallpaperMenu(
                                     onSelect()
                                     setShowDialog(false)
                                 },
-                                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
-                                shape = RoundedCornerShape(12.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                        containerColor = Color.Transparent,
+                                        contentColor = MaterialTheme.colorScheme.onSurface
+                                ),
                                 modifier = Modifier
                                     .fillMaxWidth(),
                         ) {
@@ -212,8 +217,10 @@ fun WallpaperMenu(
                                         setShowDialog(false)
                                     }
                                 },
-                                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
-                                shape = RoundedCornerShape(12.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                        containerColor = Color.Transparent,
+                                        contentColor = MaterialTheme.colorScheme.onSurface
+                                ),
                                 modifier = Modifier
                                     .fillMaxWidth(),
                         ) {
@@ -233,8 +240,10 @@ fun WallpaperMenu(
                                         setShowDialog(false)
                                     }
                                 },
-                                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
-                                shape = RoundedCornerShape(12.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                        containerColor = Color.Transparent,
+                                        contentColor = MaterialTheme.colorScheme.onSurface
+                                ),
                                 modifier = Modifier
                                     .fillMaxWidth(),
                         ) {
@@ -256,8 +265,10 @@ fun WallpaperMenu(
                                         setShowDialog(false)
                                     }
                                 },
-                                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
-                                shape = RoundedCornerShape(12.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                        containerColor = Color.Transparent,
+                                        contentColor = MaterialTheme.colorScheme.onSurface
+                                ),
                                 modifier = Modifier
                                     .fillMaxWidth()
                         ) {

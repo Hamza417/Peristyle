@@ -48,7 +48,10 @@ fun NumberSelectionDialog(onDismiss: () -> Unit, onNumberSelected: (Int) -> Unit
                                 colors = if (forLandscape.value) {
                                     ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                                 } else {
-                                    ButtonDefaults.buttonColors(containerColor = Color.Transparent)
+                                    ButtonDefaults.buttonColors(
+                                            containerColor = Color.Transparent,
+                                            contentColor = MaterialTheme.colorScheme.onSurface
+                                    )
                                 },
                                 modifier = Modifier
                                     .padding(end = 8.dp)
@@ -70,7 +73,10 @@ fun NumberSelectionDialog(onDismiss: () -> Unit, onNumberSelected: (Int) -> Unit
                                 colors = if (forLandscape.value.invert()) {
                                     ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                                 } else {
-                                    ButtonDefaults.buttonColors(containerColor = Color.Transparent)
+                                    ButtonDefaults.buttonColors(
+                                            containerColor = Color.Transparent,
+                                            contentColor = MaterialTheme.colorScheme.onSurface
+                                    )
                                 },
                                 modifier = Modifier
                                     .padding(start = 8.dp)
@@ -110,7 +116,10 @@ fun NumberSelectionDialog(onDismiss: () -> Unit, onNumberSelected: (Int) -> Unit
                                     colors = if (selectedNumber.intValue == number) {
                                         ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                                     } else {
-                                        ButtonDefaults.buttonColors(containerColor = Color.Transparent)
+                                        ButtonDefaults.buttonColors(
+                                                containerColor = Color.Transparent,
+                                                contentColor = MaterialTheme.colorScheme.onSurface
+                                        )
                                     }
                             ) {
                                 Text(

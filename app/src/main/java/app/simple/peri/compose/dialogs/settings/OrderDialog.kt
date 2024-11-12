@@ -42,7 +42,10 @@ fun OrderDialog(onDismiss: () -> Unit) {
                                 colors = if (MainPreferences.getOrder() == item.second) {
                                     ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                                 } else {
-                                    ButtonDefaults.buttonColors(containerColor = Color.Transparent)
+                                    ButtonDefaults.buttonColors(
+                                            containerColor = Color.Transparent,
+                                            contentColor = MaterialTheme.colorScheme.onSurface
+                                    )
                                 }
                         ) {
                             Text(text = item.first,

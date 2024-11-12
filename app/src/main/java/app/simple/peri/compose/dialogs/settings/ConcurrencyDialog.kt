@@ -55,7 +55,10 @@ fun ConcurrencyDialog(onDismiss: () -> Unit) {
                                 colors = if (MainComposePreferences.getSemaphoreCount() == list[index]) {
                                     ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                                 } else {
-                                    ButtonDefaults.buttonColors(containerColor = Color.Transparent)
+                                    ButtonDefaults.buttonColors(
+                                            containerColor = Color.Transparent,
+                                            contentColor = MaterialTheme.colorScheme.onSurface
+                                    )
                                 }
                         ) {
                             Text(

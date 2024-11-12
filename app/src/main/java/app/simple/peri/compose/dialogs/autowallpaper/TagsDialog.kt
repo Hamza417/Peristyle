@@ -47,7 +47,10 @@ fun TagsDialog(selected: String, setShowing: (Boolean) -> Unit, onTag: (Tag) -> 
                                             colors = if (tag.name == selected) {
                                                 ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                                             } else {
-                                                ButtonDefaults.buttonColors(containerColor = Color.Transparent)
+                                                ButtonDefaults.buttonColors(
+                                                        containerColor = Color.Transparent,
+                                                        contentColor = MaterialTheme.colorScheme.onSurface
+                                                )
                                             },
                                             modifier = Modifier
                                                 .weight(1f)
