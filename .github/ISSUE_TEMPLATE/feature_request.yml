@@ -1,6 +1,6 @@
 name: Feature Request
 description: Suggest a new feature or enhancement.
-title: "[Feature Request] "
+title: "[Feature Request] Your Title Here"
 labels: [ feature request ]
 assignees: [ Hamza417 ]
 
@@ -20,8 +20,6 @@ body:
                 -   label: I have read the [Code of Conduct](https://github.com/Hamza417/Peristyle/blob/master/CODE_OF_CONDUCT.md)
                     required: true
                 -   label: I have searched the existing issues
-                    required: true
-                -   label: I have provided sufficient information
                     required: true
 
     -   type: input
@@ -55,3 +53,13 @@ body:
             label: Additional Context
             description: Add any other context or screenshots about the feature request here.
             placeholder: Provide additional context here
+
+    -   type: checkboxes
+        id: confirmation_2
+        attributes:
+            label: Sufficiency Confirmation
+            description: |
+                Please confirm the following:
+            options:
+                -   label: I have provided all the information requested above and deemed sufficient for the developer to address the issue
+                    required: true
