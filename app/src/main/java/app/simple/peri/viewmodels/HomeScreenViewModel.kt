@@ -44,6 +44,10 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
             WallpaperManager.getInstance(application)
                 .addOnColorsChangedListener({ _, _ -> post() }, Handler(Looper.getMainLooper()))
         }
+
+        viewModelScope.launch(Dispatchers.IO) {
+            clearLegacyResidualFiles()
+        }
     }
 
     private fun postCurrentSystemWallpaper() {
@@ -58,7 +62,6 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
     }
 
     private fun getCurrentSystemWallpaper(): ArrayList<Wallpaper> {
-        clearResidualFiles()
         val wallpaperManager = WallpaperManager.getInstance(getApplication())
         val systemBitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             wallpaperManager.getDrawable(WallpaperManager.FLAG_SYSTEM)?.toBitmap()
@@ -99,18 +102,10 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
         return file
     }
 
-    private fun clearResidualFiles() {
+    private fun clearLegacyResidualFiles() {
         val filesDir = getApplication<Application>().filesDir
-        val cacheDir = getApplication<Application>().cacheDir
 
         filesDir.listFiles()?.forEach {
-            if (it.name.startsWith("system_wallpaper_")
-                    || it.name.startsWith("lock_wallpaper_")) {
-                it.delete()
-            }
-        }
-
-        cacheDir.listFiles()?.forEach {
             if (it.name.startsWith("system_wallpaper_")
                     || it.name.startsWith("lock_wallpaper_")) {
                 it.delete()
@@ -162,8 +157,8 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
     }
 
     companion object {
-        private const val SYSTEM_WALLPAPER = "system_wallpaper_$.png"
-        private const val LOCK_WALLPAPER = "lock_wallpaper_$.png"
+        private const val SYSTEM_WALLPAPER = "system_wallpaper.png"
+        private const val LOCK_WALLPAPER = "lock_wallpaper.png"
         private const val RANDOM_WALLPAPER_DELAY = 30L * 1000L // 30 seconds
     }
 }
