@@ -5,7 +5,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -234,6 +236,27 @@ fun DescriptionPreference(description: String) {
                 fontWeight = FontWeight.Normal,
                 fontSize = PREFERENCE_DESCRIPTION_SIZE,
                 modifier = Modifier.padding(bottom = 8.dp)
+        )
+    }
+}
+
+@Composable
+fun ButtonPreferences(title: String, onClick: () -> Unit) {
+    Button(
+            modifier = Modifier
+                .wrapContentWidth()
+                .padding(start = PREF_HORIZONTAL_PADDING,
+                         end = PREF_HORIZONTAL_PADDING,
+                         top = 8.dp,
+                         bottom = 8.dp),
+            shape = RoundedCornerShape(PREF_HORIZONTAL_PADDING),
+            onClick = onClick
+    ) {
+        Text(
+                text = title,
+                fontWeight = FontWeight.Bold,
+                fontSize = PREFERENCE_TITLE_SIZE,
+                modifier = Modifier.padding(4.dp)
         )
     }
 }

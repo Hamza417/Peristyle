@@ -1,10 +1,12 @@
 package app.simple.peri.compose.screens
 
+import ButtonPreferences
 import ClickablePreference
 import DescriptionPreference
 import SecondaryClickablePreference
 import SecondaryHeader
 import SwitchPreference
+import android.content.Intent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -48,6 +50,7 @@ import app.simple.peri.compose.dialogs.autowallpaper.TimeSelectionDialog
 import app.simple.peri.compose.dialogs.wallpaper.AutoWallpaperEffectsDialog
 import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.preferences.MainPreferences
+import app.simple.peri.services.AutoWallpaperService
 
 @Composable
 fun AutoWallpaper(navController: NavController? = null) {
@@ -85,6 +88,15 @@ fun AutoWallpaper(navController: NavController? = null) {
         item {
             val screenSelectionDialog = remember { mutableStateOf(false) }
             val autoWallpaperDialog = remember { mutableStateOf(false) }
+
+            ButtonPreferences(
+                    stringResource(R.string.next_wallpaper),
+                    onClick = {
+                        Intent(context, AutoWallpaperService::class.java).also { intent ->
+                            intent.action = AutoWallpaperService.ACTION_NEXT_WALLPAPER
+                            context.startService(intent)
+                        }
+                    })
 
             ClickablePreference(
                     title = context.getString(R.string.duration),
