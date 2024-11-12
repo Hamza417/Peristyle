@@ -166,24 +166,34 @@ abstract class AbstractComposeAutoWallpaperService : AbstractLegacyAutoWallpaper
         val wallpaperDatabase = WallpaperDatabase.getInstance(applicationContext)
         val wallpaperDao = wallpaperDatabase?.wallpaperDao()
         val position = MainComposePreferences.getLastHomeWallpaperPosition().plus(1)
-        val wallpaper: Wallpaper?
+        var wallpaper: Wallpaper? = null
 
         val tagId = MainComposePreferences.getHomeTagId()
         val folderId = MainComposePreferences.getHomeFolderId()
 
         when {
             tagId.isNotNull() -> {
-                val tagsDatabase = TagsDatabase.getInstance(applicationContext)
-                val tagsDao = tagsDatabase?.tagsDao()
-                val tag = tagsDao?.getTagByID(tagId!!)
-                val wallpapers = wallpaperDao?.getWallpapersByMD5s(tag?.sum!!)
+                kotlin.runCatching {
+                    val tagsDatabase = TagsDatabase.getInstance(applicationContext)
+                    val tagsDao = tagsDatabase?.tagsDao()
+                    val tag = tagsDao?.getTagByID(tagId!!)
+                    val wallpapers = wallpaperDao?.getWallpapersByMD5s(tag?.sum!!)
 
-                wallpaper = getWallpaperFromList(wallpapers, position, isHomeScreen = true)
+                    wallpaper = getWallpaperFromList(wallpapers, position, isHomeScreen = true)
+                }.getOrElse {
+                    Log.e(TAG, "Error getting wallpaper by tag: $it")
+                    showErrorNotification("Error getting wallpaper by tag: $it")
+                }
             }
 
             folderId != -1 -> {
-                val wallpapers = wallpaperDao?.getWallpapersByPathHashcode(folderId)
-                wallpaper = getWallpaperFromList(wallpapers, position, isHomeScreen = true)
+                kotlin.runCatching {
+                    val wallpapers = wallpaperDao?.getWallpapersByPathHashcode(folderId)
+                    wallpaper = getWallpaperFromList(wallpapers, position, isHomeScreen = true)
+                }.getOrElse {
+                    Log.e(TAG, "Error getting wallpaper by folder: $it")
+                    showErrorNotification("Error getting wallpaper by folder: $it")
+                }
             }
 
             else -> {
@@ -198,24 +208,36 @@ abstract class AbstractComposeAutoWallpaperService : AbstractLegacyAutoWallpaper
         val wallpaperDatabase = WallpaperDatabase.getInstance(applicationContext)
         val wallpaperDao = wallpaperDatabase?.wallpaperDao()
         val position = MainComposePreferences.getLastLockWallpaperPosition().plus(1)
-        val wallpaper: Wallpaper?
+        var wallpaper: Wallpaper? = null
 
         val tagId = MainComposePreferences.getLockTagId()
         val folderId = MainComposePreferences.getLockFolderId()
 
         when {
             tagId.isNotNull() -> {
-                val tagsDatabase = TagsDatabase.getInstance(applicationContext)
-                val tagsDao = tagsDatabase?.tagsDao()
-                val tag = tagsDao?.getTagByID(tagId!!)
-                val wallpapers = wallpaperDao?.getWallpapersByMD5s(tag?.sum!!)
+                kotlin.runCatching {
+                    val tagsDatabase = TagsDatabase.getInstance(applicationContext)
+                    val tagsDao = tagsDatabase?.tagsDao()
+                    val tag = tagsDao?.getTagByID(tagId!!)
+                    val wallpapers = wallpaperDao?.getWallpapersByMD5s(tag?.sum!!)
 
-                wallpaper = getWallpaperFromList(wallpapers, position, false)
+                    wallpaper = getWallpaperFromList(wallpapers, position, false)
+                }.getOrElse {
+                    Log.e(TAG, "Error getting wallpaper by tag: $it")
+                    showErrorNotification("Error getting wallpaper by tag: $it")
+                    return null
+                }
             }
 
             folderId != -1 -> {
-                val wallpapers = wallpaperDao?.getWallpapersByPathHashcode(folderId)
-                wallpaper = getWallpaperFromList(wallpapers, position, false)
+                kotlin.runCatching {
+                    val wallpapers = wallpaperDao?.getWallpapersByPathHashcode(folderId)
+                    wallpaper = getWallpaperFromList(wallpapers, position, false)
+                }.getOrElse {
+                    Log.e(TAG, "Error getting wallpaper by folder: $it")
+                    showErrorNotification("Error getting wallpaper by folder: $it")
+                    return null
+                }
             }
 
             else -> {
