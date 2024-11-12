@@ -1,14 +1,14 @@
-name: Bug Report
-description: Report a bug or a functional problem in the app.
-title: "[Bug] "
-labels: [ bug ]
+name: Error Report
+description: Report an error or a crash in the app.
+title: "[Error]: "
+labels: [ error ]
 assignees: [ Hamza417 ]
 
 body:
     -   type: markdown
         attributes:
             value: |
-                Thanks for taking the time to fill out this bug report! Please provide as much detail as possible.
+                Thanks for taking the time to fill out this error report! Please provide as much detail as possible.
 
     -   type: checkboxes
         id: confirmation
@@ -25,11 +25,11 @@ body:
                     required: true
 
     -   type: input
-        id: bug_description
+        id: error_description
         attributes:
-            label: Bug Description
-            description: A clear and concise description of what the bug is.
-            placeholder: Describe the bug here
+            label: Error Description
+            description: A clear and concise description of what the error is or how it happened.
+            placeholder: Describe the error here
         validations:
             required: true
 
@@ -38,7 +38,7 @@ body:
         attributes:
             label: Steps to Reproduce
             description: |
-                Steps to reproduce the behavior:
+                Steps to reproduce the error:
                 1. Go to '...'
                 2. Click on '....'
                 3. Scroll down to '....'
@@ -57,11 +57,11 @@ body:
             required: true
 
     -   type: textarea
-        id: screenshots
+        id: error_logs
         attributes:
-            label: Screenshots
-            description: If applicable, add screenshots to help explain your problem else N/A.
-            placeholder: Provide links to screenshots here
+            label: Error Logs
+            description: If applicable, add error logs to help explain your problem else N/A.
+            placeholder: Provide error logs here
 
     -   type: input
         id: device_info
