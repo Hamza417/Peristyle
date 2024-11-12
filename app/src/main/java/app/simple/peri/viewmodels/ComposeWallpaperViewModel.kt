@@ -57,7 +57,9 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
                             isNomedia = pickedDirectory.listFiles()?.any { it.name == ".nomedia" } == true
                         }
 
-                        folders.add(folder)
+                        if (folder.count > 0) {
+                            folders.add(folder)
+                        }
                     }
                 }
 
