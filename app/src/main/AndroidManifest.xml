@@ -185,6 +185,12 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget_next_wallpaper_transparent" />
         </receiver>
+
+        <receiver
+            android:name=".receivers.CopyActionReceiver"
+            android:enabled="true"
+            android:exported="false" />
+
     </application>
 
     <queries>

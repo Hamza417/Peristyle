@@ -18,6 +18,7 @@ import app.simple.peri.database.instances.WallpaperDatabase
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.preferences.MainPreferences
+import app.simple.peri.receivers.CopyActionReceiver
 import app.simple.peri.receivers.WallpaperActionReceiver
 import app.simple.peri.utils.BitmapUtils
 import app.simple.peri.utils.BitmapUtils.applyEffects
@@ -66,12 +67,17 @@ abstract class AbstractComposeAutoWallpaperService : AbstractLegacyAutoWallpaper
             }.getOrElse {
                 it.printStackTrace()
                 Log.e(TAG, "Error setting wallpaper: $it")
+
+                withContext(Dispatchers.Main) {
+                    showErrorNotification(it.stackTraceToString())
+                    stopSelf()
+                }
             }
         }
     }
 
     private fun setHomeScreenWallpaper() {
-        getHomeScreenWallpaper()?.let {
+        getHomeScreenWallpaper()?.let { it: Wallpaper ->
             Log.d(TAG, "Home wallpaper found: ${it.filePath}")
             getBitmapFromFile(it) { bitmap ->
                 val modifiedBitmap = bitmap.copy(bitmap.config ?: Bitmap.Config.ARGB_8888, true)
@@ -83,7 +89,7 @@ abstract class AbstractComposeAutoWallpaperService : AbstractLegacyAutoWallpaper
     }
 
     private fun setLockScreenWallpaper() {
-        getLockScreenWallpaper()?.let {
+        getLockScreenWallpaper()?.let { it: Wallpaper ->
             Log.d(TAG, "Lock wallpaper found: ${it.filePath}")
             getBitmapFromFile(it) { bitmap ->
                 val modifiedBitmap = bitmap.copy(bitmap.config ?: Bitmap.Config.ARGB_8888, true)
@@ -175,7 +181,7 @@ abstract class AbstractComposeAutoWallpaperService : AbstractLegacyAutoWallpaper
                 wallpaper = getWallpaperFromList(wallpapers, position, isHomeScreen = true)
             }
 
-            folderId.isNotNull() -> {
+            folderId != -1 -> {
                 val wallpapers = wallpaperDao?.getWallpapersByPathHashcode(folderId)
                 wallpaper = getWallpaperFromList(wallpapers, position, isHomeScreen = true)
             }
@@ -207,7 +213,7 @@ abstract class AbstractComposeAutoWallpaperService : AbstractLegacyAutoWallpaper
                 wallpaper = getWallpaperFromList(wallpapers, position, false)
             }
 
-            folderId.isNotNull() -> {
+            folderId != -1 -> {
                 val wallpapers = wallpaperDao?.getWallpapersByPathHashcode(folderId)
                 wallpaper = getWallpaperFromList(wallpapers, position, false)
             }
@@ -253,10 +259,19 @@ abstract class AbstractComposeAutoWallpaperService : AbstractLegacyAutoWallpaper
                 description = "Notifications for lock screen wallpaper changes"
             }
 
+            val errorChannel = NotificationChannel(
+                    "error_channel",
+                    "Error Channel",
+                    NotificationManager.IMPORTANCE_HIGH
+            ).apply {
+                description = "Notifications for errors"
+            }
+
             val notificationManager: NotificationManager =
                 getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(homeChannel)
             notificationManager.createNotificationChannel(lockChannel)
+            notificationManager.createNotificationChannel(errorChannel)
         }
     }
 
@@ -313,6 +328,38 @@ abstract class AbstractComposeAutoWallpaperService : AbstractLegacyAutoWallpaper
         notificationManager.notify(notificationId, notification)
     }
 
+    private fun showErrorNotification(message: String) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (PermissionUtils.checkNotificationPermission(applicationContext).invert()) {
+                Log.i(TAG, "Notification permission not granted, skipping notification")
+                return
+            }
+        }
+
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        val copyIntent = Intent(applicationContext, CopyActionReceiver::class.java).apply {
+            action = ACTION_COPY_ERROR_MESSAGE
+            putExtra(EXTRA_ERROR_MESSAGE, message)
+            putExtra(EXTRA_NOTIFICATION_ID, ERROR_NOTIFICATION_ID)
+        }
+
+        val copyPendingIntent: PendingIntent = PendingIntent.getBroadcast(
+                applicationContext, 0, copyIntent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
+        val notification = NotificationCompat.Builder(this, "error_channel")
+            .setSmallIcon(R.drawable.ic_peristyle)
+            .setContentTitle("Peristyle auto wallpaper service has crashed!")
+            .setContentText(message)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setSilent(false)
+            .addAction(R.drawable.ic_copy_all, applicationContext.getString(R.string.copy), copyPendingIntent)
+            .build()
+
+        notificationManager.notify(ERROR_NOTIFICATION_ID, notification)
+    }
+
     private fun createSendIntent(file: File, context: Context): Intent {
         val uri: Uri = FileProvider.getUriForFile(context, "${context.packageName}.provider", file)
         return Intent(Intent.ACTION_SEND).apply {
@@ -326,10 +373,12 @@ abstract class AbstractComposeAutoWallpaperService : AbstractLegacyAutoWallpaper
         const val ACTION_DELETE_WALLPAPER: String = "app.simple.peri.services.action.DELETE_WALLPAPER"
         const val ACTION_DELETE_WALLPAPER_HOME = "app.simple.peri.services.action.DELETE_WALLPAPER_HOME"
         const val ACTION_DELETE_WALLPAPER_LOCK = "app.simple.peri.services.action.DELETE_WALLPAPER_LOCK"
+        const val ACTION_COPY_ERROR_MESSAGE = "COPY_ERROR_MESSAGE"
 
         const val EXTRA_IS_HOME_SCREEN = "app.simple.peri.services.extra.IS_HOME_SCREEN"
         const val EXTRA_WALLPAPER_PATH = "app.simple.peri.services.extra.PATH"
         const val EXTRA_NOTIFICATION_ID = "app.simple.peri.services.extra.NOTIFICATION_ID"
+        const val EXTRA_ERROR_MESSAGE = "app.simple.peri.services.extra.ERROR_MESSAGE"
 
         const val TAG = "AutoWallpaperService"
         private const val CHANNEL_ID_HOME = "wallpaper_home_channel"
@@ -337,6 +386,7 @@ abstract class AbstractComposeAutoWallpaperService : AbstractLegacyAutoWallpaper
 
         const val HOME_NOTIFICATION_ID = 1234
         const val LOCK_NOTIFICATION_ID = 5367
+        const val ERROR_NOTIFICATION_ID = 12345
 
         private const val PENDING_INTENT_FLAGS = PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
     }
