@@ -1,8 +1,8 @@
 ---
-name: Bug report
-about: Create a bug report. Do not write your feature requests here, I'm not accepting any.
-title: ''
-labels: bug, error
+name: Bug Report
+about: Create a bug report.
+title: '[Bug] '
+labels: bug
 assignees: Hamza417
 
 ---
@@ -21,20 +21,11 @@ Steps to reproduce the behavior:
 A clear and concise description of what you expected to happen.
 
 **Screenshots**
-If applicable, add screenshots to help explain your problem.
-
-**Desktop (please complete the following information):**
- - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
+If applicable, add screenshots to help explain your problem else N/A.
 
 **Smartphone (please complete the following information):**
- - Device: [e.g. iPhone6]
- - OS: [e.g. iOS8.1]
- - Browser [e.g. stock browser, safari]
- - Version [e.g. 22]
+ - Device: [e.g. Pixel 8]
+ - OS: [e.g. Android 14]
 
 **Additional context**
 Add any other context about the problem here.
-
-**Warning:** Any bug reports withut proper steps to reporduce the issue and relevent info will be closed/ignored.
