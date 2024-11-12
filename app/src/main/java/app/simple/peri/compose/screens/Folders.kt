@@ -266,7 +266,7 @@ fun FolderItem(folder: Folder, navController: NavController? = null, composeWall
                 contentAlignment = Alignment.Center,
         ) {
             GlideImage(
-                    model = app.simple.peri.glide.folders.Folder(folder.hashcode, context = LocalContext.current),
+                    model = app.simple.peri.glide.folders.ContextFolder(folder, context = LocalContext.current),
                     contentDescription = null,
                     transition = CrossFade,
                     modifier = Modifier.haze(hazeState),

@@ -179,7 +179,7 @@ fun TagItem(tag: Tag, navController: NavController? = null) {
     ) {
         Box {
             GlideImage(
-                    model = app.simple.peri.glide.tags.Tag(tag, LocalContext.current),
+                    model = app.simple.peri.glide.tags.ContextTag(tag, LocalContext.current),
                     contentDescription = null,
                     transition = CrossFade,
                     modifier = Modifier.haze(hazeState),

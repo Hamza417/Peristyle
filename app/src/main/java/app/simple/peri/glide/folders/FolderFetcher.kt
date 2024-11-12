@@ -13,10 +13,10 @@ import com.bumptech.glide.load.data.DataFetcher
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.FutureTarget
 
-class FolderFetcher(val folder: Folder) : DataFetcher<Bitmap> {
+class FolderFetcher(private val contextFolder: ContextFolder) : DataFetcher<Bitmap> {
     override fun loadData(priority: Priority, callback: DataFetcher.DataCallback<in Bitmap>) {
-        val wallpaperDatabase = WallpaperDatabase.getInstance(folder.context)!!
-        val wallpaperList = wallpaperDatabase.wallpaperDao().getWallpapersByPathHashcode(folder.hashCode)
+        val wallpaperDatabase = WallpaperDatabase.getInstance(contextFolder.context)!!
+        val wallpaperList = wallpaperDatabase.wallpaperDao().getWallpapersByPathHashcode(contextFolder.folder.hashcode)
         val bitmapList = mutableListOf<FutureTarget<Bitmap>>()
         Log.i(TAG, "Loading wallpapers from folder: ${wallpaperList.size}")
 
@@ -28,7 +28,7 @@ class FolderFetcher(val folder: Folder) : DataFetcher<Bitmap> {
              * Reference:
              * https://bumptech.github.io/glide/doc/getting-started.html#background-threads
              */
-            val bitmap = Glide.with(folder.context)
+            val bitmap = Glide.with(contextFolder.context)
                 .asBitmap()
                 .load(wallpaper.filePath)
                 .centerCrop()
@@ -62,7 +62,7 @@ class FolderFetcher(val folder: Folder) : DataFetcher<Bitmap> {
          * Reference:
          * https://bumptech.github.io/glide/doc/getting-started.html#background-threads
          */
-        bitmapList.forEach { Glide.with(folder.context).clear(it) }
+        bitmapList.forEach { Glide.with(contextFolder.context).clear(it) }
     }
 
     override fun cleanup() {

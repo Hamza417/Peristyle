@@ -3,6 +3,8 @@ package app.simple.peri.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.Objects;
+
 public class Folder implements Parcelable {
     private int hashcode;
     private String name;
@@ -93,5 +95,32 @@ public class Folder implements Parcelable {
     
     public void setNomedia(boolean nomedia) {
         isNomedia = nomedia;
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        
+        Folder folder = (Folder) o;
+        return getHashcode() == folder.getHashcode() &&
+                getCount() == folder.getCount() &&
+                isNomedia() == folder.isNomedia() &&
+                Objects.equals(getName(), folder.getName()) &&
+                Objects.equals(getPath(), folder.getPath());
+    }
+    
+    @Override
+    public int hashCode() {
+        int result = getHashcode();
+        result = 31 * result + Objects.hashCode(getName());
+        result = 31 * result + Objects.hashCode(getPath());
+        result = 31 * result + getCount();
+        result = 31 * result + Boolean.hashCode(isNomedia());
+        return result;
     }
 }

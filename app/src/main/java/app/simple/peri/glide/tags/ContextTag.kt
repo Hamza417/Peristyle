@@ -2,14 +2,15 @@ package app.simple.peri.glide.tags
 
 import android.content.Context
 
-class Tag(
-        val tag: app.simple.peri.models.Tag?,
+class ContextTag(
+        val tag: app.simple.peri.models.Tag,
         val context: Context
 ) {
     override fun equals(other: Any?): Boolean {
-        if (other is Tag) {
-            return tag == other.tag
+        if (other is ContextTag) {
+            return tag == other.tag && tag.sum?.count() == other.tag.sum?.count()
         }
+
         return false
     }
 

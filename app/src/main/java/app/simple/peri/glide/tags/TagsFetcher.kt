@@ -13,17 +13,16 @@ import com.bumptech.glide.load.data.DataFetcher
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.FutureTarget
 
-class TagsFetcher(private val tag: Tag) : DataFetcher<Bitmap> {
+class TagsFetcher(private val contextTag: ContextTag) : DataFetcher<Bitmap> {
     override fun loadData(priority: Priority, callback: DataFetcher.DataCallback<in Bitmap>) {
-        val wallpaperDatabase = WallpaperDatabase.getInstance(tag.context)!!
+        val wallpaperDatabase = WallpaperDatabase.getInstance(contextTag.context)!!
         val wallpaperList = mutableListOf<Wallpaper>()
         val bitmapList = mutableListOf<FutureTarget<Bitmap>>()
 
-        tag.tag?.sum?.forEach {
+        contextTag.tag.sum?.forEach {
             wallpaperList.add(wallpaperDatabase.wallpaperDao().getWallpaperByID(it)!!)
         }
 
-        // Fetch top 6 wallpapers
         val topWallpapers = wallpaperList.take(TAG_COUNT)
 
         topWallpapers.forEach { wallpaper ->
@@ -31,7 +30,7 @@ class TagsFetcher(private val tag: Tag) : DataFetcher<Bitmap> {
              * Reference:
              * https://bumptech.github.io/glide/doc/getting-started.html#background-threads
              */
-            val bitmap = Glide.with(tag.context)
+            val bitmap = Glide.with(contextTag.context)
                 .asBitmap()
                 .load(wallpaper.filePath)
                 .centerCrop()
@@ -49,7 +48,9 @@ class TagsFetcher(private val tag: Tag) : DataFetcher<Bitmap> {
                 })
         val bitmapWidth = displayDimension.getReducedWidth()
         val bitmapHeight = displayDimension.getReducedHeight()
-        val gridBitmap = Bitmap.createBitmap(GRID_WIDTH * bitmapWidth, gridHeight * bitmapHeight, Bitmap.Config.ARGB_8888)
+        val gridBitmap = Bitmap
+            .createBitmap(GRID_WIDTH * bitmapWidth,
+                          gridHeight * bitmapHeight, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(gridBitmap)
         canvas.drawColor(Color.TRANSPARENT)
 
@@ -65,7 +66,7 @@ class TagsFetcher(private val tag: Tag) : DataFetcher<Bitmap> {
          * Reference:
          * https://bumptech.github.io/glide/doc/getting-started.html#background-threads
          */
-        bitmapList.forEach { Glide.with(tag.context).clear(it) }
+        bitmapList.forEach { Glide.with(contextTag.context).clear(it) }
     }
 
     override fun cleanup() {
