@@ -129,13 +129,17 @@ abstract class AbstractComposeAutoWallpaperService : AbstractLegacyAutoWallpaper
     }
 
     private fun isSameFolderOrTagUsed(): Boolean {
-        if (MainComposePreferences.isHomeSourceSet() && MainComposePreferences.isLockSourceSet()) {
-            if (MainComposePreferences.getHomeTagId() == MainComposePreferences.getLockTagId()) {
-                return true
-            }
-            if (MainComposePreferences.getHomeFolderId() == MainComposePreferences.getLockFolderId()) {
-                return true
-            }
+        val homeSourceSet = MainComposePreferences.isHomeSourceSet()
+        val lockSourceSet = MainComposePreferences.isLockSourceSet()
+
+        if (!homeSourceSet && !lockSourceSet) {
+            return true
+        }
+
+        if (homeSourceSet && lockSourceSet) {
+            val sameTag = MainComposePreferences.getHomeTagId() == MainComposePreferences.getLockTagId()
+            val sameFolder = MainComposePreferences.getHomeFolderId() == MainComposePreferences.getLockFolderId()
+            return sameTag || sameFolder
         }
 
         return false
