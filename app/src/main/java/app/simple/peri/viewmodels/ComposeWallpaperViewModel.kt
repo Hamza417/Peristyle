@@ -67,6 +67,8 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
                 if (shouldPurge) {
                     database.wallpaperDao().purgeNonExistingWallpapers(database)
                 }
+
+                database.close()
             }
         }
     }

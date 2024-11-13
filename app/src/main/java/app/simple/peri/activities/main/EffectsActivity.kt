@@ -2,7 +2,6 @@ package app.simple.peri.activities.main
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
@@ -48,15 +47,17 @@ import app.simple.peri.compose.commons.TopHeader
 import app.simple.peri.compose.constants.DIALOG_OPTION_FONT_SIZE
 import app.simple.peri.compose.constants.DIALOG_TITLE_FONT_SIZE
 import app.simple.peri.compose.theme.PeristyleTheme
+import app.simple.peri.extensions.BaseComponentActivity
 import app.simple.peri.models.Effect
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.utils.ParcelUtils.parcelable
 import app.simple.peri.viewmodels.EffectsViewModel
+import com.bumptech.glide.Glide
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import app.simple.peri.glide.effect.Effect as GlideEffect
 
-class EffectsActivity : ComponentActivity() {
+class EffectsActivity : BaseComponentActivity() {
 
     private val wallpaper: Wallpaper by lazy {
         intent.parcelable("wallpaper")!!
@@ -74,6 +75,11 @@ class EffectsActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onDestroy() {
+        Glide.get(applicationContext).clearMemory()
+        super.onDestroy()
     }
 
     private fun onEffectResult(effect: Effect) {
@@ -147,7 +153,7 @@ class EffectsActivity : ComponentActivity() {
                         )
                 ) {
                     GlideImage(
-                            model = GlideEffect(LocalContext.current, effects[index], wallpaper),
+                            model = GlideEffect(applicationContext, effects[index], wallpaper),
                             contentDescription = null,
                             modifier = Modifier.fillMaxSize()
                     )

@@ -37,4 +37,9 @@ class EffectsViewModel(application: Application) : AndroidViewModel(application)
             }
         }
     }
+
+    override fun onCleared() {
+        super.onCleared()
+        EffectsDatabase.destroy()
+    }
 }

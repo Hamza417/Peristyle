@@ -7,7 +7,6 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.os.Bundle
 import android.util.Log
 import android.view.WindowManager
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,12 +16,13 @@ import app.simple.peri.BuildConfig
 import app.simple.peri.compose.nav.PeristyleNavigation
 import app.simple.peri.compose.theme.PeristyleTheme
 import app.simple.peri.crash.CrashReport
+import app.simple.peri.extensions.BaseComponentActivity
 import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.preferences.SharedPreferences
 import app.simple.peri.services.AutoWallpaperService
 import app.simple.peri.viewmodels.ComposeWallpaperViewModel
 
-class MainComposeActivity : ComponentActivity(), OnSharedPreferenceChangeListener {
+class MainComposeActivity : BaseComponentActivity(), OnSharedPreferenceChangeListener {
 
     private val composeWallpaperViewModel: ComposeWallpaperViewModel by viewModels()
 

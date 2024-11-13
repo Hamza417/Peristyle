@@ -32,5 +32,10 @@ abstract class EffectsDatabase : RoomDatabase() {
 
             return instance
         }
+
+        fun destroy() {
+            instance?.close()
+            instance = null
+        }
     }
 }
