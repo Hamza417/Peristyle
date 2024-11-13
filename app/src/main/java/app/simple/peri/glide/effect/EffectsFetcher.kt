@@ -17,12 +17,20 @@ import kotlinx.coroutines.withContext
 
 class EffectsFetcher(private val effect: Effect) : DataFetcher<Bitmap> {
     override fun loadData(priority: Priority, callback: DataFetcher.DataCallback<in Bitmap>) {
+        // Determine the divisor based on the larger dimension
+        val divisor = maxOf(
+                getDivisorForThumbnail(effect.wallpaper.width!!),
+                getDivisorForThumbnail(effect.wallpaper.height!!))
+
+        val thumbnailWidth = effect.wallpaper.width!! / divisor
+        val thumbnailHeight = effect.wallpaper.height!! / divisor
+
         Glide.with(effect.context)
             .asBitmap()
             .load(effect.wallpaper.filePath)
             .centerCrop()
             .diskCacheStrategy(DiskCacheStrategy.ALL)
-            .into(object : CustomTarget<Bitmap>(effect.wallpaper.width!!.div(2), effect.wallpaper.height!!.div(2)) {
+            .into(object : CustomTarget<Bitmap>(thumbnailWidth, thumbnailHeight) {
                 override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
                     CoroutineScope(Dispatchers.Main).launch {
                         val processedBitmap = withContext(Dispatchers.Default) {
@@ -39,6 +47,7 @@ class EffectsFetcher(private val effect: Effect) : DataFetcher<Bitmap> {
                                     effect.effect.scaleBlueValue
                             )
                         }
+
                         callback.onDataReady(processedBitmap)
                     }
                 }
@@ -65,4 +74,8 @@ class EffectsFetcher(private val effect: Effect) : DataFetcher<Bitmap> {
         return DataSource.LOCAL
     }
 
+    private fun getDivisorForThumbnail(value: Int): Int {
+        val thousands = value / 1000
+        return if (thousands == 0) 1 else thousands
+    }
 }
