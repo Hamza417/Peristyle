@@ -69,6 +69,19 @@ fun WallpaperList(navController: NavController? = null) {
     wallpapers.clear()
     wallpapers = updatedWallpapers.toMutableStateList()
 
+    val wallpaperData = remember { mutableStateOf<PostWallpaperData?>(null) }
+    var showWallpaperComparisonDialog by remember { mutableStateOf(false) }
+
+    if (showWallpaperComparisonDialog) {
+        Log.i("WallpaperList", "Show wallpaper comparison dialog")
+        PostScalingChangeDialog(
+                onDismiss = {
+                    showWallpaperComparisonDialog = false
+                },
+                postWallpaperData = wallpaperData.value!!
+        )
+    }
+
     if (wallpapers.isEmpty()) { // TODO = list doesn't update with this
         Log.e("WallpaperList", "Wallpapers list is empty")
         return
@@ -81,8 +94,6 @@ fun WallpaperList(navController: NavController? = null) {
     var navigationBarHeight by remember { mutableIntStateOf(0) }
     var showPleaseWaitDialog by remember { mutableStateOf(false) }
     val hazeState = remember { HazeState() }
-    val wallpaperData = remember { mutableStateOf<PostWallpaperData?>(null) }
-    var showWallpaperComparisonDialog by remember { mutableStateOf(false) }
     val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
 
     statusBarHeight = WindowInsetsCompat.toWindowInsetsCompat(LocalView.current.rootWindowInsets)
@@ -107,15 +118,6 @@ fun WallpaperList(navController: NavController? = null) {
         PleaseWaitDialog {
             Log.i("WallpaperList", "Please wait dialog dismissed")
         }
-    }
-
-    if (showWallpaperComparisonDialog) {
-        PostScalingChangeDialog(
-                onDismiss = {
-                    showWallpaperComparisonDialog = false
-                },
-                postWallpaperData = wallpaperData.value!!
-        )
     }
 
     Box(

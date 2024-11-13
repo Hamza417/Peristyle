@@ -86,4 +86,17 @@ public class PostWallpaperData {
     public float getOldAspectRatio() {
         return (float) oldWidth / oldHeight;
     }
+    
+    @Override
+    public String toString() {
+        return "PostWallpaperData{" +
+                "oldSize=" + oldSize +
+                ", newSize=" + newSize +
+                ", oldWidth=" + oldWidth +
+                ", oldHeight=" + oldHeight +
+                ", newWidth=" + newWidth +
+                ", newHeight=" + newHeight +
+                ", path='" + path + '\'' +
+                '}';
+    }
 }

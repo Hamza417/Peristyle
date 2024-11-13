@@ -52,7 +52,7 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
                         val folder = Folder().apply {
                             name = pickedDirectory.name
                             this.path = path
-                            count = database.wallpaperDao().getWallpapersCountByPathHashcode(path.hashCode())
+                            count = database.wallpaperDao().getWallpapersCountByPathHashcode(path.hashCode()) // TODO - This leaks
                             hashcode = path.hashCode()
                             isNomedia = pickedDirectory.listFiles()?.any { it.name == ".nomedia" } == true
                         }
