@@ -32,5 +32,12 @@ abstract class WallpaperDatabase : RoomDatabase() {
 
             return instance
         }
+
+        fun destroyInstance() {
+            if (instance?.isOpen == true) {
+                instance?.close()
+            }
+            instance = null
+        }
     }
 }

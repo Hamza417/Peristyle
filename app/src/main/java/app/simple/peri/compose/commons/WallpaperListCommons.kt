@@ -73,6 +73,7 @@ import com.bumptech.glide.integration.compose.CrossFade
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
 import com.bumptech.glide.request.RequestListener
@@ -250,6 +251,7 @@ fun WallpaperItem(
                         }
                     })
                         .disallowHardwareConfig()
+                        .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                 }
 
                 Column(

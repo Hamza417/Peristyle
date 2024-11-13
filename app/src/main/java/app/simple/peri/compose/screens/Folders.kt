@@ -60,6 +60,7 @@ import app.simple.peri.compose.commons.TopHeader
 import app.simple.peri.compose.dialogs.common.ShowWarningDialog
 import app.simple.peri.compose.dialogs.folders.FolderMenu
 import app.simple.peri.compose.nav.Routes
+import app.simple.peri.glide.folders.ContextFolder
 import app.simple.peri.models.Folder
 import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.utils.ConditionUtils.invert
@@ -67,7 +68,6 @@ import app.simple.peri.viewmodels.ComposeWallpaperViewModel
 import com.bumptech.glide.integration.compose.CrossFade
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
 import dev.chrisbanes.haze.HazeDefaults
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
@@ -266,13 +266,12 @@ fun FolderItem(folder: Folder, navController: NavController? = null, composeWall
                 contentAlignment = Alignment.Center,
         ) {
             GlideImage(
-                    model = app.simple.peri.glide.folders.ContextFolder(folder, context = LocalContext.current),
+                    model = ContextFolder(folder, context = LocalContext.current.applicationContext),
                     contentDescription = null,
                     transition = CrossFade,
                     modifier = Modifier.haze(hazeState),
             ) {
                 it
-                    .transition(withCrossFade())
                     .disallowHardwareConfig()
             }
 

@@ -9,6 +9,8 @@ class ContextFolder(val folder: Folder, val context: Context) {
     }
 
     override fun equals(other: Any?): Boolean {
-        return other is ContextFolder && other.folder == folder
+        return other is ContextFolder
+                && other.folder.hashCode() == folder.hashCode()
+                && other.folder.count == folder.count
     }
 }

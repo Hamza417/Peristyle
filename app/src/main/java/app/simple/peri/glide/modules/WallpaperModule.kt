@@ -9,6 +9,7 @@ import com.bumptech.glide.GlideBuilder
 import com.bumptech.glide.Registry
 import com.bumptech.glide.annotation.GlideModule
 import com.bumptech.glide.load.DecodeFormat
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.BitmapTransitionOptions
 import com.bumptech.glide.load.resource.bitmap.Downsampler
 import com.bumptech.glide.module.AppGlideModule
@@ -23,9 +24,10 @@ class WallpaperModule : AppGlideModule() {
     override fun applyOptions(context: Context, builder: GlideBuilder) {
         builder.setDefaultTransitionOptions(Bitmap::class.java, BitmapTransitionOptions.withCrossFade())
         builder.setDefaultRequestOptions(
-            RequestOptions()
-                .format(DecodeFormat.PREFER_ARGB_8888)
-                .set(Downsampler.ALLOW_HARDWARE_CONFIG, false)
+                RequestOptions()
+                    .format(DecodeFormat.PREFER_ARGB_8888)
+                    .set(Downsampler.ALLOW_HARDWARE_CONFIG, false)
+                    .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
         )
     }
 

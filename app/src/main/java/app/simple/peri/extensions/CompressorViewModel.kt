@@ -34,6 +34,8 @@ abstract class CompressorViewModel(application: Application) : AndroidViewModel(
             withContext(Dispatchers.Main) {
                 onSuccess(wallpaper1)
             }
+
+            clearResidue()
         }
     }
 
@@ -55,6 +57,8 @@ abstract class CompressorViewModel(application: Application) : AndroidViewModel(
             withContext(Dispatchers.Main) {
                 onSuccess(wallpaper1)
             }
+
+            clearResidue()
         }
     }
 
@@ -65,6 +69,15 @@ abstract class CompressorViewModel(application: Application) : AndroidViewModel(
             "jpeg" -> Bitmap.CompressFormat.JPEG
             "png" -> Bitmap.CompressFormat.PNG
             else -> Bitmap.CompressFormat.WEBP
+        }
+    }
+
+    private fun clearResidue() {
+        val cacheDir = getApplication<Application>().cacheDir
+        cacheDir.listFiles()?.forEach {
+            if (it.absolutePath.contains("/compressor/")) {
+                it.delete()
+            }
         }
     }
 
