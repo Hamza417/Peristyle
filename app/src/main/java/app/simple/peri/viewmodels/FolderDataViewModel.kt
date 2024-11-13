@@ -51,7 +51,6 @@ class FolderDataViewModel(application: Application, private val folder: Folder) 
         val wallpaper = Wallpaper.createFromFile(file)
         wallpaper.id = previousWallpaper.id
         wallpaper.folderID = previousWallpaper.folderID
-        wallpaper.dateModified = previousWallpaper.dateModified
         val wallpaperDatabase = WallpaperDatabase.getInstance(getApplication())
         val wallpaperDao = wallpaperDatabase?.wallpaperDao()
         wallpaperDao?.insert(wallpaper)

@@ -164,7 +164,6 @@ class TagsViewModel(application: Application, private val id: String? = null, pr
         val wallpaper = Wallpaper.createFromFile(file)
         wallpaper.id = previousWallpaper.id
         wallpaper.folderID = previousWallpaper.folderID
-        wallpaper.dateModified = previousWallpaper.dateModified
         val wallpaperDatabase = WallpaperDatabase.getInstance(getApplication())
         val wallpaperDao = wallpaperDatabase?.wallpaperDao()
         wallpaperDao?.insert(wallpaper)

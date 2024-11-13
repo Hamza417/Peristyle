@@ -36,13 +36,14 @@ import app.simple.peri.compose.commons.SelectionMenu
 import app.simple.peri.compose.commons.TopHeader
 import app.simple.peri.compose.commons.WallpaperItem
 import app.simple.peri.compose.dialogs.common.PleaseWaitDialog
+import app.simple.peri.compose.dialogs.common.PostScalingChangeDialog
 import app.simple.peri.compose.nav.Routes
 import app.simple.peri.factories.FolderViewModelFactory
 import app.simple.peri.models.Folder
+import app.simple.peri.models.PostWallpaperData
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.utils.ConditionUtils.invert
-import app.simple.peri.utils.FileUtils.toSize
 import app.simple.peri.viewmodels.FolderDataViewModel
 import app.simple.peri.viewmodels.StateViewModel
 import app.simple.peri.viewmodels.WallpaperListViewModel
@@ -80,6 +81,8 @@ fun WallpaperList(navController: NavController? = null) {
     var navigationBarHeight by remember { mutableIntStateOf(0) }
     var showPleaseWaitDialog by remember { mutableStateOf(false) }
     val hazeState = remember { HazeState() }
+    val wallpaperData = remember { mutableStateOf<PostWallpaperData?>(null) }
+    var showWallpaperComparisonDialog by remember { mutableStateOf(false) }
     val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
 
     statusBarHeight = WindowInsetsCompat.toWindowInsetsCompat(LocalView.current.rootWindowInsets)
@@ -104,6 +107,15 @@ fun WallpaperList(navController: NavController? = null) {
         PleaseWaitDialog {
             Log.i("WallpaperList", "Please wait dialog dismissed")
         }
+    }
+
+    if (showWallpaperComparisonDialog) {
+        PostScalingChangeDialog(
+                onDismiss = {
+                    showWallpaperComparisonDialog = false
+                },
+                postWallpaperData = wallpaperData.value!!
+        )
     }
 
     Box(
@@ -142,17 +154,47 @@ fun WallpaperList(navController: NavController? = null) {
                             folderDataViewModel.deleteWallpaper(deletedWallpaper)
                         },
                         onCompress = {
+                            val postWallpaperData = PostWallpaperData().apply {
+                                oldSize = wallpapers[index].size
+                                oldWidth = wallpapers[index].width ?: 0
+                                oldHeight = wallpapers[index].height ?: 0
+                            }
                             showPleaseWaitDialog = true
-                            folderDataViewModel.compressWallpaper(wallpapers[index]) {
+
+                            folderDataViewModel.compressWallpaper(wallpapers[index]) { result ->
                                 showPleaseWaitDialog = false
-                                Log.d("WallpaperList", "Compressed wallpaper: ${wallpapers[index].size.toSize()} -> ${it.size.toSize()}")
+                                result.let {
+                                    postWallpaperData.apply {
+                                        newSize = it.size
+                                        newWidth = it.width ?: 0
+                                        newHeight = it.height ?: 0
+                                        path = it.filePath
+                                    }
+                                    wallpaperData.value = postWallpaperData
+                                    showWallpaperComparisonDialog = true
+                                }
                             }
                         },
                         onReduceResolution = {
+                            val postWallpaperData = PostWallpaperData().apply {
+                                oldSize = wallpapers[index].size
+                                oldWidth = wallpapers[index].width ?: 0
+                                oldHeight = wallpapers[index].height ?: 0
+                            }
                             showPleaseWaitDialog = true
-                            folderDataViewModel.reduceResolution(wallpapers[index]) {
+
+                            folderDataViewModel.reduceResolution(wallpapers[index]) { result ->
                                 showPleaseWaitDialog = false
-                                Log.d("WallpaperList", "Reduced wallpaper: ${it.size.toSize()}, ${it.height}x${it.width}")
+                                result.let {
+                                    postWallpaperData.apply {
+                                        newSize = it.size
+                                        newWidth = it.width ?: 0
+                                        newHeight = it.height ?: 0
+                                        path = it.filePath
+                                    }
+                                    wallpaperData.value = postWallpaperData
+                                    showWallpaperComparisonDialog = true
+                                }
                             }
                         },
                         isSelectionMode = isSelectionMode,

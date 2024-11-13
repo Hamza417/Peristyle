@@ -35,8 +35,10 @@ import app.simple.peri.compose.commons.SelectionMenu
 import app.simple.peri.compose.commons.TopHeader
 import app.simple.peri.compose.commons.WallpaperItem
 import app.simple.peri.compose.dialogs.common.PleaseWaitDialog
+import app.simple.peri.compose.dialogs.common.PostScalingChangeDialog
 import app.simple.peri.compose.nav.Routes
 import app.simple.peri.factories.TagsViewModelFactory
+import app.simple.peri.models.PostWallpaperData
 import app.simple.peri.models.Tag
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.preferences.MainComposePreferences
@@ -74,6 +76,8 @@ fun TaggedWallpapers(navController: NavController? = null) {
     val selectionCount by wallpaperListViewModel.selectedWallpapers.collectAsState()
     var showPleaseWaitDialog by remember { mutableStateOf(false) }
     val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+    val wallpaperData = remember { mutableStateOf<PostWallpaperData?>(null) }
+    var showWallpaperComparisonDialog by remember { mutableStateOf(false) }
 
     statusBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
             LocalView.current.rootWindowInsets
@@ -99,6 +103,15 @@ fun TaggedWallpapers(navController: NavController? = null) {
         PleaseWaitDialog {
             Log.i("WallpaperList", "Please wait dialog dismissed")
         }
+    }
+
+    if (showWallpaperComparisonDialog) {
+        PostScalingChangeDialog(
+                onDismiss = {
+                    showWallpaperComparisonDialog = false
+                },
+                postWallpaperData = wallpaperData.value!!
+        )
     }
 
     Box(
@@ -134,17 +147,47 @@ fun TaggedWallpapers(navController: NavController? = null) {
                             tagsViewModel.deleteWallpaper(deletedWallpaper)
                         },
                         onCompress = {
+                            val postWallpaperData = PostWallpaperData().apply {
+                                oldSize = wallpapers[index].size
+                                oldWidth = wallpapers[index].width ?: 0
+                                oldHeight = wallpapers[index].height ?: 0
+                            }
                             showPleaseWaitDialog = true
-                            tagsViewModel.compressWallpaper(wallpapers[index]) { wallpaper ->
+
+                            tagsViewModel.compressWallpaper(wallpapers[index]) { result ->
                                 showPleaseWaitDialog = false
-                                Log.i("TaggedWallpapers", "Compressed wallpaper: $wallpaper")
+                                result.let {
+                                    postWallpaperData.apply {
+                                        newSize = it.size
+                                        newWidth = it.width ?: 0
+                                        newHeight = it.height ?: 0
+                                        path = it.filePath
+                                    }
+                                    wallpaperData.value = postWallpaperData
+                                    showWallpaperComparisonDialog = true
+                                }
                             }
                         },
                         onReduceResolution = {
+                            val postWallpaperData = PostWallpaperData().apply {
+                                oldSize = wallpapers[index].size
+                                oldWidth = wallpapers[index].width ?: 0
+                                oldHeight = wallpapers[index].height ?: 0
+                            }
                             showPleaseWaitDialog = true
-                            tagsViewModel.reduceResolution(wallpapers[index]) { wallpaper ->
+
+                            tagsViewModel.reduceResolution(wallpapers[index]) { result ->
                                 showPleaseWaitDialog = false
-                                Log.i("TaggedWallpapers", "Reduced resolution wallpaper: $wallpaper")
+                                result.let {
+                                    postWallpaperData.apply {
+                                        newSize = it.size
+                                        newWidth = it.width ?: 0
+                                        newHeight = it.height ?: 0
+                                        path = it.filePath
+                                    }
+                                    wallpaperData.value = postWallpaperData
+                                    showWallpaperComparisonDialog = true
+                                }
                             }
                         },
                         isSelectionMode = isSelectionMode,
