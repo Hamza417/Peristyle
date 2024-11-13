@@ -23,7 +23,7 @@ class TagsFetcher(private val contextTag: ContextTag) : DataFetcher<Bitmap> {
             wallpaperList.add(wallpaperDatabase.wallpaperDao().getWallpaperByID(it)!!)
         }
 
-        val topWallpapers = wallpaperList.take(TAG_COUNT)
+        val topWallpapers = wallpaperList.shuffled().take(TAG_COUNT)
 
         topWallpapers.forEach { wallpaper ->
             /**

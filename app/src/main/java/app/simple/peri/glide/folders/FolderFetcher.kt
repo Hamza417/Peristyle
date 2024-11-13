@@ -21,7 +21,7 @@ class FolderFetcher(private val contextFolder: ContextFolder) : DataFetcher<Bitm
         Log.i(TAG, "Loading wallpapers from folder: ${wallpaperList.size}")
 
         // Fetch top 6 wallpapers
-        val topWallpapers = wallpaperList.take(GRID_COUNT)
+        val topWallpapers = wallpaperList.shuffled().take(GRID_COUNT)
 
         topWallpapers.forEach { wallpaper ->
             /**
