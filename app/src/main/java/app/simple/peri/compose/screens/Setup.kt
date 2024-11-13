@@ -59,6 +59,7 @@ import app.simple.peri.BuildConfig
 import app.simple.peri.R
 import app.simple.peri.compose.commons.COMMON_PADDING
 import app.simple.peri.compose.commons.FolderBrowser
+import app.simple.peri.compose.commons.InitDisplayDimension
 import app.simple.peri.compose.commons.TopHeader
 import app.simple.peri.compose.dialogs.common.ShowWarningDialog
 import app.simple.peri.compose.nav.Routes
@@ -70,6 +71,8 @@ import app.simple.peri.viewmodels.ComposeWallpaperViewModel
 
 @Composable
 fun Setup(context: Context, navController: NavController? = null) {
+    InitDisplayDimension()
+
     var showSetupIncompleteDialog by remember { mutableStateOf(false) }
     var statusBarHeight by remember { mutableIntStateOf(0) }
     var navigationBarHeight by remember { mutableIntStateOf(0) }

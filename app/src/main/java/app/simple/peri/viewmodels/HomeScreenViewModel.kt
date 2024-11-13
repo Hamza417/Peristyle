@@ -75,8 +75,8 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
             wallpaperManager.drawable?.toBitmap()
         }
 
-        val systemFile = createTempFile(SYSTEM_WALLPAPER)
-        val lockFile = createTempFile(LOCK_WALLPAPER)
+        val systemFile = createTempFile(SYSTEM_WALLPAPER.replace("$", System.currentTimeMillis().div(1000).toString()))
+        val lockFile = createTempFile(LOCK_WALLPAPER.replace("$", System.currentTimeMillis().div(1000).toString()))
 
         systemFile.outputStream().use { systemBitmap?.compress(Bitmap.CompressFormat.PNG, 100, it) }
         lockFile.outputStream().use { lockBitmap?.compress(Bitmap.CompressFormat.PNG, 100, it) }
@@ -104,10 +104,21 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
 
     private fun clearLegacyResidualFiles() {
         val filesDir = getApplication<Application>().filesDir
+        val cacheDir = getApplication<Application>().cacheDir
+        val twoDaysInMillis = 2 * 24 * 60 * 60 * 1000L
+        val currentTime = System.currentTimeMillis()
 
         filesDir.listFiles()?.forEach {
             if (it.name.startsWith("system_wallpaper_")
                     || it.name.startsWith("lock_wallpaper_")) {
+                it.delete()
+            }
+        }
+
+        cacheDir.listFiles()?.forEach {
+            if ((it.name.startsWith("system_wallpaper_")
+                            || it.name.startsWith("lock_wallpaper_"))
+                    && (currentTime - it.lastModified() > twoDaysInMillis)) {
                 it.delete()
             }
         }
@@ -157,8 +168,8 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
     }
 
     companion object {
-        private const val SYSTEM_WALLPAPER = "system_wallpaper.png"
-        private const val LOCK_WALLPAPER = "lock_wallpaper.png"
+        private const val SYSTEM_WALLPAPER = "system_wallpaper_$.png"
+        private const val LOCK_WALLPAPER = "lock_wallpaper_$.png"
         private const val RANDOM_WALLPAPER_DELAY = 30L * 1000L // 30 seconds
     }
 }
