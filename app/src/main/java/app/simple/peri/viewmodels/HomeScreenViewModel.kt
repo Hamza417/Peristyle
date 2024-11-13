@@ -162,6 +162,10 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
         handler.postDelayed(randomWallpaperRepeatRunnable, RANDOM_WALLPAPER_DELAY)
     }
 
+    fun refetchSystemWallpapers() {
+        postCurrentSystemWallpaper()
+    }
+
     override fun onCleared() {
         super.onCleared()
         handler.removeCallbacksAndMessages(null)

@@ -43,11 +43,7 @@ fun CacheDirectoryDialog(onDismiss: () -> Unit, onClearCache: () -> Unit) {
                                     .wrapContentHeight(),
                                 verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
                         ) {
-                            Text(text = if (cacheFiles[position].absolutePath.contains(GLIDE_CACHE_DIR)) {
-                                GLIDE_CACHE_DIR
-                            } else {
-                                cacheFiles[position].absolutePath.substringAfter(context.cacheDir.absolutePath)
-                            },
+                            Text(text = cacheFiles[position].absolutePath.substringAfter(context.cacheDir.absolutePath),
                                  modifier = Modifier
                                      .weight(1f)
                                      .padding(end = 16.dp))
@@ -76,24 +72,7 @@ fun CacheDirectoryDialog(onDismiss: () -> Unit, onClearCache: () -> Unit) {
 
 fun getCacheFiles(context: Context): List<File> {
     val cacheDir = context.cacheDir
-    val allFiles = getFilesRecursively(cacheDir)
-    val glideCacheFiles = allFiles.filter { it.absolutePath.contains(GLIDE_CACHE_DIR) }
-    val otherFiles = allFiles.filterNot { it.absolutePath.contains(GLIDE_CACHE_DIR) }.toMutableList()
-
-    if (glideCacheFiles.isNotEmpty()) {
-        val mergedGlideCacheFile = File(cacheDir, "merged_image_cache")
-        mergedGlideCacheFile.outputStream().use { output ->
-            glideCacheFiles.forEach { file ->
-                file.inputStream().use { input ->
-                    input.copyTo(output)
-                }
-            }
-        }
-
-        otherFiles.add(mergedGlideCacheFile)
-    }
-
-    return otherFiles
+    return getFilesRecursively(cacheDir)
 }
 
 fun getFilesRecursively(dir: File): List<File> {

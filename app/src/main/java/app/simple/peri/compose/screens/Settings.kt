@@ -50,6 +50,8 @@ import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.utils.ConditionUtils.invert
 import app.simple.peri.utils.FileUtils.toSize
 import app.simple.peri.viewmodels.ComposeWallpaperViewModel
+import app.simple.peri.viewmodels.HomeScreenViewModel
+import com.bumptech.glide.Glide
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -61,6 +63,7 @@ fun Settings(navController: NavController? = null) {
     var statusBarHeight by remember { mutableIntStateOf(0) }
     var navigationBarHeight by remember { mutableIntStateOf(0) }
     val composeWallpaperViewModel: ComposeWallpaperViewModel = viewModel(LocalContext.current as ComponentActivity)
+    val homeViewModel: HomeScreenViewModel = viewModel(LocalContext.current as ComponentActivity)
 
     statusBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
             LocalView.current.rootWindowInsets).getInsets(WindowInsetsCompat.Type.statusBars()).top
@@ -182,6 +185,8 @@ fun Settings(navController: NavController? = null) {
                                 withContext(Dispatchers.Main) {
                                     showClearCacheDialog.value = true
                                     showCacheListDialog.value = false
+                                    Glide.get(context).clearMemory()
+                                    homeViewModel.refetchSystemWallpapers()
                                 }
                             }
                         }

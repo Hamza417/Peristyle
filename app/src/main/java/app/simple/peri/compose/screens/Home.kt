@@ -3,6 +3,7 @@ package app.simple.peri.compose.screens
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.widget.Toast
+import androidx.activity.ComponentActivity
 import androidx.annotation.StringRes
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
@@ -106,7 +107,7 @@ fun Home(navController: NavController? = null) {
         pagerSnapDistance = PagerSnapDistance.atMost(10)
     )
 
-    val homeScreenViewModel: HomeScreenViewModel = viewModel()
+    val homeScreenViewModel: HomeScreenViewModel = viewModel(LocalContext.current as ComponentActivity)
     var systemWallpapers = remember { mutableStateListOf<Wallpaper>() }
 
     homeScreenViewModel.getSystemWallpaper().observe(LocalLifecycleOwner.current) {
