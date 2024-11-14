@@ -16,4 +16,20 @@ object CommonUtils {
             scopeFlag.value = false
         }
     }
+
+    fun Float.toSeconds(): Float {
+        return this / 1000f
+    }
+
+    fun Long.toSeconds(): Long {
+        return this / 1000
+    }
+
+    fun Int.toSeconds(): Int {
+        return this / 1000
+    }
+
+    fun Double.toSeconds(): Double {
+        return this / 1000
+    }
 }

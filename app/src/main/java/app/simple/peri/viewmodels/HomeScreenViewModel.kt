@@ -13,16 +13,23 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import app.simple.peri.database.instances.WallpaperDatabase
 import app.simple.peri.models.Wallpaper
-import app.simple.peri.utils.ConditionUtils.invert
 import app.simple.peri.utils.PermissionUtils
-import id.zelory.compressor.BuildConfig
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import java.io.File
 
 class HomeScreenViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val handler = Handler(Looper.getMainLooper())
+    private var countDownJobs: ArrayList<Job> = ArrayList()
+    private val countDownMutex = Mutex()
+
+    val countDownFlow: MutableStateFlow<Long> = MutableStateFlow(RANDOM_WALLPAPER_DELAY)
 
     private val systemWallpaperData: MutableLiveData<Wallpaper> by lazy {
         MutableLiveData<Wallpaper>().also {
@@ -70,6 +77,37 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
         }
     }
 
+    private fun startCountDownFlow() {
+        val job = viewModelScope.launch {
+            countDownMutex.withLock {
+                ensureActive()
+                val interval = 16L // Update 60 times per second
+                while (countDownFlow.value > 0) {
+                    ensureActive()
+                    delay(interval)
+                    countDownFlow.value -= interval
+                }
+
+                ensureActive()
+                postRandomWallpaper()
+            }
+        }
+
+        countDownJobs.add(job)
+    }
+
+    fun stopCountDownFlow() {
+        countDownJobs.forEach { it.cancel() }
+        countDownJobs.clear()
+        Log.i("HomeScreenViewModel", "Countdown flow stopped")
+    }
+
+    fun resumeCountDownFlow() {
+        stopCountDownFlow()
+        startCountDownFlow()
+        Log.i("HomeScreenViewModel", "Countdown flow resumed")
+    }
+
     private fun postCurrentSystemWallpaper() {
         Log.i("HomeScreenViewModel", "Posting current system wallpaper")
         viewModelScope.launch(Dispatchers.IO) {
@@ -111,16 +149,15 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
     }
 
     private fun postRandomWallpaper() {
-        if (BuildConfig.DEBUG.invert()) {
-            viewModelScope.launch(Dispatchers.Default) {
-                try {
-                    randomWallpaperData.postValue(getRandomWallpaperFromDatabase())
-                } catch (_: NoSuchElementException) {
-                }
+        viewModelScope.launch(Dispatchers.Default) {
+            try {
+                randomWallpaperData.postValue(getRandomWallpaperFromDatabase())
+            } catch (_: NoSuchElementException) {
             }
         }
 
-        startPostingRandomWallpaper()
+        countDownFlow.value = RANDOM_WALLPAPER_DELAY
+        startCountDownFlow()
     }
 
     private fun createTempFile(fileName: String): File {
@@ -158,19 +195,6 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
         return wallpaper ?: Wallpaper()
     }
 
-    private val randomWallpaperRepeatRunnable = Runnable {
-        postRandomWallpaper()
-    }
-
-    fun stopPostingRandomWallpaper() {
-        handler.removeCallbacksAndMessages(null)
-    }
-
-    fun startPostingRandomWallpaper() {
-        stopPostingRandomWallpaper()
-        handler.postDelayed(randomWallpaperRepeatRunnable, RANDOM_WALLPAPER_DELAY)
-    }
-
     fun refetchSystemWallpapers() {
         postCurrentSystemWallpaper()
         postCurrentLockWallpaper()
@@ -178,12 +202,12 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
 
     override fun onCleared() {
         super.onCleared()
-        handler.removeCallbacksAndMessages(null)
+        stopCountDownFlow() // Unnecessary, but just in case
     }
 
     companion object {
         private const val SYSTEM_WALLPAPER = "system_wallpaper_$.png"
         private const val LOCK_WALLPAPER = "lock_wallpaper_$.png"
-        private const val RANDOM_WALLPAPER_DELAY = 15L * 1000L // 30 seconds
+        const val RANDOM_WALLPAPER_DELAY = 15000L
     }
 }

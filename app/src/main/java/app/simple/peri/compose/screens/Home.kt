@@ -73,8 +73,10 @@ import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import app.simple.peri.R
+import app.simple.peri.compose.commons.CircularCountdownProgress
 import app.simple.peri.compose.commons.InitDisplayDimension
 import app.simple.peri.compose.nav.Routes
+import app.simple.peri.glide.transitions.ZoomOut
 import app.simple.peri.models.DisplayDimension
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.utils.FileUtils.toFile
@@ -93,6 +95,7 @@ import dev.chrisbanes.haze.hazeChild
 import kotlin.math.absoluteValue
 
 val displayDimension = DisplayDimension(1080, 1920)
+const val RANDOM_WALLPAPER_POSITION = 0
 const val HOME_SCREEN_POSITION = 1
 const val LOCK_SCREEN_POSITION = 2
 
@@ -118,12 +121,12 @@ fun Home(navController: NavController? = null) {
     DisposableEffect(ProcessLifecycleOwner.get()) {
         val observer = object : DefaultLifecycleObserver {
             override fun onPause(owner: LifecycleOwner) {
-                homeScreenViewModel.stopPostingRandomWallpaper()
+                homeScreenViewModel.stopCountDownFlow()
                 Log.i("HomeScreen", "onPause")
             }
 
             override fun onResume(owner: LifecycleOwner) {
-                homeScreenViewModel.startPostingRandomWallpaper()
+                homeScreenViewModel.resumeCountDownFlow()
                 Log.i("HomeScreen", "onResume")
             }
 
@@ -166,6 +169,7 @@ fun Home(navController: NavController? = null) {
             }
 
             WallpaperItem(
+                    position = page,
                     title = when (page) {
                         HOME_SCREEN_POSITION -> stringResource(id = R.string.home_screen)
                         LOCK_SCREEN_POSITION -> stringResource(id = R.string.lock_screen)
@@ -224,7 +228,7 @@ fun Home(navController: NavController? = null) {
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun WallpaperItem(title: String, onClick: () -> Unit, modifier: Modifier = Modifier, wallpaper: Wallpaper?) {
+fun WallpaperItem(title: String, position: Int, onClick: () -> Unit, modifier: Modifier = Modifier, wallpaper: Wallpaper?) {
     val currentScale = remember {
         mutableStateOf(ContentScale.Crop)
     }
@@ -273,6 +277,14 @@ fun WallpaperItem(title: String, onClick: () -> Unit, modifier: Modifier = Modif
                 })
                     .disallowHardwareConfig()
                     .fitCenter()
+            }
+
+            if (position == RANDOM_WALLPAPER_POSITION) {
+                CircularCountdownProgress(
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .align(Alignment.TopStart)
+                )
             }
 
             Column(

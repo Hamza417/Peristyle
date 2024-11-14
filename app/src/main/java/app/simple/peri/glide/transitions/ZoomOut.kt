@@ -1,5 +1,6 @@
 package app.simple.peri.glide.transitions
 
+import android.util.Log
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.AnimationVector1D
@@ -11,7 +12,7 @@ import androidx.compose.ui.graphics.drawscope.scale
 import com.bumptech.glide.integration.compose.DrawPainter
 import com.bumptech.glide.integration.compose.Transition
 
-val FastOutVerySlowInEasing: Easing = CubicBezierEasing(0.4f, 0f, 0.6f, 1f)
+val LinearOutVerySlowInEasing: Easing = CubicBezierEasing(0.0f, 0.0f, 0.0f, 1.0f)
 
 class ZoomOut(
         private val animationSpec: AnimationSpec<Float>
@@ -20,7 +21,7 @@ class ZoomOut(
 
     companion object : Transition.Factory {
         override fun build(): Transition =
-            ZoomOutImpl(animationSpec = tween(400, easing = FastOutVerySlowInEasing))
+            ZoomOutImpl(animationSpec = tween(400, easing = LinearOutVerySlowInEasing))
     }
 
     override fun equals(other: Any?): Boolean {
@@ -40,7 +41,7 @@ internal class ZoomOutImpl(
 ) : Transition {
 
     private companion object {
-        const val INITIAL_SCALE = 1.3f
+        const val INITIAL_SCALE = 0.75f
         const val FINAL_SCALE = 1F
     }
 
@@ -64,7 +65,8 @@ internal class ZoomOutImpl(
     override val drawPlaceholder: DrawPainter = { painter, size, alpha, colorFilter ->
         with(painter) {
             scale(animatable.value) {
-                draw(size, alpha, colorFilter)
+                val normalizedAlpha = (animatable.value - 0.75f) / (1f - 0.75f)
+                draw(size, normalizedAlpha, colorFilter)
             }
         }
     }
@@ -72,7 +74,8 @@ internal class ZoomOutImpl(
     override val drawCurrent: DrawPainter = { painter, size, alpha, colorFilter ->
         with(painter) {
             scale(animatable.value) {
-                draw(size, alpha, colorFilter)
+                val normalizedAlpha = (animatable.value - 0.75f) / (1f - 0.75f)
+                draw(size, normalizedAlpha, colorFilter)
             }
         }
     }
