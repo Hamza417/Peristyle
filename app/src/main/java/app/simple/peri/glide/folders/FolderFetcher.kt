@@ -32,7 +32,7 @@ class FolderFetcher(private val contextFolder: ContextFolder) : DataFetcher<Bitm
                 .asBitmap()
                 .load(wallpaper.filePath)
                 .centerCrop()
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .submit(displayDimension.getReducedWidth(), displayDimension.getReducedHeight())
 
             bitmapList.add(bitmap)

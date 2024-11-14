@@ -24,14 +24,34 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
 
     private val handler = Handler(Looper.getMainLooper())
 
-    private val systemWallpaperData: MutableLiveData<ArrayList<Wallpaper>> by lazy {
-        MutableLiveData<ArrayList<Wallpaper>>().also {
+    private val systemWallpaperData: MutableLiveData<Wallpaper> by lazy {
+        MutableLiveData<Wallpaper>().also {
             postCurrentSystemWallpaper()
         }
     }
 
-    fun getSystemWallpaper(): MutableLiveData<ArrayList<Wallpaper>> {
+    private val lockWallpaperData: MutableLiveData<Wallpaper> by lazy {
+        MutableLiveData<Wallpaper>().also {
+            postCurrentLockWallpaper()
+        }
+    }
+
+    private val randomWallpaperData: MutableLiveData<Wallpaper> by lazy {
+        MutableLiveData<Wallpaper>().also {
+            postRandomWallpaper()
+        }
+    }
+
+    fun getSystemWallpaper(): MutableLiveData<Wallpaper> {
         return systemWallpaperData
+    }
+
+    fun getLockWallpaper(): MutableLiveData<Wallpaper> {
+        return lockWallpaperData
+    }
+
+    fun getRandomWallpaper(): MutableLiveData<Wallpaper> {
+        return randomWallpaperData
     }
 
     init {
@@ -53,47 +73,54 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
     private fun postCurrentSystemWallpaper() {
         Log.i("HomeScreenViewModel", "Posting current system wallpaper")
         viewModelScope.launch(Dispatchers.IO) {
+            val wallpaperManager = WallpaperManager.getInstance(getApplication())
+            val systemBitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                wallpaperManager.getDrawable(WallpaperManager.FLAG_SYSTEM)?.toBitmap()
+            } else {
+                wallpaperManager.drawable?.toBitmap()
+            }
+
+            val systemFile = createTempFile(SYSTEM_WALLPAPER.replace("$", System.currentTimeMillis().div(1000).toString()))
+
+            systemFile.outputStream().use { systemBitmap?.compress(Bitmap.CompressFormat.PNG, 100, it) }
+
             if (PermissionUtils.checkStoragePermission(getApplication())) {
-                systemWallpaperData.postValue(getCurrentSystemWallpaper())
+                systemWallpaperData.postValue(Wallpaper.createFromFile(systemFile))
+            }
+        }
+    }
+
+    private fun postCurrentLockWallpaper() {
+        Log.i("HomeScreenViewModel", "Posting current lock wallpaper")
+        viewModelScope.launch(Dispatchers.IO) {
+            val wallpaperManager = WallpaperManager.getInstance(getApplication())
+            val lockBitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                wallpaperManager.getDrawable(WallpaperManager.FLAG_LOCK)?.toBitmap()
+            } else {
+                wallpaperManager.drawable?.toBitmap()
+            }
+
+            val lockFile = createTempFile(LOCK_WALLPAPER.replace("$", System.currentTimeMillis().div(1000).toString()))
+
+            lockFile.outputStream().use { lockBitmap?.compress(Bitmap.CompressFormat.PNG, 100, it) }
+
+            if (PermissionUtils.checkStoragePermission(getApplication())) {
+                lockWallpaperData.postValue(Wallpaper.createFromFile(lockFile))
+            }
+        }
+    }
+
+    private fun postRandomWallpaper() {
+        if (BuildConfig.DEBUG.invert()) {
+            viewModelScope.launch(Dispatchers.Default) {
+                try {
+                    randomWallpaperData.postValue(getRandomWallpaperFromDatabase())
+                } catch (_: NoSuchElementException) {
+                }
             }
         }
 
         startPostingRandomWallpaper()
-    }
-
-    private fun getCurrentSystemWallpaper(): ArrayList<Wallpaper> {
-        val wallpaperManager = WallpaperManager.getInstance(getApplication())
-        val systemBitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            wallpaperManager.getDrawable(WallpaperManager.FLAG_SYSTEM)?.toBitmap()
-        } else {
-            wallpaperManager.drawable?.toBitmap()
-        }
-
-        val lockBitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            wallpaperManager.getDrawable(WallpaperManager.FLAG_LOCK)?.toBitmap()
-        } else {
-            wallpaperManager.drawable?.toBitmap()
-        }
-
-        val systemFile = createTempFile(SYSTEM_WALLPAPER.replace("$", System.currentTimeMillis().div(1000).toString()))
-        val lockFile = createTempFile(LOCK_WALLPAPER.replace("$", System.currentTimeMillis().div(1000).toString()))
-
-        systemFile.outputStream().use { systemBitmap?.compress(Bitmap.CompressFormat.PNG, 100, it) }
-        lockFile.outputStream().use { lockBitmap?.compress(Bitmap.CompressFormat.PNG, 100, it) }
-
-        return try {
-            arrayListOf(
-                    Wallpaper.createFromFile(systemFile),
-                    Wallpaper.createFromFile(lockFile),
-                    getRandomWallpaperFromDatabase()
-            )
-        } catch (e: NoSuchElementException) {
-            arrayListOf(
-                    Wallpaper.createFromFile(systemFile),
-                    Wallpaper.createFromFile(lockFile),
-                    Wallpaper()
-            )
-        }
     }
 
     private fun createTempFile(fileName: String): File {
@@ -132,25 +159,7 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
     }
 
     private val randomWallpaperRepeatRunnable = Runnable {
-        if (BuildConfig.DEBUG.invert()) {
-            viewModelScope.launch(Dispatchers.Default) {
-                try {
-                    if (BuildConfig.DEBUG.invert()) {
-                        systemWallpaperData.postValue(systemWallpaperData.value?.apply {
-                            this[2] = getRandomWallpaperFromDatabase()
-                        })
-
-                        Log.i("HomeScreenViewModel", "Posting random wallpaper")
-                    } else {
-                        Log.i("HomeScreenViewModel", "Skipping posting random wallpaper")
-                    }
-                } catch (_: NoSuchElementException) {
-                    // poooo peeeeee ppooooo pooooo
-                }
-            }
-        }
-
-        startPostingRandomWallpaper()
+        postRandomWallpaper()
     }
 
     fun stopPostingRandomWallpaper() {
@@ -164,6 +173,7 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
 
     fun refetchSystemWallpapers() {
         postCurrentSystemWallpaper()
+        postCurrentLockWallpaper()
     }
 
     override fun onCleared() {

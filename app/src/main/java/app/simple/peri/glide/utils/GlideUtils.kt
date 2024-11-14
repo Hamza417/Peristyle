@@ -24,7 +24,7 @@ object GlideUtils {
                 .load(app.simple.peri.glide.wallpaper.Wallpaper(wallpaper, context.applicationContext))
                 .transition(BitmapTransitionOptions.withCrossFade())
                 // .transition(GenericTransitionOptions.with(R.anim.zoom_in))
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                 .set(Downsampler.ALLOW_HARDWARE_CONFIG, true)
                 .into(this)
         } else {
@@ -37,7 +37,7 @@ object GlideUtils {
             .asBitmap()
             .load(app.simple.peri.glide.wallpaper.Wallpaper(wallpaper, context.applicationContext))
             .transition(BitmapTransitionOptions.withCrossFade())
-            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
             .set(Downsampler.ALLOW_HARDWARE_CONFIG, true)
             .into(this)
     }
@@ -47,7 +47,7 @@ object GlideUtils {
             .asBitmap()
             .load(app.simple.peri.glide.wallpaper.Wallpaper(wallpaper, context))
             .transition(BitmapTransitionOptions.withCrossFade())
-            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
             .set(Downsampler.ALLOW_HARDWARE_CONFIG, false)
             .addListener(object : RequestListener<Bitmap> {
                 override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Bitmap>, isFirstResource: Boolean): Boolean {
@@ -67,7 +67,7 @@ object GlideUtils {
         GlideApp.with(this)
             .asBitmap()
             .load(app.simple.peri.glide.wallpaper.Wallpaper(wallpaper, this))
-            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
             .set(Downsampler.ALLOW_HARDWARE_CONFIG, false)
             .addListener(object : RequestListener<Bitmap> {
                 override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Bitmap>, isFirstResource: Boolean): Boolean {

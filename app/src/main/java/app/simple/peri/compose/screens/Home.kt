@@ -47,10 +47,9 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -103,17 +102,15 @@ fun Home(navController: NavController? = null) {
     })
 
     val fling = PagerDefaults.flingBehavior(
-        state = pagerState,
-        pagerSnapDistance = PagerSnapDistance.atMost(10)
+            state = pagerState,
+            pagerSnapDistance = PagerSnapDistance.atMost(10)
     )
 
     val homeScreenViewModel: HomeScreenViewModel = viewModel(LocalContext.current as ComponentActivity)
-    var systemWallpapers = remember { mutableStateListOf<Wallpaper>() }
 
-    homeScreenViewModel.getSystemWallpaper().observe(LocalLifecycleOwner.current) {
-        systemWallpapers.clear()
-        systemWallpapers = it.toMutableStateList()
-    }
+    val systemWallpaper = homeScreenViewModel.getSystemWallpaper().observeAsState().value
+    val lockWallpaper = homeScreenViewModel.getLockWallpaper().observeAsState().value
+    val randomWallpaper = homeScreenViewModel.getRandomWallpaper().observeAsState().value
 
     val lifecycleOwner = LocalLifecycleOwner.current
 
@@ -141,73 +138,77 @@ fun Home(navController: NavController? = null) {
                 .windowInsetsPadding(WindowInsets.safeDrawing)
     ) {
         Header(
-            title = stringResource(id = R.string.app_name),
-            modifier = Modifier.padding(24.dp),
-            navController = navController
+                title = stringResource(id = R.string.app_name),
+                modifier = Modifier.padding(24.dp),
+                navController = navController
         )
 
         HorizontalPager(
-            state = pagerState,
-            contentPadding = PaddingValues(horizontal = 48.dp),
-            flingBehavior = fling,
-            modifier = Modifier
-                .weight(1f)
-        ) { page ->
-            val wallpaper = systemWallpapers.getOrNull(page)
-
-            WallpaperItem(
-                title = when (page) {
-                    0 -> stringResource(id = R.string.home_screen)
-                    1 -> stringResource(id = R.string.lock_screen)
-                    else -> wallpaper?.name ?: ""
-                },
-                onClick = {
-                    if (wallpaper != null) {
-                        navController?.navigate(Routes.WALLPAPER) {
-                            navController.currentBackStackEntry?.savedStateHandle?.set(Routes.WALLPAPER_ARG, wallpaper)
-                        }
-                    }
-                },
+                state = pagerState,
+                contentPadding = PaddingValues(horizontal = 48.dp),
+                flingBehavior = fling,
                 modifier = Modifier
                     .weight(1f)
-                    .graphicsLayer {
-                        // Calculate the absolute offset for the current page from the
-                        // scroll position. We use the absolute value which allows us to mirror
-                        // any effects for both directions
-                        val pageOffset =
-                            ((pagerState.currentPage - page) + pagerState.currentPageOffsetFraction).absoluteValue
-                        val startScale = 0.95f
+        ) { page ->
+            val wallpaper = when (page) {
+                0 -> systemWallpaper
+                1 -> lockWallpaper
+                else -> randomWallpaper
+            }
 
-                        // We animate the alpha, between 50% and 100%
-                        // alpha = lerp(
-                        //        start = 0.75f,
-                        //        stop = 1f,
-                        //        fraction = 1f - pageOffset.coerceIn(0f, 1f),
-                        //)
+            WallpaperItem(
+                    title = when (page) {
+                        0 -> stringResource(id = R.string.home_screen)
+                        1 -> stringResource(id = R.string.lock_screen)
+                        else -> wallpaper?.name ?: ""
+                    },
+                    onClick = {
+                        if (wallpaper != null) {
+                            navController?.navigate(Routes.WALLPAPER) {
+                                navController.currentBackStackEntry?.savedStateHandle?.set(Routes.WALLPAPER_ARG, wallpaper)
+                            }
+                        }
+                    },
+                    modifier = Modifier
+                        .weight(1f)
+                        .graphicsLayer {
+                            // Calculate the absolute offset for the current page from the
+                            // scroll position. We use the absolute value which allows us to mirror
+                            // any effects for both directions
+                            val pageOffset =
+                                ((pagerState.currentPage - page) + pagerState.currentPageOffsetFraction).absoluteValue
+                            val startScale = 0.95f
 
-                        scaleX = lerp(
-                                start = startScale,
-                                stop = 1f,
-                                fraction = 1f - pageOffset.coerceIn(0f, 1f),
-                        )
+                            // We animate the alpha, between 50% and 100%
+                            // alpha = lerp(
+                            //        start = 0.75f,
+                            //        stop = 1f,
+                            //        fraction = 1f - pageOffset.coerceIn(0f, 1f),
+                            //)
 
-                        scaleY = lerp(
-                                start = startScale,
-                                stop = 1f,
-                                fraction = 1f - pageOffset.coerceIn(0f, 1f),
-                        )
-                    }
-                    .padding(8.dp), // Add padding to create space between the cards
-                wallpaper = wallpaper
+                            scaleX = lerp(
+                                    start = startScale,
+                                    stop = 1f,
+                                    fraction = 1f - pageOffset.coerceIn(0f, 1f),
+                            )
+
+                            scaleY = lerp(
+                                    start = startScale,
+                                    stop = 1f,
+                                    fraction = 1f - pageOffset.coerceIn(0f, 1f),
+                            )
+                        }
+                        .padding(8.dp), // Add padding to create space between the cards
+                    wallpaper = wallpaper
 
             )
         }
 
         BottomMenu(
-            modifier = Modifier
-                .padding(8.dp)
-                .height(120.dp),
-            navController = navController
+                modifier = Modifier
+                    .padding(8.dp)
+                    .height(120.dp),
+                navController = navController
         )
     }
 }
@@ -222,42 +223,42 @@ fun WallpaperItem(title: String, onClick: () -> Unit, modifier: Modifier = Modif
     val hazeState = remember { HazeState() }
 
     ElevatedCard(
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 0.dp
-        ),
-        modifier = modifier
-            .graphicsLayer {
-                clip = false
-            }
-            .shadow(
-                    12.dp,
-                    shape = RoundedCornerShape(32.dp),
-                    clip = false,
-                    spotColor = Color(wallpaper?.prominentColor ?: Color.DarkGray.toArgb()),
-                    ambientColor = Color(wallpaper?.prominentColor ?: Color.DarkGray.toArgb())
+            elevation = CardDefaults.cardElevation(
+                    defaultElevation = 0.dp
             ),
-        onClick = onClick,
-        shape = RoundedCornerShape(32.dp),
+            modifier = modifier
+                .graphicsLayer {
+                    clip = false
+                }
+                .shadow(
+                        12.dp,
+                        shape = RoundedCornerShape(32.dp),
+                        clip = false,
+                        spotColor = Color(wallpaper?.prominentColor ?: Color.DarkGray.toArgb()),
+                        ambientColor = Color(wallpaper?.prominentColor ?: Color.DarkGray.toArgb())
+                ),
+            onClick = onClick,
+            shape = RoundedCornerShape(32.dp),
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             GlideImage(
                     model = wallpaper?.filePath?.toFile(),
-                contentDescription = null,
-                transition = CrossFade,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .haze(state = hazeState),
-                alignment = Alignment.Center,
-                contentScale = currentScale.value,
+                    contentDescription = null,
+                    transition = CrossFade,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .haze(state = hazeState),
+                    alignment = Alignment.Center,
+                    contentScale = currentScale.value,
             ) {
                 it.addListener(object : RequestListener<Drawable> {
                     override fun onLoadFailed(
-                        e: GlideException?, model: Any?, target: Target<Drawable>, isFirstResource: Boolean): Boolean {
+                            e: GlideException?, model: Any?, target: Target<Drawable>, isFirstResource: Boolean): Boolean {
                         return false
                     }
 
                     override fun onResourceReady(
-                        resource: Drawable, model: Any, target: Target<Drawable>?, dataSource: DataSource, isFirstResource: Boolean): Boolean {
+                            resource: Drawable, model: Any, target: Target<Drawable>?, dataSource: DataSource, isFirstResource: Boolean): Boolean {
                         return false
                     }
                 })
@@ -266,25 +267,25 @@ fun WallpaperItem(title: String, onClick: () -> Unit, modifier: Modifier = Modif
             }
 
             Column(
-                modifier = Modifier
-                    .wrapContentHeight()
-                    .fillMaxWidth()
-                    .hazeChild(
-                            state = hazeState,
-                            style = HazeDefaults.style(backgroundColor = Color(0x50000000), blurRadius = 15.dp)
-                    )
-                    .align(Alignment.BottomCenter)
+                    modifier = Modifier
+                        .wrapContentHeight()
+                        .fillMaxWidth()
+                        .hazeChild(
+                                state = hazeState,
+                                style = HazeDefaults.style(backgroundColor = Color(0x50000000), blurRadius = 15.dp)
+                        )
+                        .align(Alignment.BottomCenter)
             ) {
                 Text(
-                    text = title,
-                    modifier = Modifier
-                        .padding(start = 16.dp, top = 16.dp, end = 16.dp),
-                    textAlign = TextAlign.Start,
-                    fontSize = 24.sp, // Set the font size
-                    fontWeight = FontWeight.Bold, // Make the text bold
-                    color = Color.White, // Set the text color
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                        text = title,
+                        modifier = Modifier
+                            .padding(start = 16.dp, top = 16.dp, end = 16.dp),
+                        textAlign = TextAlign.Start,
+                        fontSize = 24.sp, // Set the font size
+                        fontWeight = FontWeight.Bold, // Make the text bold
+                        color = Color.White, // Set the text color
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                 )
 
                 val info = when (title) {
@@ -314,13 +315,13 @@ fun WallpaperItem(title: String, onClick: () -> Unit, modifier: Modifier = Modif
                 }
 
                 Text(
-                    text = info,
-                    modifier = Modifier
-                        .padding(start = 16.dp, top = 4.dp, bottom = 16.dp, end = 16.dp),
-                    textAlign = TextAlign.Start,
-                    fontSize = 16.sp, // Set the font size
-                    fontWeight = FontWeight.Light, // Make the text bold
-                    color = Color.White, // Set the text color
+                        text = info,
+                        modifier = Modifier
+                            .padding(start = 16.dp, top = 4.dp, bottom = 16.dp, end = 16.dp),
+                        textAlign = TextAlign.Start,
+                        fontSize = 16.sp, // Set the font size
+                        fontWeight = FontWeight.Light, // Make the text bold
+                        color = Color.White, // Set the text color
                 )
             }
         }
@@ -330,27 +331,27 @@ fun WallpaperItem(title: String, onClick: () -> Unit, modifier: Modifier = Modif
 @Composable
 fun Header(title: String, modifier: Modifier = Modifier, navController: NavController? = null) {
     Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .wrapContentHeight(),
-        verticalAlignment = Alignment.CenterVertically
+            modifier = modifier
+                .fillMaxWidth()
+                .wrapContentHeight(),
+            verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = title,
-            textAlign = TextAlign.Start,
-            fontSize = 32.sp, // Set the font size
-            modifier = Modifier.weight(1f), // Set the weight
-            fontWeight = FontWeight.Bold, // Make the text bold
+                text = title,
+                textAlign = TextAlign.Start,
+                fontSize = 32.sp, // Set the font size
+                modifier = Modifier.weight(1f), // Set the weight
+                fontWeight = FontWeight.Bold, // Make the text bold
         )
 
         IconButton(
-            onClick = {
-                navController?.navigate(Routes.SETTINGS)
-            },
+                onClick = {
+                    navController?.navigate(Routes.SETTINGS)
+                },
         ) {
             Icon(
-                imageVector = Icons.Rounded.Settings,
-                contentDescription = null
+                    imageVector = Icons.Rounded.Settings,
+                    contentDescription = null
             )
         }
     }
@@ -364,77 +365,77 @@ fun BottomMenu(modifier: Modifier = Modifier, navController: NavController? = nu
     val context = LocalContext.current
 
     Row(
-        modifier = modifier
-            .fillMaxHeight()
-            .padding(start = rowPadding, end = rowPadding),
-        verticalAlignment = Alignment.CenterVertically
+            modifier = modifier
+                .fillMaxHeight()
+                .padding(start = rowPadding, end = rowPadding),
+            verticalAlignment = Alignment.CenterVertically
     ) {
         BottomMenuItem(
-            modifier = Modifier
-                .weight(0.2F)
-                .height(height),
-            imageVector = Icons.AutoMirrored.Rounded.Label,
-            title = R.string.tags
+                modifier = Modifier
+                    .weight(0.2F)
+                    .height(height),
+                imageVector = Icons.AutoMirrored.Rounded.Label,
+                title = R.string.tags
         ) {
             navController?.navigate(Routes.TAGS)
         }
 
         BottomMenuItem(
-            modifier = Modifier
-                .weight(0.2F)
-                .height(height),
-            imageVector = Icons.Rounded.Schedule,
-            title = R.string.auto_wallpaper
+                modifier = Modifier
+                    .weight(0.2F)
+                    .height(height),
+                imageVector = Icons.Rounded.Schedule,
+                title = R.string.auto_wallpaper
         ) {
             navController?.navigate(Routes.AUTO_WALLPAPER)
         }
 
         BottomMenuItem(
-            modifier = Modifier
-                .weight(0.2F)
-                .height(height),
-            imageVector = Icons.Rounded.MotionPhotosOn,
-            title = R.string.live_wallpapers
+                modifier = Modifier
+                    .weight(0.2F)
+                    .height(height),
+                imageVector = Icons.Rounded.MotionPhotosOn,
+                title = R.string.live_wallpapers
         ) {
             navController?.navigate(Routes.LIVE_WALLPAPERS)
         }
 
         Card(
-            elevation = CardDefaults.cardElevation(
-                defaultElevation = 0.dp
-            ),
-            modifier = Modifier
-                .padding(8.dp)
-                .weight(0.4f)
-                .height(height)
-                .combinedClickable(
-                        onClick = {
-                            navController?.navigate(Routes.FOLDERS)
-                        },
-                        onLongClick = {
-                            Toast
-                                .makeText(
-                                        context,
-                                        context.getString(R.string.folder),
-                                        Toast.LENGTH_SHORT
-                                )
-                                .show()
-                        },
-                        indication = ripple(bounded = true, radius = 32.dp),
-                        interactionSource = remember { MutableInteractionSource() }
+                elevation = CardDefaults.cardElevation(
+                        defaultElevation = 0.dp
                 ),
-            shape = RoundedCornerShape(32.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.primary,
-            ),
+                modifier = Modifier
+                    .padding(8.dp)
+                    .weight(0.4f)
+                    .height(height)
+                    .combinedClickable(
+                            onClick = {
+                                navController?.navigate(Routes.FOLDERS)
+                            },
+                            onLongClick = {
+                                Toast
+                                    .makeText(
+                                            context,
+                                            context.getString(R.string.folder),
+                                            Toast.LENGTH_SHORT
+                                    )
+                                    .show()
+                            },
+                            indication = ripple(bounded = true, radius = 32.dp),
+                            interactionSource = remember { MutableInteractionSource() }
+                    ),
+                shape = RoundedCornerShape(32.dp),
+                colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                ),
         ) {
             Icon(
-                imageVector = Icons.Rounded.Folder,
-                contentDescription = null,
-                modifier = Modifier
-                    .size(64.dp)
-                    .padding(16.dp)
-                    .align(Alignment.CenterHorizontally)
+                    imageVector = Icons.Rounded.Folder,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(64.dp)
+                        .padding(16.dp)
+                        .align(Alignment.CenterHorizontally)
             )
         }
     }
@@ -446,39 +447,39 @@ fun BottomMenuItem(modifier: Modifier = Modifier, @StringRes title: Int = 0, ima
     val context = LocalContext.current
 
     Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally
+            modifier = modifier,
+            horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Card(
-            elevation = CardDefaults.cardElevation(
-                defaultElevation = 0.dp
-            ),
-            modifier = modifier
-                .padding(start = 4.dp, end = 4.dp)
-                .aspectRatio(1f)
-                .combinedClickable(
-                        onClick = onClick,
-                        onLongClick = {
-                            Toast
-                                .makeText(
-                                        context,
-                                        context.getString(title),
-                                        Toast.LENGTH_SHORT
-                                )
-                                .show()
-                        },
-                        indication = ripple(bounded = true, radius = 32.dp),
-                        interactionSource = remember { MutableInteractionSource() }
+                elevation = CardDefaults.cardElevation(
+                        defaultElevation = 0.dp
                 ),
-            shape = RoundedCornerShape(32.dp),
+                modifier = modifier
+                    .padding(start = 4.dp, end = 4.dp)
+                    .aspectRatio(1f)
+                    .combinedClickable(
+                            onClick = onClick,
+                            onLongClick = {
+                                Toast
+                                    .makeText(
+                                            context,
+                                            context.getString(title),
+                                            Toast.LENGTH_SHORT
+                                    )
+                                    .show()
+                            },
+                            indication = ripple(bounded = true, radius = 32.dp),
+                            interactionSource = remember { MutableInteractionSource() }
+                    ),
+                shape = RoundedCornerShape(32.dp),
         ) {
             Icon(
-                imageVector = imageVector,
-                contentDescription = null,
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .fillMaxWidth()
-                    .padding(14.dp)
+                    imageVector = imageVector,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .fillMaxWidth()
+                        .padding(14.dp)
             )
         }
     }
@@ -487,19 +488,19 @@ fun BottomMenuItem(modifier: Modifier = Modifier, @StringRes title: Int = 0, ima
 @Composable
 fun ShowTagDialog(title: String, onDismiss: () -> Unit) {
     AlertDialog(
-        onDismissRequest = onDismiss,
-        title = {
-            Text(text = title)
-        },
-        text = {
-            Text(text = "This is a placeholder")
-        },
-        confirmButton = {
-            TextButton(
-                onClick = onDismiss
-            ) {
-                Text(text = "OK")
+            onDismissRequest = onDismiss,
+            title = {
+                Text(text = title)
+            },
+            text = {
+                Text(text = "This is a placeholder")
+            },
+            confirmButton = {
+                TextButton(
+                        onClick = onDismiss
+                ) {
+                    Text(text = "OK")
+                }
             }
-        }
     )
 }

@@ -29,7 +29,7 @@ class EffectsFetcher(private val effect: Effect) : DataFetcher<Bitmap> {
             .asBitmap()
             .load(effect.wallpaper.filePath)
             .centerCrop()
-            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
             .into(object : CustomTarget<Bitmap>(thumbnailWidth, thumbnailHeight) {
                 override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
                     CoroutineScope(Dispatchers.Main).launch {

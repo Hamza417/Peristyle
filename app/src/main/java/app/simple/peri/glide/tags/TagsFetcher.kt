@@ -34,7 +34,7 @@ class TagsFetcher(private val contextTag: ContextTag) : DataFetcher<Bitmap> {
                 .asBitmap()
                 .load(wallpaper.filePath)
                 .centerCrop()
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .submit(displayDimension.getReducedWidth(), displayDimension.getReducedHeight())
 
             bitmapList.add(bitmap)
