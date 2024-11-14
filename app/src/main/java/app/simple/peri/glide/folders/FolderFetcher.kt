@@ -12,6 +12,7 @@ import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.data.DataFetcher
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.FutureTarget
+import com.bumptech.glide.signature.ObjectKey
 
 class FolderFetcher(private val contextFolder: ContextFolder) : DataFetcher<Bitmap> {
     override fun loadData(priority: Priority, callback: DataFetcher.DataCallback<in Bitmap>) {
@@ -32,7 +33,10 @@ class FolderFetcher(private val contextFolder: ContextFolder) : DataFetcher<Bitm
                 .asBitmap()
                 .load(wallpaper.filePath)
                 .centerCrop()
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                .signature(ObjectKey(
+                        (wallpaper.filePath + displayDimension.getReducedWidth() + displayDimension.getReducedHeight())
+                            .hashCode()))
                 .submit(displayDimension.getReducedWidth(), displayDimension.getReducedHeight())
 
             bitmapList.add(bitmap)

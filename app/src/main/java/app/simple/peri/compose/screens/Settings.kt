@@ -185,7 +185,8 @@ fun Settings(navController: NavController? = null) {
                                 withContext(Dispatchers.Main) {
                                     showClearCacheDialog.value = true
                                     showCacheListDialog.value = false
-                                    Glide.get(context).clearMemory()
+                                    // Can break the loading in the whole app
+                                    // Glide.get(context).clearMemory()
                                     homeViewModel.refetchSystemWallpapers()
                                 }
                             }

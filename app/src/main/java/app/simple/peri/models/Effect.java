@@ -3,6 +3,7 @@ package app.simple.peri.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
@@ -199,6 +200,7 @@ public class Effect implements Parcelable {
         this.scaleBlueValue = scaleBlueValue;
     }
     
+    @NonNull
     @Override
     public String toString() {
         return "Effect{" +
@@ -214,5 +216,44 @@ public class Effect implements Parcelable {
                 ", scaleGreenValue=" + scaleGreenValue +
                 ", scaleBlueValue=" + scaleBlueValue +
                 '}';
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        
+        Effect effect = (Effect) o;
+        return getId() == effect.getId() &&
+                Float.compare(getBlurValue(), effect.getBlurValue()) == 0 &&
+                Float.compare(getBrightnessValue(), effect.getBrightnessValue()) == 0 &&
+                Float.compare(getContrastValue(), effect.getContrastValue()) == 0 &&
+                Float.compare(getSaturationValue(), effect.getSaturationValue()) == 0 &&
+                Float.compare(getHueRedValue(), effect.getHueRedValue()) == 0 &&
+                Float.compare(getHueGreenValue(), effect.getHueGreenValue()) == 0 &&
+                Float.compare(getHueBlueValue(), effect.getHueBlueValue()) == 0 &&
+                Float.compare(getScaleRedValue(), effect.getScaleRedValue()) == 0 &&
+                Float.compare(getScaleGreenValue(), effect.getScaleGreenValue()) == 0 &&
+                Float.compare(getScaleBlueValue(), effect.getScaleBlueValue()) == 0;
+    }
+    
+    @Override
+    public int hashCode() {
+        int result = getId();
+        result = 31 * result + Float.hashCode(getBlurValue());
+        result = 31 * result + Float.hashCode(getBrightnessValue());
+        result = 31 * result + Float.hashCode(getContrastValue());
+        result = 31 * result + Float.hashCode(getSaturationValue());
+        result = 31 * result + Float.hashCode(getHueRedValue());
+        result = 31 * result + Float.hashCode(getHueGreenValue());
+        result = 31 * result + Float.hashCode(getHueBlueValue());
+        result = 31 * result + Float.hashCode(getScaleRedValue());
+        result = 31 * result + Float.hashCode(getScaleGreenValue());
+        result = 31 * result + Float.hashCode(getScaleBlueValue());
+        return result;
     }
 }

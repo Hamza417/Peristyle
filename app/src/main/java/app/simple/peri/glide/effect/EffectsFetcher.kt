@@ -10,6 +10,7 @@ import com.bumptech.glide.load.data.DataFetcher
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
+import com.bumptech.glide.signature.ObjectKey
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -29,7 +30,10 @@ class EffectsFetcher(private val effect: Effect) : DataFetcher<Bitmap> {
             .asBitmap()
             .load(effect.wallpaper.filePath)
             .centerCrop()
-            .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+            .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+            .signature(ObjectKey(
+                    (effect.wallpaper.filePath + effect.effect.id)
+                        .hashCode()))
             .into(object : CustomTarget<Bitmap>(thumbnailWidth, thumbnailHeight) {
                 override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
                     CoroutineScope(Dispatchers.Main).launch {

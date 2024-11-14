@@ -27,7 +27,7 @@ class WallpaperModule : AppGlideModule() {
                 RequestOptions()
                     .format(DecodeFormat.PREFER_ARGB_8888)
                     .set(Downsampler.ALLOW_HARDWARE_CONFIG, false)
-                    .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                    .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
         )
     }
 
