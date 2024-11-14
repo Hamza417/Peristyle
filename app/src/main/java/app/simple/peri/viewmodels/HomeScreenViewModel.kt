@@ -184,6 +184,6 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
     companion object {
         private const val SYSTEM_WALLPAPER = "system_wallpaper_$.png"
         private const val LOCK_WALLPAPER = "lock_wallpaper_$.png"
-        private const val RANDOM_WALLPAPER_DELAY = 30L * 1000L // 30 seconds
+        private const val RANDOM_WALLPAPER_DELAY = 15L * 1000L // 30 seconds
     }
 }

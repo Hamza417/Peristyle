@@ -2,6 +2,7 @@ package app.simple.peri.compose.screens
 
 import android.graphics.drawable.Drawable
 import android.os.Build
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.annotation.StringRes
@@ -68,7 +69,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.lerp
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import app.simple.peri.R
@@ -92,6 +93,8 @@ import dev.chrisbanes.haze.hazeChild
 import kotlin.math.absoluteValue
 
 val displayDimension = DisplayDimension(1080, 1920)
+const val HOME_SCREEN_POSITION = 1
+const val LOCK_SCREEN_POSITION = 2
 
 @Composable
 fun Home(navController: NavController? = null) {
@@ -112,23 +115,29 @@ fun Home(navController: NavController? = null) {
     val lockWallpaper = homeScreenViewModel.getLockWallpaper().observeAsState().value
     val randomWallpaper = homeScreenViewModel.getRandomWallpaper().observeAsState().value
 
-    val lifecycleOwner = LocalLifecycleOwner.current
-
-    DisposableEffect(LocalLifecycleOwner.current) {
+    DisposableEffect(ProcessLifecycleOwner.get()) {
         val observer = object : DefaultLifecycleObserver {
             override fun onPause(owner: LifecycleOwner) {
                 homeScreenViewModel.stopPostingRandomWallpaper()
+                Log.i("HomeScreen", "onPause")
             }
 
             override fun onResume(owner: LifecycleOwner) {
                 homeScreenViewModel.startPostingRandomWallpaper()
+                Log.i("HomeScreen", "onResume")
+            }
+
+            override fun onDestroy(owner: LifecycleOwner) {
+                super.onDestroy(owner)
+                Log.i("HomeScreen", "onDestroy")
             }
         }
 
-        lifecycleOwner.lifecycle.addObserver(observer)
+        val lifecycle = ProcessLifecycleOwner.get().lifecycle
+        lifecycle.addObserver(observer)
 
         onDispose {
-            lifecycleOwner.lifecycle.removeObserver(observer)
+            lifecycle.removeObserver(observer)
         }
     }
 
@@ -151,15 +160,15 @@ fun Home(navController: NavController? = null) {
                     .weight(1f)
         ) { page ->
             val wallpaper = when (page) {
-                0 -> systemWallpaper
-                1 -> lockWallpaper
+                HOME_SCREEN_POSITION -> systemWallpaper
+                LOCK_SCREEN_POSITION -> lockWallpaper
                 else -> randomWallpaper
             }
 
             WallpaperItem(
                     title = when (page) {
-                        0 -> stringResource(id = R.string.home_screen)
-                        1 -> stringResource(id = R.string.lock_screen)
+                        HOME_SCREEN_POSITION -> stringResource(id = R.string.home_screen)
+                        LOCK_SCREEN_POSITION -> stringResource(id = R.string.lock_screen)
                         else -> wallpaper?.name ?: ""
                     },
                     onClick = {
