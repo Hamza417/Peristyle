@@ -198,6 +198,7 @@
     <string name="bottom_bar_summary">Başlığı uygulamanın alt kısmına taşı.</string>
     <string name="original_aspect_ratio">Orijinal En Boy Oranı</string>
     <string name="original_aspect_ratio_summary">Duvar kağıdı küçük resimlerini orijinal en-boy oranında göster.</string>
+    <string name="wallpaper_changed">%1$s duvar kağıdınız değişti.</string>
     <string name="delete_current_wallpaper">Mevcut Duvar Kağıdını Sil</string>
     <string name="notifications">Bildirim Gönder</string>
     <string name="notifications_summary">Uygulamanın otomatik duvar kağıdı ile ilgili bildirimler göndermesine izin verin.</string>
@@ -209,4 +210,5 @@
     <string name="max_process_summary">İzin verilen maksimum eşzamanlı işlem sayısını seçin.</string>
     <string name="max_process_desc">Bu ayarı yalnızca cihazınız destekliyorsa değiştirin; kapasitenin üzerinde ayar yapmak uygulamayı kullanılamaz hale getirebilir ve bazı durumlarda cihazın donmasına veya çökmesine neden olabilir.</string>
     <string name="no_sd_card_found">SD Kart Bulunamadı!</string>
+    <string name="done">Bitti</string>
 </resources>
