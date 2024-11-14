@@ -188,13 +188,13 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
         loadWallpaperImages()
     }
 
-    fun deleteFolder(folder: Folder) {
+    fun revokeFolder(folder: Folder) {
         viewModelScope.launch(Dispatchers.IO) {
             loadWallpaperImagesJobs.cancelAll("deleting folder")
             MainComposePreferences.removeWallpaperPath(folder.path)
             val wallpaperDatabase = WallpaperDatabase.getInstance(getApplication())
             val wallpaperDao = wallpaperDatabase?.wallpaperDao()
-            wallpaperDao?.deleteByPathHashcode(folder.path.hashCode())
+            wallpaperDao?.removeByPathHashcode(folder.path.hashCode())
             refresh()
         }
     }

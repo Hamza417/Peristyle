@@ -22,7 +22,7 @@ import app.simple.peri.utils.ConditionUtils.invert
 @Composable
 fun FolderMenu(folder: Folder? = null, onDismiss: () -> Unit, onOptionSelected: (String) -> Unit) {
     val options = listOf(
-            stringResource(R.string.delete),
+            stringResource(R.string.revoke),
             when (folder?.isNomedia?.invert()) {
                 true -> stringResource(R.string.add_nomedia)
                 else -> stringResource(R.string.remove_nomedia)

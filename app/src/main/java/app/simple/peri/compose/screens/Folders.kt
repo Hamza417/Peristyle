@@ -141,7 +141,7 @@ fun Folders(navController: NavController? = null) {
                         navController = navController,
                         composeWallpaperViewModel = composeWallpaperViewModel
                 ) {
-                    composeWallpaperViewModel.deleteFolder(it)
+                    composeWallpaperViewModel.revokeFolder(it)
                 }
             }
             item {
@@ -189,7 +189,7 @@ fun Folders(navController: NavController? = null) {
 
 @OptIn(ExperimentalGlideComposeApi::class, ExperimentalFoundationApi::class)
 @Composable
-fun FolderItem(folder: Folder, navController: NavController? = null, composeWallpaperViewModel: ComposeWallpaperViewModel, onDelete: (Folder) -> Unit) {
+fun FolderItem(folder: Folder, navController: NavController? = null, composeWallpaperViewModel: ComposeWallpaperViewModel, onRevoke: (Folder) -> Unit) {
     val hazeState = remember { HazeState() }
     val context = LocalContext.current
     var showFolderMenu by remember { mutableStateOf(false) }
@@ -202,8 +202,8 @@ fun FolderItem(folder: Folder, navController: NavController? = null, composeWall
                 onDismiss = { showFolderMenu = false },
                 onOptionSelected = {
                     when (it) {
-                        context.getString(R.string.delete) -> {
-                            onDelete(folder)
+                        context.getString(R.string.revoke) -> {
+                            onRevoke(folder)
                         }
 
                         context.getString(R.string.add_nomedia) -> {

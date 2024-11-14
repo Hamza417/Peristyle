@@ -126,7 +126,7 @@ interface WallpaperDao {
      * with the specified [hashcode]
      */
     @Query("DELETE FROM wallpapers WHERE folder_id = :hashcode")
-    fun deleteByPathHashcode(hashcode: Int)
+    fun removeByPathHashcode(hashcode: Int)
 
     fun purgeNonExistingWallpapers(wallpaperDatabase: WallpaperDatabase) {
         Log.i("WallpaperDao", "Purged non-existing or non-permitted wallpapers in: ${
