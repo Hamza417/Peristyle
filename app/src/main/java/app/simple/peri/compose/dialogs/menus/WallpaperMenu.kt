@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -17,22 +16,24 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ShareCompat
 import androidx.core.content.FileProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import app.simple.peri.R
+import app.simple.peri.compose.commons.FolderBrowser
 import app.simple.peri.compose.constants.DIALOG_OPTION_FONT_SIZE
-import app.simple.peri.compose.constants.DIALOG_TITLE_FONT_SIZE
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.utils.FileUtils.toFile
 import app.simple.peri.viewmodels.ComposeWallpaperViewModel
@@ -50,9 +51,26 @@ fun WallpaperMenu(
         onCompress: () -> Unit = {},
         onReduceResolution: () -> Unit = {}
 ) {
+    val space = 2.dp
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
+    var launchDirectoryPicker by remember { mutableStateOf(false) }
     val composeWallpaperViewModel: ComposeWallpaperViewModel = viewModel(LocalContext.current as ComponentActivity)
+
+    if (launchDirectoryPicker) {
+        FolderBrowser(
+                onCancel = {
+                    launchDirectoryPicker = false
+                },
+                onStorageGranted = {
+                    launchDirectoryPicker = false
+                    composeWallpaperViewModel.moveWallpaper(wallpaper, it) {
+                        Log.i("WallpaperMenu", "Wallpaper moved: $it")
+                        setShowDialog(false)
+                    }
+                }
+        )
+    }
 
     AlertDialog(
             onDismissRequest = { setShowDialog(false) },
@@ -95,7 +113,7 @@ fun WallpaperMenu(
                             )
                         }
 
-                        Spacer(modifier = Modifier.height(5.dp))
+                        Spacer(modifier = Modifier.height(space))
 
                         Button(
                                 onClick = {
@@ -124,7 +142,7 @@ fun WallpaperMenu(
                             )
                         }
 
-                        Spacer(modifier = Modifier.height(5.dp))
+                        Spacer(modifier = Modifier.height(space))
 
                         Button(
                                 onClick = {
@@ -147,7 +165,7 @@ fun WallpaperMenu(
                             )
                         }
 
-                        Spacer(modifier = Modifier.height(5.dp))
+                        Spacer(modifier = Modifier.height(space))
 
                         Button(
                                 onClick = {
@@ -183,7 +201,7 @@ fun WallpaperMenu(
                             )
                         }
 
-                        Spacer(modifier = Modifier.height(5.dp))
+                        Spacer(modifier = Modifier.height(space))
 
                         Button(
                                 onClick = {
@@ -199,6 +217,27 @@ fun WallpaperMenu(
                         ) {
                             Text(
                                     text = context.getString(R.string.select),
+                                    fontSize = DIALOG_OPTION_FONT_SIZE,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(space))
+
+                        Button(
+                                onClick = {
+                                    launchDirectoryPicker = true
+                                },
+                                colors = ButtonDefaults.buttonColors(
+                                        containerColor = Color.Transparent,
+                                        contentColor = MaterialTheme.colorScheme.onSurface
+                                ),
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                        ) {
+                            Text(
+                                    text = context.getString(R.string.move),
                                     fontSize = DIALOG_OPTION_FONT_SIZE,
                                     fontWeight = FontWeight.SemiBold,
                                     color = MaterialTheme.colorScheme.onSurface
@@ -232,7 +271,7 @@ fun WallpaperMenu(
                             )
                         }
 
-                        Spacer(modifier = Modifier.height(5.dp))
+                        Spacer(modifier = Modifier.height(space))
 
                         Button(
                                 onClick = {
@@ -255,7 +294,7 @@ fun WallpaperMenu(
                             )
                         }
 
-                        Spacer(modifier = Modifier.height(5.dp))
+                        Spacer(modifier = Modifier.height(space))
 
                         Button(
                                 onClick = {

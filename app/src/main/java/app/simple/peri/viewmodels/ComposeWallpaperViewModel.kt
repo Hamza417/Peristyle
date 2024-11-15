@@ -215,6 +215,28 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
         }
     }
 
+    fun moveWallpaper(wallpaper: Wallpaper, toPath: String, onSuccess: () -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            runCatching {
+                val originalFile = wallpaper.filePath.toFile()
+                val dest = File(toPath, originalFile.name)
+
+                originalFile.copyTo(dest, overwrite = true)
+                originalFile.delete()
+
+                WallpaperDatabase.getInstance(getApplication())?.wallpaperDao()?.delete(wallpaper)
+
+                refresh()
+
+                withContext(Dispatchers.Main) {
+                    onSuccess()
+                }
+            }.getOrElse {
+                Log.e(TAG, "Error moving wallpaper", it)
+            }
+        }
+    }
+
     fun removeNoMediaFile(folder: Folder, onSuccess: () -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             val pickedDirectory = File(folder.path)

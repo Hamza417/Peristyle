@@ -106,6 +106,7 @@ fun Folders(navController: NavController? = null) {
         FolderBrowser(
                 onCancel = { requestPermission = false },
                 onStorageGranted = {
+                    MainComposePreferences.addWallpaperPath(it)
                     composeWallpaperViewModel.refresh()
                     requestPermission = false
                 }

@@ -211,4 +211,5 @@
     <string name="no_sd_card_found">No SDCard Found!</string>
     <string name="done">Done</string>
     <string name="revoke">Revoke</string>
+    <string name="move">Move</string>
 </resources>
