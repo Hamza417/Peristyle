@@ -194,4 +194,23 @@
     <string name="reduce_resolution">Redukuj Rozdzielczość</string>
     <string name="please_wait">Czekaj</string>
     <string name="hide">Ukryj</string>
+    <string name="bottom_bar">Pasek Dolny</string>
+    <string name="bottom_bar_summary">Przenieś nagłówek na dół aplikacji.</string>
+    <string name="original_aspect_ratio">Oryginalny Współczynnik Proporcji</string>
+    <string name="original_aspect_ratio_summary">Renderuj miniatury tapet w oryginalnych proporcjach tapet.</string>
+    <string name="wallpaper_changed">Twoja %1$s tapeta została zmieniona.</string>
+    <string name="delete_current_wallpaper">Usuń Bieżącą Tapetę</string>
+    <string name="notifications">Publikuj Powiadomienia</string>
+    <string name="notifications_summary">Pozwala aplikacji na wysyłanie powiadomień związanych z automatyczną tapetą.</string>
+    <string name="saved_effects">Zapisane Efekty</string>
+    <string name="save">Zapisz</string>
+    <string name="no_effects_summary">Wszystkie zapisane efekty pojawią się tutaj jako podgląd tapety, którą aktualnie przeglądasz.</string>
+    <string name="scale">Skaluj</string>
+    <string name="max_process">Maksymalna Ilość Procesów Równoczesnych</string>
+    <string name="max_process_summary">Wybierz maksymalną liczbę dozwolonych równoległych procesów.</string>
+    <string name="max_process_desc">Zmień te ustawienia tylko wtedy, gdy urządzenie jest w stanie je obsłużyć, ustawienie wartości wykraczającej poza możliwości może sprawić, że aplikacja przestanie działać poprawnie i w niektórych przypadkach może zablokować lub zawiesić urządzenie.</string>
+    <string name="no_sd_card_found">Nie Znaleziono Karty SD!</string>
+    <string name="done">Zrobione</string>
+    <string name="revoke">Cofnij</string>
+    <string name="move">Przenieś</string>
 </resources>
