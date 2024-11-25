@@ -316,12 +316,10 @@ fun Folder(modifier: Modifier, context: Context, navController: NavController? =
                 },
                 onStorageGranted = {
                     launchDirectoryPermission = false
-                    if (it != null) {
-                        showDirectoryPermissionDialog = true
-                        MainComposePreferences.addWallpaperPath(it)
-                        directories = MainComposePreferences.getAllowedPaths().joinToString("\n")
-                        composeWallpaperViewModel.refresh()
-                    }
+                    showDirectoryPermissionDialog = true
+                    MainComposePreferences.addWallpaperPath(it)
+                    directories = MainComposePreferences.getAllowedPaths().joinToString("\n")
+                    composeWallpaperViewModel.refresh()
                 }
         )
     }
