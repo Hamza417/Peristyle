@@ -144,6 +144,7 @@ dependencies {
 
     implementation 'me.saket.telephoto:zoomable-image-glide:0.7.1'
     implementation 'id.zelory:compressor:3.0.1'
+    implementation 'com.github.nanihadesuka:LazyColumnScrollbar:2.2.0'
 
     def hazeVersion = "0.9.0-beta01"
     implementation "dev.chrisbanes.haze:haze:$hazeVersion"

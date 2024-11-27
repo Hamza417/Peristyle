@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Text
@@ -64,6 +65,8 @@ import dev.chrisbanes.haze.HazeDefaults
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.hazeChild
+import my.nanihadesuka.compose.LazyVerticalGridScrollbar
+import my.nanihadesuka.compose.ScrollbarSettings
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -74,6 +77,7 @@ fun LiveWallpapers(navController: NavHostController) {
     val liveWallpapers = remember { mutableStateListOf<LiveWallpaperInfo>() }
     var packageNameToUninstall by remember { mutableStateOf<String?>(null) }
     val hazeState = remember { HazeState() }
+    val listState = rememberLazyGridState()
 
     statusBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
             LocalView.current.rootWindowInsets).getInsets(WindowInsetsCompat.Type.statusBars()).top
@@ -119,118 +123,124 @@ fun LiveWallpapers(navController: NavHostController) {
     }
 
     Box {
-        LazyVerticalGrid(
-                columns = GridCells.Fixed(MainComposePreferences.getGridSpanCount(isLandscape)),
-                modifier = Modifier
-                    .fillMaxSize()
-                    .haze(state = hazeState),
-                contentPadding = PaddingValues(
-                        top = topPadding,
-                        start = 8.dp,
-                        end = 8.dp,
-                        bottom = bottomPadding
-                )
+        LazyVerticalGridScrollbar(
+                state = listState,
+                settings = ScrollbarSettings.Default
         ) {
-            if (MainComposePreferences.getBottomHeader().not()) {
-                item(span = { GridItemSpan(maxLineSpan) }) {
-                    TopHeader(
-                            title = stringResource(R.string.live_wallpapers),
-                            count = liveWallpapers.size,
-                            modifier = Modifier.padding(COMMON_PADDING),
-                            navController = navController
+            LazyVerticalGrid(
+                    state = listState,
+                    columns = GridCells.Fixed(MainComposePreferences.getGridSpanCount(isLandscape)),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .haze(state = hazeState),
+                    contentPadding = PaddingValues(
+                            top = topPadding,
+                            start = 8.dp,
+                            end = 8.dp,
+                            bottom = bottomPadding
                     )
+            ) {
+                if (MainComposePreferences.getBottomHeader().not()) {
+                    item(span = { GridItemSpan(maxLineSpan) }) {
+                        TopHeader(
+                                title = stringResource(R.string.live_wallpapers),
+                                count = liveWallpapers.size,
+                                modifier = Modifier.padding(COMMON_PADDING),
+                                navController = navController
+                        )
+                    }
                 }
-            }
-            items(liveWallpapers.size) { index ->
-                val liveWallpaperInfo = liveWallpapers[index]
-                val context = LocalContext.current
-                var showWallpaperMenu by remember { mutableStateOf(false) }
-                val aspectRatio = if (isLandscape()) 16F / 9F else 9F / 16F
+                items(liveWallpapers.size) { index ->
+                    val liveWallpaperInfo = liveWallpapers[index]
+                    val context = LocalContext.current
+                    var showWallpaperMenu by remember { mutableStateOf(false) }
+                    val aspectRatio = if (isLandscape()) 16F / 9F else 9F / 16F
 
-                if (showWallpaperMenu) {
-                    LiveWallpapersMenu(
-                            liveWallpaperInfo = liveWallpaperInfo,
-                            onDismiss = { showWallpaperMenu = false },
-                            onOptionSelected = { option ->
-                                when (option) {
-                                    context.getString(R.string.delete) -> {
-                                        packageNameToUninstall = liveWallpaperInfo.resolveInfo.serviceInfo.packageName
-                                        val intent = Intent(Intent.ACTION_UNINSTALL_PACKAGE).apply {
-                                            putExtra(Intent.EXTRA_RETURN_RESULT, true)
-                                            data = Uri.parse("package:$packageNameToUninstall")
+                    if (showWallpaperMenu) {
+                        LiveWallpapersMenu(
+                                liveWallpaperInfo = liveWallpaperInfo,
+                                onDismiss = { showWallpaperMenu = false },
+                                onOptionSelected = { option ->
+                                    when (option) {
+                                        context.getString(R.string.delete) -> {
+                                            packageNameToUninstall = liveWallpaperInfo.resolveInfo.serviceInfo.packageName
+                                            val intent = Intent(Intent.ACTION_UNINSTALL_PACKAGE).apply {
+                                                putExtra(Intent.EXTRA_RETURN_RESULT, true)
+                                                data = Uri.parse("package:$packageNameToUninstall")
+                                            }
+                                            uninstallLauncher.launch(intent)
                                         }
-                                        uninstallLauncher.launch(intent)
                                     }
                                 }
-                            }
-                    )
-                }
-
-                ElevatedCard(
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .fillMaxWidth()
-                            .aspectRatio(aspectRatio)
-                            .combinedClickable(
-                                    onClick = {
-                                        runCatching {
-                                            val componentName = ComponentName(
-                                                    liveWallpaperInfo.resolveInfo.serviceInfo.packageName,
-                                                    liveWallpaperInfo.resolveInfo.serviceInfo.name
-                                            )
-                                            val intent = Intent(WallpaperManager.ACTION_CHANGE_LIVE_WALLPAPER).apply {
-                                                putExtra(WallpaperManager.EXTRA_LIVE_WALLPAPER_COMPONENT, componentName)
-                                            }
-                                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                            context.startActivity(intent)
-                                        }.onFailure {
-                                            it.printStackTrace()
-                                            Toast
-                                                .makeText(
-                                                        context,
-                                                        it.message ?: it.localizedMessage ?: it.stackTraceToString(),
-                                                        Toast.LENGTH_SHORT
-                                                )
-                                                .show()
-                                        }
-                                    },
-                                    onLongClick = {
-                                        showWallpaperMenu = true
-                                    },
-                            ),
-                        elevation = CardDefaults.cardElevation(
-                                defaultElevation = 8.dp,
-                                pressedElevation = 16.dp
-                        ),
-                ) {
-                    val localHazeState = remember { HazeState() }
-
-                    Box(modifier = Modifier.padding(0.dp)) {
-                        Image(
-                                painter = rememberDrawablePainter(drawable = liveWallpaperInfo.icon),
-                                contentDescription = liveWallpaperInfo.name,
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .haze(localHazeState),
-                                contentScale = ContentScale.Crop
                         )
-                        Column(
-                                modifier = Modifier
-                                    .wrapContentHeight()
-                                    .fillMaxWidth()
-                                    .hazeChild(
-                                            state = localHazeState,
-                                            style = HazeDefaults.style(backgroundColor = Color(0x50000000), blurRadius = 25.dp)
-                                    )
-                                    .align(Alignment.BottomCenter)
-                        ) {
-                            Text(
-                                    text = liveWallpaperInfo.name,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 16.sp,
-                                    color = Color.White,
-                                    modifier = Modifier.padding(COMMON_PADDING)
+                    }
+
+                    ElevatedCard(
+                            modifier = Modifier
+                                .padding(8.dp)
+                                .fillMaxWidth()
+                                .aspectRatio(aspectRatio)
+                                .combinedClickable(
+                                        onClick = {
+                                            runCatching {
+                                                val componentName = ComponentName(
+                                                        liveWallpaperInfo.resolveInfo.serviceInfo.packageName,
+                                                        liveWallpaperInfo.resolveInfo.serviceInfo.name
+                                                )
+                                                val intent = Intent(WallpaperManager.ACTION_CHANGE_LIVE_WALLPAPER).apply {
+                                                    putExtra(WallpaperManager.EXTRA_LIVE_WALLPAPER_COMPONENT, componentName)
+                                                }
+                                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                                context.startActivity(intent)
+                                            }.onFailure {
+                                                it.printStackTrace()
+                                                Toast
+                                                    .makeText(
+                                                            context,
+                                                            it.message ?: it.localizedMessage ?: it.stackTraceToString(),
+                                                            Toast.LENGTH_SHORT
+                                                    )
+                                                    .show()
+                                            }
+                                        },
+                                        onLongClick = {
+                                            showWallpaperMenu = true
+                                        },
+                                ),
+                            elevation = CardDefaults.cardElevation(
+                                    defaultElevation = 8.dp,
+                                    pressedElevation = 16.dp
+                            ),
+                    ) {
+                        val localHazeState = remember { HazeState() }
+
+                        Box(modifier = Modifier.padding(0.dp)) {
+                            Image(
+                                    painter = rememberDrawablePainter(drawable = liveWallpaperInfo.icon),
+                                    contentDescription = liveWallpaperInfo.name,
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .haze(localHazeState),
+                                    contentScale = ContentScale.Crop
                             )
+                            Column(
+                                    modifier = Modifier
+                                        .wrapContentHeight()
+                                        .fillMaxWidth()
+                                        .hazeChild(
+                                                state = localHazeState,
+                                                style = HazeDefaults.style(backgroundColor = Color(0x50000000), blurRadius = 25.dp)
+                                        )
+                                        .align(Alignment.BottomCenter)
+                            ) {
+                                Text(
+                                        text = liveWallpaperInfo.name,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 16.sp,
+                                        color = Color.White,
+                                        modifier = Modifier.padding(COMMON_PADDING)
+                                )
+                            }
                         }
                     }
                 }
