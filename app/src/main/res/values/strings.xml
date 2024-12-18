@@ -212,4 +212,5 @@
     <string name="done">Done</string>
     <string name="revoke">Revoke</string>
     <string name="move">Move</string>
+    <string name="select_all_from_last">Select All From Last Selected</string>
 </resources>

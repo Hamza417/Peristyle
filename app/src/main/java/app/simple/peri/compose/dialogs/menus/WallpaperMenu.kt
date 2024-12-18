@@ -45,11 +45,13 @@ import kotlinx.coroutines.withContext
 fun WallpaperMenu(
         setShowDialog: (Boolean) -> Unit,
         wallpaper: Wallpaper,
+        isAnySelected: Boolean = false,
         onDelete: (Wallpaper) -> Unit,
         onSelect: () -> Unit = {},
         onAddTag: () -> Unit = {},
         onCompress: () -> Unit = {},
-        onReduceResolution: () -> Unit = {}
+        onReduceResolution: () -> Unit = {},
+        onSelectToHere: () -> Unit = {},
 ) {
     val space = 2.dp
     val context = LocalContext.current
@@ -221,6 +223,30 @@ fun WallpaperMenu(
                                     fontWeight = FontWeight.SemiBold,
                                     color = MaterialTheme.colorScheme.onSurface
                             )
+                        }
+
+                        if (isAnySelected) {
+                            Spacer(modifier = Modifier.height(space))
+
+                            Button(
+                                    onClick = {
+                                        onSelectToHere()
+                                        setShowDialog(false)
+                                    },
+                                    colors = ButtonDefaults.buttonColors(
+                                            containerColor = Color.Transparent,
+                                            contentColor = MaterialTheme.colorScheme.onSurface
+                                    ),
+                                    modifier = Modifier
+                                        .fillMaxWidth(),
+                            ) {
+                                Text(
+                                        text = context.getString(R.string.select_all_from_last),
+                                        fontSize = DIALOG_OPTION_FONT_SIZE,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = MaterialTheme.colorScheme.onSurface
+                                )
+                            }
                         }
 
                         Spacer(modifier = Modifier.height(space))

@@ -64,4 +64,30 @@ class WallpaperListViewModel(application: Application) : AndroidViewModel(applic
         _selectedWallpapers.value = 0
         _isSelectionMode.value = false
     }
+
+    fun selectFromLastToCurrent(wallpaper: Wallpaper, wallpapers: List<Wallpaper>) {
+        val currentIndex = wallpapers.indexOf(wallpaper)
+        val lastSelectedIndex = wallpapers.indexOfLast { it.isSelected }
+        val firstSelectedIndex = wallpapers.indexOfFirst { it.isSelected }
+
+        when {
+            currentIndex > lastSelectedIndex -> {
+                for (i in lastSelectedIndex..currentIndex) {
+                    wallpapers[i].isSelected = true
+                }
+            }
+            currentIndex < firstSelectedIndex -> {
+                for (i in currentIndex..firstSelectedIndex) {
+                    wallpapers[i].isSelected = true
+                }
+            }
+            else -> { // I am not sure why it's here
+                for (i in currentIndex..lastSelectedIndex) {
+                    wallpapers[i].isSelected = true
+                }
+            }
+        }
+
+        _selectedWallpapers.value = wallpapers.count { it.isSelected }
+    }
 }

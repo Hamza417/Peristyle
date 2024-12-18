@@ -128,25 +128,30 @@ fun WallpaperItem(
     }
 
     if (showDialog) {
-        WallpaperMenu({
-                          showDialog = it
-                      }, wallpaper,
-                      onDelete = onDelete,
-                      onSelect = {
-                          wallpaper.isSelected = wallpaper.isSelected.not()
-                          isSelected = wallpaper.isSelected
-                          wallpaperListViewModel.setSelectionMode(list.any { it.isSelected })
-                          wallpaperListViewModel.setSelectedWallpapers(list.count { it.isSelected })
-                      },
-                      onAddTag = {
-                          showTagDialog.value = true
-                      },
-                      onCompress = {
-                          onCompress()
-                      },
-                      onReduceResolution = {
-                          onReduceResolution()
-                      })
+        WallpaperMenu(
+                { showDialog = it },
+                wallpaper,
+                isAnySelected = list.any { it.isSelected },
+                onDelete = onDelete,
+                onSelect = {
+                    wallpaper.isSelected = wallpaper.isSelected.not()
+                    isSelected = wallpaper.isSelected
+                    wallpaperListViewModel.setSelectionMode(list.any { it.isSelected })
+                    wallpaperListViewModel.setSelectedWallpapers(list.count { it.isSelected })
+                },
+                onAddTag = {
+                    showTagDialog.value = true
+                },
+                onCompress = {
+                    onCompress()
+                },
+                onReduceResolution = {
+                    onReduceResolution()
+                },
+                onSelectToHere = {
+                    wallpaperListViewModel.selectFromLastToCurrent(wallpaper, list)
+                }
+        )
     }
 
     if (showTagDialog.value) {
