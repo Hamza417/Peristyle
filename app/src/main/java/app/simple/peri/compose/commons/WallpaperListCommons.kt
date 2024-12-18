@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.Label
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Delete
@@ -156,7 +157,7 @@ fun WallpaperItem(
 
     if (showTagDialog.value) {
         AddTagDialog(
-                wallpaper = wallpaper,
+                wallpapers = listOf(wallpaper),
                 onDismiss = { showTagDialog.value = false }
         )
     }
@@ -366,7 +367,7 @@ fun WallpaperDimensionsText(
 @Composable
 fun SelectionMenu(
         modifier: Modifier = Modifier,
-        selectedWallpapers: List<Wallpaper>, // Inclusive of all wallpapers
+        selectedWallpapers: List<Wallpaper>,
         count: Int = selectedWallpapers.count { it.isSelected },
         hazeState: HazeState,
         wallpaperListViewModel: WallpaperListViewModel,
@@ -377,6 +378,7 @@ fun SelectionMenu(
     val iconSize = 56.dp
     var showDeleteSureDialog by remember { mutableStateOf(false) }
     var launchDirectoryPicker by remember { mutableStateOf(false) }
+    val showTagDialog = remember { mutableStateOf(false) }
 
     val composeWallpaperViewModel: ComposeWallpaperViewModel = viewModel(LocalContext.current as ComponentActivity)
 
@@ -406,6 +408,19 @@ fun SelectionMenu(
                         Log.i("WallpaperMenu", "Wallpaper moved: $path")
                         wallpaperListViewModel.resetSelectedWallpapersState()
                     }
+                }
+        )
+    }
+
+    if (showTagDialog.value) {
+        AddTagDialog(
+                wallpapers = selectedWallpapers,
+                onDismiss = {
+                    showTagDialog.value = false
+                    selectedWallpapers.forEach {
+                        it.isSelected = false
+                    }
+                    wallpaperListViewModel.resetSelectedWallpapersState()
                 }
         )
     }
@@ -440,6 +455,18 @@ fun SelectionMenu(
             ) {
                 Icon(
                         imageVector = Icons.Rounded.MoveUp,
+                        contentDescription = null,
+                )
+            }
+            IconButton(
+                    onClick = {
+                        showTagDialog.value = true
+                    },
+                    modifier = Modifier
+                        .size(iconSize)
+            ) {
+                Icon(
+                        imageVector = Icons.AutoMirrored.Rounded.Label,
                         contentDescription = null,
                 )
             }

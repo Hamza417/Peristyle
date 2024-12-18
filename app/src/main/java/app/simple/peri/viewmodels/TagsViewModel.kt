@@ -84,18 +84,20 @@ class TagsViewModel(application: Application, private val id: String? = null, pr
         }
     }
 
-    fun addTag(tagName: String, wallpaper: Wallpaper, onSuccess: () -> Unit) {
+    fun addTag(tagName: String, wallpapers: List<Wallpaper>, onSuccess: () -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             val database = TagsDatabase.getInstance(getApplication())
             val tagsDao = database?.tagsDao()
 
-            if (tagsDao?.isTagExists(tagName.trim())!!) {
-                val tag = tagsDao.getTagByID(tagName.trim())
-                tag.addSum(wallpaper.id)
-                tagsDao.insertTag(tag)
-            } else {
-                val tag = Tag(tagName.trim(), hashSetOf(wallpaper.id))
-                tagsDao.insertTag(tag)
+            wallpapers.forEach { wallpaper ->
+                if (tagsDao?.isTagExists(tagName.trim())!!) {
+                    val tag = tagsDao.getTagByID(tagName.trim())
+                    tag.addSum(wallpaper.id)
+                    tagsDao.insertTag(tag)
+                } else {
+                    val tag = Tag(tagName.trim(), hashSetOf(wallpaper.id))
+                    tagsDao.insertTag(tag)
+                }
             }
 
             loadTags()

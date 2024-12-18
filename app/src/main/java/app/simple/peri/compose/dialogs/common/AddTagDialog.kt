@@ -30,7 +30,7 @@ import app.simple.peri.models.Wallpaper
 import app.simple.peri.viewmodels.TagsViewModel
 
 @Composable
-fun AddTagDialog(wallpaper: Wallpaper, onDismiss: () -> Unit) {
+fun AddTagDialog(wallpapers: List<Wallpaper>, onDismiss: () -> Unit) {
     val tagsViewModel: TagsViewModel = viewModel(
             factory = TagsViewModelFactory()
     )
@@ -80,7 +80,7 @@ fun AddTagDialog(wallpaper: Wallpaper, onDismiss: () -> Unit) {
             confirmButton = {
                 Button(
                         onClick = {
-                            tagsViewModel.addTag(tag.value, wallpaper) {
+                            tagsViewModel.addTag(tag.value, wallpapers) {
                                 onDismiss()
                             }
                         })

@@ -202,7 +202,7 @@ fun TaggedWallpapers(navController: NavController? = null) {
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
                         .padding(bottom = navigationBarHeightDp),
-                    selectedWallpapers = wallpapers,
+                    selectedWallpapers = wallpapers.filter { it.isSelected },
                     count = selectionCount,
                     hazeState = hazeState,
                     wallpaperListViewModel = wallpaperListViewModel,
