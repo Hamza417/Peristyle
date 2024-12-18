@@ -2,6 +2,8 @@ package app.simple.peri.compose.commons
 
 import android.content.Intent
 import android.graphics.drawable.Drawable
+import android.util.Log
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -22,6 +24,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.MoveUp
 import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.Card
@@ -58,6 +61,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.FileProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import app.simple.peri.R
 import app.simple.peri.compose.dialogs.common.AddTagDialog
@@ -68,6 +72,7 @@ import app.simple.peri.models.Wallpaper
 import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.utils.FileUtils.toFile
 import app.simple.peri.utils.FileUtils.toSize
+import app.simple.peri.viewmodels.ComposeWallpaperViewModel
 import app.simple.peri.viewmodels.WallpaperListViewModel
 import com.bumptech.glide.integration.compose.CrossFade
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
@@ -356,8 +361,8 @@ fun WallpaperDimensionsText(
 @Composable
 fun SelectionMenu(
         modifier: Modifier = Modifier,
-        list: List<Wallpaper>,
-        count: Int = list.count { it.isSelected },
+        selectedWallpapers: List<Wallpaper>, // Inclusive of all wallpapers
+        count: Int = selectedWallpapers.count { it.isSelected },
         hazeState: HazeState,
         wallpaperListViewModel: WallpaperListViewModel,
         navigationBarHeight: Dp
@@ -366,18 +371,37 @@ fun SelectionMenu(
     val context = LocalContext.current
     val iconSize = 56.dp
     var showDeleteSureDialog by remember { mutableStateOf(false) }
+    var launchDirectoryPicker by remember { mutableStateOf(false) }
+
+    val composeWallpaperViewModel: ComposeWallpaperViewModel = viewModel(LocalContext.current as ComponentActivity)
 
     if (showDeleteSureDialog) {
         SureDialog(title = stringResource(R.string.delete),
-                   text = stringResource(R.string.delete_message, list.count { it.isSelected }),
+                   text = stringResource(R.string.delete_message, selectedWallpapers.count { it.isSelected }),
                    onConfirm = {
                        // Delete the selected wallpapers
                        showDeleteSureDialog = false
-                       wallpaperListViewModel.deleteSelectedWallpapers(list.toMutableList())
+                       wallpaperListViewModel.deleteSelectedWallpapers(selectedWallpapers.toMutableList())
                    },
                    onDismiss = {
                        showDeleteSureDialog = false
                    }
+        )
+    }
+
+    if (launchDirectoryPicker) {
+        FolderBrowser(
+                onCancel = {
+                    launchDirectoryPicker = false
+                },
+                onStorageGranted = { path ->
+                    Log.d("WallpaperMenu", "Path: $path Selected: ${selectedWallpapers.size}")
+                    launchDirectoryPicker = false
+                    composeWallpaperViewModel.moveWallpapers(selectedWallpapers, path) {
+                        Log.i("WallpaperMenu", "Wallpaper moved: $path")
+                        wallpaperListViewModel.resetSelectedWallpapersState()
+                    }
+                }
         )
     }
 
@@ -404,6 +428,18 @@ fun SelectionMenu(
         ) {
             IconButton(
                     onClick = {
+                        launchDirectoryPicker = true
+                    },
+                    modifier = Modifier
+                        .size(iconSize)
+            ) {
+                Icon(
+                        imageVector = Icons.Rounded.MoveUp,
+                        contentDescription = null,
+                )
+            }
+            IconButton(
+                    onClick = {
                         showDeleteSureDialog = true
                     },
                     modifier = Modifier
@@ -416,7 +452,7 @@ fun SelectionMenu(
             }
             IconButton(
                     onClick = {
-                        val files = list.filter { it.isSelected }.map { it.filePath.toFile() }
+                        val files = selectedWallpapers.filter { it.isSelected }.map { it.filePath.toFile() }
                         val filesUri = files.map {
                             FileProvider.getUriForFile(
                                     context,
@@ -453,7 +489,7 @@ fun SelectionMenu(
             )
             IconButton(
                     onClick = {
-                        list.forEach {
+                        selectedWallpapers.forEach {
                             it.isSelected = false
                         }
                         wallpaperListViewModel.setSelectionMode(false)

@@ -215,16 +215,18 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
         }
     }
 
-    fun moveWallpaper(wallpaper: Wallpaper, toPath: String, onSuccess: () -> Unit) {
+    fun moveWallpapers(wallpapers: List<Wallpaper>, toPath: String, onSuccess: () -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             runCatching {
-                val originalFile = wallpaper.filePath.toFile()
-                val dest = File(toPath, originalFile.name)
+                wallpapers.forEach { wallpaper ->
+                    val originalFile = wallpaper.filePath.toFile()
+                    val dest = File(toPath, originalFile.name)
 
-                originalFile.copyTo(dest, overwrite = true)
-                originalFile.delete()
+                    originalFile.copyTo(dest, overwrite = true)
+                    originalFile.delete()
 
-                WallpaperDatabase.getInstance(getApplication())?.wallpaperDao()?.delete(wallpaper)
+                    WallpaperDatabase.getInstance(getApplication())?.wallpaperDao()?.delete(wallpaper)
+                }
 
                 refresh()
 
@@ -232,7 +234,7 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
                     onSuccess()
                 }
             }.getOrElse {
-                Log.e(TAG, "Error moving wallpaper", it)
+                Log.e(TAG, "Error moving wallpapers", it)
             }
         }
     }

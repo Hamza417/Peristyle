@@ -64,7 +64,7 @@ fun WallpaperMenu(
                 },
                 onStorageGranted = {
                     launchDirectoryPicker = false
-                    composeWallpaperViewModel.moveWallpaper(wallpaper, it) {
+                    composeWallpaperViewModel.moveWallpapers(listOf(wallpaper), it) {
                         Log.i("WallpaperMenu", "Wallpaper moved: $it")
                         setShowDialog(false)
                     }

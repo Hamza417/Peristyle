@@ -59,4 +59,9 @@ class WallpaperListViewModel(application: Application) : AndroidViewModel(applic
             _wallpapers.value = list
         }
     }
+
+    fun resetSelectedWallpapersState() {
+        _selectedWallpapers.value = 0
+        _isSelectionMode.value = false
+    }
 }

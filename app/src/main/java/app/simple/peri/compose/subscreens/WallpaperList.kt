@@ -208,7 +208,7 @@ fun WallpaperList(navController: NavController? = null) {
 
         if (isSelectionMode) {
             SelectionMenu(
-                    list = wallpapers,
+                    selectedWallpapers = wallpapers.filter { it.isSelected },
                     count = selectionCount,
                     modifier = Modifier
                         .align(Alignment.BottomCenter),
