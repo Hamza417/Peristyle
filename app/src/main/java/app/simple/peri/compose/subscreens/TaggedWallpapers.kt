@@ -124,10 +124,22 @@ fun TaggedWallpapers(navController: NavController? = null) {
                     .fillMaxSize()
                     .haze(state = hazeState),
                 contentPadding = PaddingValues(
-                        top = topPadding,
-                        start = 8.dp,
-                        end = 8.dp,
-                        bottom = bottomPadding
+                        top = if (MainComposePreferences.getBottomHeader()) {
+                            if (MainComposePreferences.getMarginBetween()) {
+                                topPadding
+                            } else {
+                                0.dp
+                            }
+                        } else {
+                            topPadding
+                        },
+                        start = if (MainComposePreferences.getMarginBetween()) 8.dp else 0.dp,
+                        end = if (MainComposePreferences.getMarginBetween()) 8.dp else 0.dp,
+                        bottom = if (MainComposePreferences.getMarginBetween()) {
+                            bottomPadding
+                        } else {
+                            bottomPadding - 8.dp
+                        }
                 )
         ) {
             if (MainComposePreferences.getBottomHeader().not()) {

@@ -51,7 +51,6 @@ import app.simple.peri.utils.ConditionUtils.invert
 import app.simple.peri.utils.FileUtils.toSize
 import app.simple.peri.viewmodels.ComposeWallpaperViewModel
 import app.simple.peri.viewmodels.HomeScreenViewModel
-import com.bumptech.glide.Glide
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -141,6 +140,14 @@ fun Settings(navController: NavController? = null) {
                     checked = MainComposePreferences.getBottomHeader()
             ) {
                 MainComposePreferences.setBottomHeader(it)
+            }
+
+            SwitchPreference(
+                    title = stringResource(R.string.margin_between_wallpapers),
+                    description = stringResource(R.string.margin_between_wallpapers_summary),
+                    checked = MainComposePreferences.getMarginBetween()
+            ) {
+                MainComposePreferences.setMarginBetween(it)
             }
         }
         item { // Data

@@ -25,6 +25,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Text
@@ -211,6 +212,7 @@ fun LiveWallpapers(navController: NavHostController) {
                                     defaultElevation = 8.dp,
                                     pressedElevation = 16.dp
                             ),
+                            shape = RoundedCornerShape(16.dp)
                     ) {
                         val localHazeState = remember { HazeState() }
 

@@ -113,6 +113,10 @@ object MainPreferences {
         return SharedPreferences.getSharedPreferences().getBoolean(MARGIN_BETWEEN, false)
     }
 
+    fun setMarginBetween(marginBetween: Boolean) {
+        SharedPreferences.getSharedPreferences().edit().putBoolean(MARGIN_BETWEEN, marginBetween).apply()
+    }
+
     fun getMainScreenBackground(): String? {
         return SharedPreferences.getSharedPreferences().getString(MAIN_SCREEN_BACKGROUND, "1")
     }

@@ -2,6 +2,7 @@ package app.simple.peri.preferences
 
 import android.util.Log
 import app.simple.peri.models.Effect
+import app.simple.peri.preferences.MainPreferences.MARGIN_BETWEEN
 import app.simple.peri.preferences.SharedPreferences.getSharedPreferences
 
 object MainComposePreferences {
@@ -681,5 +682,15 @@ object MainComposePreferences {
         getSharedPreferences().edit().putInt(SEMAPHORE_COUNT, value
             .coerceAtLeast(1).coerceAtMost(20))
             .apply()
+    }
+
+    // ----------------------------------------------------------------------------------------------------- //
+
+    fun getMarginBetween(): Boolean {
+        return getSharedPreferences().getBoolean(MARGIN_BETWEEN, true)
+    }
+
+    fun setMarginBetween(marginBetween: Boolean) {
+        getSharedPreferences().edit().putBoolean(MARGIN_BETWEEN, marginBetween).apply()
     }
 }

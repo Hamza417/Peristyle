@@ -163,7 +163,12 @@ fun WallpaperItem(
     }
 
     Box {
-        val imageShadow = remember { MainComposePreferences.getShowImageShadow() }
+        val imageShadow = remember {
+            MainComposePreferences.getShowImageShadow()
+                    && MainComposePreferences.getMarginBetween()
+        }
+
+        Log.d("WallpaperItem", "ImageShadow: $imageShadow")
 
         if (imageShadow) {
             GlideImage(
@@ -196,10 +201,10 @@ fun WallpaperItem(
                 modifier = Modifier
                     .aspectRatio(aspectRatio)
                     .padding(
-                            start = 8.dp,
-                            bottom = if (imageShadow) 35.dp else 8.dp,
-                            end = 8.dp,
-                            top = 8.dp
+                            start = if (MainComposePreferences.getMarginBetween()) 8.dp else 0.dp,
+                            bottom = if (imageShadow) 35.dp else if (MainComposePreferences.getMarginBetween()) 8.dp else 0.dp,
+                            end = if (MainComposePreferences.getMarginBetween()) 8.dp else 0.dp,
+                            top = if (MainComposePreferences.getMarginBetween()) 8.dp else 0.dp
                     )
                     .shadow(
                             if (imageShadow) 0.dp else 24.dp,
@@ -226,7 +231,11 @@ fun WallpaperItem(
                                 showDialog = true
                             }
                     ),
-                shape = RoundedCornerShape(16.dp),
+                shape = if (MainComposePreferences.getMarginBetween()) {
+                    RoundedCornerShape(16.dp)
+                } else {
+                    RoundedCornerShape(0.dp)
+                },
         ) {
             Box(
                     modifier = Modifier.fillMaxSize(),
