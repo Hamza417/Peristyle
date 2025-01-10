@@ -1,39 +1,17 @@
 Peristyle is created to be extremely simple and sophisticated wallpaper manager and browser app for Android. It solves the problem of having too many features and bloated apps and having very minimal support for locally stored wallpapers. What if you just wanted an app that allows you to browse and select your own locally stored wallpapers and lets you manage and set wallpapers from there? then Peristyle is for you :)
 
-## Features  
+Features:
 
-#### 🎨 **Effortless Wallpaper Management**  
-- Browse, organize, and apply wallpapers seamlessly.  
-- Multi-folder support for intuitive categorization.  
-
-#### 🏷️ **Smart Organization Tools**  
-- Use custom tags for quick searches and filters.  
-- Automatically exclude `.nomedia` directories to keep private collections hidden.  
-
-#### 🎛️ **Dynamic Image Editing**  
-- Real-time blur and color adjustments before applying wallpapers.  
-- Instant compression and resizing with no quality compromise.  
-
-#### 🚀 **Optimized for Performance**  
-- Smooth, elegant animations crafted for speed and responsiveness.  
-- Built with a **zero-loading architecture** for instant interactions.  
-
-#### 🔒 **Privacy at Its Core**  
-- No ads. No tracking. No analytics.  
-- Requires only essential permissions—no internet needed.  
-
-#### 🔄 **Automated Wallpaper Rotation**  
-- Auto-change wallpapers with folder or tag-based customization for every screen.  
-
-#### 🖼️ **Live Wallpaper Integration**  
-- Effortlessly manage live wallpapers with the built-in selector.  
-
-#### 🌙 **Dark Mode and Adaptive Themes**  
-- Full dark mode support for eye comfort.  
-- Dynamic **Material You** theming adapts to your device’s palette.  
-
-#### 🌟 **Elegant Glassmorphic Design**  
-- Immerse yourself in a stunning interface featuring real-time blurs and caustic shadows.  
-
-#### 🔧 **Developer-Friendly Transparency**  
-- Reproducible builds ensure trust and security.
+- Simple architecture, browse wallpapers and use system wallpaper manager to set them as wallpaper.
+- Multiple folders support.
+- Ability to assign Tags to any wallpaper.
+- Can scan .nomedia directories, useful if you want to keep your wallpapers away from gallery.
+- Apply blur and color filters dynamically on any wallpaper before applying.
+- Simple yet pretty animations with proper optimizations.
+- Compress or reduce images on the fly.
+- No ads, no tracking, no analytics, no internet permissions, no unnecessary permissions.
+- Auto wallpaper change support with dedicated folders and tags for each screens.
+- Built-in live wallpaper picker.
+- Dark mode support.
+- Glassmorphic UI based on realtime blur effects and caustic shadows.
+- Material You themes and colors.
