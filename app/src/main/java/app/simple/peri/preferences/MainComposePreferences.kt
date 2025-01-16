@@ -58,6 +58,7 @@ object MainComposePreferences {
     private const val AUTO_WALLPAPER_NOTIFICATION = "auto_wallpaper_notification"
     private const val ALL_WALLPAPER_PATHS = "all_wallpaper_paths"
     private const val SEMAPHORE_COUNT = "semaphore_count"
+    private const val WALLPAPER_DETAILS = "wallpaper_details"
 
     // ----------------------------------------------------------------------------------------------------- //
 
@@ -692,5 +693,15 @@ object MainComposePreferences {
 
     fun setMarginBetween(marginBetween: Boolean) {
         getSharedPreferences().edit().putBoolean(MARGIN_BETWEEN, marginBetween).apply()
+    }
+
+    // ----------------------------------------------------------------------------------------------------- //
+
+    fun getWallpaperDetails(): Boolean {
+        return getSharedPreferences().getBoolean(WALLPAPER_DETAILS, true)
+    }
+
+    fun setWallpaperDetails(value: Boolean) {
+        getSharedPreferences().edit().putBoolean(WALLPAPER_DETAILS, value).apply()
     }
 }

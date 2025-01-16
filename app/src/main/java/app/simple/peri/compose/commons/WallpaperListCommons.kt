@@ -274,33 +274,35 @@ fun WallpaperItem(
                         .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                 }
 
-                Column(
-                        modifier = Modifier
-                            .wrapContentHeight()
-                            .fillMaxWidth()
-                            .hazeChild(
-                                    state = hazeState,
-                                    style = HazeDefaults.style(
-                                            backgroundColor = Color(0x50000000),
-                                            blurRadius = 5.dp
-                                    )
-                            )
-                            .align(Alignment.BottomCenter)
-                ) {
-                    Text(
-                            text = wallpaper.name ?: "",
+                if (MainComposePreferences.getWallpaperDetails()) {
+                    Column(
                             modifier = Modifier
-                                .padding(start = 16.dp, top = 16.dp, end = 16.dp),
-                            textAlign = TextAlign.Start,
-                            fontSize = 18.sp, // Set the font size
-                            fontWeight = FontWeight.Bold, // Make the text bold
-                            color = Color.White, // Set the text color
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            softWrap = false,
-                    )
+                                .wrapContentHeight()
+                                .fillMaxWidth()
+                                .hazeChild(
+                                        state = hazeState,
+                                        style = HazeDefaults.style(
+                                                backgroundColor = Color(0x50000000),
+                                                blurRadius = 5.dp
+                                        )
+                                )
+                                .align(Alignment.BottomCenter)
+                    ) {
+                        Text(
+                                text = wallpaper.name ?: "",
+                                modifier = Modifier
+                                    .padding(start = 16.dp, top = 16.dp, end = 16.dp),
+                                textAlign = TextAlign.Start,
+                                fontSize = 18.sp, // Set the font size
+                                fontWeight = FontWeight.Bold, // Make the text bold
+                                color = Color.White, // Set the text color
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                softWrap = false,
+                        )
 
-                    WallpaperDimensionsText(wallpaper, displayWidth, displayHeight, isSelected)
+                        WallpaperDimensionsText(wallpaper, displayWidth, displayHeight, isSelected)
+                    }
                 }
             }
         }

@@ -149,6 +149,14 @@ fun Settings(navController: NavController? = null) {
             ) {
                 MainComposePreferences.setMarginBetween(it)
             }
+
+            SwitchPreference(
+                    title = stringResource(R.string.enabled_wallpaper_details),
+                    description = stringResource(R.string.show_wallpaper_details_on_the_main_screen),
+                    checked = MainComposePreferences.getWallpaperDetails()
+            ) {
+                MainComposePreferences.setWallpaperDetails(it)
+            }
         }
         item { // Data
             val showSortDialog = remember { mutableStateOf(false) }
