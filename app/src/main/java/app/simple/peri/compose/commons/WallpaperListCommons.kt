@@ -4,6 +4,7 @@ import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.util.Log
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -391,7 +392,7 @@ fun SelectionMenu(
     var launchDirectoryPicker by remember { mutableStateOf(false) }
     val showTagDialog = remember { mutableStateOf(false) }
 
-    val composeWallpaperViewModel: ComposeWallpaperViewModel = viewModel(LocalContext.current as ComponentActivity)
+    val composeWallpaperViewModel: ComposeWallpaperViewModel = viewModel(LocalActivity.current as ComponentActivity)
 
     if (showDeleteSureDialog) {
         SureDialog(title = stringResource(R.string.delete),

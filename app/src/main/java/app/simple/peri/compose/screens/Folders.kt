@@ -2,6 +2,7 @@ package app.simple.peri.compose.screens
 
 import android.util.Log
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -75,7 +76,7 @@ import dev.chrisbanes.haze.hazeChild
 
 @Composable
 fun Folders(navController: NavController? = null) {
-    val composeWallpaperViewModel: ComposeWallpaperViewModel = viewModel(LocalContext.current as ComponentActivity)
+    val composeWallpaperViewModel: ComposeWallpaperViewModel = viewModel(LocalActivity.current as ComponentActivity)
     val folders by composeWallpaperViewModel.getFoldersLiveData().observeAsState(emptyList())
     var requestPermission by remember { mutableStateOf(false) }
     var statusBarHeight by remember { mutableIntStateOf(0) }

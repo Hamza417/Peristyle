@@ -5,6 +5,7 @@ import android.os.Build
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalActivity
 import androidx.annotation.StringRes
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
@@ -76,7 +77,6 @@ import app.simple.peri.R
 import app.simple.peri.compose.commons.CircularCountdownProgress
 import app.simple.peri.compose.commons.InitDisplayDimension
 import app.simple.peri.compose.nav.Routes
-import app.simple.peri.glide.transitions.ZoomOut
 import app.simple.peri.models.DisplayDimension
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.utils.FileUtils.toFile
@@ -112,7 +112,7 @@ fun Home(navController: NavController? = null) {
             pagerSnapDistance = PagerSnapDistance.atMost(10)
     )
 
-    val homeScreenViewModel: HomeScreenViewModel = viewModel(LocalContext.current as ComponentActivity)
+    val homeScreenViewModel: HomeScreenViewModel = viewModel(LocalActivity.current as ComponentActivity)
 
     val systemWallpaper = homeScreenViewModel.getSystemWallpaper().observeAsState().value
     val lockWallpaper = homeScreenViewModel.getLockWallpaper().observeAsState().value

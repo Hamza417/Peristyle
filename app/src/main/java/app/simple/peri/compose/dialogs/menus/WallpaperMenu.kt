@@ -3,6 +3,7 @@ package app.simple.peri.compose.dialogs.menus
 import android.content.Intent
 import android.util.Log
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -57,7 +58,7 @@ fun WallpaperMenu(
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     var launchDirectoryPicker by remember { mutableStateOf(false) }
-    val composeWallpaperViewModel: ComposeWallpaperViewModel = viewModel(LocalContext.current as ComponentActivity)
+    val composeWallpaperViewModel: ComposeWallpaperViewModel = viewModel(LocalActivity.current as ComponentActivity)
 
     if (launchDirectoryPicker) {
         FolderBrowser(
