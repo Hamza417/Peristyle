@@ -33,6 +33,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Label
 import androidx.compose.material.icons.rounded.Circle
+import androidx.compose.material.icons.rounded.FastForward
 import androidx.compose.material.icons.rounded.Folder
 import androidx.compose.material.icons.rounded.MotionPhotosOn
 import androidx.compose.material.icons.rounded.Schedule
@@ -43,6 +44,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -212,7 +214,10 @@ fun Home(navController: NavController? = null) {
                             )
                         }
                         .padding(8.dp), // Add padding to create space between the cards
-                    wallpaper = wallpaper
+                    wallpaper = wallpaper,
+                    onNextWallpaper = {
+                        homeScreenViewModel.nextRandomWallpaper()
+                    }
 
             )
         }
@@ -228,7 +233,7 @@ fun Home(navController: NavController? = null) {
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun WallpaperItem(title: String, position: Int, onClick: () -> Unit, modifier: Modifier = Modifier, wallpaper: Wallpaper?) {
+fun WallpaperItem(title: String, position: Int, onClick: () -> Unit, onNextWallpaper: () -> Unit, modifier: Modifier = Modifier, wallpaper: Wallpaper?) {
     val currentScale = remember {
         mutableStateOf(ContentScale.Crop)
     }
@@ -280,11 +285,31 @@ fun WallpaperItem(title: String, position: Int, onClick: () -> Unit, modifier: M
             }
 
             if (position == RANDOM_WALLPAPER_POSITION) {
-                CircularCountdownProgress(
+                Row(
                         modifier = Modifier
-                            .padding(16.dp)
                             .align(Alignment.TopStart)
-                )
+                ) {
+                    CircularCountdownProgress(
+                            modifier = Modifier
+                                .padding(16.dp)
+                    )
+
+                    IconButton(
+                            onClick = {
+                                onNextWallpaper()
+                            },
+                            modifier = Modifier
+                                .align(Alignment.CenterVertically),
+                            colors = IconButtonDefaults.iconButtonColors(
+                                    contentColor = Color.White
+                            )
+                    ) {
+                        Icon(
+                                imageVector = Icons.Rounded.FastForward,
+                                contentDescription = null
+                        )
+                    }
+                }
             }
 
             Column(

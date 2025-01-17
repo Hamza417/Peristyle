@@ -205,6 +205,11 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
         stopCountDownFlow() // Unnecessary, but just in case
     }
 
+    fun nextRandomWallpaper() {
+        stopCountDownFlow()
+        postRandomWallpaper()
+    }
+
     companion object {
         private const val SYSTEM_WALLPAPER = "system_wallpaper_$.png"
         private const val LOCK_WALLPAPER = "lock_wallpaper_$.png"
