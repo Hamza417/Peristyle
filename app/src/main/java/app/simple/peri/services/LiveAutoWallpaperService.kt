@@ -16,6 +16,7 @@ import app.simple.peri.abstraction.AutoWallpaperUtils.getBitmapFromFile
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.preferences.SharedPreferences
+import app.simple.peri.utils.BitmapUtils.applyEffects
 import app.simple.peri.utils.ParcelUtils.parcelable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -129,7 +130,7 @@ class LiveAutoWallpaperService : WallpaperService() {
                 fadeStartTime = System.currentTimeMillis()
                 transitionProgress = 0f
             }
-            bitmap = newBitmap
+            bitmap = newBitmap.applyEffects(MainComposePreferences.getWallpaperEffects())
             onSurfaceRedrawNeeded(surfaceHolder) // Trigger the fade animation
         }
 
