@@ -64,6 +64,10 @@ class AutoWallpaperService : AbstractAutoLiveWallpaperService() {
                     Log.e(TAG, "No wallpaper path provided, skipping")
                 }
             }
+            RANDOM_PREVIEW_WALLPAPER -> {
+                Log.d(TAG, "Random preview wallpaper action received")
+                setPreviewWallpaper()
+            }
             else -> {
                 init()
             }
@@ -118,5 +122,6 @@ class AutoWallpaperService : AbstractAutoLiveWallpaperService() {
 
     companion object {
         const val ACTION_NEXT_WALLPAPER: String = "app.simple.peri.services.action.NEXT_WALLPAPER"
+        const val RANDOM_PREVIEW_WALLPAPER = "app.simple.peri.services.action.RANDOM_PREVIEW_WALLPAPER"
     }
 }

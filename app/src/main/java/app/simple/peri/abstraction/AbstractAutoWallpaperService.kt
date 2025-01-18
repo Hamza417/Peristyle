@@ -29,4 +29,12 @@ abstract class AbstractAutoWallpaperService : Service() {
             dao?.getWallpapers()
         }
     }
+
+    protected suspend fun getRandomWallpaperFromDatabase(): Wallpaper? {
+        return withContext(Dispatchers.IO) {
+            val dao = WallpaperDatabase.getInstance(applicationContext)?.wallpaperDao()
+            dao?.sanitizeEntries()
+            dao?.getRandomWallpaper()
+        }
+    }
 }

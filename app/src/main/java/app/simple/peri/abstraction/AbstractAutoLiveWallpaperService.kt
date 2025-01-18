@@ -6,6 +6,9 @@ import android.os.Parcelable
 import android.service.wallpaper.WallpaperService
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.services.LiveAutoWallpaperService
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 abstract class AbstractAutoLiveWallpaperService : AbstractComposeAutoWallpaperService() {
 
@@ -31,6 +34,15 @@ abstract class AbstractAutoLiveWallpaperService : AbstractComposeAutoWallpaperSe
         val intent = LiveAutoWallpaperService.getIntent(applicationContext, LiveAutoWallpaperService.LOCK_SCREEN_WALLPAPER)
         intent.putExtra(LiveAutoWallpaperService.EXTRA_WALLPAPER, wallpaper as Parcelable)
         applicationContext.startService(intent)
+    }
+
+    protected fun setPreviewWallpaper() {
+        CoroutineScope(Dispatchers.Default).launch {
+            val wallpaper = getRandomWallpaperFromDatabase()
+            val intent = LiveAutoWallpaperService.getIntent(applicationContext, LiveAutoWallpaperService.PREVIEW_WALLPAPER)
+            intent.putExtra(LiveAutoWallpaperService.EXTRA_WALLPAPER, wallpaper as Parcelable)
+            applicationContext.startService(intent)
+        }
     }
 
     @Suppress("DEPRECATION")

@@ -25,7 +25,7 @@ class LiveAutoWallpaperService : WallpaperService() {
     override fun onCreate() {
         super.onCreate()
         val intent = Intent(applicationContext, AutoWallpaperService::class.java)
-        intent.action = AutoWallpaperService.ACTION_NEXT_WALLPAPER
+        intent.action = AutoWallpaperService.RANDOM_PREVIEW_WALLPAPER
         applicationContext.startService(intent)
 
         handler = Handler(Looper.getMainLooper()) { msg ->
@@ -46,7 +46,7 @@ class LiveAutoWallpaperService : WallpaperService() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when (intent?.action) {
-            SAME_WALLPAPER -> {
+            SAME_WALLPAPER, PREVIEW_WALLPAPER -> {
                 val wallpaper: Wallpaper = intent.parcelable<Wallpaper>(EXTRA_WALLPAPER)!!
                 Log.i(TAG, "Setting wallpaper: ${wallpaper.filePath}")
                 val msg = handler?.obtainMessage(MSG_SET_WALLPAPER, wallpaper.filePath)!!
@@ -104,6 +104,7 @@ class LiveAutoWallpaperService : WallpaperService() {
         const val SAME_WALLPAPER = "action.SAME_WALLPAPER"
         const val HOME_SCREEN_WALLPAPER = "action.HOME_SCREEN_WALLPAPER"
         const val LOCK_SCREEN_WALLPAPER = "action.LOCK_SCREEN_WALLPAPER"
+        const val PREVIEW_WALLPAPER = "action.PREVIEW_WALLPAPER"
         const val EXTRA_WALLPAPER = "extra.WALLPAPER"
         const val MSG_SET_WALLPAPER = 1
 
