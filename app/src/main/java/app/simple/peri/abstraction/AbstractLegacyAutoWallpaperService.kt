@@ -6,6 +6,8 @@ import android.net.Uri
 import android.util.Log
 import androidx.core.net.toUri
 import app.simple.peri.abstraction.AbstractComposeAutoWallpaperService.Companion.TAG
+import app.simple.peri.abstraction.AutoWallpaperUtils.calculateVisibleCropHint
+import app.simple.peri.abstraction.AutoWallpaperUtils.decodeBitmap
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.utils.BitmapUtils
@@ -53,12 +55,12 @@ abstract class AbstractLegacyAutoWallpaperService : AbstractAutoWallpaperService
         withContext(Dispatchers.IO) {
             contentResolver.openInputStream(uri)?.use { stream ->
                 val byteArray = stream.readBytes()
-                var bitmap = decodeBitmap(byteArray)
+                var bitmap = decodeBitmap(byteArray, displayWidth, displayHeight)
 
                 // Correct orientation of the bitmap if faulty due to EXIF data
                 bitmap = BitmapUtils.correctOrientation(bitmap, ByteArrayInputStream(byteArray))
 
-                val visibleCropHint = calculateVisibleCropHint(bitmap)
+                val visibleCropHint = calculateVisibleCropHint(bitmap, displayWidth, displayHeight)
 
                 if (MainPreferences.getCropWallpaper()) {
                     bitmap = bitmap.cropBitmap(visibleCropHint)
@@ -115,12 +117,12 @@ abstract class AbstractLegacyAutoWallpaperService : AbstractAutoWallpaperService
     private fun setLockScreenWallpaperFromUri(uri: Uri) {
         contentResolver.openInputStream(uri)?.use { stream ->
             val byteArray = stream.readBytes()
-            var bitmap = decodeBitmap(byteArray)
+            var bitmap = decodeBitmap(byteArray, displayWidth, displayHeight)
 
             // Correct orientation of the bitmap if faulty due to EXIF data
             bitmap = BitmapUtils.correctOrientation(bitmap, ByteArrayInputStream(byteArray))
 
-            val visibleCropHint = calculateVisibleCropHint(bitmap)
+            val visibleCropHint = calculateVisibleCropHint(bitmap, displayWidth, displayHeight)
 
             if (MainPreferences.getCropWallpaper()) {
                 bitmap = bitmap.cropBitmap(visibleCropHint)

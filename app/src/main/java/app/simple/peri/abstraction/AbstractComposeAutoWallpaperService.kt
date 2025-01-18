@@ -13,6 +13,7 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.content.FileProvider
 import app.simple.peri.R
+import app.simple.peri.abstraction.AutoWallpaperUtils.getBitmapFromFile
 import app.simple.peri.database.instances.TagsDatabase
 import app.simple.peri.database.instances.WallpaperDatabase
 import app.simple.peri.models.Wallpaper
@@ -20,9 +21,7 @@ import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.receivers.CopyActionReceiver
 import app.simple.peri.receivers.WallpaperActionReceiver
-import app.simple.peri.utils.BitmapUtils
 import app.simple.peri.utils.BitmapUtils.applyEffects
-import app.simple.peri.utils.BitmapUtils.cropBitmap
 import app.simple.peri.utils.ConditionUtils.invert
 import app.simple.peri.utils.ConditionUtils.isNotNull
 import app.simple.peri.utils.FileUtils.toFile
@@ -31,7 +30,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.ByteArrayInputStream
 import java.io.File
 
 abstract class AbstractComposeAutoWallpaperService : AbstractLegacyAutoWallpaperService() {
@@ -47,17 +45,27 @@ abstract class AbstractComposeAutoWallpaperService : AbstractLegacyAutoWallpaper
                 when {
                     MainPreferences.isSettingForBoth() -> {
                         if (shouldSetSameWallpaper()) {
-                            setSameWallpaper()
+                            getHomeScreenWallpaper()?.let {
+                                setSameWallpaper(it)
+                            }
                         } else {
-                            setHomeScreenWallpaper()
-                            setLockScreenWallpaper()
+                            getHomeScreenWallpaper()?.let {
+                                setHomeScreenWallpaper(it)
+                            }
+                            getLockScreenWallpaper()?.let {
+                                setLockScreenWallpaper(it)
+                            }
                         }
                     }
                     MainPreferences.isSettingForHomeScreen() -> {
-                        setHomeScreenWallpaper()
+                        getHomeScreenWallpaper()?.let {
+                            setHomeScreenWallpaper(it)
+                        }
                     }
                     MainPreferences.isSettingForLockScreen() -> {
-                        setLockScreenWallpaper()
+                        getLockScreenWallpaper()?.let {
+                            setLockScreenWallpaper(it)
+                        }
                     }
                 }
 
@@ -71,54 +79,48 @@ abstract class AbstractComposeAutoWallpaperService : AbstractLegacyAutoWallpaper
 
                 withContext(Dispatchers.Main) {
                     showErrorNotification(it.stackTraceToString())
-                    onComplete
+                    onComplete()
                     stopSelf()
                 }
             }
         }
     }
 
-    private fun setHomeScreenWallpaper() {
-        getHomeScreenWallpaper()?.let { it: Wallpaper ->
-            Log.d(TAG, "Home wallpaper found: ${it.filePath}")
-            getBitmapFromFile(it) { bitmap ->
-                val modifiedBitmap = bitmap.copy(bitmap.config ?: Bitmap.Config.ARGB_8888, true)
-                    .applyEffects(MainComposePreferences.getHomeScreenEffects())
-                wallpaperManager.setBitmap(modifiedBitmap, null, true, WallpaperManager.FLAG_SYSTEM)
-                showWallpaperChangedNotification(true, it.filePath.toFile(), modifiedBitmap)
-            }
+    open fun setHomeScreenWallpaper(wallpaper: Wallpaper) {
+        Log.d(TAG, "Home wallpaper found: ${wallpaper.filePath}")
+        getBitmapFromFile(wallpaper.filePath, displayWidth, displayHeight, MainPreferences.getCropWallpaper()) { bitmap ->
+            val modifiedBitmap = bitmap.copy(bitmap.config ?: Bitmap.Config.ARGB_8888, true)
+                .applyEffects(MainComposePreferences.getHomeScreenEffects())
+            wallpaperManager.setBitmap(modifiedBitmap, null, true, WallpaperManager.FLAG_SYSTEM)
+            showWallpaperChangedNotification(true, wallpaper.filePath.toFile(), modifiedBitmap)
         }
     }
 
-    private fun setLockScreenWallpaper() {
-        getLockScreenWallpaper()?.let { it: Wallpaper ->
-            Log.d(TAG, "Lock wallpaper found: ${it.filePath}")
-            getBitmapFromFile(it) { bitmap ->
-                val modifiedBitmap = bitmap.copy(bitmap.config ?: Bitmap.Config.ARGB_8888, true)
-                    .applyEffects(MainComposePreferences.getLockScreenEffects())
-                wallpaperManager.setBitmap(modifiedBitmap, null, true, WallpaperManager.FLAG_LOCK)
-                showWallpaperChangedNotification(false, it.filePath.toFile(), modifiedBitmap)
-            }
+    open fun setLockScreenWallpaper(wallpaper: Wallpaper) {
+        Log.d(TAG, "Lock wallpaper found: ${wallpaper.filePath}")
+        getBitmapFromFile(wallpaper.filePath, displayWidth, displayHeight, MainPreferences.getCropWallpaper()) { bitmap ->
+            val modifiedBitmap = bitmap.copy(bitmap.config ?: Bitmap.Config.ARGB_8888, true)
+                .applyEffects(MainComposePreferences.getLockScreenEffects())
+            wallpaperManager.setBitmap(modifiedBitmap, null, true, WallpaperManager.FLAG_LOCK)
+            showWallpaperChangedNotification(false, wallpaper.filePath.toFile(), modifiedBitmap)
         }
     }
 
-    private fun setSameWallpaper() {
-        getHomeScreenWallpaper()?.let { wallpaper ->
-            MainComposePreferences.setLastLockWallpaperPosition(MainComposePreferences.getLastHomeWallpaperPosition())
-            Log.d(TAG, "Wallpaper found: ${wallpaper.filePath}")
-            getBitmapFromFile(wallpaper) { bitmap ->
-                var homeBitmap = bitmap.copy(bitmap.config ?: Bitmap.Config.ARGB_8888, true)
-                var lockBitmap = bitmap.copy(bitmap.config ?: Bitmap.Config.ARGB_8888, true)
+    open fun setSameWallpaper(wallpaper: Wallpaper) {
+        MainComposePreferences.setLastLockWallpaperPosition(MainComposePreferences.getLastHomeWallpaperPosition())
+        Log.d(TAG, "Wallpaper found: ${wallpaper.filePath}")
+        getBitmapFromFile(wallpaper.filePath, displayWidth, displayHeight, MainPreferences.getCropWallpaper()) { bitmap ->
+            var homeBitmap = bitmap.copy(bitmap.config ?: Bitmap.Config.ARGB_8888, true)
+            var lockBitmap = bitmap.copy(bitmap.config ?: Bitmap.Config.ARGB_8888, true)
 
-                homeBitmap = homeBitmap.applyEffects(MainComposePreferences.getHomeScreenEffects())
-                lockBitmap = lockBitmap.applyEffects(MainComposePreferences.getLockScreenEffects())
+            homeBitmap = homeBitmap.applyEffects(MainComposePreferences.getHomeScreenEffects())
+            lockBitmap = lockBitmap.applyEffects(MainComposePreferences.getLockScreenEffects())
 
-                wallpaperManager.setBitmap(homeBitmap, null, true, WallpaperManager.FLAG_SYSTEM)
-                showWallpaperChangedNotification(true, wallpaper.filePath.toFile(), homeBitmap)
+            wallpaperManager.setBitmap(homeBitmap, null, true, WallpaperManager.FLAG_SYSTEM)
+            showWallpaperChangedNotification(true, wallpaper.filePath.toFile(), homeBitmap)
 
-                wallpaperManager.setBitmap(lockBitmap, null, true, WallpaperManager.FLAG_LOCK)
-                showWallpaperChangedNotification(false, wallpaper.filePath.toFile(), lockBitmap)
-            }
+            wallpaperManager.setBitmap(lockBitmap, null, true, WallpaperManager.FLAG_LOCK)
+            showWallpaperChangedNotification(false, wallpaper.filePath.toFile(), lockBitmap)
         }
     }
 
@@ -147,28 +149,7 @@ abstract class AbstractComposeAutoWallpaperService : AbstractLegacyAutoWallpaper
         return false
     }
 
-    private fun getBitmapFromFile(wallpaper: Wallpaper, onBitmap: (Bitmap) -> Unit) {
-        wallpaper.filePath.toFile().inputStream().use { stream ->
-            val byteArray = stream.readBytes()
-            Log.i(TAG, "Compose Wallpaper URI Decoding: ${wallpaper.uri}")
-            var bitmap = decodeBitmap(byteArray)
-
-            // Correct orientation of the bitmap if faulty due to EXIF data
-            bitmap = BitmapUtils.correctOrientation(bitmap, ByteArrayInputStream(byteArray))
-
-            val visibleCropHint = calculateVisibleCropHint(bitmap)
-
-            if (MainPreferences.getCropWallpaper()) {
-                bitmap = bitmap.cropBitmap(visibleCropHint)
-            }
-
-            onBitmap(bitmap)
-
-            bitmap.recycle()
-        }
-    }
-
-    private fun getHomeScreenWallpaper(): Wallpaper? {
+    protected fun getHomeScreenWallpaper(): Wallpaper? {
         val wallpaperDatabase = WallpaperDatabase.getInstance(applicationContext)
         val wallpaperDao = wallpaperDatabase?.wallpaperDao()
         val position = MainComposePreferences.getLastHomeWallpaperPosition().plus(1)

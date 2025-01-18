@@ -6,7 +6,10 @@ import DescriptionPreference
 import SecondaryClickablePreference
 import SecondaryHeader
 import SwitchPreference
+import android.app.WallpaperManager
+import android.content.ComponentName
 import android.content.Intent
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -51,6 +54,7 @@ import app.simple.peri.compose.dialogs.wallpaper.AutoWallpaperEffectsDialog
 import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.services.AutoWallpaperService
+import app.simple.peri.services.LiveAutoWallpaperService
 
 @Composable
 fun AutoWallpaper(navController: NavController? = null) {
@@ -98,6 +102,31 @@ fun AutoWallpaper(navController: NavController? = null) {
                         }
                     })
 
+            ButtonPreference(
+                    title = stringResource(R.string.set_live_wallpaper),
+                    onClick = {
+                        runCatching {
+                            val componentName = ComponentName(
+                                    context,
+                                    LiveAutoWallpaperService::class.java
+                            )
+                            val intent = Intent(WallpaperManager.ACTION_CHANGE_LIVE_WALLPAPER).apply {
+                                putExtra(WallpaperManager.EXTRA_LIVE_WALLPAPER_COMPONENT, componentName)
+                            }
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            context.startActivity(intent)
+                        }.onFailure {
+                            it.printStackTrace()
+                            Toast
+                                .makeText(
+                                        context,
+                                        it.message ?: it.localizedMessage ?: it.stackTraceToString(),
+                                        Toast.LENGTH_SHORT
+                                )
+                                .show()
+                        }
+                    })
+
             ClickablePreference(
                     title = context.getString(R.string.duration),
                     description = context.getString(R.string.duration_summary),
@@ -111,6 +140,27 @@ fun AutoWallpaper(navController: NavController? = null) {
                     description = context.getString(R.string.auto_wallpaper_set_for_summary),
                     onClick = {
                         screenSelectionDialog.value = true
+                    }
+            )
+
+            DescriptionPreference(stringResource(R.string.live_wallpaper_waring))
+
+            SwitchPreference(
+                    title = context.getString(R.string.change_when_screen_on),
+                    description = context.getString(R.string.change_when_screen_on_summary),
+                    checked = MainComposePreferences.getChangeWhenOn(),
+                    topPadding = 4.dp,
+                    onCheckedChange = {
+                        MainComposePreferences.setChangeWhenOn(it)
+                    }
+            )
+
+            SwitchPreference(
+                    title = context.getString(R.string.change_when_screen_off),
+                    description = context.getString(R.string.change_when_screen_off_summary),
+                    checked = MainComposePreferences.getChangeWhenOff(),
+                    onCheckedChange = {
+                        MainComposePreferences.setChangeWhenOff(it)
                     }
             )
 

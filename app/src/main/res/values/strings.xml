@@ -213,4 +213,10 @@
     <string name="revoke">Revoke</string>
     <string name="move">Move</string>
     <string name="select_all_from_last">Select All From Last Selected</string>
+    <string name="change_when_screen_on">Change When Screen On</string>
+    <string name="change_when_screen_on_summary">Change wallpaper every time when the screen lights up.</string>
+    <string name="change_when_screen_off">Change When Screen Off</string>
+    <string name="change_when_screen_off_summary">Change wallpaper every time when the screen turns off.</string>
+    <string name="live_wallpaper_waring">Works only with the live wallpaper method.</string>
+    <string name="set_live_wallpaper">Live Auto Wallpaper</string>
 </resources>

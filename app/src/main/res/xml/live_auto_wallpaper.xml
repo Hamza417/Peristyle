@@ -1,0 +1,4 @@
+<wallpaper xmlns:android="http://schemas.android.com/apk/res/android"
+    android:label="@string/auto_wallpaper"
+    android:thumbnail="@drawable/ic_peristyle"
+    android:description="@string/auto_wallpaper_summary" />

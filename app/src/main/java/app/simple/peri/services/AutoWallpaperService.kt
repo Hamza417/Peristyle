@@ -7,7 +7,7 @@ import android.os.IBinder
 import android.util.Log
 import android.widget.Toast
 import app.simple.peri.R
-import app.simple.peri.abstraction.AbstractComposeAutoWallpaperService
+import app.simple.peri.abstraction.AbstractAutoLiveWallpaperService
 import app.simple.peri.activities.main.LegacyActivity
 import app.simple.peri.activities.main.MainComposeActivity
 import app.simple.peri.preferences.MainComposePreferences
@@ -16,7 +16,7 @@ import app.simple.peri.preferences.SharedPreferences
 import app.simple.peri.utils.ScreenUtils
 import java.io.File
 
-class AutoWallpaperService : AbstractComposeAutoWallpaperService() {
+class AutoWallpaperService : AbstractAutoLiveWallpaperService() {
 
     /**
      * Flag to prevent multiple next wallpaper actions from running at the same time
@@ -64,6 +64,10 @@ class AutoWallpaperService : AbstractComposeAutoWallpaperService() {
                     Log.e(TAG, "No wallpaper path provided, skipping")
                 }
             }
+            RANDOM_PREVIEW_WALLPAPER -> {
+                Log.d(TAG, "Random preview wallpaper action received")
+                setPreviewWallpaper()
+            }
             else -> {
                 init()
             }
@@ -94,8 +98,16 @@ class AutoWallpaperService : AbstractComposeAutoWallpaperService() {
             }
         } else {
             Log.i(TAG, "Compose interface detected, switching to new approach")
-            setComposeWallpaper {
-                isNextWallpaperActionRunning = false
+            if (isWallpaperServiceRunning()) {
+                Log.i(TAG, "Wallpaper service is running, setting next wallpaper through live wallpaper service")
+                postLiveWallpaper {
+                    isNextWallpaperActionRunning = false
+                }
+            } else {
+                Log.d(TAG, "Wallpaper service is not running, setting next wallpaper through compose service")
+                setComposeWallpaper {
+                    isNextWallpaperActionRunning = false
+                }
             }
         }
     }
@@ -110,5 +122,6 @@ class AutoWallpaperService : AbstractComposeAutoWallpaperService() {
 
     companion object {
         const val ACTION_NEXT_WALLPAPER: String = "app.simple.peri.services.action.NEXT_WALLPAPER"
+        const val RANDOM_PREVIEW_WALLPAPER = "app.simple.peri.services.action.RANDOM_PREVIEW_WALLPAPER"
     }
 }
