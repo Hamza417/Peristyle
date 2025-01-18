@@ -172,7 +172,7 @@ abstract class AbstractComposeAutoWallpaperService : AbstractLegacyAutoWallpaper
         }
     }
 
-    private fun getHomeScreenWallpaper(): Wallpaper? {
+    protected fun getHomeScreenWallpaper(): Wallpaper? {
         val wallpaperDatabase = WallpaperDatabase.getInstance(applicationContext)
         val wallpaperDao = wallpaperDatabase?.wallpaperDao()
         val position = MainComposePreferences.getLastHomeWallpaperPosition().plus(1)
