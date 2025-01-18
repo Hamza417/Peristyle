@@ -17,19 +17,19 @@ abstract class AbstractAutoLiveWallpaperService : AbstractComposeAutoWallpaperSe
 
     override fun setSameWallpaper(wallpaper: Wallpaper) {
         val intent = LiveAutoWallpaperService.getIntent(applicationContext, LiveAutoWallpaperService.SAME_WALLPAPER)
-        intent.putExtra(LiveAutoWallpaperService.EXTRA_WALLPAER, wallpaper as Parcelable)
+        intent.putExtra(LiveAutoWallpaperService.EXTRA_WALLPAPER, wallpaper as Parcelable)
         applicationContext.startService(intent)
     }
 
     override fun setHomeScreenWallpaper(wallpaper: Wallpaper) {
         val intent = LiveAutoWallpaperService.getIntent(applicationContext, LiveAutoWallpaperService.HOME_SCREEN_WALLPAPER)
-        intent.putExtra(LiveAutoWallpaperService.EXTRA_WALLPAER, wallpaper as Parcelable)
+        intent.putExtra(LiveAutoWallpaperService.EXTRA_WALLPAPER, wallpaper as Parcelable)
         applicationContext.startService(intent)
     }
 
     override fun setLockScreenWallpaper(wallpaper: Wallpaper) {
         val intent = LiveAutoWallpaperService.getIntent(applicationContext, LiveAutoWallpaperService.LOCK_SCREEN_WALLPAPER)
-        intent.putExtra(LiveAutoWallpaperService.EXTRA_WALLPAER, wallpaper as Parcelable)
+        intent.putExtra(LiveAutoWallpaperService.EXTRA_WALLPAPER, wallpaper as Parcelable)
         applicationContext.startService(intent)
     }
 
