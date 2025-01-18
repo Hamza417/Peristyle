@@ -13,6 +13,7 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.content.FileProvider
 import app.simple.peri.R
+import app.simple.peri.abstraction.AutoWallpaperUtils.getBitmapFromFile
 import app.simple.peri.database.instances.TagsDatabase
 import app.simple.peri.database.instances.WallpaperDatabase
 import app.simple.peri.models.Wallpaper
@@ -20,9 +21,7 @@ import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.receivers.CopyActionReceiver
 import app.simple.peri.receivers.WallpaperActionReceiver
-import app.simple.peri.utils.BitmapUtils
 import app.simple.peri.utils.BitmapUtils.applyEffects
-import app.simple.peri.utils.BitmapUtils.cropBitmap
 import app.simple.peri.utils.ConditionUtils.invert
 import app.simple.peri.utils.ConditionUtils.isNotNull
 import app.simple.peri.utils.FileUtils.toFile
@@ -31,7 +30,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.ByteArrayInputStream
 import java.io.File
 
 abstract class AbstractComposeAutoWallpaperService : AbstractLegacyAutoWallpaperService() {
@@ -90,7 +88,7 @@ abstract class AbstractComposeAutoWallpaperService : AbstractLegacyAutoWallpaper
 
     open fun setHomeScreenWallpaper(wallpaper: Wallpaper) {
         Log.d(TAG, "Home wallpaper found: ${wallpaper.filePath}")
-        getBitmapFromFile(wallpaper) { bitmap ->
+        getBitmapFromFile(wallpaper.filePath, displayWidth, displayHeight, MainPreferences.getCropWallpaper()) { bitmap ->
             val modifiedBitmap = bitmap.copy(bitmap.config ?: Bitmap.Config.ARGB_8888, true)
                 .applyEffects(MainComposePreferences.getHomeScreenEffects())
             wallpaperManager.setBitmap(modifiedBitmap, null, true, WallpaperManager.FLAG_SYSTEM)
@@ -100,7 +98,7 @@ abstract class AbstractComposeAutoWallpaperService : AbstractLegacyAutoWallpaper
 
     open fun setLockScreenWallpaper(wallpaper: Wallpaper) {
         Log.d(TAG, "Lock wallpaper found: ${wallpaper.filePath}")
-        getBitmapFromFile(wallpaper) { bitmap ->
+        getBitmapFromFile(wallpaper.filePath, displayWidth, displayHeight, MainPreferences.getCropWallpaper()) { bitmap ->
             val modifiedBitmap = bitmap.copy(bitmap.config ?: Bitmap.Config.ARGB_8888, true)
                 .applyEffects(MainComposePreferences.getLockScreenEffects())
             wallpaperManager.setBitmap(modifiedBitmap, null, true, WallpaperManager.FLAG_LOCK)
@@ -111,7 +109,7 @@ abstract class AbstractComposeAutoWallpaperService : AbstractLegacyAutoWallpaper
     open fun setSameWallpaper(wallpaper: Wallpaper) {
         MainComposePreferences.setLastLockWallpaperPosition(MainComposePreferences.getLastHomeWallpaperPosition())
         Log.d(TAG, "Wallpaper found: ${wallpaper.filePath}")
-        getBitmapFromFile(wallpaper) { bitmap ->
+        getBitmapFromFile(wallpaper.filePath, displayWidth, displayHeight, MainPreferences.getCropWallpaper()) { bitmap ->
             var homeBitmap = bitmap.copy(bitmap.config ?: Bitmap.Config.ARGB_8888, true)
             var lockBitmap = bitmap.copy(bitmap.config ?: Bitmap.Config.ARGB_8888, true)
 
@@ -149,27 +147,6 @@ abstract class AbstractComposeAutoWallpaperService : AbstractLegacyAutoWallpaper
         }
 
         return false
-    }
-
-    private fun getBitmapFromFile(wallpaper: Wallpaper, onBitmap: (Bitmap) -> Unit) {
-        wallpaper.filePath.toFile().inputStream().use { stream ->
-            val byteArray = stream.readBytes()
-            Log.i(TAG, "Compose Wallpaper URI Decoding: ${wallpaper.uri}")
-            var bitmap = decodeBitmap(byteArray)
-
-            // Correct orientation of the bitmap if faulty due to EXIF data
-            bitmap = BitmapUtils.correctOrientation(bitmap, ByteArrayInputStream(byteArray))
-
-            val visibleCropHint = calculateVisibleCropHint(bitmap)
-
-            if (MainPreferences.getCropWallpaper()) {
-                bitmap = bitmap.cropBitmap(visibleCropHint)
-            }
-
-            onBitmap(bitmap)
-
-            bitmap.recycle()
-        }
     }
 
     protected fun getHomeScreenWallpaper(): Wallpaper? {

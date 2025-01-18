@@ -10,8 +10,7 @@ import app.simple.peri.services.LiveAutoWallpaperService
 abstract class AbstractAutoLiveWallpaperService : AbstractComposeAutoWallpaperService() {
 
     protected fun postLiveWallpaper(onComplete: () -> Unit) {
-        getHomeScreenWallpaper()?.let {
-            setSameWallpaper(it)
+        setComposeWallpaper {
             onComplete()
         }
     }
