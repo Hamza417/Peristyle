@@ -30,10 +30,14 @@ abstract class AbstractAutoLiveWallpaperService : AbstractComposeAutoWallpaperSe
         applicationContext.startService(intent)
     }
 
+    /**
+     * As much as it needs to Live Wallpapers don't have the ability to work exclusively on the lock screen.
+     * So, I am skipping this method.
+     */
     override fun setLockScreenWallpaper(wallpaper: Wallpaper) {
-        val intent = LiveAutoWallpaperService.getIntent(applicationContext, LiveAutoWallpaperService.LOCK_SCREEN_WALLPAPER)
-        intent.putExtra(LiveAutoWallpaperService.EXTRA_WALLPAPER, wallpaper as Parcelable)
-        applicationContext.startService(intent)
+        //        val intent = LiveAutoWallpaperService.getIntent(applicationContext, LiveAutoWallpaperService.LOCK_SCREEN_WALLPAPER)
+        //        intent.putExtra(LiveAutoWallpaperService.EXTRA_WALLPAPER, wallpaper as Parcelable)
+        //        applicationContext.startService(intent)
     }
 
     protected fun setPreviewWallpaper() {

@@ -6,7 +6,10 @@ import DescriptionPreference
 import SecondaryClickablePreference
 import SecondaryHeader
 import SwitchPreference
+import android.app.WallpaperManager
+import android.content.ComponentName
 import android.content.Intent
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -51,6 +54,7 @@ import app.simple.peri.compose.dialogs.wallpaper.AutoWallpaperEffectsDialog
 import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.services.AutoWallpaperService
+import app.simple.peri.services.LiveAutoWallpaperService
 
 @Composable
 fun AutoWallpaper(navController: NavController? = null) {
@@ -95,6 +99,31 @@ fun AutoWallpaper(navController: NavController? = null) {
                         Intent(context, AutoWallpaperService::class.java).also { intent ->
                             intent.action = AutoWallpaperService.ACTION_NEXT_WALLPAPER
                             context.startService(intent)
+                        }
+                    })
+
+            ButtonPreference(
+                    title = stringResource(R.string.set_live_wallpaper),
+                    onClick = {
+                        runCatching {
+                            val componentName = ComponentName(
+                                    context,
+                                    LiveAutoWallpaperService::class.java
+                            )
+                            val intent = Intent(WallpaperManager.ACTION_CHANGE_LIVE_WALLPAPER).apply {
+                                putExtra(WallpaperManager.EXTRA_LIVE_WALLPAPER_COMPONENT, componentName)
+                            }
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            context.startActivity(intent)
+                        }.onFailure {
+                            it.printStackTrace()
+                            Toast
+                                .makeText(
+                                        context,
+                                        it.message ?: it.localizedMessage ?: it.stackTraceToString(),
+                                        Toast.LENGTH_SHORT
+                                )
+                                .show()
                         }
                     })
 

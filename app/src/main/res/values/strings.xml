@@ -218,4 +218,5 @@
     <string name="change_when_screen_off">Change When Screen Off</string>
     <string name="change_when_screen_off_summary">Change wallpaper every time when the screen turns off.</string>
     <string name="live_wallpaper_waring">Works only with the live wallpaper method.</string>
+    <string name="set_live_wallpaper">Live Auto Wallpaper</string>
 </resources>
