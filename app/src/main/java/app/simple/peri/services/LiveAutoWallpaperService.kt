@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.graphics.Paint
 import android.os.Handler
 import android.os.Looper
 import android.service.wallpaper.WallpaperService
@@ -21,6 +22,12 @@ class LiveAutoWallpaperService : WallpaperService() {
 
     private var engine: LiveAutoWallpaperEngine? = null
     private var handler: Handler? = null
+
+    private var transitionProgress = 0f // Progress of the fade (0.0 to 1.0)
+    private var crossfadeDuration = 500L // Crossfade duration in milliseconds
+    private var fadeStartTime: Long = -1L
+    private var oldBitmap: Bitmap? = null
+    private var isFading = false
 
     override fun onCreate() {
         super.onCreate()
@@ -53,26 +60,34 @@ class LiveAutoWallpaperService : WallpaperService() {
         return super.onStartCommand(intent, flags, startId)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-    }
-
     private inner class LiveAutoWallpaperEngine : Engine() {
         private var bitmap: Bitmap? = null
 
         fun setWallpaper(filePath: String) {
             CoroutineScope(Dispatchers.Main).launch {
                 val canvas = surfaceHolder.lockCanvas()
+                var localBitmap: Bitmap? = null
 
                 withContext(Dispatchers.Default) {
                     getBitmapFromFile(filePath, canvas.width, canvas.height, recycle = false) { bmp ->
-                        bitmap = bmp
+                        localBitmap = bmp
                     }
                 }
 
                 surfaceHolder.unlockCanvasAndPost(canvas)
-                onSurfaceRedrawNeeded(surfaceHolder)
+                setBitmapWithCrossfade(localBitmap!!)
             }
+        }
+
+        fun setBitmapWithCrossfade(newBitmap: Bitmap) {
+            if (bitmap != null) {
+                oldBitmap = bitmap // Save the current bitmap for fading
+                isFading = true
+                fadeStartTime = System.currentTimeMillis()
+                transitionProgress = 0f
+            }
+            bitmap = newBitmap
+            onSurfaceRedrawNeeded(surfaceHolder) // Trigger the fade animation
         }
 
         override fun onSurfaceCreated(holder: SurfaceHolder?) {
@@ -94,12 +109,48 @@ class LiveAutoWallpaperService : WallpaperService() {
 
         override fun onSurfaceRedrawNeeded(holder: SurfaceHolder?) {
             super.onSurfaceRedrawNeeded(holder)
-            Log.d(TAG, "onSurfaceRedrawNeeded")
             holder?.let {
                 val canvas: Canvas? = it.lockCanvas()
-                bitmap?.let { bmp ->
-                    // Draw the bitmap on the canvas
-                    canvas!!.drawBitmap(bmp, 0f, 0f, null)
+                canvas?.let { canvas1 ->
+                    if (isFading && oldBitmap != null && bitmap != null) {
+                        // Calculate the fade progress
+                        val elapsedTime = System.currentTimeMillis() - fadeStartTime
+                        transitionProgress = elapsedTime.toFloat() / crossfadeDuration
+
+                        if (transitionProgress >= 1.0f) {
+                            // End the fade and draw the new bitmap at full opacity
+                            isFading = false
+                            transitionProgress = 1.0f
+                        }
+
+                        // Draw the old bitmap
+                        oldBitmap?.let { bmp ->
+                            canvas1.drawBitmap(bmp, 0f, 0f, null)
+                        }
+
+                        // Overlay the new bitmap with alpha
+                        bitmap?.let { bmp ->
+                            val paint = Paint()
+                            paint.alpha = (transitionProgress * 255).toInt()
+                            canvas1.drawBitmap(bmp, 0f, 0f, paint)
+                        }
+
+                        // Trigger another redraw until the fade is complete
+                        if (isFading) {
+                            it.unlockCanvasAndPost(canvas1)
+                            onSurfaceRedrawNeeded(holder)
+                            return
+                        } else {
+                            // End the fade and recycle the old bitmap
+                            oldBitmap?.recycle()
+                            oldBitmap = null
+                        }
+                    } else {
+                        // Draw the current bitmap normally if no fade is active
+                        bitmap?.let { bmp ->
+                            canvas1.drawBitmap(bmp, 0f, 0f, null)
+                        }
+                    }
                 }
 
                 it.unlockCanvasAndPost(canvas)
@@ -108,9 +159,10 @@ class LiveAutoWallpaperService : WallpaperService() {
 
         override fun onSurfaceDestroyed(holder: SurfaceHolder?) {
             super.onSurfaceDestroyed(holder)
-            Log.d(TAG, "onSurfaceDestroyed")
             bitmap?.recycle()
             bitmap = null
+            oldBitmap?.recycle()
+            oldBitmap = null
         }
     }
 
