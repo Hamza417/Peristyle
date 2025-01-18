@@ -1,11 +1,17 @@
 package app.simple.peri.services
 
+import android.content.Intent
 import android.service.wallpaper.WallpaperService
 import android.view.SurfaceHolder
 
 class LiveAutoWallpaperService : WallpaperService() {
+
     override fun onCreateEngine(): Engine {
         return LiveAutoWallpaperEngine()
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        return super.onStartCommand(intent, flags, startId)
     }
 
     override fun onDestroy() {

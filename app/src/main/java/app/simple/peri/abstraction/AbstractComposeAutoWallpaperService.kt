@@ -47,17 +47,27 @@ abstract class AbstractComposeAutoWallpaperService : AbstractLegacyAutoWallpaper
                 when {
                     MainPreferences.isSettingForBoth() -> {
                         if (shouldSetSameWallpaper()) {
-                            setSameWallpaper()
+                            getHomeScreenWallpaper()?.let {
+                                setSameWallpaper(it)
+                            }
                         } else {
-                            setHomeScreenWallpaper()
-                            setLockScreenWallpaper()
+                            getHomeScreenWallpaper()?.let {
+                                setHomeScreenWallpaper(it)
+                            }
+                            getLockScreenWallpaper()?.let {
+                                setLockScreenWallpaper(it)
+                            }
                         }
                     }
                     MainPreferences.isSettingForHomeScreen() -> {
-                        setHomeScreenWallpaper()
+                        getHomeScreenWallpaper()?.let {
+                            setHomeScreenWallpaper(it)
+                        }
                     }
                     MainPreferences.isSettingForLockScreen() -> {
-                        setLockScreenWallpaper()
+                        getLockScreenWallpaper()?.let {
+                            setLockScreenWallpaper(it)
+                        }
                     }
                 }
 
@@ -71,54 +81,48 @@ abstract class AbstractComposeAutoWallpaperService : AbstractLegacyAutoWallpaper
 
                 withContext(Dispatchers.Main) {
                     showErrorNotification(it.stackTraceToString())
-                    onComplete
+                    onComplete()
                     stopSelf()
                 }
             }
         }
     }
 
-    private fun setHomeScreenWallpaper() {
-        getHomeScreenWallpaper()?.let { it: Wallpaper ->
-            Log.d(TAG, "Home wallpaper found: ${it.filePath}")
-            getBitmapFromFile(it) { bitmap ->
-                val modifiedBitmap = bitmap.copy(bitmap.config ?: Bitmap.Config.ARGB_8888, true)
-                    .applyEffects(MainComposePreferences.getHomeScreenEffects())
-                wallpaperManager.setBitmap(modifiedBitmap, null, true, WallpaperManager.FLAG_SYSTEM)
-                showWallpaperChangedNotification(true, it.filePath.toFile(), modifiedBitmap)
-            }
+    open fun setHomeScreenWallpaper(wallpaper: Wallpaper) {
+        Log.d(TAG, "Home wallpaper found: ${wallpaper.filePath}")
+        getBitmapFromFile(wallpaper) { bitmap ->
+            val modifiedBitmap = bitmap.copy(bitmap.config ?: Bitmap.Config.ARGB_8888, true)
+                .applyEffects(MainComposePreferences.getHomeScreenEffects())
+            wallpaperManager.setBitmap(modifiedBitmap, null, true, WallpaperManager.FLAG_SYSTEM)
+            showWallpaperChangedNotification(true, wallpaper.filePath.toFile(), modifiedBitmap)
         }
     }
 
-    private fun setLockScreenWallpaper() {
-        getLockScreenWallpaper()?.let { it: Wallpaper ->
-            Log.d(TAG, "Lock wallpaper found: ${it.filePath}")
-            getBitmapFromFile(it) { bitmap ->
-                val modifiedBitmap = bitmap.copy(bitmap.config ?: Bitmap.Config.ARGB_8888, true)
-                    .applyEffects(MainComposePreferences.getLockScreenEffects())
-                wallpaperManager.setBitmap(modifiedBitmap, null, true, WallpaperManager.FLAG_LOCK)
-                showWallpaperChangedNotification(false, it.filePath.toFile(), modifiedBitmap)
-            }
+    open fun setLockScreenWallpaper(wallpaper: Wallpaper) {
+        Log.d(TAG, "Lock wallpaper found: ${wallpaper.filePath}")
+        getBitmapFromFile(wallpaper) { bitmap ->
+            val modifiedBitmap = bitmap.copy(bitmap.config ?: Bitmap.Config.ARGB_8888, true)
+                .applyEffects(MainComposePreferences.getLockScreenEffects())
+            wallpaperManager.setBitmap(modifiedBitmap, null, true, WallpaperManager.FLAG_LOCK)
+            showWallpaperChangedNotification(false, wallpaper.filePath.toFile(), modifiedBitmap)
         }
     }
 
-    private fun setSameWallpaper() {
-        getHomeScreenWallpaper()?.let { wallpaper ->
-            MainComposePreferences.setLastLockWallpaperPosition(MainComposePreferences.getLastHomeWallpaperPosition())
-            Log.d(TAG, "Wallpaper found: ${wallpaper.filePath}")
-            getBitmapFromFile(wallpaper) { bitmap ->
-                var homeBitmap = bitmap.copy(bitmap.config ?: Bitmap.Config.ARGB_8888, true)
-                var lockBitmap = bitmap.copy(bitmap.config ?: Bitmap.Config.ARGB_8888, true)
+    open fun setSameWallpaper(wallpaper: Wallpaper) {
+        MainComposePreferences.setLastLockWallpaperPosition(MainComposePreferences.getLastHomeWallpaperPosition())
+        Log.d(TAG, "Wallpaper found: ${wallpaper.filePath}")
+        getBitmapFromFile(wallpaper) { bitmap ->
+            var homeBitmap = bitmap.copy(bitmap.config ?: Bitmap.Config.ARGB_8888, true)
+            var lockBitmap = bitmap.copy(bitmap.config ?: Bitmap.Config.ARGB_8888, true)
 
-                homeBitmap = homeBitmap.applyEffects(MainComposePreferences.getHomeScreenEffects())
-                lockBitmap = lockBitmap.applyEffects(MainComposePreferences.getLockScreenEffects())
+            homeBitmap = homeBitmap.applyEffects(MainComposePreferences.getHomeScreenEffects())
+            lockBitmap = lockBitmap.applyEffects(MainComposePreferences.getLockScreenEffects())
 
-                wallpaperManager.setBitmap(homeBitmap, null, true, WallpaperManager.FLAG_SYSTEM)
-                showWallpaperChangedNotification(true, wallpaper.filePath.toFile(), homeBitmap)
+            wallpaperManager.setBitmap(homeBitmap, null, true, WallpaperManager.FLAG_SYSTEM)
+            showWallpaperChangedNotification(true, wallpaper.filePath.toFile(), homeBitmap)
 
-                wallpaperManager.setBitmap(lockBitmap, null, true, WallpaperManager.FLAG_LOCK)
-                showWallpaperChangedNotification(false, wallpaper.filePath.toFile(), lockBitmap)
-            }
+            wallpaperManager.setBitmap(lockBitmap, null, true, WallpaperManager.FLAG_LOCK)
+            showWallpaperChangedNotification(false, wallpaper.filePath.toFile(), lockBitmap)
         }
     }
 
