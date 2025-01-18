@@ -1,7 +1,9 @@
 package app.simple.peri.services
 
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
@@ -12,6 +14,8 @@ import android.util.Log
 import android.view.SurfaceHolder
 import app.simple.peri.abstraction.AutoWallpaperUtils.getBitmapFromFile
 import app.simple.peri.models.Wallpaper
+import app.simple.peri.preferences.MainComposePreferences
+import app.simple.peri.preferences.SharedPreferences
 import app.simple.peri.utils.ParcelUtils.parcelable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -23,6 +27,8 @@ class LiveAutoWallpaperService : WallpaperService() {
     private var engine: LiveAutoWallpaperEngine? = null
     private var handler: Handler? = null
 
+    private var broadcastReceiver: BroadcastReceiver? = null
+
     private var transitionProgress = 0f // Progress of the fade (0.0 to 1.0)
     private var crossfadeDuration = 500L // Crossfade duration in milliseconds
     private var fadeStartTime: Long = -1L
@@ -31,6 +37,8 @@ class LiveAutoWallpaperService : WallpaperService() {
 
     override fun onCreate() {
         super.onCreate()
+        SharedPreferences.init(applicationContext)
+
         handler = Handler(Looper.getMainLooper()) { msg ->
             when (msg.what) {
                 MSG_SET_WALLPAPER -> {
@@ -40,6 +48,34 @@ class LiveAutoWallpaperService : WallpaperService() {
             }
             true
         }
+
+        val filter = IntentFilter()
+        filter.addAction(Intent.ACTION_SCREEN_ON)
+        filter.addAction(Intent.ACTION_SCREEN_OFF)
+
+        broadcastReceiver = object : BroadcastReceiver() {
+            override fun onReceive(context: Context, intent: Intent) {
+                try {
+                    when (intent.action) {
+                        Intent.ACTION_SCREEN_ON -> {
+                            if (MainComposePreferences.getChangeWhenOn()) {
+                                askNextWallpaper()
+                            }
+                        }
+
+                        Intent.ACTION_SCREEN_OFF -> {
+                            if (MainComposePreferences.getChangeWhenOff()) {
+                                askNextWallpaper()
+                            }
+                        }
+                    }
+                } catch (e: NullPointerException) {
+                    e.printStackTrace()
+                }
+            }
+        }
+
+        registerReceiver(broadcastReceiver, filter)
     }
 
     override fun onCreateEngine(): Engine {
@@ -59,6 +95,13 @@ class LiveAutoWallpaperService : WallpaperService() {
 
         return super.onStartCommand(intent, flags, startId)
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        unregisterReceiver(broadcastReceiver)
+    }
+
+    // --------------------------------------------------------------------------------------------- //
 
     private inner class LiveAutoWallpaperEngine : Engine() {
         private var bitmap: Bitmap? = null
@@ -93,13 +136,9 @@ class LiveAutoWallpaperService : WallpaperService() {
         override fun onSurfaceCreated(holder: SurfaceHolder?) {
             super.onSurfaceCreated(holder)
             if (isPreview) {
-                val intent = Intent(applicationContext, AutoWallpaperService::class.java)
-                intent.action = AutoWallpaperService.RANDOM_PREVIEW_WALLPAPER
-                applicationContext.startService(intent)
+                askPreviewWallpaper()
             } else {
-                val intent = Intent(applicationContext, AutoWallpaperService::class.java)
-                intent.action = AutoWallpaperService.ACTION_NEXT_WALLPAPER
-                applicationContext.startService(intent)
+                askNextWallpaper()
             }
         }
 
@@ -164,6 +203,18 @@ class LiveAutoWallpaperService : WallpaperService() {
             oldBitmap?.recycle()
             oldBitmap = null
         }
+    }
+
+    private fun askPreviewWallpaper() {
+        val intent = Intent(applicationContext, AutoWallpaperService::class.java)
+        intent.action = AutoWallpaperService.RANDOM_PREVIEW_WALLPAPER
+        applicationContext.startService(intent)
+    }
+
+    private fun askNextWallpaper() {
+        val intent = Intent(applicationContext, AutoWallpaperService::class.java)
+        intent.action = AutoWallpaperService.ACTION_NEXT_WALLPAPER
+        applicationContext.startService(intent)
     }
 
     companion object {

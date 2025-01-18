@@ -114,6 +114,27 @@ fun AutoWallpaper(navController: NavController? = null) {
                     }
             )
 
+            DescriptionPreference(stringResource(R.string.live_wallpaper_waring))
+
+            SwitchPreference(
+                    title = context.getString(R.string.change_when_screen_on),
+                    description = context.getString(R.string.change_when_screen_on_summary),
+                    checked = MainComposePreferences.getChangeWhenOn(),
+                    topPadding = 4.dp,
+                    onCheckedChange = {
+                        MainComposePreferences.setChangeWhenOn(it)
+                    }
+            )
+
+            SwitchPreference(
+                    title = context.getString(R.string.change_when_screen_off),
+                    description = context.getString(R.string.change_when_screen_off_summary),
+                    checked = MainComposePreferences.getChangeWhenOff(),
+                    onCheckedChange = {
+                        MainComposePreferences.setChangeWhenOff(it)
+                    }
+            )
+
             if (screenSelectionDialog.value) {
                 ScreenSelectionDialog(
                         onDismiss = { screenSelectionDialog.value = false },

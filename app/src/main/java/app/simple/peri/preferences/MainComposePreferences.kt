@@ -59,6 +59,8 @@ object MainComposePreferences {
     private const val ALL_WALLPAPER_PATHS = "all_wallpaper_paths"
     private const val SEMAPHORE_COUNT = "semaphore_count"
     private const val WALLPAPER_DETAILS = "wallpaper_details"
+    private const val CHANGE_WHEN_ON = "change_when_on"
+    private const val CHANGE_WHEN_OFF = "change_when_off"
 
     // ----------------------------------------------------------------------------------------------------- //
 
@@ -703,5 +705,25 @@ object MainComposePreferences {
 
     fun setWallpaperDetails(value: Boolean) {
         getSharedPreferences().edit().putBoolean(WALLPAPER_DETAILS, value).apply()
+    }
+
+    // ----------------------------------------------------------------------------------------------------- //
+
+    fun getChangeWhenOn(): Boolean {
+        return getSharedPreferences().getBoolean(CHANGE_WHEN_ON, false)
+    }
+
+    fun setChangeWhenOn(value: Boolean) {
+        getSharedPreferences().edit().putBoolean(CHANGE_WHEN_ON, value).apply()
+    }
+
+    // ----------------------------------------------------------------------------------------------------- //
+
+    fun getChangeWhenOff(): Boolean {
+        return getSharedPreferences().getBoolean(CHANGE_WHEN_OFF, false)
+    }
+
+    fun setChangeWhenOff(value: Boolean) {
+        getSharedPreferences().edit().putBoolean(CHANGE_WHEN_OFF, value).apply()
     }
 }
