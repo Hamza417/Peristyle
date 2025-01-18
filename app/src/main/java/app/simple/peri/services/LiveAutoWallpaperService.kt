@@ -24,10 +24,6 @@ class LiveAutoWallpaperService : WallpaperService() {
 
     override fun onCreate() {
         super.onCreate()
-        val intent = Intent(applicationContext, AutoWallpaperService::class.java)
-        intent.action = AutoWallpaperService.RANDOM_PREVIEW_WALLPAPER
-        applicationContext.startService(intent)
-
         handler = Handler(Looper.getMainLooper()) { msg ->
             when (msg.what) {
                 MSG_SET_WALLPAPER -> {
@@ -79,8 +75,26 @@ class LiveAutoWallpaperService : WallpaperService() {
             }
         }
 
+        override fun onSurfaceCreated(holder: SurfaceHolder?) {
+            super.onSurfaceCreated(holder)
+            if (isPreview) {
+                val intent = Intent(applicationContext, AutoWallpaperService::class.java)
+                intent.action = AutoWallpaperService.RANDOM_PREVIEW_WALLPAPER
+                applicationContext.startService(intent)
+            } else {
+                val intent = Intent(applicationContext, AutoWallpaperService::class.java)
+                intent.action = AutoWallpaperService.ACTION_NEXT_WALLPAPER
+                applicationContext.startService(intent)
+            }
+        }
+
+        override fun onSurfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {
+            super.onSurfaceChanged(holder, format, width, height)
+        }
+
         override fun onSurfaceRedrawNeeded(holder: SurfaceHolder?) {
             super.onSurfaceRedrawNeeded(holder)
+            Log.d(TAG, "onSurfaceRedrawNeeded")
             holder?.let {
                 val canvas: Canvas? = it.lockCanvas()
                 bitmap?.let { bmp ->
@@ -94,6 +108,7 @@ class LiveAutoWallpaperService : WallpaperService() {
 
         override fun onSurfaceDestroyed(holder: SurfaceHolder?) {
             super.onSurfaceDestroyed(holder)
+            Log.d(TAG, "onSurfaceDestroyed")
             bitmap?.recycle()
             bitmap = null
         }
