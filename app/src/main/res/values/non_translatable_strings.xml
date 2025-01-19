@@ -7,4 +7,5 @@
     <string name="positional_summary">An elegant and colorful location information app for Android with Compass, Clock, Level, Sun, Moon, Trail Marker and many other features.</string>
     <string name="github">GitHub</string>
     <string name="play_store">Play Store</string>
+    <string name="wallpaper_manager">Wallpaper Manager API</string>
 </resources>

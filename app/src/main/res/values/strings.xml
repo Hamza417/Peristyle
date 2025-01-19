@@ -218,5 +218,6 @@
     <string name="change_when_screen_off">Change When Screen Off</string>
     <string name="change_when_screen_off_summary">Change wallpaper every time when the screen turns off.</string>
     <string name="live_wallpaper_waring">Works only with the live wallpaper method.</string>
-    <string name="set_live_wallpaper">Live Auto Wallpaper</string>
+    <string name="live_auto_wallpaper">Live Auto Wallpaper</string>
+    <string name="auto_wallpaper_api_summary">The app automatically detects which method to use. If Peristyle live wallpaper is set the auto wallpaper will use that else system wallpaper manager will be used.</string>
 </resources>

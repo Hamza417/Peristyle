@@ -20,6 +20,7 @@ import androidx.navigation.compose.rememberNavController
 import app.simple.peri.compose.screens.AutoWallpaper
 import app.simple.peri.compose.screens.Folders
 import app.simple.peri.compose.screens.Home
+import app.simple.peri.compose.screens.LiveAutoWallpaper
 import app.simple.peri.compose.screens.LiveWallpapers
 import app.simple.peri.compose.screens.Settings
 import app.simple.peri.compose.screens.Setup
@@ -60,6 +61,10 @@ fun PeristyleNavigation(context: Context) {
 
         composableWithTransitions(Routes.AUTO_WALLPAPER) {
             AutoWallpaper(navController)
+        }
+
+        composableWithTransitions(Routes.LIVE_AUTO_WALLPAPER) {
+            LiveAutoWallpaper(navController)
         }
 
         composableWithTransitions(Routes.TAGS) {

@@ -78,6 +78,7 @@ import androidx.navigation.NavController
 import app.simple.peri.R
 import app.simple.peri.compose.commons.CircularCountdownProgress
 import app.simple.peri.compose.commons.InitDisplayDimension
+import app.simple.peri.compose.dialogs.autowallpaper.AutoWallpaperPageSelectionDialog
 import app.simple.peri.compose.nav.Routes
 import app.simple.peri.models.DisplayDimension
 import app.simple.peri.models.Wallpaper
@@ -409,6 +410,26 @@ fun BottomMenu(modifier: Modifier = Modifier, navController: NavController? = nu
     val height = 60.dp
     val rowPadding = 16.dp
     val context = LocalContext.current
+    val autoWallpaperScreenSelection = remember { mutableStateOf(false) }
+
+    if (autoWallpaperScreenSelection.value) {
+        AutoWallpaperPageSelectionDialog(
+                onDismiss = {
+                    autoWallpaperScreenSelection.value = false
+                },
+                onOptionSelected = { option ->
+                    when (option) {
+                        context.getString(R.string.wallpaper_manager) -> {
+                            navController?.navigate(Routes.AUTO_WALLPAPER)
+                        }
+
+                        context.getString(R.string.live_auto_wallpaper) -> {
+                            navController?.navigate(Routes.LIVE_AUTO_WALLPAPER)
+                        }
+                    }
+                }
+        )
+    }
 
     Row(
             modifier = modifier
@@ -443,7 +464,7 @@ fun BottomMenu(modifier: Modifier = Modifier, navController: NavController? = nu
                 imageVector = Icons.Rounded.MotionPhotosOn,
                 title = R.string.live_wallpapers
         ) {
-            navController?.navigate(Routes.LIVE_WALLPAPERS)
+            autoWallpaperScreenSelection.value = true
         }
 
         Card(
