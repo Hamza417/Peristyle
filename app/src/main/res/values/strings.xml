@@ -220,4 +220,6 @@
     <string name="live_wallpaper_waring">Works only with the live wallpaper method.</string>
     <string name="live_auto_wallpaper">Live Auto Wallpaper</string>
     <string name="auto_wallpaper_api_summary">The app automatically detects which method to use. If Peristyle live wallpaper is set the auto wallpaper will use that else system wallpaper manager will be used.</string>
+    <string name="insufficient_wallpaper">Wallpapers bellow your device\'s screen resolution.</string>
+    <string name="excessive_wallpaper">Wallpapers larger than your device\'s screen resolution.</string>
 </resources>

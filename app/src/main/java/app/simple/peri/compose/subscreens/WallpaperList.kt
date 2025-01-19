@@ -3,12 +3,15 @@ package app.simple.peri.compose.subscreens
 import android.content.res.Configuration
 import android.util.Log
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -20,6 +23,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
@@ -33,6 +37,7 @@ import app.simple.peri.R
 import app.simple.peri.compose.commons.BottomHeader
 import app.simple.peri.compose.commons.COMMON_PADDING
 import app.simple.peri.compose.commons.SelectionMenu
+import app.simple.peri.compose.commons.TextWithIcon
 import app.simple.peri.compose.commons.TopHeader
 import app.simple.peri.compose.commons.WallpaperItem
 import app.simple.peri.compose.dialogs.common.PleaseWaitDialog
@@ -158,6 +163,25 @@ fun WallpaperList(navController: NavController? = null) {
                             modifier = Modifier.padding(COMMON_PADDING),
                             navController = navController
                     )
+                }
+            }
+            if (MainComposePreferences.getWallpaperDetails()) {
+                item(span = StaggeredGridItemSpan.FullLine) {
+                    Column {
+                        TextWithIcon(
+                                imageVector = Icons.Rounded.Warning,
+                                tint = Color.Red,
+                                text = stringResource(R.string.insufficient_wallpaper),
+                                modifier = Modifier.padding(start = COMMON_PADDING, end = COMMON_PADDING)
+                        )
+
+                        TextWithIcon(
+                                imageVector = Icons.Rounded.Warning,
+                                tint = Color.LightGray,
+                                text = stringResource(R.string.excessive_wallpaper),
+                                modifier = Modifier.padding(start = COMMON_PADDING, end = COMMON_PADDING, top = 8.dp, bottom = COMMON_PADDING)
+                        )
+                    }
                 }
             }
             items(wallpapers.size, key = { wallpapers[it].hashCode() }) { index ->
