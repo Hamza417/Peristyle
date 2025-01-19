@@ -89,7 +89,7 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
         ?.get<Wallpaper>(Routes.WALLPAPER_ARG)
         ?: associatedWallpaper
     val stateViewModel: StateViewModel = viewModel()
-    var showDialog by remember { mutableStateOf(false) }
+    var showScreenSelectionDialog by remember { mutableStateOf(false) }
     var drawable by remember { mutableStateOf<Drawable?>(null) }
     var blurValue by remember { stateViewModel::blurValue } // 0F..25F
     var brightnessValue by remember { stateViewModel::brightnessValue } // -255F..255F
@@ -337,10 +337,10 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
                 }
 
                 Column {
-                    val showLaunchedEffect = remember { mutableStateOf(false) }
+                    val showWallpaperLaunchedEffect = remember { mutableStateOf(false) }
 
-                    if (showLaunchedEffect.value) {
-                        LaunchedEffect(showLaunchedEffect) {
+                    if (showWallpaperLaunchedEffect.value) {
+                        LaunchedEffect(showWallpaperLaunchedEffect) {
                             coroutineScope.launch {
                                 val bitmap = graphicsLayer.toImageBitmap().asAndroidBitmap()
                                     .copy(Bitmap.Config.ARGB_8888, true)
@@ -349,8 +349,8 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
                                         colorMatrix = colorMatrix
                                 )
                                 drawable = BitmapDrawable(context.resources, bitmap)
-                                showDialog = true
-                                showLaunchedEffect.value = false
+                                showScreenSelectionDialog = true
+                                showWallpaperLaunchedEffect.value = false
                             }
                         }
                     }
@@ -418,7 +418,7 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
 
                     Button(
                             onClick = {
-                                showLaunchedEffect.value = true
+                                showWallpaperLaunchedEffect.value = true
                             },
                             shape = RoundedCornerShape(20.dp),
                             modifier = Modifier
@@ -441,9 +441,9 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
             }
         }
 
-        if (showDialog) {
+        if (showScreenSelectionDialog) {
             ScreenSelectionDialog(
-                    setShowDialog = { showDialog = it },
+                    setShowDialog = { showScreenSelectionDialog = it },
                     context = context,
                     drawable = drawable,
                     wallpaper = wallpaper!!

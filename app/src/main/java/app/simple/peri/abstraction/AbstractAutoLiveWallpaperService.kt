@@ -3,7 +3,6 @@ package app.simple.peri.abstraction
 import android.app.ActivityManager
 import android.content.Context
 import android.os.Parcelable
-import android.service.wallpaper.WallpaperService
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.services.LiveAutoWallpaperService
 import kotlinx.coroutines.CoroutineScope
@@ -63,27 +62,6 @@ abstract class AbstractAutoLiveWallpaperService : AbstractComposeAutoWallpaperSe
         val services = activityManager.getRunningServices(Int.MAX_VALUE)
         for (service in services) {
             if (LiveAutoWallpaperService::class.java.name == service.service.className) {
-                return true
-            }
-        }
-
-        return false
-    }
-
-    @Suppress("DEPRECATION")
-    private fun isWallpaperServiceRunning(context: Context, serviceClass: Class<out WallpaperService>): Boolean {
-        val activityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-
-        /**
-         * "As of Build. VERSION_CODES. O, this method is no longer available
-         * to third party applications. For backwards compatibility, it will still
-         * return the caller's own services."
-         *
-         * If we are querying my app's services, this method will work just fine.
-         */
-        val services = activityManager.getRunningServices(Int.MAX_VALUE)
-        for (service in services) {
-            if (serviceClass.name == service.service.className) {
                 return true
             }
         }
