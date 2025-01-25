@@ -31,7 +31,6 @@ class LiveAutoWallpaperService : WallpaperService() {
     private var broadcastReceiver: BroadcastReceiver? = null
 
     private var transitionProgress = 0f // Progress of the fade (0.0 to 1.0)
-    private var crossfadeDuration = 500L // Crossfade duration in milliseconds
     private var fadeStartTime: Long = -1L
     private var oldBitmap: Bitmap? = null
     private var isFading = false
@@ -100,6 +99,7 @@ class LiveAutoWallpaperService : WallpaperService() {
     override fun onDestroy() {
         super.onDestroy()
         unregisterReceiver(broadcastReceiver)
+        handler?.removeCallbacksAndMessages(null)
     }
 
     // --------------------------------------------------------------------------------------------- //
@@ -155,7 +155,7 @@ class LiveAutoWallpaperService : WallpaperService() {
                     if (isFading && oldBitmap != null && bitmap != null) {
                         // Calculate the fade progress
                         val elapsedTime = System.currentTimeMillis() - fadeStartTime
-                        transitionProgress = elapsedTime.toFloat() / crossfadeDuration
+                        transitionProgress = elapsedTime.toFloat() / CROSSFADE_DURATION
 
                         if (transitionProgress >= 1.0f) {
                             // End the fade and draw the new bitmap at full opacity
@@ -226,6 +226,8 @@ class LiveAutoWallpaperService : WallpaperService() {
         const val PREVIEW_WALLPAPER = "action.PREVIEW_WALLPAPER"
         const val EXTRA_WALLPAPER = "extra.WALLPAPER"
         const val MSG_SET_WALLPAPER = 1
+        private const val CROSSFADE_DURATION = 500L
+        private const val ASK_NEXT_WALLPAPER_DELAY = 250L
 
         fun getIntent(context: Context, action: String): Intent {
             return Intent(context, LiveAutoWallpaperService::class.java).apply {
