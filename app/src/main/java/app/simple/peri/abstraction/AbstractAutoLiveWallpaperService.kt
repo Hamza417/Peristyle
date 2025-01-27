@@ -18,15 +18,23 @@ abstract class AbstractAutoLiveWallpaperService : AbstractComposeAutoWallpaperSe
     }
 
     override fun setSameWallpaper(wallpaper: Wallpaper) {
-        val intent = LiveAutoWallpaperService.getIntent(applicationContext, LiveAutoWallpaperService.SAME_WALLPAPER)
-        intent.putExtra(LiveAutoWallpaperService.EXTRA_WALLPAPER, wallpaper as Parcelable)
-        applicationContext.startService(intent)
+        if (isWallpaperServiceRunning()) {
+            val intent = LiveAutoWallpaperService.getIntent(applicationContext, LiveAutoWallpaperService.SAME_WALLPAPER)
+            intent.putExtra(LiveAutoWallpaperService.EXTRA_WALLPAPER, wallpaper as Parcelable)
+            applicationContext.startService(intent)
+        } else {
+            super.setSameWallpaper(wallpaper)
+        }
     }
 
     override fun setHomeScreenWallpaper(wallpaper: Wallpaper) {
-        val intent = LiveAutoWallpaperService.getIntent(applicationContext, LiveAutoWallpaperService.HOME_SCREEN_WALLPAPER)
-        intent.putExtra(LiveAutoWallpaperService.EXTRA_WALLPAPER, wallpaper as Parcelable)
-        applicationContext.startService(intent)
+        if (isWallpaperServiceRunning()) {
+            val intent = LiveAutoWallpaperService.getIntent(applicationContext, LiveAutoWallpaperService.HOME_SCREEN_WALLPAPER)
+            intent.putExtra(LiveAutoWallpaperService.EXTRA_WALLPAPER, wallpaper as Parcelable)
+            applicationContext.startService(intent)
+        } else {
+            super.setHomeScreenWallpaper(wallpaper)
+        }
     }
 
     /**
@@ -34,9 +42,13 @@ abstract class AbstractAutoLiveWallpaperService : AbstractComposeAutoWallpaperSe
      * So, I am skipping this method.
      */
     override fun setLockScreenWallpaper(wallpaper: Wallpaper) {
-        //        val intent = LiveAutoWallpaperService.getIntent(applicationContext, LiveAutoWallpaperService.LOCK_SCREEN_WALLPAPER)
-        //        intent.putExtra(LiveAutoWallpaperService.EXTRA_WALLPAPER, wallpaper as Parcelable)
-        //        applicationContext.startService(intent)
+        if (isWallpaperServiceRunning()) {
+            //        val intent = LiveAutoWallpaperService.getIntent(applicationContext, LiveAutoWallpaperService.LOCK_SCREEN_WALLPAPER)
+            //        intent.putExtra(LiveAutoWallpaperService.EXTRA_WALLPAPER, wallpaper as Parcelable)
+            //        applicationContext.startService(intent)
+        } else {
+            super.setLockScreenWallpaper(wallpaper)
+        }
     }
 
     protected fun setPreviewWallpaper() {
