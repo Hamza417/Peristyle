@@ -85,7 +85,7 @@ class LiveAutoWallpaperService : WallpaperService() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when (intent?.action) {
-            SAME_WALLPAPER, PREVIEW_WALLPAPER -> {
+            NEXT_WALLPAPER, PREVIEW_WALLPAPER -> {
                 try {
                     val wallpaper: Wallpaper = intent.parcelable<Wallpaper>(EXTRA_WALLPAPER)!!
                     Log.i(TAG, "Setting wallpaper: ${wallpaper.filePath}")
@@ -232,14 +232,11 @@ class LiveAutoWallpaperService : WallpaperService() {
 
     companion object {
         private const val TAG = "LiveAutoWallpaperService"
-        const val SAME_WALLPAPER = "action.SAME_WALLPAPER"
-        const val HOME_SCREEN_WALLPAPER = "action.HOME_SCREEN_WALLPAPER"
-        const val LOCK_SCREEN_WALLPAPER = "action.LOCK_SCREEN_WALLPAPER"
+        const val NEXT_WALLPAPER = "action.SAME_WALLPAPER"
         const val PREVIEW_WALLPAPER = "action.PREVIEW_WALLPAPER"
         const val EXTRA_WALLPAPER = "extra.WALLPAPER"
         const val MSG_SET_WALLPAPER = 1
         private const val CROSSFADE_DURATION = 500L
-        private const val ASK_NEXT_WALLPAPER_DELAY = 250L
 
         fun getIntent(context: Context, action: String): Intent {
             return Intent(context, LiveAutoWallpaperService::class.java).apply {

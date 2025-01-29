@@ -124,7 +124,7 @@ abstract class AbstractComposeAutoWallpaperService : AbstractLegacyAutoWallpaper
         }
     }
 
-    private fun shouldSetSameWallpaper(): Boolean {
+    fun shouldSetSameWallpaper(): Boolean {
         if (!MainPreferences.isSettingForHomeScreen() || !MainPreferences.isSettingForLockScreen()) {
             return false
         }
@@ -191,7 +191,7 @@ abstract class AbstractComposeAutoWallpaperService : AbstractLegacyAutoWallpaper
         return wallpaper
     }
 
-    private fun getLockScreenWallpaper(): Wallpaper? {
+    fun getLockScreenWallpaper(): Wallpaper? {
         val wallpaperDatabase = WallpaperDatabase.getInstance(applicationContext)
         val wallpaperDao = wallpaperDatabase?.wallpaperDao()
         val position = MainComposePreferences.getLastLockWallpaperPosition().plus(1)
@@ -337,7 +337,7 @@ abstract class AbstractComposeAutoWallpaperService : AbstractLegacyAutoWallpaper
         notificationManager.notify(notificationId, notification)
     }
 
-    private fun showErrorNotification(message: String) {
+    fun showErrorNotification(message: String) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (PermissionUtils.checkNotificationPermission(applicationContext).invert()) {
                 Log.i(TAG, "Notification permission not granted, skipping notification")
