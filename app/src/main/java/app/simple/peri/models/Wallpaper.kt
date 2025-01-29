@@ -61,9 +61,9 @@ class Wallpaper() : Comparable<Wallpaper>, Serializable, Parcelable {
 
     constructor(parcel: Parcel) : this() {
         name = parcel.readString()
-        uri = parcel.readString().toString()
-        filePath = parcel.readString().toString()
-        id = parcel.readString().toString()
+        uri = parcel.readString() ?: ""
+        filePath = parcel.readString() ?: ""
+        id = parcel.readString() ?: ""
         prominentColor = parcel.readInt()
         width = parcel.readValue(Int::class.java.classLoader) as? Int
         height = parcel.readValue(Int::class.java.classLoader) as? Int

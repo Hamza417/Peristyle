@@ -86,10 +86,14 @@ class LiveAutoWallpaperService : WallpaperService() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when (intent?.action) {
             SAME_WALLPAPER, PREVIEW_WALLPAPER -> {
-                val wallpaper: Wallpaper = intent.parcelable<Wallpaper>(EXTRA_WALLPAPER)!!
-                Log.i(TAG, "Setting wallpaper: ${wallpaper.filePath}")
-                val msg = handler?.obtainMessage(MSG_SET_WALLPAPER, wallpaper.filePath)!!
-                handler?.sendMessage(msg)
+                try {
+                    val wallpaper: Wallpaper = intent.parcelable<Wallpaper>(EXTRA_WALLPAPER)!!
+                    Log.i(TAG, "Setting wallpaper: ${wallpaper.filePath}")
+                    val msg = handler?.obtainMessage(MSG_SET_WALLPAPER, wallpaper.filePath)!!
+                    handler?.sendMessage(msg)
+                } catch (e: NullPointerException) {
+                    e.printStackTrace()
+                }
             }
         }
 
@@ -113,13 +117,21 @@ class LiveAutoWallpaperService : WallpaperService() {
                 var localBitmap: Bitmap? = null
 
                 withContext(Dispatchers.Default) {
-                    getBitmapFromFile(filePath, canvas.width, canvas.height, recycle = false) { bmp ->
-                        localBitmap = bmp
+                    try {
+                        getBitmapFromFile(filePath, canvas.width, canvas.height, recycle = false) { bmp ->
+                            localBitmap = bmp
+                        }
+                    } catch (e: NullPointerException) {
+                        if (localBitmap == null) {
+                            localBitmap = bitmap
+                        }
                     }
                 }
 
-                surfaceHolder.unlockCanvasAndPost(canvas)
-                setBitmapWithCrossfade(localBitmap!!)
+                if (localBitmap != null) {
+                    surfaceHolder.unlockCanvasAndPost(canvas)
+                    setBitmapWithCrossfade(localBitmap!!)
+                }
             }
         }
 

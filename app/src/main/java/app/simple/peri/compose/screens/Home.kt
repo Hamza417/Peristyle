@@ -454,7 +454,7 @@ fun BottomMenu(modifier: Modifier = Modifier, navController: NavController? = nu
                 imageVector = Icons.Rounded.Schedule,
                 title = R.string.auto_wallpaper
         ) {
-            navController?.navigate(Routes.AUTO_WALLPAPER)
+            autoWallpaperScreenSelection.value = true
         }
 
         BottomMenuItem(
@@ -464,7 +464,7 @@ fun BottomMenu(modifier: Modifier = Modifier, navController: NavController? = nu
                 imageVector = Icons.Rounded.MotionPhotosOn,
                 title = R.string.live_wallpapers
         ) {
-            autoWallpaperScreenSelection.value = true
+            navController?.navigate(Routes.LIVE_WALLPAPERS)
         }
 
         Card(
