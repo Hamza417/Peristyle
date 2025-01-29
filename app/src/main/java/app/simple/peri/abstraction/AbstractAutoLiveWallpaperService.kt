@@ -3,23 +3,55 @@ package app.simple.peri.abstraction
 import android.app.ActivityManager
 import android.content.Context
 import android.os.Parcelable
+import android.util.Log
 import app.simple.peri.models.Wallpaper
+import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.services.LiveAutoWallpaperService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 abstract class AbstractAutoLiveWallpaperService : AbstractComposeAutoWallpaperService() {
 
     protected fun postLiveWallpaper(onComplete: () -> Unit) {
-        setComposeWallpaper {
-            onComplete()
+        CoroutineScope(Dispatchers.IO).launch {
+            runCatching {
+                when {
+                    MainPreferences.isSettingForHomeScreen() -> {
+                        Log.d(TAG, "Setting wallpaper for home screen")
+                        getHomeScreenWallpaper()?.let { wallpaper ->
+                            setHomeScreenWallpaper(wallpaper)
+                        }
+                    }
+                    else -> {
+                        Log.d(TAG, "Setting wallpaper for both home and lock screen")
+                        getRandomWallpaperFromDatabase()?.let { wallpaper ->
+                            setSameWallpaper(wallpaper)
+                        }
+                    }
+                }
+
+                withContext(Dispatchers.Main) {
+                    onComplete()
+                    stopSelf()
+                }
+            }.getOrElse {
+                it.printStackTrace()
+                Log.e(TAG, "Error setting wallpaper: $it")
+
+                withContext(Dispatchers.Main) {
+                    showErrorNotification(it.stackTraceToString())
+                    onComplete()
+                    stopSelf()
+                }
+            }
         }
     }
 
     override fun setSameWallpaper(wallpaper: Wallpaper) {
         if (isWallpaperServiceRunning()) {
-            val intent = LiveAutoWallpaperService.getIntent(applicationContext, LiveAutoWallpaperService.SAME_WALLPAPER)
+            val intent = LiveAutoWallpaperService.getIntent(applicationContext, LiveAutoWallpaperService.NEXT_WALLPAPER)
             intent.putExtra(LiveAutoWallpaperService.EXTRA_WALLPAPER, wallpaper as Parcelable)
             applicationContext.startService(intent)
         } else {
@@ -29,7 +61,7 @@ abstract class AbstractAutoLiveWallpaperService : AbstractComposeAutoWallpaperSe
 
     override fun setHomeScreenWallpaper(wallpaper: Wallpaper) {
         if (isWallpaperServiceRunning()) {
-            val intent = LiveAutoWallpaperService.getIntent(applicationContext, LiveAutoWallpaperService.HOME_SCREEN_WALLPAPER)
+            val intent = LiveAutoWallpaperService.getIntent(applicationContext, LiveAutoWallpaperService.NEXT_WALLPAPER)
             intent.putExtra(LiveAutoWallpaperService.EXTRA_WALLPAPER, wallpaper as Parcelable)
             applicationContext.startService(intent)
         } else {
