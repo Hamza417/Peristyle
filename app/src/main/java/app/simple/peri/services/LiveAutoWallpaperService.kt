@@ -87,7 +87,7 @@ class LiveAutoWallpaperService : WallpaperService() {
         when (intent?.action) {
             NEXT_WALLPAPER, PREVIEW_WALLPAPER -> {
                 try {
-                    val wallpaper: Wallpaper = IntentCompat.getParcelableExtra(intent, EXTRA_WALLPAPER, Wallpaper::class.java)!!
+                    val wallpaper = IntentCompat.getParcelableExtra(intent, EXTRA_WALLPAPER, Wallpaper::class.java)!!
                     Log.i(TAG, "Setting wallpaper: ${wallpaper.filePath}")
                     val msg = handler?.obtainMessage(MSG_SET_WALLPAPER, wallpaper.filePath)!!
                     handler?.sendMessage(msg)
@@ -129,8 +129,10 @@ class LiveAutoWallpaperService : WallpaperService() {
                 }
 
                 if (localBitmap != null) {
-                    surfaceHolder.unlockCanvasAndPost(canvas)
-                    setBitmapWithCrossfade(localBitmap!!)
+                    if (canvas != null) {
+                        surfaceHolder.unlockCanvasAndPost(canvas)
+                        setBitmapWithCrossfade(localBitmap!!)
+                    }
                 }
             }
         }
@@ -205,7 +207,9 @@ class LiveAutoWallpaperService : WallpaperService() {
                     }
                 }
 
-                it.unlockCanvasAndPost(canvas)
+                if (canvas != null) {
+                    it.unlockCanvasAndPost(canvas)
+                }
             }
         }
 
