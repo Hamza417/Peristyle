@@ -12,12 +12,12 @@ import android.os.Looper
 import android.service.wallpaper.WallpaperService
 import android.util.Log
 import android.view.SurfaceHolder
+import androidx.core.content.IntentCompat
 import app.simple.peri.abstraction.AutoWallpaperUtils.getBitmapFromFile
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.preferences.SharedPreferences
 import app.simple.peri.utils.BitmapUtils.applyEffects
-import app.simple.peri.utils.ParcelUtils.parcelable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -87,7 +87,7 @@ class LiveAutoWallpaperService : WallpaperService() {
         when (intent?.action) {
             NEXT_WALLPAPER, PREVIEW_WALLPAPER -> {
                 try {
-                    val wallpaper: Wallpaper = intent.parcelable<Wallpaper>(EXTRA_WALLPAPER)!!
+                    val wallpaper: Wallpaper = IntentCompat.getParcelableExtra(intent, EXTRA_WALLPAPER, Wallpaper::class.java)!!
                     Log.i(TAG, "Setting wallpaper: ${wallpaper.filePath}")
                     val msg = handler?.obtainMessage(MSG_SET_WALLPAPER, wallpaper.filePath)!!
                     handler?.sendMessage(msg)
