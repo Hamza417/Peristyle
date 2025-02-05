@@ -48,7 +48,7 @@
     <string name="contrast">Kontrast</string>
     <string name="saturation">Nasycenie Kolorów</string>
     <string name="data">Dane</string>
-    <string name="enabled_wallpaper_details">Włącz Pokazywanie Nazw Tapet</string>
+    <string name="enabled_wallpaper_details">Szczegóły Tapety</string>
     <string name="show_wallpaper_details_on_the_main_screen">Pokaż informacje o tapecie na ekranie głównym.</string>
     <string name="high_definition">Podgląd HD</string>
     <string name="error">Błąd</string>
@@ -87,7 +87,7 @@
     <string name="size_info">Obliczam rozmiar</string>
     <string name="remember_scroll_position_summary">Zapamiętaj ostatnią pozycję przewijania listy.</string>
     <string name="remember_scroll_position">Zapamiętaj Pozycję Przewijania Listy</string>
-    <string name="margin_between_wallpapers_summary">Dodaj małą przestrzeń między tapetami na głównym ekranie.</string>
+    <string name="margin_between_wallpapers_summary">Dodaj przerwę pomiędzy tapetami na liście.</string>
     <string name="margin_between_wallpapers">Margines Pomiędzy Tapetami</string>
     <string name="main_screen_background_summary">Tryb koloru tła ekranu głównego.</string>
     <string name="main_screen_background">Tło Ekranu Głównego</string>
@@ -213,4 +213,14 @@
     <string name="done">Zrobione</string>
     <string name="revoke">Cofnij</string>
     <string name="move">Przenieś</string>
+    <string name="select_all_from_last">Zaznacz Wszystko z Ostatnio Wybranych</string>
+    <string name="change_when_screen_on">Zmień Po Włączeniu Ekranu</string>
+    <string name="change_when_screen_on_summary">Zmień tapetę za każdym razem, gdy ekran się rozjaśnia.</string>
+    <string name="change_when_screen_off">Zmień Po Zgaśnięciu Ekranu</string>
+    <string name="change_when_screen_off_summary">Zmień tapetę za każdym razem, gdy ekran się wyłącza.</string>
+    <string name="live_wallpaper_waring">Działa tylko z metodą żywej tapety.</string>
+    <string name="live_auto_wallpaper">Automatyczna Tapeta na Żywo</string>
+    <string name="auto_wallpaper_api_summary">Aplikacja automatycznie wykrywa metodę użycia. Jeśli ustawiona jest żywa tapeta, automatyczna tapeta użyje menedżera tapety systemowej.</string>
+    <string name="insufficient_wallpaper">Tapety o niższej rozdzielczości niż ekran.</string>
+    <string name="excessive_wallpaper">Tapety o wyższej rozdzielczości niż twój ekran.</string>
 </resources>
