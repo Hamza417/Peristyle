@@ -257,5 +257,9 @@ class LiveAutoWallpaperService : WallpaperService() {
                 this.action = action
             }
         }
+
+        fun getIntent(context: Context): Intent {
+            return Intent(context, LiveAutoWallpaperService::class.java)
+        }
     }
 }
