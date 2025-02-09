@@ -3,5 +3,13 @@ files:
     translation: /app/src/main/res/values-%android_code%/%original_file_name%
     translate_content: 0
     translate_attributes: 0
-  - source: /fastlane/metadata/android/en-US/*.txt
-    translation: /fastlane/metadata/android/%two_letters_code%/%original_file_name%
+
+  - source: /fastlane/metadata/android/en-US/full_description.txt
+    translation: /fastlane/metadata/android/%two_letters_code%/full_description.txt
+    translate_content: 1
+    translate_attributes: 0
+
+  - source: /fastlane/metadata/android/en-US/short_description.txt
+    translation: /fastlane/metadata/android/%two_letters_code%/short_description.txt
+    translate_content: 1
+    translate_attributes: 0
