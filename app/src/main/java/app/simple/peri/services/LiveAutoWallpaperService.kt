@@ -43,8 +43,12 @@ class LiveAutoWallpaperService : WallpaperService() {
         handler = Handler(Looper.getMainLooper()) { msg ->
             when (msg.what) {
                 MSG_SET_WALLPAPER -> {
-                    val filePath = msg.obj as String
-                    engine!!.setWallpaper(filePath)
+                    try {
+                        val filePath = msg.obj as String
+                        engine!!.setWallpaper(filePath)
+                    } catch (e: NullPointerException) {
+                        e.printStackTrace()
+                    }
                 }
             }
             true
