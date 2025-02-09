@@ -102,7 +102,6 @@ class PathChooserActivity : ComponentActivity() {
                 Surface(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(top = topPadding, bottom = bottomPadding)
                 ) {
                     if (showNoSdCardWarning) {
                         ShowWarningDialog(
@@ -117,7 +116,7 @@ class PathChooserActivity : ComponentActivity() {
                     Column(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .padding(start = 16.dp, end = 16.dp)
+                                .padding(start = 16.dp, end = 16.dp, top = topPadding)
                     ) {
                         Row(
                                 verticalAlignment = Alignment.CenterVertically,
@@ -196,7 +195,9 @@ class PathChooserActivity : ComponentActivity() {
                                     .padding(top = COMMON_PADDING, bottom = COMMON_PADDING)
                         )
                         Row(
-                                modifier = Modifier.fillMaxWidth(),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(bottom = bottomPadding),
                                 horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Button(

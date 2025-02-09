@@ -140,7 +140,7 @@ fun Setup(context: Context, navController: NavController? = null) {
                     }
                 },
                 modifier = Modifier
-                    .padding(COMMON_PADDING + COMMON_PADDING)
+                    .padding(COMMON_PADDING + COMMON_PADDING, end = COMMON_PADDING + COMMON_PADDING, bottom = bottomPadding)
                     .fillMaxWidth(),
         ) {
             Text(text = context.getString(R.string.continue_button),
