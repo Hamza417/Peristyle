@@ -78,7 +78,7 @@ class AutoWallpaperService : AbstractAutoLiveWallpaperService() {
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.d(TAG, "Service destroyed")
+        Log.d(TAG, "auto wallpaper service destroyed")
     }
 
     private fun init() {

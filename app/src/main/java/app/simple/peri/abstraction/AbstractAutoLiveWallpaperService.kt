@@ -54,6 +54,7 @@ abstract class AbstractAutoLiveWallpaperService : AbstractComposeAutoWallpaperSe
             val intent = LiveAutoWallpaperService.getIntent(applicationContext, LiveAutoWallpaperService.NEXT_WALLPAPER)
             intent.putExtra(LiveAutoWallpaperService.EXTRA_WALLPAPER, wallpaper as Parcelable)
             applicationContext.startService(intent)
+            Log.i(TAG, "wallpaper data sent, live wallpaper should handle this from here")
         } else {
             super.setSameWallpaper(wallpaper)
         }
@@ -64,6 +65,7 @@ abstract class AbstractAutoLiveWallpaperService : AbstractComposeAutoWallpaperSe
             val intent = LiveAutoWallpaperService.getIntent(applicationContext, LiveAutoWallpaperService.NEXT_WALLPAPER)
             intent.putExtra(LiveAutoWallpaperService.EXTRA_WALLPAPER, wallpaper as Parcelable)
             applicationContext.startService(intent)
+            Log.i(TAG, "wallpaper data sent, live wallpaper should handle this from here")
         } else {
             super.setHomeScreenWallpaper(wallpaper)
         }

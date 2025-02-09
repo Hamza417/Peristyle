@@ -5,12 +5,13 @@ import android.graphics.BitmapFactory
 import android.graphics.Rect
 import android.os.Build
 import android.util.Log
-import app.simple.peri.abstraction.AbstractComposeAutoWallpaperService.Companion.TAG
 import app.simple.peri.utils.BitmapUtils
 import app.simple.peri.utils.FileUtils.toFile
 import java.io.ByteArrayInputStream
 
 object AutoWallpaperUtils {
+
+    private const val TAG = "AutoWallpaperUtils"
 
     fun getBitmapFromFile(path: String, expectedWidth: Int, expectedHeight: Int, crop: Boolean = true, recycle: Boolean = true, onBitmap: (Bitmap) -> Unit) {
         path.toFile().inputStream().use { stream ->
