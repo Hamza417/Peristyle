@@ -67,6 +67,7 @@ import app.simple.peri.constants.Misc
 import app.simple.peri.factories.TagsViewModelFactory
 import app.simple.peri.models.Effect
 import app.simple.peri.models.Wallpaper
+import app.simple.peri.services.LiveAutoWallpaperService
 import app.simple.peri.utils.BitmapUtils.applyEffects
 import app.simple.peri.utils.BitmapUtils.multiplyMatrices
 import app.simple.peri.utils.ConditionUtils.isNotNull
@@ -351,6 +352,12 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
                                 drawable = BitmapDrawable(context.resources, bitmap)
                                 showScreenSelectionDialog = true
                                 showWallpaperLaunchedEffect.value = false
+
+                                try {
+                                    context.stopService(LiveAutoWallpaperService.getIntent(context))
+                                } catch (e: IllegalStateException) {
+                                    Log.e("Wallpaper", "Service not running")
+                                }
                             }
                         }
                     }

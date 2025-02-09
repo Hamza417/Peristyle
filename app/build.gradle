@@ -19,7 +19,7 @@ android {
         minSdk 24
         targetSdk 35
         versionCode 701
-        versionName "v7.0.1"
+        versionName "v7.0.1-rc5"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 

@@ -12,12 +12,13 @@ import android.os.Looper
 import android.service.wallpaper.WallpaperService
 import android.util.Log
 import android.view.SurfaceHolder
+import androidx.core.content.IntentCompat
 import app.simple.peri.abstraction.AutoWallpaperUtils.getBitmapFromFile
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.preferences.SharedPreferences
 import app.simple.peri.utils.BitmapUtils.applyEffects
-import app.simple.peri.utils.ParcelUtils.parcelable
+import app.simple.peri.utils.ConditionUtils.invert
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -42,8 +43,12 @@ class LiveAutoWallpaperService : WallpaperService() {
         handler = Handler(Looper.getMainLooper()) { msg ->
             when (msg.what) {
                 MSG_SET_WALLPAPER -> {
-                    val filePath = msg.obj as String
-                    engine!!.setWallpaper(filePath)
+                    try {
+                        val filePath = msg.obj as String
+                        engine!!.setWallpaper(filePath)
+                    } catch (e: NullPointerException) {
+                        e.printStackTrace()
+                    }
                 }
             }
             true
@@ -87,7 +92,7 @@ class LiveAutoWallpaperService : WallpaperService() {
         when (intent?.action) {
             NEXT_WALLPAPER, PREVIEW_WALLPAPER -> {
                 try {
-                    val wallpaper: Wallpaper = intent.parcelable<Wallpaper>(EXTRA_WALLPAPER)!!
+                    val wallpaper = IntentCompat.getParcelableExtra(intent, EXTRA_WALLPAPER, Wallpaper::class.java)!!
                     Log.i(TAG, "Setting wallpaper: ${wallpaper.filePath}")
                     val msg = handler?.obtainMessage(MSG_SET_WALLPAPER, wallpaper.filePath)!!
                     handler?.sendMessage(msg)
@@ -113,24 +118,30 @@ class LiveAutoWallpaperService : WallpaperService() {
 
         fun setWallpaper(filePath: String) {
             CoroutineScope(Dispatchers.Main).launch {
-                val canvas = surfaceHolder.lockCanvas()
-                var localBitmap: Bitmap? = null
+                if (surfaceHolder.surface.isValid) {
+                    val canvas = surfaceHolder.lockCanvas()
+                    var localBitmap: Bitmap? = null
 
-                withContext(Dispatchers.Default) {
-                    try {
-                        getBitmapFromFile(filePath, canvas.width, canvas.height, recycle = false) { bmp ->
-                            localBitmap = bmp
-                        }
-                    } catch (e: NullPointerException) {
-                        if (localBitmap == null) {
-                            localBitmap = bitmap
+                    withContext(Dispatchers.Default) {
+                        try {
+                            getBitmapFromFile(filePath, canvas.width, canvas.height, recycle = false) { bmp ->
+                                localBitmap = bmp
+                            }
+                        } catch (e: NullPointerException) {
+                            if (localBitmap == null) {
+                                localBitmap = bitmap
+                            }
                         }
                     }
-                }
 
-                if (localBitmap != null) {
-                    surfaceHolder.unlockCanvasAndPost(canvas)
-                    setBitmapWithCrossfade(localBitmap!!)
+                    if (localBitmap != null) {
+                        if (canvas != null) {
+                            surfaceHolder.unlockCanvasAndPost(canvas)
+                            setBitmapWithCrossfade(localBitmap!!)
+                        }
+                    }
+                } else {
+                    Log.i(TAG, "Surface is not valid, skipping wallpaper change")
                 }
             }
         }
@@ -205,16 +216,23 @@ class LiveAutoWallpaperService : WallpaperService() {
                     }
                 }
 
-                it.unlockCanvasAndPost(canvas)
+                if (canvas != null) {
+                    it.unlockCanvasAndPost(canvas)
+                }
             }
         }
 
         override fun onSurfaceDestroyed(holder: SurfaceHolder?) {
-            super.onSurfaceDestroyed(holder)
-            bitmap?.recycle()
-            bitmap = null
-            oldBitmap?.recycle()
-            oldBitmap = null
+            if (isPreview.invert()) {
+                super.onSurfaceDestroyed(holder)
+                Log.i(TAG, "wallpaper surface destroyed")
+                bitmap?.recycle()
+                bitmap = null
+                oldBitmap?.recycle()
+                oldBitmap = null
+            } else {
+                Log.i(TAG, "Preview mode, skipping destruction")
+            }
         }
     }
 
@@ -242,6 +260,10 @@ class LiveAutoWallpaperService : WallpaperService() {
             return Intent(context, LiveAutoWallpaperService::class.java).apply {
                 this.action = action
             }
+        }
+
+        fun getIntent(context: Context): Intent {
+            return Intent(context, LiveAutoWallpaperService::class.java)
         }
     }
 }
