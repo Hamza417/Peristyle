@@ -8,10 +8,10 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.IntentCompat
 import app.simple.peri.activities.main.EffectsActivity
 import app.simple.peri.models.Effect
 import app.simple.peri.models.Wallpaper
-import app.simple.peri.utils.ParcelUtils.parcelable
 
 @Composable
 fun LaunchEffectActivity(wallpaper: Wallpaper, onEffect: (Effect) -> Unit, onCanceled: () -> Unit) {
@@ -20,7 +20,7 @@ fun LaunchEffectActivity(wallpaper: Wallpaper, onEffect: (Effect) -> Unit, onCan
             contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
-            val effect = result.data?.parcelable<Effect>("effect")
+            val effect = IntentCompat.getParcelableExtra(result.data!!, "effect", Effect::class.java)
             onEffect(effect!!)
         } else {
             onCanceled()
