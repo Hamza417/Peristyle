@@ -40,6 +40,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
+import androidx.core.content.IntentCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import app.simple.peri.R
 import app.simple.peri.compose.commons.COMMON_PADDING
@@ -50,7 +51,6 @@ import app.simple.peri.compose.theme.PeristyleTheme
 import app.simple.peri.extensions.BaseComponentActivity
 import app.simple.peri.models.Effect
 import app.simple.peri.models.Wallpaper
-import app.simple.peri.utils.ParcelUtils.parcelable
 import app.simple.peri.viewmodels.EffectsViewModel
 import com.bumptech.glide.Glide
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
@@ -60,7 +60,7 @@ import app.simple.peri.glide.effect.Effect as GlideEffect
 class EffectsActivity : BaseComponentActivity() {
 
     private val wallpaper: Wallpaper by lazy {
-        intent.parcelable("wallpaper")!!
+        IntentCompat.getParcelableExtra(intent, "wallpaper", Wallpaper::class.java)!!
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
