@@ -5,11 +5,11 @@ files:
     translate_attributes: 0
 
   - source: /fastlane/metadata/android/en-US/full_description.txt
-    translation: /fastlane/metadata/android/%two_letters_code%/full_description.txt
+    translation: /fastlane/metadata/android/%locale%/full_description.txt
     translate_content: 1
     translate_attributes: 0
 
   - source: /fastlane/metadata/android/en-US/short_description.txt
-    translation: /fastlane/metadata/android/%two_letters_code%/short_description.txt
+    translation: /fastlane/metadata/android/%locale%/short_description.txt
     translate_content: 1
     translate_attributes: 0
