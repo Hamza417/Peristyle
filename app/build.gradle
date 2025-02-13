@@ -38,7 +38,7 @@ android {
         release {
             minifyEnabled true
             shrinkResources true
-            vcsInfo.include false
+            vcsInfo.include true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
             // Clean gradle cache before building release
