@@ -1,1 +1,0 @@
-Prosty menedżer tapet z funkcją tapet animowanych oraz z obsługą kilku folderów naraz.

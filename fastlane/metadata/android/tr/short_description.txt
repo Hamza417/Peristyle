@@ -1,1 +1,0 @@
-Otomatik Duvar Kağıdı ve Çoklu Klasör desteği ile basit duvar kağıdı yöneticisi uygulaması.
