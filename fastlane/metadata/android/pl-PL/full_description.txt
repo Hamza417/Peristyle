@@ -1,0 +1,17 @@
+Peristyle zostało stworzone, by być bardzo prostą oraz łatwą w obsłudze aplikacją do porządkowania, oraz wybierania tapet na system Android. Rozwiązuje problem związany ze zbyt dużą ilością funkcji czy też programów zza dużym rozmiarem, czy także minimalnej kompatybilności z tapetami znajdującymi się na urządzeniu. Chciałbyś/łabyś aplikację, która pozwala na wybieranie oraz przeglądanie tapet prosto z pamięci urządzenia, i na zarządzanie nimi? Więc Peristyle jest strzałem w dziesiątkę. :)
+
+Funkcje:
+
+Prosta architektura do przeglądania oraz używania systemowego menadżera tapet do ustawienia ich.
+- Obsługa wielu folderów jednocześnie.
+- Dodawanie tagów do każdej tapety.
+- Skanowanie folderów typu .nomedia. Przydatne, jeśli chcesz, by twoje tapety nie były w galerii zdjęć na urządzeniu.
+- Dodawanie efektu rozmycia i filtrów kolorów do wybranej tapety tuż przed ustawieniem jej.
+- Proste i przyjazne dla oka zoptymalizowane animacje.
+- Kompresja i zmniejszanie rozmiaru pliku tapety.
+- Brak reklam, śledzenia, analiz oraz dostępu do internetu czy niepotrzebnych uprawnień.
+- Automatyczna zmiana tapety z obsługą wybranych folderów oraz tagów.
+- Wbudowany menedżer tapet animowanych.
+- Ciemny motyw.
+- Interfejs w stylu Glass, oparty na efektach rozmycia oraz cieni.
+- Tryb Material You.

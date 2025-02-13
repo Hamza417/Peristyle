@@ -1,0 +1,17 @@
+Peristyle, Android için son derece basit ve sofistike bir duvar kağıdı yöneticisi ve tarayıcı uygulaması olarak oluşturuldu. Çok fazla özelliğe ve şişirilmiş uygulamalara sahip olma sorununu ve yerel olarak depolanan duvar kağıtları için çok az destek sunulmasını çözer. Çok fazla özelliğe ve şişirilmiş uygulamalara sahip olma sorununu ve yerel olarak depolanan duvar kağıtları için çok az destek sunulmasını çözer. Ya sadece kendi yerel olarak depolanan duvar kağıtlarınızı taramanıza ve seçmenize olanak tanıyan, bunları yönetmenize ve duvar kağıdı olarak ayarlamanıza izin veren bir uygulama isteseydiniz? O zaman Peristyle tam size göre :)
+
+Özellikler:
+
+- Basit mimari, duvar kağıtlarını tarayın ve sistem duvar kağıdı yöneticisini kullanarak bunları duvar kağıdı olarak ayarlayın.
+- Birden fazla klasör desteği.
+- Herhangi bir duvar kağıdına etiket atama yeteneği.
+- **.nomedia** dizinlerini tarayabilir, duvar kağıtlarınızı galeriden uzak tutmak istiyorsanız kullanışlıdır.
+- Uygulamadan önce herhangi bir duvar kağıdına bulanıklık ve renk filtreleri dinamik olarak uygulayın.
+- Uygun optimizasyonlarla basit ama hoş animasyonlar.
+- Görselleri anında sıkıştırma veya boyutlarını küçültme.
+- Reklam yok, izleme yok, analiz yok, internet izinleri yok, gereksiz izinler yok.
+- Özel klasörler ve her ekran için etiketlerle otomatik duvar kağıdı değiştirme desteği.
+- Dahili canlı duvar kağıdı seçici.
+- Karanlık mod desteği.
+- Gerçek zamanlı bulanıklık efektleri ve ışık kırılmalarına dayalı cam benzeri kullanıcı arayüzü.
+- Material You temaları ve renkleri.
