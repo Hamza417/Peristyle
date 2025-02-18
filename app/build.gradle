@@ -96,7 +96,7 @@ android {
 dependencies {
 
     implementation 'androidx.lifecycle:lifecycle-process:2.8.7'
-    def composeBom = platform('androidx.compose:compose-bom:2025.01.00')
+    def composeBom = platform('androidx.compose:compose-bom:2025.02.00')
     implementation composeBom
     androidTestImplementation composeBom
 
@@ -105,11 +105,11 @@ dependencies {
     implementation 'androidx.activity:activity-compose:1.10.0'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7'
     implementation 'androidx.compose.runtime:runtime-livedata'
-    implementation 'androidx.compose.foundation:foundation:1.7.6'
-    implementation 'androidx.compose.ui:ui-tooling-preview-android:1.7.6'
-    implementation 'androidx.navigation:navigation-compose:2.8.5'
-    implementation "androidx.compose.material:material-icons-extended:1.7.6"
-    debugImplementation 'androidx.compose.ui:ui-tooling:1.7.6'
+    implementation 'androidx.compose.foundation:foundation:1.7.8'
+    implementation 'androidx.compose.ui:ui-tooling-preview-android:1.7.8'
+    implementation 'androidx.navigation:navigation-compose:2.8.7'
+    implementation "androidx.compose.material:material-icons-extended:1.7.8"
+    debugImplementation 'androidx.compose.ui:ui-tooling:1.7.8'
 
     implementation 'androidx.window:window:1.3.0'
     implementation 'androidx.core:core-ktx:1.15.0'
@@ -119,7 +119,7 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.8.7'
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.8.7'
-    implementation 'androidx.fragment:fragment-ktx:1.8.5'
+    implementation 'androidx.fragment:fragment-ktx:1.8.6'
     implementation 'androidx.activity:activity-ktx:1.10.0'
     implementation 'androidx.recyclerview:recyclerview:1.4.0'
     implementation 'androidx.preference:preference-ktx:1.2.1'
