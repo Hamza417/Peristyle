@@ -30,11 +30,14 @@ abstract class AbstractAutoWallpaperService : Service() {
         }
     }
 
-    protected suspend fun getRandomWallpaperFromDatabase(): Wallpaper? {
+    protected suspend fun getRandomWallpaperFromDatabase(): Wallpaper {
         return withContext(Dispatchers.IO) {
-            val dao = WallpaperDatabase.getInstance(applicationContext)?.wallpaperDao()
-            dao?.sanitizeEntries()
-            dao?.getRandomWallpaper()
+            val dao = WallpaperDatabase.getInstance(applicationContext)?.wallpaperDao()!!
+            val dupDao = WallpaperDatabase.getLastRandomWallpapersDatabaseInstance(applicationContext)?.wallpaperDao()!!
+            dao.sanitizeEntries()
+            val wallpaper = dao.getWallpapers().filterNot { it in dupDao.getWallpapers() }.random()
+            wallpaper.let { dupDao.insert(it) }
+            wallpaper
         }
     }
 }

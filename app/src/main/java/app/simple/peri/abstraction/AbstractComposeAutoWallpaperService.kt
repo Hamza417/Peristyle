@@ -149,7 +149,7 @@ abstract class AbstractComposeAutoWallpaperService : AbstractLegacyAutoWallpaper
         return false
     }
 
-    protected fun getHomeScreenWallpaper(): Wallpaper? {
+    protected suspend fun getHomeScreenWallpaper(): Wallpaper? {
         val wallpaperDatabase = WallpaperDatabase.getInstance(applicationContext)
         val wallpaperDao = wallpaperDatabase?.wallpaperDao()
         val position = MainComposePreferences.getLastHomeWallpaperPosition().plus(1)
@@ -184,14 +184,14 @@ abstract class AbstractComposeAutoWallpaperService : AbstractLegacyAutoWallpaper
             }
 
             else -> {
-                wallpaper = wallpaperDao?.getRandomWallpaper()
+                wallpaper = getRandomWallpaperFromDatabase()
             }
         }
 
         return wallpaper
     }
 
-    fun getLockScreenWallpaper(): Wallpaper? {
+    private suspend fun getLockScreenWallpaper(): Wallpaper? {
         val wallpaperDatabase = WallpaperDatabase.getInstance(applicationContext)
         val wallpaperDao = wallpaperDatabase?.wallpaperDao()
         val position = MainComposePreferences.getLastLockWallpaperPosition().plus(1)
@@ -228,7 +228,7 @@ abstract class AbstractComposeAutoWallpaperService : AbstractLegacyAutoWallpaper
             }
 
             else -> {
-                wallpaper = wallpaperDao?.getRandomWallpaper()
+                wallpaper = getRandomWallpaperFromDatabase()
             }
         }
 
@@ -246,7 +246,34 @@ abstract class AbstractComposeAutoWallpaperService : AbstractLegacyAutoWallpaper
                 wallpapers?.get(0)
             }
         } else {
-            wallpapers?.random()
+            val wallpaper = wallpapers?.filterNot { it in (getLastUsedWallpapers(isHomeScreen) ?: emptyList()) }
+                ?.random()
+
+            wallpaper?.let {
+                insertWallpaperToLastUsedDatabase(it, isHomeScreen)
+            }
+
+            wallpaper
+        }
+    }
+
+    private fun getLastUsedWallpapers(homeScreen: Boolean = true): List<Wallpaper>? {
+        if (homeScreen) {
+            return WallpaperDatabase.getLastRandomHomeWallpapersDatabaseInstance(applicationContext)
+                ?.wallpaperDao()?.getWallpapers()
+        } else {
+            return WallpaperDatabase.getLastRandomLockWallpapersDatabaseInstance(applicationContext)
+                ?.wallpaperDao()?.getWallpapers()
+        }
+    }
+
+    private fun insertWallpaperToLastUsedDatabase(wallpaper: Wallpaper, homeScreen: Boolean) {
+        if (homeScreen) {
+            WallpaperDatabase.getLastRandomHomeWallpapersDatabaseInstance(applicationContext)
+                ?.wallpaperDao()?.insert(wallpaper)
+        } else {
+            WallpaperDatabase.getLastRandomLockWallpapersDatabaseInstance(applicationContext)
+                ?.wallpaperDao()?.insert(wallpaper)
         }
     }
 
