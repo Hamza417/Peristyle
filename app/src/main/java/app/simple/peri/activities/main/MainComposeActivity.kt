@@ -17,7 +17,7 @@ import app.simple.peri.BuildConfig
 import app.simple.peri.compose.nav.PeristyleNavigation
 import app.simple.peri.compose.theme.PeristyleTheme
 import app.simple.peri.crash.CrashReport
-import app.simple.peri.database.instances.WallpaperDatabase
+import app.simple.peri.database.instances.LastLockWallpapersDatabase
 import app.simple.peri.extensions.BaseComponentActivity
 import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.preferences.MainPreferences
@@ -79,13 +79,13 @@ class MainComposeActivity : BaseComponentActivity(), OnSharedPreferenceChangeLis
             MainComposePreferences.LOCK_TAG_ID,
             MainComposePreferences.LOCK_FOLDER_ID -> {
                 lifecycleScope.launch(Dispatchers.IO) {
-                    WallpaperDatabase.wipeLastRandomLockWallpapersDatabase(applicationContext)
+                    LastLockWallpapersDatabase.wipeDatabase(applicationContext)
                 }
             }
             MainComposePreferences.HOME_TAG_ID,
             MainComposePreferences.HOME_FOLDER_ID -> {
                 lifecycleScope.launch(Dispatchers.IO) {
-                    WallpaperDatabase.wipeLastRandomHomeWallpapersDatabase(applicationContext)
+                    LastLockWallpapersDatabase.wipeDatabase(applicationContext)
                 }
             }
         }

@@ -14,6 +14,8 @@ import androidx.core.app.NotificationCompat
 import androidx.core.content.FileProvider
 import app.simple.peri.R
 import app.simple.peri.abstraction.AutoWallpaperUtils.getBitmapFromFile
+import app.simple.peri.database.instances.LastHomeWallpapersDatabase
+import app.simple.peri.database.instances.LastLockWallpapersDatabase
 import app.simple.peri.database.instances.TagsDatabase
 import app.simple.peri.database.instances.WallpaperDatabase
 import app.simple.peri.models.Wallpaper
@@ -25,6 +27,7 @@ import app.simple.peri.utils.BitmapUtils.applyEffects
 import app.simple.peri.utils.ConditionUtils.invert
 import app.simple.peri.utils.ConditionUtils.isNotNull
 import app.simple.peri.utils.FileUtils.toFile
+import app.simple.peri.utils.ListUtils.deepEquals
 import app.simple.peri.utils.PermissionUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -263,21 +266,21 @@ abstract class AbstractComposeAutoWallpaperService : AbstractLegacyAutoWallpaper
 
     private fun getLastUsedWallpapers(homeScreen: Boolean = true, wallpapers: List<Wallpaper>): List<Wallpaper>? {
         if (homeScreen) {
-            val usedWallpapers = WallpaperDatabase.getLastRandomHomeWallpapersDatabaseInstance(applicationContext)
+            val usedWallpapers = LastHomeWallpapersDatabase.getInstance(applicationContext)
                 ?.wallpaperDao()?.getWallpapers()
 
-            if (usedWallpapers == wallpapers) {
-                WallpaperDatabase.wipeLastRandomHomeWallpapersDatabase(applicationContext)
+            if (wallpapers.deepEquals(usedWallpapers ?: emptyList())) {
+                LastHomeWallpapersDatabase.wipeDatabase(applicationContext)
                 return emptyList()
             }
 
             return usedWallpapers
         } else {
-            val usedWallpapers = WallpaperDatabase.getLastRandomLockWallpapersDatabaseInstance(applicationContext)
+            val usedWallpapers = LastLockWallpapersDatabase.getInstance(applicationContext)
                 ?.wallpaperDao()?.getWallpapers()
 
-            if (usedWallpapers == wallpapers) {
-                WallpaperDatabase.wipeLastRandomLockWallpapersDatabase(applicationContext)
+            if (wallpapers.deepEquals(usedWallpapers ?: emptyList())) {
+                LastLockWallpapersDatabase.wipeDatabase(applicationContext)
                 return emptyList()
             }
 
@@ -287,10 +290,10 @@ abstract class AbstractComposeAutoWallpaperService : AbstractLegacyAutoWallpaper
 
     private fun insertWallpaperToLastUsedDatabase(wallpaper: Wallpaper, homeScreen: Boolean) {
         if (homeScreen) {
-            WallpaperDatabase.getLastRandomHomeWallpapersDatabaseInstance(applicationContext)
+            LastHomeWallpapersDatabase.getInstance(applicationContext)
                 ?.wallpaperDao()?.insert(wallpaper)
         } else {
-            WallpaperDatabase.getLastRandomLockWallpapersDatabaseInstance(applicationContext)
+            LastLockWallpapersDatabase.getInstance(applicationContext)
                 ?.wallpaperDao()?.insert(wallpaper)
         }
     }
