@@ -41,8 +41,14 @@ abstract class AbstractAutoWallpaperService : Service() {
                 dupDao.nukeTable()
             }
 
-            val wallpaper = dao.getWallpapers().filterNot { it in dupDao.getWallpapers() }.random()
+            val wallpaper = try {
+                dao.getWallpapers().filterNot { it in dupDao.getWallpapers() }.random()
+            } catch (e: NoSuchElementException) {
+                dao.getWallpapers().random()
+            }
+
             wallpaper.let { dupDao.insert(it) }
+
             wallpaper
         }
     }

@@ -246,8 +246,12 @@ abstract class AbstractComposeAutoWallpaperService : AbstractLegacyAutoWallpaper
                 wallpapers?.get(0)
             }
         } else {
-            val wallpaper = wallpapers?.filterNot { it in (getLastUsedWallpapers(isHomeScreen, wallpapers) ?: emptyList()) }
-                ?.random()
+            val wallpaper = try {
+                wallpapers?.filterNot { it in (getLastUsedWallpapers(isHomeScreen, wallpapers) ?: emptyList()) }
+                    ?.random()
+            } catch (e: NoSuchElementException) {
+                wallpapers?.random()
+            }
 
             wallpaper?.let {
                 insertWallpaperToLastUsedDatabase(it, isHomeScreen)
