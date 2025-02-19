@@ -35,6 +35,12 @@ abstract class AbstractAutoWallpaperService : Service() {
             val dao = WallpaperDatabase.getInstance(applicationContext)?.wallpaperDao()!!
             val dupDao = WallpaperDatabase.getLastRandomWallpapersDatabaseInstance(applicationContext)?.wallpaperDao()!!
             dao.sanitizeEntries()
+            dupDao.sanitizeEntries()
+
+            if (dao.getWallpapers() == dupDao.getWallpapers()) {
+                dupDao.nukeTable()
+            }
+
             val wallpaper = dao.getWallpapers().filterNot { it in dupDao.getWallpapers() }.random()
             wallpaper.let { dupDao.insert(it) }
             wallpaper

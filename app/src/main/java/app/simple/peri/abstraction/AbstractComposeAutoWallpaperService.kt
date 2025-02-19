@@ -246,7 +246,7 @@ abstract class AbstractComposeAutoWallpaperService : AbstractLegacyAutoWallpaper
                 wallpapers?.get(0)
             }
         } else {
-            val wallpaper = wallpapers?.filterNot { it in (getLastUsedWallpapers(isHomeScreen) ?: emptyList()) }
+            val wallpaper = wallpapers?.filterNot { it in (getLastUsedWallpapers(isHomeScreen, wallpapers) ?: emptyList()) }
                 ?.random()
 
             wallpaper?.let {
@@ -257,13 +257,27 @@ abstract class AbstractComposeAutoWallpaperService : AbstractLegacyAutoWallpaper
         }
     }
 
-    private fun getLastUsedWallpapers(homeScreen: Boolean = true): List<Wallpaper>? {
+    private fun getLastUsedWallpapers(homeScreen: Boolean = true, wallpapers: List<Wallpaper>): List<Wallpaper>? {
         if (homeScreen) {
-            return WallpaperDatabase.getLastRandomHomeWallpapersDatabaseInstance(applicationContext)
+            val usedWallpapers = WallpaperDatabase.getLastRandomHomeWallpapersDatabaseInstance(applicationContext)
                 ?.wallpaperDao()?.getWallpapers()
+
+            if (usedWallpapers == wallpapers) {
+                WallpaperDatabase.wipeLastRandomHomeWallpapersDatabase(applicationContext)
+                return emptyList()
+            }
+
+            return usedWallpapers
         } else {
-            return WallpaperDatabase.getLastRandomLockWallpapersDatabaseInstance(applicationContext)
+            val usedWallpapers = WallpaperDatabase.getLastRandomLockWallpapersDatabaseInstance(applicationContext)
                 ?.wallpaperDao()?.getWallpapers()
+
+            if (usedWallpapers == wallpapers) {
+                WallpaperDatabase.wipeLastRandomLockWallpapersDatabase(applicationContext)
+                return emptyList()
+            }
+
+            return usedWallpapers
         }
     }
 
