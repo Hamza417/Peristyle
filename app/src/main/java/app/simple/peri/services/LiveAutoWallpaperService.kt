@@ -138,6 +138,7 @@ class LiveAutoWallpaperService : WallpaperService() {
                         if (canvas != null) {
                             surfaceHolder.unlockCanvasAndPost(canvas)
                             setBitmapWithCrossfade(localBitmap!!)
+                            MainComposePreferences.setLastLiveWallpaperPath(filePath)
                         }
                     }
                 } else {
