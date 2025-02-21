@@ -64,9 +64,9 @@ fun PeristyleTheme(
         SideEffect {
             val window = (view.context as Activity).window
             makeAppFullScreen(window)
+
             WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme.not()
-            // Hide the action bar
-            (view.context as Activity).actionBar?.hide()
+            WindowCompat.getInsetsController(window, view).isAppearanceLightNavigationBars = darkTheme.not()
         }
     }
 

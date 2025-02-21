@@ -14,16 +14,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerDefaults
@@ -49,9 +46,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -61,6 +61,8 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -68,6 +70,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.lerp
+import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
@@ -107,10 +110,24 @@ const val LIVE_AUTO_WALLPAPER_POSITION = 3
 @Composable
 fun Home(navController: NavController? = null) {
     InitDisplayDimension()
+
     val applicationContext = LocalContext.current.applicationContext
     val isLiveWallpaperRunning = remember {
         mutableStateOf(ServiceUtils.isWallpaperServiceRunning(applicationContext))
     }
+
+    var statusBarHeight by remember { mutableIntStateOf(0) }
+    var navigationBarHeight by remember { mutableIntStateOf(0) }
+
+    statusBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
+            LocalView.current.rootWindowInsets).getInsets(WindowInsetsCompat.Type.statusBars()).top
+    navigationBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
+            LocalView.current.rootWindowInsets).getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
+
+    val statusBarHeightPx = statusBarHeight
+    val statusBarHeightDp = with(LocalDensity.current) { statusBarHeightPx.toDp() }
+    val navigationBarHeightPx = navigationBarHeight
+    val navigationBarHeightDp = with(LocalDensity.current) { navigationBarHeightPx.toDp() }
 
     val pages = listOf(
             Page(RANDOM_WALLPAPER_POSITION, true),
@@ -165,7 +182,10 @@ fun Home(navController: NavController? = null) {
     Column(
             Modifier
                 .fillMaxSize()
-                .windowInsetsPadding(WindowInsets.safeDrawing)
+                .padding(
+                        top = statusBarHeightDp,
+                        bottom = navigationBarHeightDp,
+                )
     ) {
         Header(
                 title = stringResource(id = R.string.app_name),

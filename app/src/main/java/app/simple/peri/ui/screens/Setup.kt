@@ -32,6 +32,7 @@ import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -127,6 +128,11 @@ fun Setup(context: Context, navController: NavController? = null) {
             }
         }
 
+        HorizontalDivider(
+                modifier = Modifier
+                    .fillMaxWidth()
+        )
+
         Button(
                 onClick = {
                     if (isSetupComplete(context)) {
@@ -140,13 +146,20 @@ fun Setup(context: Context, navController: NavController? = null) {
                     }
                 },
                 modifier = Modifier
-                    .padding(COMMON_PADDING + COMMON_PADDING, end = COMMON_PADDING + COMMON_PADDING, bottom = bottomPadding)
+                    .padding(
+                            top = COMMON_PADDING,
+                            start = COMMON_PADDING,
+                            end = COMMON_PADDING,
+                            bottom = COMMON_PADDING + navigationBarHeightDp
+                    )
                     .fillMaxWidth(),
         ) {
             Text(text = context.getString(R.string.continue_button),
                  fontWeight = FontWeight.Bold,
                  fontSize = 18.sp,
-                 modifier = Modifier.padding(12.dp))
+                 modifier = Modifier
+                     .padding(12.dp)
+            )
         }
     }
 }
