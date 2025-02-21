@@ -156,8 +156,6 @@
     <string name="select_folder_summary">Wählen Sie Ihr primäres Hintergrundbild-Verzeichnis.</string>
     <string name="continue_button">Weiter</string>
     <string name="setup_incomplete">Bitte schließen Sie zuerst die Einrichtung ab.</string>
-    <string name="go_back_to_legacy_interface">Zurück zur Legacy-Oberfläche</string>
-    <string name="go_back_to_legacy_interface_summary">Wechseln Sie zurück zur alten Oberfläche von Peristyle. \n\nHinweis: Die alte Oberfläche wird nicht mehr unterstützt.</string>
     <string name="interface_settings">Benutzeroberfläche</string>
     <string name="warning_indicator_title">Warnhinweis ausblenden</string>
     <string name="warning_indicator_summary">Warnhinweis für zu große Hintergrundbilder aus der Liste ausblenden.</string>

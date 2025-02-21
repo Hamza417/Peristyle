@@ -156,8 +156,6 @@
     <string name="select_folder_summary">Chọn thư mục hình nền chính của bạn.</string>
     <string name="continue_button">Tiếp tục</string>
     <string name="setup_incomplete">Vui lòng hoàn tất thiết lập trước.</string>
-    <string name="go_back_to_legacy_interface">Quay lại giao diện cũ</string>
-    <string name="go_back_to_legacy_interface_summary">Quay lại giao diện cũ của Peristyle. \n\nLưu ý: Giao diện cũ không còn được hỗ trợ.</string>
     <string name="interface_settings">Giao diện</string>
     <string name="warning_indicator_title">Ẩn dấu cảnh báo</string>
     <string name="warning_indicator_summary">Ẩn dấu cảnh báo về số lượng hình nền quá nhiều khỏi danh sách hình nền.</string>

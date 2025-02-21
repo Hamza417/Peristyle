@@ -156,8 +156,6 @@
     <string name="select_folder_summary">Ana duvar kağıdı dizininizi seçin.</string>
     <string name="continue_button">Devam Et</string>
     <string name="setup_incomplete">Lütfen önce kurulumu tamamlayın.</string>
-    <string name="go_back_to_legacy_interface">Eski Arayüze Dön</string>
-    <string name="go_back_to_legacy_interface_summary">Peristyle’in eski arayüzüne geri dön.\n\nNot: Eski arayüz artık desteklenmiyor.</string>
     <string name="interface_settings">Arayüz Ayarları</string>
     <string name="warning_indicator_title">Uyarı Göstergesini Gizle</string>
     <string name="warning_indicator_summary">Duvar kağıdı listesindeki fazla büyük duvar kağıtları için uyarı göstergesini gizle.</string>

@@ -156,8 +156,6 @@
     <string name="select_folder_summary">Wybierz główny katalog z tapetami.</string>
     <string name="continue_button">Kontynuuj</string>
     <string name="setup_incomplete">Dokończ konfigurację.</string>
-    <string name="go_back_to_legacy_interface">Ustaw starszy wygląd interfejsu</string>
-    <string name="go_back_to_legacy_interface_summary">Przełącz z powrotem na stary interfejs Peristyle. \n\nUwaga: stary interfejs nie jest już obsługiwany.</string>
     <string name="interface_settings">Interfejs</string>
     <string name="warning_indicator_title">Ukryj Wskaźnik Ostrzeżenia</string>
     <string name="warning_indicator_summary">Ukryj wskaźnik ostrzegawczy dla nadmiernej ilości tapet z listy tapet.</string>

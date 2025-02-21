@@ -2,7 +2,6 @@ package app.simple.peri.activities.association
 
 import android.graphics.BitmapFactory
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
@@ -10,9 +9,10 @@ import androidx.compose.ui.Modifier
 import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
-import app.simple.peri.compose.screens.Wallpaper
-import app.simple.peri.compose.theme.PeristyleTheme
+import app.simple.peri.extensions.BaseComponentActivity
 import app.simple.peri.preferences.SharedPreferences
+import app.simple.peri.ui.screens.Wallpaper
+import app.simple.peri.ui.theme.PeristyleTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -21,7 +21,7 @@ import java.io.FileOutputStream
 import java.io.InputStream
 import app.simple.peri.models.Wallpaper as ModelWallpaper
 
-class WallpaperAssociationActivity : ComponentActivity() {
+class WallpaperAssociationActivity : BaseComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

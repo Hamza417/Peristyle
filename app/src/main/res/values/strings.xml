@@ -155,8 +155,6 @@
     <string name="select_folder_summary">Select your primary wallpaper directory.</string>
     <string name="continue_button">Continue</string>
     <string name="setup_incomplete">Please complete the setup first.</string>
-    <string name="go_back_to_legacy_interface">Go Back to Legacy Interface</string>
-    <string name="go_back_to_legacy_interface_summary">Switch back to the old interface of Peristyle. \n\nNote: The old interface isn\'t supported anymore.</string>
     <string name="interface_settings">Interface</string>
     <string name="warning_indicator_title">Hide Warning Indicator</string>
     <string name="warning_indicator_summary">Hide warning indicator for excessive wallpapers from the wallpaper list.</string>
@@ -226,4 +224,6 @@
     <string name="using_wallpaper_manager_mode">Wallpapers are currently being set through Wallpaper Manager mode.</string>
     <string name="show_lock_screen_wallpaper">Show Lock Screen Wallpaper</string>
     <string name="show_lock_screen_wallpaper_summary">Show or hide lock screen wallpaper from the main screen.</string>
+    <string name="every_3_days">Every 3 Days</string>
+    <string name="every_7_days">Every 7 Days</string>
 </resources>

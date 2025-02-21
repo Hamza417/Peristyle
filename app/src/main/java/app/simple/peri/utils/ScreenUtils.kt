@@ -103,19 +103,6 @@ object ScreenUtils {
         }
     }
 
-    /**
-     * Classify screen into three main classes: large, normal, small
-     */
-    fun getScreenClass(context: Context): String {
-        return when (context.resources.configuration.screenLayout and Configuration.SCREENLAYOUT_SIZE_MASK) {
-            Configuration.SCREENLAYOUT_SIZE_LARGE -> context.resources.getString(R.string.large)
-            Configuration.SCREENLAYOUT_SIZE_NORMAL -> context.resources.getString(R.string.normal)
-            Configuration.SCREENLAYOUT_SIZE_SMALL -> context.resources.getString(R.string.small)
-            Configuration.SCREENLAYOUT_SIZE_XLARGE -> context.resources.getString(R.string.extra_large)
-            else -> context.resources.getString(R.string.unknown)
-        }
-    }
-
     fun getRefreshRate(context: Context): Float {
         @Suppress("deprecation")
         return context.getSystemService(WindowManager::class.java).defaultDisplay.refreshRate

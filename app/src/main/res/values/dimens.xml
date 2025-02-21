@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <dimen name="button_size">50dp</dimen>
-    <dimen name="margin_8dp">8dp</dimen>
-    <dimen name="fab_circle_radius">36dp</dimen>
-</resources>

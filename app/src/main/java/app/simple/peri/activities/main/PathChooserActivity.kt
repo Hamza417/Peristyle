@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
-import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.clickable
@@ -41,15 +40,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowInsetsCompat
 import app.simple.peri.R
-import app.simple.peri.compose.commons.COMMON_PADDING
-import app.simple.peri.compose.dialogs.common.ShowWarningDialog
-import app.simple.peri.compose.theme.PeristyleTheme
+import app.simple.peri.extensions.BaseComponentActivity
 import app.simple.peri.preferences.SharedPreferences
+import app.simple.peri.ui.commons.COMMON_PADDING
+import app.simple.peri.ui.dialogs.common.ShowWarningDialog
+import app.simple.peri.ui.theme.PeristyleTheme
 import app.simple.peri.utils.FileUtils.toSize
 import app.simple.peri.utils.SDCard
 import java.io.File
 
-class PathChooserActivity : ComponentActivity() {
+class PathChooserActivity : BaseComponentActivity() {
     private var backPressedCallback: OnBackPressedCallback? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {

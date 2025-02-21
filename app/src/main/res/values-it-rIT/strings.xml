@@ -156,8 +156,6 @@
     <string name="select_folder_summary">Seleziona la tua cartella di sfondi.</string>
     <string name="continue_button">Continua</string>
     <string name="setup_incomplete">Per favore completa il setup prima.</string>
-    <string name="go_back_to_legacy_interface">Usa la vecchia interfaccia</string>
-    <string name="go_back_to_legacy_interface_summary">Utilizza la vecchia interfaccia di Peristyle. \n\nNota: La vecchia interfaccia non è più supportata.</string>
     <string name="interface_settings">Interfaccia</string>
     <string name="warning_indicator_title">Nascondi indicatore di attenzione</string>
     <string name="warning_indicator_summary">Nascondi l\'indicatore di attenzione per troppi sfondi nella lista sfondi.</string>
