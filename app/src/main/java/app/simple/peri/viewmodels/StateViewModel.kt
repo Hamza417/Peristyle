@@ -11,11 +11,14 @@ import app.simple.peri.database.instances.EffectsDatabase
 import app.simple.peri.models.Effect
 import app.simple.peri.models.Folder
 import app.simple.peri.models.Tag
+import app.simple.peri.models.Wallpaper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class StateViewModel(application: Application) : AndroidViewModel(application) {
+
+    var wallpaper by mutableStateOf<Wallpaper?>(null)
     var tag by mutableStateOf<Tag?>(null)
     var folder by mutableStateOf<Folder?>(null)
     var blurValue by mutableFloatStateOf(0f) // 0F..25F
