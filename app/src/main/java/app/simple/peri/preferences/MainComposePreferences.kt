@@ -61,6 +61,7 @@ object MainComposePreferences {
     private const val WALLPAPER_DETAILS = "wallpaper_details"
     private const val CHANGE_WHEN_ON = "change_when_on"
     private const val CHANGE_WHEN_OFF = "change_when_off"
+    const val LAST_LIVE_WALLPAPER_PATH = "last_live_wallpaper_path"
 
     // ----------------------------------------------------------------------------------------------------- //
 
@@ -725,5 +726,15 @@ object MainComposePreferences {
 
     fun setChangeWhenOff(value: Boolean) {
         getSharedPreferences().edit().putBoolean(CHANGE_WHEN_OFF, value).apply()
+    }
+
+    // ----------------------------------------------------------------------------------------------------- //
+
+    fun getLastLiveWallpaperPath(): String? {
+        return getSharedPreferences().getString(LAST_LIVE_WALLPAPER_PATH, null)
+    }
+
+    fun setLastLiveWallpaperPath(value: String?) {
+        getSharedPreferences().edit().putString(LAST_LIVE_WALLPAPER_PATH, value).apply()
     }
 }
