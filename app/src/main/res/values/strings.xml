@@ -224,4 +224,6 @@
     <string name="using_wallpaper_manager_mode">Wallpapers are currently being set through Wallpaper Manager mode.</string>
     <string name="show_lock_screen_wallpaper">Show Lock Screen Wallpaper</string>
     <string name="show_lock_screen_wallpaper_summary">Show or hide lock screen wallpaper from the main screen.</string>
+    <string name="every_3_days">Every 3 Days</string>
+    <string name="every_7_days">Every 7 Days</string>
 </resources>
