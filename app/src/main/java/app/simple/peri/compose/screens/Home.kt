@@ -128,13 +128,7 @@ fun Home(navController: NavController? = null) {
     val systemWallpaper = homeScreenViewModel.getSystemWallpaper().observeAsState().value
     val lockWallpaper = homeScreenViewModel.getLockWallpaper().observeAsState().value
     val randomWallpaper = homeScreenViewModel.getRandomWallpaper().observeAsState().value
-    val lastLiveWallpaper: Wallpaper? = if (isLiveWallpaperRunning.value) {
-        homeScreenViewModel.getLastLiveWallpaper().observeAsState().value?.apply {
-            name = stringResource(R.string.live_auto_wallpaper)
-        }
-    } else {
-        null
-    }
+    val lastLiveWallpaper = homeScreenViewModel.getLastLiveWallpaper().observeAsState().value
 
     DisposableEffect(ProcessLifecycleOwner.get()) {
         val observer = object : DefaultLifecycleObserver {
@@ -193,6 +187,7 @@ fun Home(navController: NavController? = null) {
                     title = when (page) {
                         HOME_SCREEN_POSITION -> stringResource(id = R.string.home_screen)
                         LOCK_SCREEN_POSITION -> stringResource(id = R.string.lock_screen)
+                        LIVE_AUTO_WALLPAPER_POSITION -> stringResource(id = R.string.live_auto_wallpaper)
                         else -> wallpaper?.name ?: ""
                     },
                     onClick = {
