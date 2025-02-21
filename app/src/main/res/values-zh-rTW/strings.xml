@@ -155,8 +155,6 @@
     <string name="select_folder_summary">選擇您的主要桌布目錄。</string>
     <string name="continue_button">繼續</string>
     <string name="setup_incomplete">請先完成設定。</string>
-    <string name="go_back_to_legacy_interface">回到舊介面</string>
-    <string name="go_back_to_legacy_interface_summary">切換回 Peristyle 的舊介面。\n\n注意：舊介面已不再支援。</string>
     <string name="interface_settings">介面</string>
     <string name="warning_indicator_title">隱藏警告指示燈</string>
     <string name="warning_indicator_summary">隱藏牆紙清單中過量牆紙的警告指示器。</string>

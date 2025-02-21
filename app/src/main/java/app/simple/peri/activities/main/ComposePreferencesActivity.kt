@@ -5,10 +5,10 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import app.simple.peri.compose.screens.Settings
-import app.simple.peri.compose.theme.PeristyleTheme
 import app.simple.peri.extensions.BaseComponentActivity
 import app.simple.peri.preferences.SharedPreferences
+import app.simple.peri.ui.screens.Settings
+import app.simple.peri.ui.theme.PeristyleTheme
 
 class ComposePreferencesActivity : BaseComponentActivity() {
 

@@ -33,7 +33,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:requestLegacyExternalStorage="true"
         android:supportsRtl="true"
-        android:theme="@style/Base.Theme.Peri"
         tools:targetApi="tiramisu">
 
         <meta-data
@@ -46,18 +45,6 @@
 
         <activity
             android:name=".activities.main.MainComposeActivity"
-            android:exported="true"
-            tools:ignore="LockedOrientationActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-
-        <activity
-            android:name=".activities.main.LegacyActivity"
-            android:enabled="false"
             android:exported="true"
             tools:ignore="LockedOrientationActivity">
             <intent-filter>
@@ -81,11 +68,6 @@
                 <data android:mimeType="image/*" />
             </intent-filter>
         </activity>
-
-        <activity
-            android:name=".activities.main.SettingsActivity"
-            android:exported="true"
-            tools:ignore="LockedOrientationActivity" />
 
         <activity
             android:name=".activities.main.PathChooserActivity"

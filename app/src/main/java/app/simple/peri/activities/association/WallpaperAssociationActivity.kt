@@ -10,9 +10,9 @@ import androidx.compose.ui.Modifier
 import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
-import app.simple.peri.compose.screens.Wallpaper
-import app.simple.peri.compose.theme.PeristyleTheme
 import app.simple.peri.preferences.SharedPreferences
+import app.simple.peri.ui.screens.Wallpaper
+import app.simple.peri.ui.theme.PeristyleTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

@@ -156,8 +156,6 @@
     <string name="select_folder_summary">Seleccione su directorio principal de fondos de pantalla.</string>
     <string name="continue_button">Continuar</string>
     <string name="setup_incomplete">Por favor, complete la configuración primero.</string>
-    <string name="go_back_to_legacy_interface">Volver a la interfaz antigua</string>
-    <string name="go_back_to_legacy_interface_summary">Volver a la antigua interfaz del Peristyle. \n\nNota: La antigua interfaz ya no tiene soporte.</string>
     <string name="interface_settings">Interfaz</string>
     <string name="warning_indicator_title">Ocultar indicador de advertencia</string>
     <string name="warning_indicator_summary">Ocultar el indicador de advertencia para fondos de pantalla excesivos de la lista de fondos de pantalla.</string>

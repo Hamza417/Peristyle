@@ -3,9 +3,9 @@ package app.simple.peri.glide.tags
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
-import app.simple.peri.compose.screens.displayDimension
 import app.simple.peri.database.instances.WallpaperDatabase
 import app.simple.peri.models.Wallpaper
+import app.simple.peri.ui.screens.displayDimension
 import com.bumptech.glide.Glide
 import com.bumptech.glide.Priority
 import com.bumptech.glide.load.DataSource
