@@ -224,4 +224,6 @@
     <string name="excessive_wallpaper">Wallpapers larger than your device\'s screen resolution.</string>
     <string name="using_live_wallpaper_mode">Wallpapers are currently being set through Live Wallpaper mode.</string>
     <string name="using_wallpaper_manager_mode">Wallpapers are currently being set through Wallpaper Manager mode.</string>
+    <string name="show_lock_screen_wallpaper">Show Lock Screen Wallpaper</string>
+    <string name="show_lock_screen_wallpaper_summary">Show or hide lock screen wallpaper from the main screen.</string>
 </resources>

@@ -287,6 +287,14 @@ fun Settings(navController: NavController? = null) {
             SecondaryHeader(title = context.getString(R.string.accessibility))
 
             SwitchPreference(
+                    title = context.getString(R.string.show_lock_screen_wallpaper),
+                    description = context.getString(R.string.show_lock_screen_wallpaper_summary),
+                    checked = MainComposePreferences.getShowLockScreenWallpaper()
+            ) {
+                MainComposePreferences.setShowLockScreenWallpaper(it)
+            }
+
+            SwitchPreference(
                     title = context.getString(R.string.go_back_to_legacy_interface),
                     description = context.getString(R.string.go_back_to_legacy_interface_summary),
                     checked = context.packageManager.getComponentEnabledSetting(ComponentName(context, LegacyActivity::class.java))
