@@ -169,8 +169,6 @@ fun WallpaperItem(
                     && MainComposePreferences.getMarginBetween()
         }
 
-        Log.d("WallpaperItem", "ImageShadow: $imageShadow")
-
         if (imageShadow) {
             GlideImage(
                     model = wallpaper.filePath.toFile(),
