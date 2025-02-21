@@ -79,13 +79,15 @@ class MainComposeActivity : BaseComponentActivity(), OnSharedPreferenceChangeLis
             MainComposePreferences.LOCK_TAG_ID,
             MainComposePreferences.LOCK_FOLDER_ID -> {
                 lifecycleScope.launch(Dispatchers.IO) {
-                    LastLockWallpapersDatabase.wipeDatabase(applicationContext)
+                    LastLockWallpapersDatabase.getInstance(applicationContext)
+                        ?.wallpaperDao()?.nukeTable()
                 }
             }
             MainComposePreferences.HOME_TAG_ID,
             MainComposePreferences.HOME_FOLDER_ID -> {
                 lifecycleScope.launch(Dispatchers.IO) {
-                    LastLockWallpapersDatabase.wipeDatabase(applicationContext)
+                    LastLockWallpapersDatabase.getInstance(applicationContext)
+                        ?.wallpaperDao()?.nukeTable()
                 }
             }
         }
