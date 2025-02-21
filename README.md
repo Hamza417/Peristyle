@@ -85,24 +85,6 @@ Peristyle supports localization, If you want to
 translate Peristyle in your language/s, you can do
 so [here on Crowdin](https://crowdin.com/project/peristyle).
 
-### Translation Contributors
-
-| Language              | Translators                                                                                                     |
-|-----------------------|-----------------------------------------------------------------------------------------------------------------|
-| Arabic                | [@eyadmahm0ud](https://crowdin.com/profile/eyadmahm0ud)                                                         |
-| Chinese Simplified    | [@shanzhaxiaok](https://crowdin.com/profile/shanzhaxiaok) [@xjchenyang](https://crowdin.com/profile/xjchenyang) |
-| Chinese Traditional   | [@aaypkzixad](https://crowdin.com/profile/aaypkzixad), [@hugoalh](https://crowdin.com/profile/hugoalh)          |
-| French                | [@ppp987](https://crowdin.com/profile/ppp987)                                                                   |
-| German                | [@ottozumkeller](https://crowdin.com/profile/ottozumkeller)                                                     |
-| Italian               | [@gabrifrz](https://crowdin.com/profile/gabrifrz)                                                               |
-| Polish                | [@Tama10](https://crowdin.com/profile/tama10), [@chefski](https://crowdin.com/profile/chefski)                  |
-| Portuguese, Brazilian | [@teogabriel](https://crowdin.com/profile/teogabriel)                                                           |
-| Spanish               | [@esneiderfjaimes](https://crowdin.com/profile/esneiderfjaimes)                                                 |
-| Turkish               | [@mikropsoft](https://crowdin.com/profile/mikropsoft)                                                           |
-| Vietnamese            | [@xeus0000](https://crowdin.com/profile/xeus0000)                                                               |
-
-Last updated: 18 Sept, 2024
-
 ## License
 
 ```
