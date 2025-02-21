@@ -14,8 +14,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
 import app.simple.peri.BuildConfig
-import app.simple.peri.compose.nav.PeristyleNavigation
-import app.simple.peri.compose.theme.PeristyleTheme
 import app.simple.peri.crash.CrashReport
 import app.simple.peri.database.instances.LastLockWallpapersDatabase
 import app.simple.peri.extensions.BaseComponentActivity
@@ -23,6 +21,8 @@ import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.preferences.SharedPreferences
 import app.simple.peri.services.AutoWallpaperService
+import app.simple.peri.ui.nav.PeristyleNavigation
+import app.simple.peri.ui.theme.PeristyleTheme
 import app.simple.peri.viewmodels.ComposeWallpaperViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

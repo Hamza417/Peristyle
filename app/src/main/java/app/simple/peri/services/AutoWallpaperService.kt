@@ -1,19 +1,13 @@
 package app.simple.peri.services
 
-import android.content.ComponentName
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.IBinder
 import android.util.Log
 import android.widget.Toast
 import app.simple.peri.R
 import app.simple.peri.abstraction.AbstractAutoLiveWallpaperService
-import app.simple.peri.activities.main.LegacyActivity
-import app.simple.peri.activities.main.MainComposeActivity
 import app.simple.peri.preferences.MainComposePreferences
-import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.preferences.SharedPreferences
-import app.simple.peri.utils.ScreenUtils
 import java.io.File
 
 class AutoWallpaperService : AbstractAutoLiveWallpaperService() {
@@ -84,40 +78,17 @@ class AutoWallpaperService : AbstractAutoLiveWallpaperService() {
     private fun init() {
         SharedPreferences.init(applicationContext)
 
-        if (isLegacyInterface()) {
-            Log.i(TAG, "Legacy interface detected, switching to old approach")
-            if (MainPreferences.isWallpaperWhenSleeping()) {
-                setLegacyWallpaper()
-                Log.d(TAG, "Wallpaper set when the user is sleeping")
-            } else {
-                if (ScreenUtils.isDeviceSleeping(applicationContext)) {
-                    Log.d(TAG, "Device is sleeping, waiting for next alarm to set wallpaper")
-                } else {
-                    setLegacyWallpaper()
-                }
+        if (isWallpaperServiceRunning()) {
+            Log.i(TAG, "Wallpaper service is running, setting next wallpaper through live wallpaper service")
+            postLiveWallpaper {
+                isNextWallpaperActionRunning = false
             }
         } else {
-            Log.i(TAG, "Compose interface detected, switching to new approach")
-            if (isWallpaperServiceRunning()) {
-                Log.i(TAG, "Wallpaper service is running, setting next wallpaper through live wallpaper service")
-                postLiveWallpaper {
-                    isNextWallpaperActionRunning = false
-                }
-            } else {
-                Log.d(TAG, "Wallpaper service is not running, setting next wallpaper through compose service")
-                setComposeWallpaper {
-                    isNextWallpaperActionRunning = false
-                }
+            Log.d(TAG, "Wallpaper service is not running, setting next wallpaper through compose service")
+            setComposeWallpaper {
+                isNextWallpaperActionRunning = false
             }
         }
-    }
-
-    private fun isLegacyInterface(): Boolean {
-        return applicationContext.packageManager.getComponentEnabledSetting(
-                ComponentName(applicationContext, LegacyActivity::class.java)
-        ) == PackageManager.COMPONENT_ENABLED_STATE_ENABLED && applicationContext.packageManager.getComponentEnabledSetting(
-                ComponentName(applicationContext, MainComposeActivity::class.java)
-        ) == PackageManager.COMPONENT_ENABLED_STATE_DISABLED
     }
 
     companion object {

@@ -35,7 +35,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 
-abstract class AbstractComposeAutoWallpaperService : AbstractLegacyAutoWallpaperService() {
+abstract class AbstractComposeAutoWallpaperService : AbstractAutoWallpaperService() {
 
     override fun onCreate() {
         super.onCreate()

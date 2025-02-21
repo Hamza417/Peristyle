@@ -156,8 +156,6 @@
     <string name="select_folder_summary">选择您的主壁纸目录。</string>
     <string name="continue_button">继续</string>
     <string name="setup_incomplete">请先完成设置。</string>
-    <string name="go_back_to_legacy_interface">返回旧界面</string>
-    <string name="go_back_to_legacy_interface_summary">切换到Peristyle旧界面。 \n\n注意：不再支持旧界面。</string>
     <string name="interface_settings">界面</string>
     <string name="warning_indicator_title">隐藏警告指示</string>
     <string name="warning_indicator_summary">从壁纸列表中隐藏过多壁纸警告指示。</string>

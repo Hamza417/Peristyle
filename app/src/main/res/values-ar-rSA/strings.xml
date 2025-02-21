@@ -156,8 +156,6 @@
     <string name="select_folder_summary">تحديد مجلدك الرئيس للخلفيات.</string>
     <string name="continue_button">المتابعة</string>
     <string name="setup_incomplete">الرجاء إكمال الإعداد أولًا.</string>
-    <string name="go_back_to_legacy_interface">العودة إلى الواجهة القديمة</string>
-    <string name="go_back_to_legacy_interface_summary">العودة إلى واجهة Peristyle القديمة. \n\nملحوظة: الواجهة القديمة لم تعد مدعومة.</string>
     <string name="interface_settings">الواجهة</string>
     <string name="warning_indicator_title">إخفاء الإشارات التحذيرية</string>
     <string name="warning_indicator_summary">إخفاء الإشارات التحذيرية للخلفيات الضخمة من قائمة الخلفيات.</string>

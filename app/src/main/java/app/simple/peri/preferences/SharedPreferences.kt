@@ -2,7 +2,6 @@ package app.simple.peri.preferences
 
 import android.content.Context
 import android.content.SharedPreferences
-import androidx.preference.PreferenceManager
 import app.simple.peri.utils.ConditionUtils.isNull
 
 object SharedPreferences {
@@ -12,7 +11,7 @@ object SharedPreferences {
 
     fun init(context: Context) {
         if (sharedPreferences.isNull()) {
-            sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+            sharedPreferences = context.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE)
         }
     }
 
