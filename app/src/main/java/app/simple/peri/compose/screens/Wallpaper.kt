@@ -38,6 +38,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -86,10 +87,20 @@ import me.saket.telephoto.zoomable.glide.ZoomableGlideImage
 @Composable
 fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? = null) {
     val context = LocalContext.current
-    val wallpaper = navController.previousBackStackEntry?.savedStateHandle
-        ?.get<Wallpaper>(Routes.WALLPAPER_ARG)
-        ?: associatedWallpaper
+    val savedStateHandle = navController.previousBackStackEntry?.savedStateHandle
     val stateViewModel: StateViewModel = viewModel()
+
+    val wallpaper by rememberSaveable(savedStateHandle) {
+        if (stateViewModel.wallpaper == null) {
+            mutableStateOf(savedStateHandle?.get<Wallpaper>(Routes.WALLPAPER_ARG)
+                               ?: associatedWallpaper)
+        } else {
+            mutableStateOf(stateViewModel.wallpaper)
+        }
+    }
+
+    stateViewModel.wallpaper = wallpaper // Manually save state?
+
     var showScreenSelectionDialog by remember { mutableStateOf(false) }
     var drawable by remember { mutableStateOf<Drawable?>(null) }
     var blurValue by remember { stateViewModel::blurValue } // 0F..25F
