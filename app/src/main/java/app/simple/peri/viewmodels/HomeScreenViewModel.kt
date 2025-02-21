@@ -2,6 +2,8 @@ package app.simple.peri.viewmodels
 
 import android.app.Application
 import android.app.WallpaperManager
+import android.content.SharedPreferences
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.graphics.Bitmap
 import android.os.Build
 import android.os.Handler
@@ -9,11 +11,17 @@ import android.os.Looper
 import android.util.Log
 import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import app.simple.peri.database.instances.WallpaperDatabase
 import app.simple.peri.models.Wallpaper
+import app.simple.peri.preferences.MainComposePreferences
+import app.simple.peri.preferences.SharedPreferences.registerSharedPreferenceChangeListener
+import app.simple.peri.preferences.SharedPreferences.unregisterSharedPreferenceChangeListener
+import app.simple.peri.utils.FileUtils.toFile
 import app.simple.peri.utils.PermissionUtils
+import app.simple.peri.utils.ServiceUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -24,12 +32,16 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import java.io.File
 
-class HomeScreenViewModel(application: Application) : AndroidViewModel(application) {
+class HomeScreenViewModel(application: Application) : AndroidViewModel(application), OnSharedPreferenceChangeListener {
 
     private var countDownJobs: ArrayList<Job> = ArrayList()
     private val countDownMutex = Mutex()
 
     val countDownFlow: MutableStateFlow<Long> = MutableStateFlow(RANDOM_WALLPAPER_DELAY)
+
+    init {
+        registerSharedPreferenceChangeListener()
+    }
 
     private val systemWallpaperData: MutableLiveData<Wallpaper> by lazy {
         MutableLiveData<Wallpaper>().also {
@@ -45,6 +57,14 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
 
     private val randomWallpaperData: MutableLiveData<Wallpaper> by lazy {
         MutableLiveData<Wallpaper>().also {
+            if (ServiceUtils.isWallpaperServiceRunning(getApplication())) {
+                postlastLiveWallpaper()
+            }
+        }
+    }
+
+    private val lastLiveWallpaper: MutableLiveData<Wallpaper> by lazy {
+        MutableLiveData<Wallpaper>().also {
             postRandomWallpaper()
         }
     }
@@ -59,6 +79,10 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
 
     fun getRandomWallpaper(): MutableLiveData<Wallpaper> {
         return randomWallpaperData
+    }
+
+    fun getLastLiveWallpaper(): LiveData<Wallpaper> {
+        return lastLiveWallpaper
     }
 
     init {
@@ -160,6 +184,22 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
         startCountDownFlow()
     }
 
+    private fun postlastLiveWallpaper() {
+        viewModelScope.launch(Dispatchers.Default) {
+            try {
+                MainComposePreferences.getLastLiveWallpaperPath()?.toFile()?.let {
+                    Wallpaper.createFromFile(it).let {
+                        lastLiveWallpaper.postValue(it)
+                    }
+                }
+            } catch (_: NullPointerException) {
+            }
+        }
+
+        countDownFlow.value = RANDOM_WALLPAPER_DELAY
+        startCountDownFlow()
+    }
+
     private fun createTempFile(fileName: String): File {
         val file = File(getApplication<Application>().cacheDir, fileName)
         if (file.exists()) file.delete()
@@ -203,6 +243,15 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
     override fun onCleared() {
         super.onCleared()
         stopCountDownFlow() // Unnecessary, but just in case
+        unregisterSharedPreferenceChangeListener()
+    }
+
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+        when (key) {
+            MainComposePreferences.LAST_LIVE_WALLPAPER_PATH -> {
+                postlastLiveWallpaper()
+            }
+        }
     }
 
     fun nextRandomWallpaper() {

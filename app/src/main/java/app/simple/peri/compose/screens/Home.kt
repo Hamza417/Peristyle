@@ -38,7 +38,6 @@ import androidx.compose.material.icons.rounded.Folder
 import androidx.compose.material.icons.rounded.MotionPhotosOn
 import androidx.compose.material.icons.rounded.Schedule
 import androidx.compose.material.icons.rounded.Settings
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
@@ -47,7 +46,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -83,6 +81,7 @@ import app.simple.peri.compose.nav.Routes
 import app.simple.peri.models.DisplayDimension
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.utils.FileUtils.toFile
+import app.simple.peri.utils.ServiceUtils
 import app.simple.peri.viewmodels.HomeScreenViewModel
 import com.bumptech.glide.integration.compose.CrossFade
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
@@ -101,13 +100,22 @@ val displayDimension = DisplayDimension(1080, 1920)
 const val RANDOM_WALLPAPER_POSITION = 0
 const val HOME_SCREEN_POSITION = 1
 const val LOCK_SCREEN_POSITION = 2
+const val LIVE_AUTO_WALLPAPER_POSITION = 3
 
 @Composable
 fun Home(navController: NavController? = null) {
     InitDisplayDimension()
+    val applicationContext = LocalContext.current.applicationContext
+    val isLiveWallpaperRunning = remember {
+        mutableStateOf(ServiceUtils.isWallpaperServiceRunning(applicationContext))
+    }
 
     val pagerState = rememberPagerState(pageCount = {
-        3
+        if (isLiveWallpaperRunning.value) {
+            4
+        } else {
+            3
+        }
     })
 
     val fling = PagerDefaults.flingBehavior(
@@ -120,6 +128,7 @@ fun Home(navController: NavController? = null) {
     val systemWallpaper = homeScreenViewModel.getSystemWallpaper().observeAsState().value
     val lockWallpaper = homeScreenViewModel.getLockWallpaper().observeAsState().value
     val randomWallpaper = homeScreenViewModel.getRandomWallpaper().observeAsState().value
+    val lastLiveWallpaper = homeScreenViewModel.getLastLiveWallpaper().observeAsState().value
 
     DisposableEffect(ProcessLifecycleOwner.get()) {
         val observer = object : DefaultLifecycleObserver {
@@ -130,6 +139,7 @@ fun Home(navController: NavController? = null) {
 
             override fun onResume(owner: LifecycleOwner) {
                 homeScreenViewModel.resumeCountDownFlow()
+                isLiveWallpaperRunning.value = ServiceUtils.isWallpaperServiceRunning(applicationContext)
                 Log.i("HomeScreen", "onResume")
             }
 
@@ -168,6 +178,7 @@ fun Home(navController: NavController? = null) {
             val wallpaper = when (page) {
                 HOME_SCREEN_POSITION -> systemWallpaper
                 LOCK_SCREEN_POSITION -> lockWallpaper
+                LIVE_AUTO_WALLPAPER_POSITION -> lastLiveWallpaper
                 else -> randomWallpaper
             }
 
@@ -176,6 +187,7 @@ fun Home(navController: NavController? = null) {
                     title = when (page) {
                         HOME_SCREEN_POSITION -> stringResource(id = R.string.home_screen)
                         LOCK_SCREEN_POSITION -> stringResource(id = R.string.lock_screen)
+                        LIVE_AUTO_WALLPAPER_POSITION -> stringResource(id = R.string.live_auto_wallpaper)
                         else -> wallpaper?.name ?: ""
                     },
                     onClick = {
@@ -550,24 +562,4 @@ fun BottomMenuItem(modifier: Modifier = Modifier, @StringRes title: Int = 0, ima
             )
         }
     }
-}
-
-@Composable
-fun ShowTagDialog(title: String, onDismiss: () -> Unit) {
-    AlertDialog(
-            onDismissRequest = onDismiss,
-            title = {
-                Text(text = title)
-            },
-            text = {
-                Text(text = "This is a placeholder")
-            },
-            confirmButton = {
-                TextButton(
-                        onClick = onDismiss
-                ) {
-                    Text(text = "OK")
-                }
-            }
-    )
 }
