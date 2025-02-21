@@ -2,6 +2,7 @@ package app.simple.peri.abstraction
 
 import android.app.Service
 import android.app.WallpaperManager
+import android.util.Log
 import app.simple.peri.database.instances.LastWallpapersDatabase
 import app.simple.peri.database.instances.WallpaperDatabase
 import app.simple.peri.models.Wallpaper
@@ -39,6 +40,7 @@ abstract class AbstractAutoWallpaperService : Service() {
 
             if (dao.getWallpapers().deepEquals(dupDao.getWallpapers())) {
                 LastWallpapersDatabase.getInstance(applicationContext)?.clearAllTables()
+                Log.i(TAG, "LastWallpapersDatabase cleared because it was equal to WallpaperDatabase")
             }
 
             val wallpaper = try {
@@ -52,5 +54,9 @@ abstract class AbstractAutoWallpaperService : Service() {
 
             wallpaper
         }
+    }
+
+    companion object {
+        private const val TAG = "AbstractAutoWallpaperService"
     }
 }
