@@ -82,7 +82,7 @@ class AutoWallpaperService : AbstractAutoLiveWallpaperService() {
     }
 
     private fun init() {
-        SharedPreferences.init(this)
+        SharedPreferences.init(applicationContext)
 
         if (isLegacyInterface()) {
             Log.i(TAG, "Legacy interface detected, switching to old approach")

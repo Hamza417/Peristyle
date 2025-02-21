@@ -63,7 +63,7 @@ class LegacyActivity : AppCompatActivity(), android.content.SharedPreferences.On
     }
 
     private fun initSharedPreferences() {
-        SharedPreferences.init(this)
+        SharedPreferences.init(applicationContext)
         SharedPreferences.getSharedPreferences().registerOnSharedPreferenceChangeListener(this)
     }
 

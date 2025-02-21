@@ -19,7 +19,7 @@ android {
         minSdk 24
         targetSdk 35
         versionCode 710
-        versionName "v7.1.0-rc1"
+        versionName "v7.1.0-rc2"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 

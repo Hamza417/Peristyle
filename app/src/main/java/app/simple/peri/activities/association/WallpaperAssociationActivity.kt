@@ -25,7 +25,7 @@ class WallpaperAssociationActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        SharedPreferences.init(this)
+        SharedPreferences.init(applicationContext)
 
         lifecycleScope.launch(Dispatchers.IO) {
             val wallpaper = ModelWallpaper()
