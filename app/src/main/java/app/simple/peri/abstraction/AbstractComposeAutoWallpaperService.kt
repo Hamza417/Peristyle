@@ -270,7 +270,7 @@ abstract class AbstractComposeAutoWallpaperService : AbstractLegacyAutoWallpaper
                 ?.wallpaperDao()?.getWallpapers()
 
             if (wallpapers.deepEquals(usedWallpapers ?: emptyList())) {
-                LastHomeWallpapersDatabase.wipeDatabase(applicationContext)
+                LastHomeWallpapersDatabase.getInstance(applicationContext)?.wallpaperDao()?.nukeTable()
                 return emptyList()
             }
 
@@ -280,7 +280,7 @@ abstract class AbstractComposeAutoWallpaperService : AbstractLegacyAutoWallpaper
                 ?.wallpaperDao()?.getWallpapers()
 
             if (wallpapers.deepEquals(usedWallpapers ?: emptyList())) {
-                LastLockWallpapersDatabase.wipeDatabase(applicationContext)
+                LastLockWallpapersDatabase.getInstance(applicationContext)?.wallpaperDao()?.nukeTable()
                 return emptyList()
             }
 
