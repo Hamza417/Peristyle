@@ -10,7 +10,6 @@ import android.content.ComponentName
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.PaddingValues
@@ -287,14 +286,12 @@ fun Settings(navController: NavController? = null) {
         item { // Accessibility
             SecondaryHeader(title = context.getString(R.string.accessibility))
 
-            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.TIRAMISU) {
-                SwitchPreference(
-                        title = context.getString(R.string.show_lock_screen_wallpaper),
-                        description = context.getString(R.string.show_lock_screen_wallpaper_summary),
-                        checked = MainComposePreferences.getShowLockScreenWallpaper()
-                ) {
-                    MainComposePreferences.setShowLockScreenWallpaper(it)
-                }
+            SwitchPreference(
+                    title = context.getString(R.string.show_lock_screen_wallpaper),
+                    description = context.getString(R.string.show_lock_screen_wallpaper_summary),
+                    checked = MainComposePreferences.getShowLockScreenWallpaper()
+            ) {
+                MainComposePreferences.setShowLockScreenWallpaper(it)
             }
 
             SwitchPreference(

@@ -78,8 +78,10 @@ import app.simple.peri.compose.commons.CircularCountdownProgress
 import app.simple.peri.compose.commons.InitDisplayDimension
 import app.simple.peri.compose.dialogs.autowallpaper.AutoWallpaperPageSelectionDialog
 import app.simple.peri.compose.nav.Routes
+import app.simple.peri.data.Page
 import app.simple.peri.models.DisplayDimension
 import app.simple.peri.models.Wallpaper
+import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.utils.FileUtils.toFile
 import app.simple.peri.utils.ServiceUtils
 import app.simple.peri.viewmodels.HomeScreenViewModel
@@ -110,12 +112,15 @@ fun Home(navController: NavController? = null) {
         mutableStateOf(ServiceUtils.isWallpaperServiceRunning(applicationContext))
     }
 
+    val pages = listOf(
+            Page(RANDOM_WALLPAPER_POSITION, true),
+            Page(HOME_SCREEN_POSITION, true),
+            Page(LOCK_SCREEN_POSITION, MainComposePreferences.getShowLockScreenWallpaper()),
+            Page(LIVE_AUTO_WALLPAPER_POSITION, isLiveWallpaperRunning.value)
+    )
+
     val pagerState = rememberPagerState(pageCount = {
-        if (isLiveWallpaperRunning.value) {
-            4
-        } else {
-            3
-        }
+        pages.count { it.isVisible }
     })
 
     val fling = PagerDefaults.flingBehavior(
@@ -168,14 +173,16 @@ fun Home(navController: NavController? = null) {
                 navController = navController
         )
 
+        val visiblePages = pages.filter { it.isVisible }
+
         HorizontalPager(
                 state = pagerState,
                 contentPadding = PaddingValues(horizontal = 48.dp),
                 flingBehavior = fling,
-                modifier = Modifier
-                    .weight(1f)
-        ) { page ->
-            val wallpaper = when (page) {
+                modifier = Modifier.weight(1f)
+        ) { pageIndex ->
+            val currentPage = visiblePages[pageIndex]
+            val wallpaper = when (currentPage.id) {
                 HOME_SCREEN_POSITION -> systemWallpaper
                 LOCK_SCREEN_POSITION -> lockWallpaper
                 LIVE_AUTO_WALLPAPER_POSITION -> lastLiveWallpaper
@@ -183,8 +190,8 @@ fun Home(navController: NavController? = null) {
             }
 
             WallpaperItem(
-                    position = page,
-                    title = when (page) {
+                    position = currentPage.id,
+                    title = when (currentPage.id) {
                         HOME_SCREEN_POSITION -> stringResource(id = R.string.home_screen)
                         LOCK_SCREEN_POSITION -> stringResource(id = R.string.lock_screen)
                         LIVE_AUTO_WALLPAPER_POSITION -> stringResource(id = R.string.live_auto_wallpaper)
@@ -200,19 +207,9 @@ fun Home(navController: NavController? = null) {
                     modifier = Modifier
                         .weight(1f)
                         .graphicsLayer {
-                            // Calculate the absolute offset for the current page from the
-                            // scroll position. We use the absolute value which allows us to mirror
-                            // any effects for both directions
                             val pageOffset =
-                                ((pagerState.currentPage - page) + pagerState.currentPageOffsetFraction).absoluteValue
+                                ((pagerState.currentPage - pageIndex) + pagerState.currentPageOffsetFraction).absoluteValue
                             val startScale = 0.95f
-
-                            // We animate the alpha, between 50% and 100%
-                            // alpha = lerp(
-                            //        start = 0.75f,
-                            //        stop = 1f,
-                            //        fraction = 1f - pageOffset.coerceIn(0f, 1f),
-                            //)
 
                             scaleX = lerp(
                                     start = startScale,
@@ -226,12 +223,11 @@ fun Home(navController: NavController? = null) {
                                     fraction = 1f - pageOffset.coerceIn(0f, 1f),
                             )
                         }
-                        .padding(8.dp), // Add padding to create space between the cards
+                        .padding(8.dp),
                     wallpaper = wallpaper,
                     onNextWallpaper = {
                         homeScreenViewModel.nextRandomWallpaper()
                     }
-
             )
         }
 
