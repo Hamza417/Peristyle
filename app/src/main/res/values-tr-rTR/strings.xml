@@ -223,4 +223,8 @@
     <string name="auto_wallpaper_api_summary">Uygulama hangi yöntemin kullanılacağını otomatik olarak algılar. Eğer Peristyle canlı duvar kağıdı ayarlanmışsa, otomatik duvar kağıdı bunu kullanır; aksi takdirde sistem duvar kağıdı yöneticisi kullanılır.</string>
     <string name="insufficient_wallpaper">Cihazınızın ekran çözünürlüğünün altında kalan duvar kağıtları.</string>
     <string name="excessive_wallpaper">Cihazınızın ekran çözünürlüğünden daha büyük duvar kağıtları.</string>
+    <string name="using_live_wallpaper_mode">Duvar kağıtları şu anda Canlı Duvar Kağıdı modu aracılığıyla ayarlanmaktadır.</string>
+    <string name="using_wallpaper_manager_mode">Duvar kağıtları şu anda Duvar Kağıdı Yöneticisi modu aracılığıyla ayarlanmaktadır.</string>
+    <string name="show_lock_screen_wallpaper">Kilit Ekranı Duvar Kağıdını Göster</string>
+    <string name="show_lock_screen_wallpaper_summary">Ana ekrandan kilit ekranı duvar kağıdını gösterin veya gizleyin.</string>
 </resources>
