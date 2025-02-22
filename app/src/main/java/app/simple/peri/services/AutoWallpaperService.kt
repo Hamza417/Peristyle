@@ -31,14 +31,18 @@ class AutoWallpaperService : AbstractAutoLiveWallpaperService() {
                 if (!isNextWallpaperActionRunning) {
                     isNextWallpaperActionRunning = true
                     runCatching {
-                        Toast.makeText(applicationContext, R.string.changing_wallpaper, Toast.LENGTH_SHORT)
-                            .show()
+                        if (MainComposePreferences.getAutoWallpaperNotification()) {
+                            Toast.makeText(applicationContext, R.string.changing_wallpaper, Toast.LENGTH_SHORT)
+                                .show()
+                        }
                     }
                     init()
                 } else {
                     Log.d(TAG, "Next wallpaper action already running, ignoring")
-                    Toast.makeText(applicationContext, R.string.next_wallpaper_already_running, Toast.LENGTH_SHORT)
-                        .show()
+                    if (MainComposePreferences.getAutoWallpaperNotification()) {
+                        Toast.makeText(applicationContext, R.string.next_wallpaper_already_running, Toast.LENGTH_SHORT)
+                            .show()
+                    }
                 }
             }
             ACTION_DELETE_WALLPAPER -> {
