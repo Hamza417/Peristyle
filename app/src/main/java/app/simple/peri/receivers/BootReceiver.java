@@ -17,7 +17,7 @@ import static android.content.Context.ALARM_SERVICE;
 public class BootReceiver extends android.content.BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        SharedPreferences.INSTANCE.init(context);
+        SharedPreferences.INSTANCE.init(context.getApplicationContext());
         
         if (intent.getAction() != null) {
             if (intent.getAction().equals("android.intent.action.BOOT_COMPLETED")) {

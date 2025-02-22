@@ -76,7 +76,7 @@ class AutoWallpaperService : AbstractAutoLiveWallpaperService() {
     }
 
     private fun init() {
-        SharedPreferences.init(this)
+        SharedPreferences.init(applicationContext)
 
         if (isWallpaperServiceRunning()) {
             Log.i(TAG, "Wallpaper service is running, setting next wallpaper through live wallpaper service")
