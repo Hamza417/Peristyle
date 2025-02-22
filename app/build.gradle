@@ -19,7 +19,7 @@ android {
         minSdk 24
         targetSdk 35
         versionCode 800
-        versionName "v8.0.0-rc1"
+        versionName "v8.0.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -38,7 +38,7 @@ android {
         release {
             minifyEnabled true
             shrinkResources true
-            vcsInfo.include true
+            vcsInfo.include false // disabling this for now until all tests are sure
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
             // Clean gradle cache before building release
@@ -95,7 +95,6 @@ android {
 
 dependencies {
 
-    implementation 'androidx.lifecycle:lifecycle-process:2.8.7'
     def composeBom = platform('androidx.compose:compose-bom:2025.02.00')
     implementation composeBom
     androidTestImplementation composeBom
@@ -117,6 +116,7 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.8.7'
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.8.7'
+    implementation 'androidx.lifecycle:lifecycle-process:2.8.7'
     implementation 'androidx.palette:palette-ktx:1.0.0'
 
     implementation 'com.google.android.material:material:1.12.0'
