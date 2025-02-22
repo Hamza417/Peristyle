@@ -49,7 +49,7 @@ from there? then Peristyle is for you :)
 
 ### Peristyle also has a separate UI based on Material You
 
-The legacy interface was removed in v8.0.0.
+The legacy interface is planned to be removed in v8.0.0.
 
 | ![001](./screenshots/01.png) | ![002](./screenshots/02.png) | ![003](./screenshots/03.png) |
 |:----------------------------:|:----------------------------:|:----------------------------:|
@@ -72,10 +72,6 @@ the [Issue #72](https://github.com/Hamza417/Peristyle/issues/72#issuecomment-235
 The `REQUEST_IGNORE_BATTERY_OPTIMIZATIONS` is used to run Auto Wallpaper service whenever required.
 
 And an access to all the wallpaper directories whichever the user specifies.
-
-## v5.0.0 and Destructive Changes in the App
-
-Read about it [here](https://github.com/Hamza417/Peristyle/releases/tag/v5.0.0).
 
 ## Translate
 
