@@ -8,10 +8,16 @@ import app.simple.peri.database.instances.WallpaperDatabase
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.utils.ListUtils.deepEquals
 import app.simple.peri.utils.ScreenUtils
+import app.simple.peri.utils.WallpaperServiceNotification.createNotificationChannels
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 abstract class AbstractAutoWallpaperService : Service() {
+
+    override fun onCreate() {
+        super.onCreate()
+        createNotificationChannels()
+    }
 
     protected val wallpaperManager: WallpaperManager by lazy {
         WallpaperManager.getInstance(applicationContext)

@@ -19,6 +19,8 @@ import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.preferences.SharedPreferences
 import app.simple.peri.utils.BitmapUtils.applyEffects
 import app.simple.peri.utils.ConditionUtils.invert
+import app.simple.peri.utils.FileUtils.toFile
+import app.simple.peri.utils.WallpaperServiceNotification.showWallpaperChangedNotification
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -139,6 +141,9 @@ class LiveAutoWallpaperService : WallpaperService() {
                             surfaceHolder.unlockCanvasAndPost(canvas)
                             setBitmapWithCrossfade(localBitmap!!)
                             MainComposePreferences.setLastLiveWallpaperPath(filePath)
+                            if (MainComposePreferences.getAutoWallpaperNotification()) {
+                                showWallpaperChangedNotification(true, filePath.toFile(), localBitmap!!)
+                            }
                         }
                     }
                 } else {

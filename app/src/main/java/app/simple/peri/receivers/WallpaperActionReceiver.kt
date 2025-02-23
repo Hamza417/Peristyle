@@ -9,6 +9,7 @@ import app.simple.peri.abstraction.AbstractComposeAutoWallpaperService
 import app.simple.peri.database.instances.WallpaperDatabase
 import app.simple.peri.services.AutoWallpaperService
 import app.simple.peri.utils.FileUtils.toFile
+import app.simple.peri.utils.WallpaperServiceNotification
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -22,14 +23,14 @@ class WallpaperActionReceiver : BroadcastReceiver() {
                         context,
                         intent,
                         WallpaperManager.FLAG_SYSTEM,
-                        AbstractComposeAutoWallpaperService.HOME_NOTIFICATION_ID)
+                        WallpaperServiceNotification.HOME_NOTIFICATION_ID)
             }
             AbstractComposeAutoWallpaperService.ACTION_DELETE_WALLPAPER_LOCK -> {
                 handleWallpaperAction(
                         context,
                         intent,
                         WallpaperManager.FLAG_LOCK,
-                        AbstractComposeAutoWallpaperService.LOCK_NOTIFICATION_ID)
+                        WallpaperServiceNotification.LOCK_NOTIFICATION_ID)
             }
         }
     }
