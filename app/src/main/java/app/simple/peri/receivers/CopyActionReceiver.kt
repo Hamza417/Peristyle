@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.Intent
 import android.widget.Toast
 import app.simple.peri.abstraction.AbstractComposeAutoWallpaperService
+import app.simple.peri.utils.WallpaperServiceNotification
 
 class CopyActionReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
@@ -19,7 +20,7 @@ class CopyActionReceiver : BroadcastReceiver() {
             Toast.makeText(context, "Error message copied to clipboard", Toast.LENGTH_SHORT).show()
 
             val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.cancel(AbstractComposeAutoWallpaperService.ERROR_NOTIFICATION_ID)
+            notificationManager.cancel(WallpaperServiceNotification.ERROR_NOTIFICATION_ID)
         }
     }
 }

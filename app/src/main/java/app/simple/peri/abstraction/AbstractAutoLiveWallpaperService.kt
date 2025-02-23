@@ -7,6 +7,7 @@ import android.util.Log
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.services.LiveAutoWallpaperService
+import app.simple.peri.utils.WallpaperServiceNotification.showErrorNotification
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -26,7 +27,7 @@ abstract class AbstractAutoLiveWallpaperService : AbstractComposeAutoWallpaperSe
                     }
                     else -> {
                         Log.d(TAG, "Setting wallpaper for both home and lock screen")
-                        getRandomWallpaperFromDatabase()?.let { wallpaper ->
+                        getRandomWallpaperFromDatabase().let { wallpaper ->
                             setSameWallpaper(wallpaper)
                         }
                     }
