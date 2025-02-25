@@ -81,6 +81,8 @@ Peristyle supports localization, If you want to
 translate Peristyle in your language/s, you can do
 so [here on Crowdin](https://crowdin.com/project/peristyle).
 
+[Contributors](https://crowdin.com/project/peristyle/members)
+
 ## License
 
 ```
