@@ -225,4 +225,6 @@
     <string name="using_wallpaper_manager_mode">Duvar kağıtları şu anda Duvar Kağıdı Yöneticisi modu aracılığıyla ayarlanmaktadır.</string>
     <string name="show_lock_screen_wallpaper">Kilit Ekranı Duvar Kağıdını Göster</string>
     <string name="show_lock_screen_wallpaper_summary">Ana ekrandan kilit ekranı duvar kağıdını gösterin veya gizleyin.</string>
+    <string name="every_3_days">Her 3 Günde Bir</string>
+    <string name="every_7_days">Her 7 Günde Bir</string>
 </resources>
