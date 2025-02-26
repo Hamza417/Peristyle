@@ -20,7 +20,7 @@
     <string name="delete_message">Вы удаляете обои %1$s, вы уверены?</string>
     <string name="no_wallpaper_selected">Обои не выбраны</string>
     <string name="send_message">Вы отправляете обои %1$s, вы уверены?</string>
-    <string name="show_wallpaper_names_on_the_main_screen">Показывать названия обоев на главном экране</string>
+    <string name="show_wallpaper_names_on_the_main_screen">Отображает название обоев в списке</string>
     <string name="enabled_wallpaper_names">Включить названия обоев</string>
     <string name="home">Главная</string>
     <string name="about">О приложении</string>
@@ -36,7 +36,7 @@
     <string name="yes">Да</string>
     <string name="nomedia_success">.nomedia файл успешно создан!\n\nПРЕДУПРЕЖДЕНИЕ: Файлы все еще могут быть видны программам, игнорирующим .nomedia файл.</string>
     <string name="dont_show_again">Больше не показывать</string>
-    <string name="blur_summary">Включить размытие на главном экране.</string>
+    <string name="blur_summary">Включить размытие в списке.</string>
     <string name="blur">Размытие</string>
     <string name="clear_cache_summary">Очистить кэш изображений</string>
     <string name="clear_cache">Очистить кэш</string>
@@ -48,8 +48,8 @@
     <string name="contrast">Контраст</string>
     <string name="saturation">Насыщенность</string>
     <string name="data">Данные</string>
-    <string name="enabled_wallpaper_details">Информация о обоях</string>
-    <string name="show_wallpaper_details_on_the_main_screen">Показывать названия обоев на главном экране.</string>
+    <string name="enabled_wallpaper_details">Информация обоев</string>
+    <string name="show_wallpaper_details_on_the_main_screen">Отображает информацию обоев в списке.</string>
     <string name="high_definition">Предпросмотр в HD качестве</string>
     <string name="error">Ошибка</string>
     <string name="still_loading">Обои обновляются, попробуйте через некоторое время.</string>
@@ -87,7 +87,7 @@
     <string name="size_info">Вычисление размера</string>
     <string name="remember_scroll_position_summary">Запомнить последнюю позицию прокрутки главного списка.</string>
     <string name="remember_scroll_position">Запоминать позицию прокрутки</string>
-    <string name="margin_between_wallpapers_summary">Добавляет место между обоями в списке.</string>
+    <string name="margin_between_wallpapers_summary">Добавляет расстояние между обоями в списке.</string>
     <string name="margin_between_wallpapers">Отступ между обоями</string>
     <string name="main_screen_background_summary">Режим цвета фона домашней страницы.</string>
     <string name="main_screen_background">Фон главного экрана</string>
@@ -146,7 +146,7 @@
     <string name="external_storage">Разрешить доступ к файлам</string>
     <string name="external_storage_summary">Будет использоваться для отображения текущих системных обоев на домашнем экране.</string>
     <string name="battery_optimization">Игнорировать оптимизацию энергосбережения</string>
-    <string name="battery_optimization_summary">Отключите оптимизацию батареи, чтобы убедиться, что автоматические обои работают правильно.</string>
+    <string name="battery_optimization_summary">Отключите оптимизацию батареи, чтобы убедиться, что авто обои работают правильно.</string>
     <string name="current_wallpaper">Текущие обои</string>
     <string name="wallpapers">Обои</string>
     <string name="tags">Метки</string>
@@ -172,7 +172,7 @@
     <string name="source">Источник</string>
     <string name="source_summary">Назначить метку или папку для установки обоев для каждого экрана. Если метка или папка не назначена или пустая, из коллекции будут выбраны случайные обои.</string>
     <string name="not_set">Не задано</string>
-    <string name="duration_summary">Установить задержку между каждым триггером или выключить автоматические обои.</string>
+    <string name="duration_summary">Установить задержку между каждым триггером или выключить авто обои.</string>
     <string name="select_folder_info">Вы можете добавить больше папок позже в приложении.</string>
     <string name="developer_profile">Профиль разработчика</string>
     <string name="allow_media_access">Разрешить доступ к медиафайлам</string>
@@ -194,7 +194,7 @@
     <string name="hide">Скрыть</string>
     <string name="bottom_bar">Панель управления</string>
     <string name="bottom_bar_summary">Перемещает заголовок в нижнюю часть приложения.</string>
-    <string name="original_aspect_ratio">Исходные размер</string>
+    <string name="original_aspect_ratio">Исходный размер</string>
     <string name="original_aspect_ratio_summary">Отображает миниатюры обоев в исходном соотношении сторон.</string>
     <string name="wallpaper_changed">Ваши обои %1$s были изменены.</string>
     <string name="delete_current_wallpaper">Удалить текущие обои</string>
@@ -217,14 +217,14 @@
     <string name="change_when_screen_off">Изменить при выключенном экране</string>
     <string name="change_when_screen_off_summary">Менять обои каждый раз, когда экран выключен.</string>
     <string name="live_wallpaper_waring">Доступно только в режиме живых обоев.</string>
-    <string name="live_auto_wallpaper">Живые авто-обои</string>
+    <string name="live_auto_wallpaper">Живые авто обои</string>
     <string name="auto_wallpaper_api_summary">Приложение автоматически определяет какой метод использовать. Если установлен Peristyle живые обои, то будут использованы другие системные обои.</string>
     <string name="insufficient_wallpaper">Разрешение обоев меньше разрешения вашего экрана.</string>
     <string name="excessive_wallpaper">Разрешение обоев больше разрешения вашего экрана.</string>
     <string name="using_live_wallpaper_mode">В настоящее время обои устанавливаются в режиме живых обоев.</string>
     <string name="using_wallpaper_manager_mode">В настоящее время обои устанавливаются в режиме менеджера обоев.</string>
     <string name="show_lock_screen_wallpaper">Показать обои экрана блокировки</string>
-    <string name="show_lock_screen_wallpaper_summary">Показать или скрыть обои экрана блокировки на главном экране.</string>
+    <string name="show_lock_screen_wallpaper_summary">Показывает или скрывает обои экрана блокировки в списке.</string>
     <string name="every_3_days">Каждые 3 дня</string>
     <string name="every_7_days">Каждые 7 дней</string>
 </resources>
