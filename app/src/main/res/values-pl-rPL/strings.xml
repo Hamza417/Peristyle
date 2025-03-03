@@ -221,4 +221,10 @@
     <string name="auto_wallpaper_api_summary">Aplikacja automatycznie wykrywa metodę użycia. Jeśli ustawiona jest żywa tapeta, automatyczna tapeta użyje menedżera tapety systemowej.</string>
     <string name="insufficient_wallpaper">Tapety o niższej rozdzielczości niż ekran.</string>
     <string name="excessive_wallpaper">Tapety o wyższej rozdzielczości niż twój ekran.</string>
+    <string name="using_live_wallpaper_mode">Tapety zostały ustawione jako tapety animowane.</string>
+    <string name="using_wallpaper_manager_mode">Tapety zostały ustawione przy pomocy menadżera tapet.</string>
+    <string name="show_lock_screen_wallpaper">Pokaż tapetę na ekranie blokady.</string>
+    <string name="show_lock_screen_wallpaper_summary">Pokaż lub ukryj tapetę z ekranu blokady na ekranie głównym.</string>
+    <string name="every_3_days">Co 3 dni</string>
+    <string name="every_7_days">Co tydzień</string>
 </resources>
