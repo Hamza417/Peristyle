@@ -1,5 +1,8 @@
 package app.simple.peri.preferences
 
+import android.annotation.SuppressLint
+
+@SuppressLint("UseKtx")
 object CrashPreferences {
 
     private const val CRASH_TIMESTAMP = "crash_timestamp"

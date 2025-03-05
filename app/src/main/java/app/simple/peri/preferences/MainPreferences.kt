@@ -1,7 +1,9 @@
 package app.simple.peri.preferences
 
+import android.annotation.SuppressLint
 import app.simple.peri.utils.WallpaperSort
 
+@SuppressLint("UseKtx")
 object MainPreferences {
 
     private const val CROP_WALLPAPER = "crop_wallpaper"

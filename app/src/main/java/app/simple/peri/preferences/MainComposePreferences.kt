@@ -1,10 +1,12 @@
 package app.simple.peri.preferences
 
+import android.annotation.SuppressLint
 import android.util.Log
 import app.simple.peri.models.Effect
 import app.simple.peri.preferences.MainPreferences.MARGIN_BETWEEN
 import app.simple.peri.preferences.SharedPreferences.getSharedPreferences
 
+@SuppressLint("UseKtx")
 object MainComposePreferences {
 
     private const val GRID_SPAN_COUNT_VERT = "grid_span_count"
@@ -63,8 +65,6 @@ object MainComposePreferences {
     private const val CHANGE_WHEN_OFF = "change_when_off"
     const val LAST_LIVE_WALLPAPER_PATH = "last_live_wallpaper_path"
     private const val SHOW_LOCK_SCREEN_WALLPAPER = "show_lock_screen_wallpaper"
-
-
 
     // ----------------------------------------------------------------------------------------------------- //
 
