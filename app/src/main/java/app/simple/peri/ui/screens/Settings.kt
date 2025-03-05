@@ -7,7 +7,6 @@ import OtherApps
 import SecondaryHeader
 import SwitchPreference
 import android.content.Intent
-import android.net.Uri
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.PaddingValues
@@ -26,6 +25,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -74,6 +74,8 @@ fun Settings(navController: NavController? = null) {
     val topPadding = COMMON_PADDING + statusBarHeightDp
     val bottomPadding = 8.dp + navigationBarHeightDp
 
+    val isWallpaperDetails = remember { mutableStateOf(MainComposePreferences.getWallpaperDetails()) }
+
     LazyColumn(
             contentPadding = PaddingValues(
                     start = 8.dp,
@@ -107,14 +109,6 @@ fun Settings(navController: NavController? = null) {
             )
 
             SwitchPreference(
-                    title = context.getString(R.string.warning_indicator_title),
-                    description = context.getString(R.string.warning_indicator_summary),
-                    checked = MainComposePreferences.getShowWarningIndicator().invert()
-            ) {
-                MainComposePreferences.setShowWarningIndicator(it.invert())
-            }
-
-            SwitchPreference(
                     title = context.getString(R.string.image_shadow_title),
                     description = context.getString(R.string.image_shadow_summary),
                     checked = MainComposePreferences.getShowImageShadow()
@@ -126,7 +120,6 @@ fun Settings(navController: NavController? = null) {
                     title = context.getString(R.string.original_aspect_ratio),
                     description = context.getString(R.string.original_aspect_ratio_summary),
                     checked = MainComposePreferences.isOriginalAspectRatio(),
-                    topPadding = 8.dp
             ) {
                 MainComposePreferences.setOriginalAspectRatio(it)
             }
@@ -153,6 +146,17 @@ fun Settings(navController: NavController? = null) {
                     checked = MainComposePreferences.getWallpaperDetails()
             ) {
                 MainComposePreferences.setWallpaperDetails(it)
+                isWallpaperDetails.value = it
+            }
+
+            if (isWallpaperDetails.value) {
+                SwitchPreference(
+                        title = context.getString(R.string.warning_indicator_title),
+                        description = context.getString(R.string.warning_indicator_summary),
+                        checked = MainComposePreferences.getShowWarningIndicator().invert()
+                ) {
+                    MainComposePreferences.setShowWarningIndicator(it.invert())
+                }
             }
         }
         item { // Data
@@ -310,7 +314,7 @@ fun Settings(navController: NavController? = null) {
                     description = context.getString(R.string.github_summary))
             {
                 val intent = Intent(Intent.ACTION_VIEW)
-                intent.data = Uri.parse("https://github.com/Hamza417/Peristyle")
+                intent.data = "https://github.com/Hamza417/Peristyle".toUri()
                 context.startActivity(intent)
             }
 

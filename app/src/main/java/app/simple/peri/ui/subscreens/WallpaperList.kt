@@ -166,7 +166,7 @@ fun WallpaperList(navController: NavController? = null) {
                 }
             }
 
-            if (MainComposePreferences.getShowWarningIndicator() || MainComposePreferences.getWallpaperDetails()) {
+            if (MainComposePreferences.getShowWarningIndicator() && MainComposePreferences.getWallpaperDetails()) {
                 item(span = StaggeredGridItemSpan.FullLine) {
                     Column {
                         TextWithIcon(
