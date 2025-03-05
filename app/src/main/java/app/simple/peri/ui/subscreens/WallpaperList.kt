@@ -165,7 +165,8 @@ fun WallpaperList(navController: NavController? = null) {
                     )
                 }
             }
-            if (MainComposePreferences.getWallpaperDetails()) {
+
+            if (MainComposePreferences.getShowWarningIndicator() || MainComposePreferences.getWallpaperDetails()) {
                 item(span = StaggeredGridItemSpan.FullLine) {
                     Column {
                         TextWithIcon(
@@ -184,6 +185,7 @@ fun WallpaperList(navController: NavController? = null) {
                     }
                 }
             }
+
             items(wallpapers.size, key = { wallpapers[it].hashCode() }) { index ->
                 WallpaperItem(
                         wallpaper = wallpapers[index],
