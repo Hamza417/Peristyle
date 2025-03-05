@@ -132,13 +132,13 @@ interface WallpaperDao {
         Log.i("WallpaperDao", "Purged non-existing or non-permitted wallpapers in: ${
             measureTimeMillis {
                 val allPaths = MainComposePreferences.getAllowedPaths()
-                val validHashcodes = allPaths.map { it.hashCode() }.toSet()
+                val validHashcode = allPaths.map { it.hashCode() }.toSet()
 
                 val wallpaperDao = wallpaperDatabase.wallpaperDao()
-                val allWallpapers = wallpaperDao.getWallpapers() ?: emptyList()
+                val allWallpapers = wallpaperDao.getWallpapers()
 
                 allWallpapers.forEach { wallpaper ->
-                    if (wallpaper.folderID !in validHashcodes || !File(wallpaper.filePath).exists()) {
+                    if (wallpaper.folderID !in validHashcode || !File(wallpaper.filePath).exists()) {
                         wallpaperDao.delete(wallpaper)
                     }
                 }
