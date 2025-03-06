@@ -11,7 +11,11 @@ Features:
 - Compress or reduce images on the fly.
 - No ads, no tracking, no analytics, no internet permissions, no unnecessary permissions.
 - Auto wallpaper change support with dedicated folders and tags for each screens.
+- Change wallpaper using app's live wallpaper
+- Edit and apply filters on wallpapers losslessly in realtime.
 - Built-in live wallpaper picker.
 - Dark mode support.
 - Glassmorphic UI based on realtime blur effects and caustic shadows.
-- Material You themes and colors.
+- Material You color theme.
+- Fully reproducible build.
+- Zero loading software architecture.
