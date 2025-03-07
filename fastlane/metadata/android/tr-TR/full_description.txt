@@ -11,7 +11,11 @@ Peristyle, Android için son derece basit ve sofistike bir duvar kağıdı yöne
 - Görselleri anında sıkıştırma veya boyutlarını küçültme.
 - Reklam yok, izleme yok, analiz yok, internet izinleri yok, gereksiz izinler yok.
 - Özel klasörler ve her ekran için etiketlerle otomatik duvar kağıdı değiştirme desteği.
+- Uygulamanın canlı duvar kağıdını kullanarak duvar kağıdını değiştirin
+- Duvar kağıtlarını gerçek zamanlı olarak kayıpsız şekilde düzenleyin ve filtreler uygulayın.
 - Dahili canlı duvar kağıdı seçici.
 - Karanlık mod desteği.
 - Gerçek zamanlı bulanıklık efektleri ve ışık kırılmalarına dayalı cam benzeri kullanıcı arayüzü.
-- Material You temaları ve renkleri.
+- Material You renk teması.
+- Tamamen yeniden üretilebilir (reproducible) yapı.
+- Sıfır yükleme yazılım mimarisi.
