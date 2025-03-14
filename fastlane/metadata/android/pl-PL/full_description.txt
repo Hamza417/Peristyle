@@ -11,7 +11,11 @@ Prosta architektura do przeglądania oraz używania systemowego menadżera tapet
 - Kompresja i zmniejszanie rozmiaru pliku tapety.
 - Brak reklam, śledzenia, analiz oraz dostępu do internetu czy niepotrzebnych uprawnień.
 - Automatyczna zmiana tapety z obsługą wybranych folderów oraz tagów.
+- Zmień tapetę używając żywej tapety aplikacji
+- Edytuj i zastosuj filtry na tapetach w czasie rzeczywistym.
 - Wbudowany menedżer tapet animowanych.
 - Ciemny motyw.
 - Interfejs w stylu Glass, oparty na efektach rozmycia oraz cieni.
-- Tryb Material You.
+- Materiał w kolorze motywu.
+- Budowa w pełni odtwarzalna.
+- Zero ładowania architektury oprogramowania.
