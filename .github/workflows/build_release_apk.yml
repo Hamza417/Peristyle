@@ -28,7 +28,7 @@ jobs:
             -   name: Build GitHub Release APK
                 run: |
                     chmod +x ./gradlew
-                    ./gradlew clean assembleProdRelease --no-build-cache --rerun-tasks
+                    ./gradlew clean assembleProdRelease --no-build-cache --no-configuration-cache --no-daemon --rerun-tasks
                 env:
                     SIGNING_KEY_ALIAS: ${{ secrets.ALIAS }}
                     SIGNING_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
