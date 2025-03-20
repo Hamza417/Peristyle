@@ -34,15 +34,39 @@ android {
         }
     }
 
+    signingConfigs {
+        release {
+            def path = System.getProperty("user.home") + "/work/_temp/keystore/"
+            def keystoreFileName = "key.jks"
+            def keystoreFile = new File(path, keystoreFileName)
+
+            if (keystoreFile.exists()) {
+                storeFile = keystoreFile
+                storePassword = System.getenv("SIGNING_STORE_PASSWORD")
+                keyAlias = System.getenv("SIGNING_KEY_ALIAS")
+                keyPassword = System.getenv("SIGNING_KEY_PASSWORD")
+            } else {
+                println("Keystore file not found at: " + keystoreFile)
+            }
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled true
             shrinkResources true
-            vcsInfo.include false // disabling this for now until all tests are sure
+            vcsInfo.include true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
 
-            // Clean gradle cache before building release
-            // preBuild.dependsOn 'clean'
+        pre {
+            minifyEnabled true
+            shrinkResources true
+            vcsInfo.include true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            versionNameSuffix "-pre"
+            signingConfig signingConfigs.release
         }
 
         debug {
@@ -95,7 +119,7 @@ android {
 
 dependencies {
 
-    def composeBom = platform('androidx.compose:compose-bom:2025.02.00')
+    def composeBom = platform('androidx.compose:compose-bom:2025.03.00')
     implementation composeBom
     androidTestImplementation composeBom
 
@@ -106,7 +130,7 @@ dependencies {
     implementation 'androidx.compose.runtime:runtime-livedata'
     implementation 'androidx.compose.foundation:foundation:1.7.8'
     implementation 'androidx.compose.ui:ui-tooling-preview-android:1.7.8'
-    implementation 'androidx.navigation:navigation-compose:2.8.8'
+    implementation 'androidx.navigation:navigation-compose:2.8.9'
     implementation "androidx.compose.material:material-icons-extended:1.7.8"
     debugImplementation 'androidx.compose.ui:ui-tooling:1.7.8'
 
