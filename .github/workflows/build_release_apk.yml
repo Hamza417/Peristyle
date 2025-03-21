@@ -40,10 +40,6 @@ jobs:
                     VERSION_NAME=$(cat app/build.gradle | grep -oP 'versionName "\K[^"]*')
                     VERSION_CODE=$(cat app/build.gradle | grep -oP 'versionCode \K\d+')
                     
-                    # Make them lowercase
-                    VERSION_NAME=$(echo "$VERSION_NAME" | awk '{for(i=1;i<=NF;i++) $i=toupper(substr($i,1,1)) tolower(substr($i,2));}1')
-                    VERSION_CODE=$(echo "$VERSION_CODE" | awk '{for(i=1;i<=NF;i++) $i=toupper(substr($i,1,1)) tolower(substr($i,2));}1')
-                    
                     echo "Version Name: $VERSION_NAME"
                     echo "Version Code: $VERSION_CODE"
                     
