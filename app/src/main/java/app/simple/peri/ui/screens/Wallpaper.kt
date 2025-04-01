@@ -1,7 +1,6 @@
 package app.simple.peri.ui.screens
 
 import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
@@ -57,6 +56,7 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.graphics.drawable.toDrawable
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import app.simple.peri.R
@@ -360,7 +360,7 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
                                         blur = blurValue.times(Misc.BLUR_TIMES),
                                         colorMatrix = colorMatrix
                                 )
-                                drawable = BitmapDrawable(context.resources, bitmap)
+                                drawable = bitmap.toDrawable(context.resources)
                                 showScreenSelectionDialog = true
                                 showWallpaperLaunchedEffect.value = false
 
