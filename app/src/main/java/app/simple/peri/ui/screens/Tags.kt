@@ -51,8 +51,8 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import dev.chrisbanes.haze.HazeDefaults
 import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.haze
-import dev.chrisbanes.haze.hazeChild
+import dev.chrisbanes.haze.hazeEffect
+import dev.chrisbanes.haze.hazeSource
 
 @Composable
 fun Tags(navController: NavController? = null) {
@@ -94,7 +94,7 @@ fun Tags(navController: NavController? = null) {
                 columns = StaggeredGridCells.Fixed(2),
                 modifier = Modifier
                     .fillMaxSize()
-                    .haze(state = hazeState),
+                    .hazeSource(state = hazeState),
                 contentPadding = PaddingValues(
                         top = topPadding,
                         start = 8.dp,
@@ -182,16 +182,15 @@ fun TagItem(tag: Tag, navController: NavController? = null) {
                     model = app.simple.peri.glide.tags.ContextTag(tag, LocalContext.current),
                     contentDescription = null,
                     transition = CrossFade,
-                    modifier = Modifier.haze(hazeState),
+                    modifier = Modifier.hazeSource(hazeState),
             )
 
             Column(
                     modifier = Modifier
                         .wrapContentHeight()
                         .fillMaxWidth()
-                        .hazeChild(
-                                state = hazeState,
-                                style = HazeDefaults.style(backgroundColor = Color(0x50000000), blurRadius = 5.dp)
+                        .hazeEffect(state = hazeState,
+                                    style = HazeDefaults.style(backgroundColor = Color(0x50000000), blurRadius = 5.dp)
                         )
                         .align(Alignment.BottomCenter)
             ) {

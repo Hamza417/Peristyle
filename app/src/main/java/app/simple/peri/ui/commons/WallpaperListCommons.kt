@@ -87,8 +87,8 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import dev.chrisbanes.haze.HazeDefaults
 import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.haze
-import dev.chrisbanes.haze.hazeChild
+import dev.chrisbanes.haze.hazeEffect
+import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
 import dev.chrisbanes.haze.materials.HazeMaterials
 
@@ -245,7 +245,7 @@ fun WallpaperItem(
                         contentDescription = null,
                         transition = CrossFade,
                         modifier = Modifier
-                            .haze(hazeState)
+                            .hazeSource(hazeState)
                             .fillMaxSize(),
                         contentScale = ContentScale.Crop
                 ) {
@@ -278,7 +278,7 @@ fun WallpaperItem(
                             modifier = Modifier
                                 .wrapContentHeight()
                                 .fillMaxWidth()
-                                .hazeChild(
+                                .hazeEffect(
                                         state = hazeState,
                                         style = HazeDefaults.style(
                                                 backgroundColor = Color(0x50000000),
@@ -444,9 +444,8 @@ fun SelectionMenu(
                 .padding(16.dp)
                 .padding(bottom = navigationBarHeight)
                 .clip(RoundedCornerShape(16.dp))
-                .hazeChild(
-                        state = hazeState,
-                        style = HazeMaterials.thin()
+                .hazeEffect(state = hazeState,
+                            style = HazeMaterials.thin()
                 ),
             colors = CardDefaults.cardColors(
                     containerColor = Color.Transparent,

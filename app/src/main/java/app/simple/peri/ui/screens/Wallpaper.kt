@@ -79,8 +79,8 @@ import app.simple.peri.viewmodels.TagsViewModel
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
 import dev.chrisbanes.haze.HazeDefaults
 import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.haze
-import dev.chrisbanes.haze.hazeChild
+import dev.chrisbanes.haze.hazeEffect
+import dev.chrisbanes.haze.hazeSource
 import kotlinx.coroutines.launch
 import me.saket.telephoto.zoomable.glide.ZoomableGlideImage
 
@@ -246,7 +246,7 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
         Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .haze(state = hazeState)
+                    .hazeSource(state = hazeState)
                     .drawWithContent {
                         // call record to capture the content in the graphics layer
                         graphicsLayer.record {
@@ -290,9 +290,8 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
                         .wrapContentHeight()
                         .windowInsetsPadding(WindowInsets.safeDrawing)
                         .clip(RoundedCornerShape(32.dp))
-                        .hazeChild(
-                                state = hazeState,
-                                style = HazeDefaults.style(backgroundColor = Color(0x50000000), blurRadius = 15.dp)
+                        .hazeEffect(state = hazeState,
+                                    style = HazeDefaults.style(backgroundColor = Color(0x50000000), blurRadius = 15.dp)
                         ),
                     shape = RoundedCornerShape(32.dp),
                     colors = CardDefaults.cardColors(

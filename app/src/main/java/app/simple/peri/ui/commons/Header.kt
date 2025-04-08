@@ -28,7 +28,7 @@ import androidx.navigation.NavController
 import app.simple.peri.R
 import app.simple.peri.ui.nav.Routes
 import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.hazeChild
+import dev.chrisbanes.haze.hazeEffect
 import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
 import dev.chrisbanes.haze.materials.HazeMaterials
 
@@ -108,7 +108,7 @@ fun BottomHeader(title: String,
                 .shadow(elevation = 24.dp,
                         spotColor = MaterialTheme.colorScheme.onSurfaceVariant,
                         ambientColor = MaterialTheme.colorScheme.surfaceVariant)
-                .hazeChild(
+                .hazeEffect(
                         state = hazeState,
                         style = HazeMaterials.regular()
                 ),

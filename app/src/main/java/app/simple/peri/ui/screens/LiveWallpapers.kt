@@ -64,8 +64,8 @@ import app.simple.peri.viewmodels.LiveWallpapersViewModel
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import dev.chrisbanes.haze.HazeDefaults
 import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.haze
-import dev.chrisbanes.haze.hazeChild
+import dev.chrisbanes.haze.hazeEffect
+import dev.chrisbanes.haze.hazeSource
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -127,7 +127,7 @@ fun LiveWallpapers(navController: NavHostController) {
                 columns = GridCells.Fixed(MainComposePreferences.getGridSpanCount(isLandscape)),
                 modifier = Modifier
                     .fillMaxSize()
-                    .haze(state = hazeState),
+                    .hazeSource(state = hazeState),
                 contentPadding = PaddingValues(
                         top = topPadding,
                         start = 8.dp,
@@ -216,16 +216,15 @@ fun LiveWallpapers(navController: NavHostController) {
                                 contentDescription = liveWallpaperInfo.name,
                                 modifier = Modifier
                                     .fillMaxSize()
-                                    .haze(localHazeState),
+                                    .hazeSource(localHazeState),
                                 contentScale = ContentScale.Crop
                         )
                         Column(
                                 modifier = Modifier
                                     .wrapContentHeight()
                                     .fillMaxWidth()
-                                    .hazeChild(
-                                            state = localHazeState,
-                                            style = HazeDefaults.style(backgroundColor = Color(0x50000000), blurRadius = 25.dp)
+                                    .hazeEffect(state = localHazeState,
+                                                style = HazeDefaults.style(backgroundColor = Color(0x50000000), blurRadius = 25.dp)
                                     )
                                     .align(Alignment.BottomCenter)
                         ) {

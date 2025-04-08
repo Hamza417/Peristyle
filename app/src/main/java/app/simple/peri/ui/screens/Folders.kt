@@ -71,8 +71,8 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import dev.chrisbanes.haze.HazeDefaults
 import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.haze
-import dev.chrisbanes.haze.hazeChild
+import dev.chrisbanes.haze.hazeEffect
+import dev.chrisbanes.haze.hazeSource
 
 @Composable
 fun Folders(navController: NavController? = null) {
@@ -119,7 +119,7 @@ fun Folders(navController: NavController? = null) {
                 columns = StaggeredGridCells.Fixed(2),
                 modifier = Modifier
                     .fillMaxSize()
-                    .haze(state = hazeState),
+                    .hazeSource(state = hazeState),
                 contentPadding = PaddingValues(
                         top = topPadding,
                         start = 8.dp,
@@ -271,7 +271,7 @@ fun FolderItem(folder: Folder, navController: NavController? = null, composeWall
                     model = ContextFolder(folder, context = LocalContext.current.applicationContext),
                     contentDescription = null,
                     transition = CrossFade,
-                    modifier = Modifier.haze(hazeState),
+                    modifier = Modifier.hazeSource(hazeState),
             ) {
                 it
                     .disallowHardwareConfig()
@@ -281,9 +281,8 @@ fun FolderItem(folder: Folder, navController: NavController? = null, composeWall
                     modifier = Modifier
                         .fillMaxWidth()
                         .wrapContentHeight()
-                        .hazeChild(
-                                state = hazeState,
-                                style = HazeDefaults.style(backgroundColor = Color(0x50000000), blurRadius = 5.dp)
+                        .hazeEffect(state = hazeState,
+                                    style = HazeDefaults.style(backgroundColor = Color(0x50000000), blurRadius = 5.dp)
                         )
                         .align(Alignment.BottomCenter)
             ) {

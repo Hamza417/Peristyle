@@ -97,8 +97,8 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import dev.chrisbanes.haze.HazeDefaults
 import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.haze
-import dev.chrisbanes.haze.hazeChild
+import dev.chrisbanes.haze.hazeEffect
+import dev.chrisbanes.haze.hazeSource
 import kotlin.math.absoluteValue
 
 val displayDimension = DisplayDimension(1080, 1920)
@@ -294,7 +294,7 @@ fun WallpaperItem(title: String, position: Int, onClick: () -> Unit, onNextWallp
                     transition = CrossFade,
                     modifier = Modifier
                         .fillMaxSize()
-                        .haze(state = hazeState),
+                        .hazeSource(state = hazeState),
                     alignment = Alignment.Center,
                     contentScale = currentScale.value,
             ) {
@@ -345,9 +345,8 @@ fun WallpaperItem(title: String, position: Int, onClick: () -> Unit, onNextWallp
                     modifier = Modifier
                         .wrapContentHeight()
                         .fillMaxWidth()
-                        .hazeChild(
-                                state = hazeState,
-                                style = HazeDefaults.style(backgroundColor = Color(0x50000000), blurRadius = 15.dp)
+                        .hazeEffect(state = hazeState,
+                                    style = HazeDefaults.style(backgroundColor = Color(0x50000000), blurRadius = 15.dp)
                         )
                         .align(Alignment.BottomCenter)
             ) {

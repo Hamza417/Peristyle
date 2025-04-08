@@ -46,7 +46,7 @@ import app.simple.peri.viewmodels.StateViewModel
 import app.simple.peri.viewmodels.TagsViewModel
 import app.simple.peri.viewmodels.WallpaperListViewModel
 import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.haze
+import dev.chrisbanes.haze.hazeSource
 
 @Composable
 fun TaggedWallpapers(navController: NavController? = null) {
@@ -122,7 +122,7 @@ fun TaggedWallpapers(navController: NavController? = null) {
                 state = wallpaperListViewModel.lazyGridState,
                 modifier = Modifier
                     .fillMaxSize()
-                    .haze(state = hazeState),
+                    .hazeSource(state = hazeState),
                 contentPadding = PaddingValues(
                         top = if (MainComposePreferences.getBottomHeader()) {
                             if (MainComposePreferences.getMarginBetween()) {
