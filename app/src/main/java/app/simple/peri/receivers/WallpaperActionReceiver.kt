@@ -8,7 +8,9 @@ import android.content.Intent
 import app.simple.peri.abstraction.AbstractComposeAutoWallpaperService
 import app.simple.peri.database.instances.WallpaperDatabase
 import app.simple.peri.services.AutoWallpaperService
+import app.simple.peri.utils.ConditionUtils.invert
 import app.simple.peri.utils.FileUtils.toFile
+import app.simple.peri.utils.ServiceUtils
 import app.simple.peri.utils.WallpaperServiceNotification
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -40,7 +42,10 @@ class WallpaperActionReceiver : BroadcastReceiver() {
         val file = intent.getStringExtra(AbstractComposeAutoWallpaperService.EXTRA_WALLPAPER_PATH)!!.toFile()
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        wallpaperManager.clear(flag)
+        if (ServiceUtils.isWallpaperServiceRunning(context).invert()) {
+            wallpaperManager.clear(flag)
+        }
+
         launchDeleteService(file, context)
         notificationManager.cancel(notificationId)
     }
