@@ -48,6 +48,7 @@ class WallpaperActionReceiver : BroadcastReceiver() {
 
         launchDeleteService(file, context)
         notificationManager.cancel(notificationId)
+        sendNextWallpaperIntent(context)
     }
 
     private fun launchDeleteService(file: File, context: Context) {
