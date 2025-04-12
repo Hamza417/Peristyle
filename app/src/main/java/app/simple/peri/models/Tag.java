@@ -22,11 +22,12 @@ public class Tag implements Parcelable {
     
     @ColumnInfo (name = "ids")
     @TypeConverters (IDListConverter.class)
-    private HashSet <String> sum;
+    @NonNull
+    private HashSet <String> sum = new HashSet <>();
     
-    public Tag(@NonNull String name, HashSet <String> sum) {
+    public Tag(@NonNull String name, @NonNull HashSet <String> sum) {
         this.name = name;
-        this.sum = sum != null ? new HashSet <>(sum) : new HashSet <>();
+        this.sum = new HashSet <>(sum);
     }
     
     protected Tag(Parcel in) {
@@ -43,7 +44,7 @@ public class Tag implements Parcelable {
         return 0;
     }
     
-    public static final Creator <Tag> CREATOR = new Creator <Tag>() {
+    public static final Creator <Tag> CREATOR = new Creator <>() {
         @Override
         public Tag createFromParcel(Parcel in) {
             return new Tag(in);
