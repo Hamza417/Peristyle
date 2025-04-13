@@ -5,10 +5,14 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import app.simple.peri.database.dao.TagsDao
+import app.simple.peri.database.migrations.TagsMigration
 import app.simple.peri.models.Tag
 import app.simple.peri.utils.ConditionUtils.invert
 
-@Database(entities = [Tag::class], version = 2)
+@Database(
+        entities = [Tag::class],
+        version = 3,
+)
 abstract class TagsDatabase : RoomDatabase() {
     abstract fun tagsDao(): TagsDao
 
@@ -21,12 +25,12 @@ abstract class TagsDatabase : RoomDatabase() {
             kotlin.runCatching {
                 if (instance!!.isOpen.invert()) {
                     instance = Room.databaseBuilder(context, TagsDatabase::class.java, DATABASE_NAME)
-                        .fallbackToDestructiveMigration()
+                        .addMigrations(TagsMigration(2, 3))
                         .build()
                 }
             }.getOrElse {
                 instance = Room.databaseBuilder(context, TagsDatabase::class.java, DATABASE_NAME)
-                    .fallbackToDestructiveMigration()
+                    .addMigrations(TagsMigration(2, 3))
                     .build()
             }
 

@@ -23,12 +23,10 @@ abstract class LastHomeWallpapersDatabase : RoomDatabase() {
             kotlin.runCatching {
                 if (instance!!.isOpen.invert()) {
                     instance = Room.databaseBuilder(context, LastHomeWallpapersDatabase::class.java, DB_NAME)
-                        .fallbackToDestructiveMigration()
                         .build()
                 }
             }.getOrElse {
                 instance = Room.databaseBuilder(context, LastHomeWallpapersDatabase::class.java, DB_NAME)
-                    .fallbackToDestructiveMigration()
                     .build()
             }
 
@@ -41,7 +39,6 @@ abstract class LastHomeWallpapersDatabase : RoomDatabase() {
                 instance?.clearAllTables()
             }.getOrElse {
                 Room.databaseBuilder(context, LastHomeWallpapersDatabase::class.java, DB_NAME)
-                    .fallbackToDestructiveMigration()
                     .build()
                     .clearAllTables()
             }

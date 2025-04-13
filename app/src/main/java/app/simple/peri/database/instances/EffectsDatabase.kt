@@ -21,13 +21,10 @@ abstract class EffectsDatabase : RoomDatabase() {
             kotlin.runCatching {
                 if (instance!!.isOpen.invert()) {
                     instance = Room.databaseBuilder(context, EffectsDatabase::class.java, DATABASE_NAME)
-                        .fallbackToDestructiveMigration()
                         .build()
                 }
             }.getOrElse {
-                instance = Room.databaseBuilder(context, EffectsDatabase::class.java, DATABASE_NAME)
-                    .fallbackToDestructiveMigration()
-                    .build()
+                instance = Room.databaseBuilder(context, EffectsDatabase::class.java, DATABASE_NAME).build()
             }
 
             return instance

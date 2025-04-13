@@ -6,6 +6,34 @@ plugins {
     id 'org.jetbrains.kotlin.plugin.compose'
 }
 
+static def loadProperties(filePath) {
+    def properties = new Properties()
+    def file = new File(filePath)
+    if (file.exists()) {
+        properties.load(new FileInputStream(file))
+    } else {
+        println("Properties file not found: $filePath")
+    }
+    return properties
+}
+
+static def findKeystoreFile(properties) {
+    def path = System.getProperty("user.home") + "/work/_temp/keystore/"
+    def fallbackPath = properties.get("KEYSTORE_PATH")
+    def keystoreFileName = "key.jks"
+    def keystoreFile = new File(path, keystoreFileName)
+
+    if (!keystoreFile.exists() && fallbackPath != null) {
+        keystoreFile = new File(fallbackPath)
+    }
+
+    return keystoreFile
+}
+
+static def getEnvOrProperty(envKey, properties) {
+    return System.getenv(envKey) ?: properties.get(envKey)
+}
+
 android {
     namespace 'app.simple.peri'
     compileSdk 35
@@ -37,17 +65,17 @@ android {
 
     signingConfigs {
         release {
-            def path = System.getProperty("user.home") + "/work/_temp/keystore/"
-            def keystoreFileName = "key.jks"
-            def keystoreFile = new File(path, keystoreFileName)
+            def properties = loadProperties("local.properties")
+            def keystoreFile = findKeystoreFile(properties)
 
             if (keystoreFile.exists()) {
                 storeFile = keystoreFile
-                storePassword = System.getenv("SIGNING_STORE_PASSWORD")
-                keyAlias = System.getenv("SIGNING_KEY_ALIAS")
-                keyPassword = System.getenv("SIGNING_KEY_PASSWORD")
+                storePassword = getEnvOrProperty("SIGNING_STORE_PASSWORD", properties)
+                keyAlias = getEnvOrProperty("SIGNING_KEY_ALIAS", properties)
+                keyPassword = getEnvOrProperty("SIGNING_KEY_PASSWORD", properties)
             } else {
-                println("Keystore file not found at: " + keystoreFile)
+                storeFile = null
+                logger.error("Keystore file not found, signing disabled.")
             }
         }
     }
@@ -58,7 +86,9 @@ android {
             shrinkResources true
             vcsInfo.include true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.release
+            if (signingConfigs.release != null && signingConfigs.release.storeFile != null) {
+                signingConfig signingConfigs.release
+            }
         }
 
         pre {
@@ -67,13 +97,18 @@ android {
             vcsInfo.include true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             versionNameSuffix "-pre"
-            signingConfig signingConfigs.release
+            if (signingConfigs.release != null && signingConfigs.release.storeFile != null) {
+                signingConfig signingConfigs.release
+            }
         }
 
         debug {
             minifyEnabled false
             shrinkResources false
             vcsInfo.include false
+            if (signingConfigs.release != null && signingConfigs.release.storeFile != null) {
+                signingConfig signingConfigs.release
+            }
         }
     }
 
@@ -98,7 +133,6 @@ android {
     productFlavors {
         dev {
             dimension "default"
-            applicationIdSuffix ".dev"
             versionNameSuffix "-dev"
         }
         prod {

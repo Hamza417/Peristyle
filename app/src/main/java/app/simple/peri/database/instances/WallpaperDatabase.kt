@@ -21,12 +21,11 @@ abstract class WallpaperDatabase : RoomDatabase() {
             kotlin.runCatching {
                 if (instance!!.isOpen.invert()) {
                     instance = Room.databaseBuilder(context, WallpaperDatabase::class.java, DATABASE_NAME)
-                        .fallbackToDestructiveMigration()
+
                         .build()
                 }
             }.getOrElse {
                 instance = Room.databaseBuilder(context, WallpaperDatabase::class.java, DATABASE_NAME)
-                    .fallbackToDestructiveMigration()
                     .build()
             }
 
