@@ -36,6 +36,7 @@ import app.simple.peri.R
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.ui.commons.FolderBrowser
 import app.simple.peri.ui.constants.DIALOG_OPTION_FONT_SIZE
+import app.simple.peri.ui.dialogs.common.SureDialog
 import app.simple.peri.utils.FileUtils.toFile
 import app.simple.peri.viewmodels.ComposeWallpaperViewModel
 import kotlinx.coroutines.Dispatchers
@@ -58,6 +59,7 @@ fun WallpaperMenu(
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     var launchDirectoryPicker by remember { mutableStateOf(false) }
+    var deleteSure by remember { mutableStateOf(false) }
     val composeWallpaperViewModel: ComposeWallpaperViewModel = viewModel(LocalActivity.current as ComponentActivity)
 
     if (launchDirectoryPicker) {
@@ -71,6 +73,29 @@ fun WallpaperMenu(
                         Log.i("WallpaperMenu", "Wallpaper moved: $it")
                         setShowDialog(false)
                     }
+                }
+        )
+    }
+
+    if (deleteSure) {
+        SureDialog(
+                title = stringResource(R.string.delete),
+                message = wallpaper.name ?: "",
+                onSure = {
+                    coroutineScope.launch(Dispatchers.IO) {
+                        if (wallpaper.filePath.toFile().delete()) {
+                            withContext(Dispatchers.Main) {
+                                composeWallpaperViewModel.removeWallpaper(wallpaper)
+                                onDelete(wallpaper)
+                                deleteSure = false
+                                setShowDialog(false)
+                            }
+                        }
+                    }
+                },
+                onDismiss = {
+                    deleteSure = false
+                    setShowDialog(true)
                 }
         )
     }
@@ -120,15 +145,7 @@ fun WallpaperMenu(
 
                         Button(
                                 onClick = {
-                                    coroutineScope.launch(Dispatchers.IO) {
-                                        if (wallpaper.filePath.toFile().delete()) {
-                                            withContext(Dispatchers.Main) {
-                                                composeWallpaperViewModel.removeWallpaper(wallpaper)
-                                                onDelete(wallpaper)
-                                                setShowDialog(false)
-                                            }
-                                        }
-                                    }
+                                    deleteSure = true
                                 },
                                 colors = ButtonDefaults.buttonColors(
                                         containerColor = Color.Transparent,
@@ -139,7 +156,7 @@ fun WallpaperMenu(
                         ) {
                             Text(
                                     text = context.getString(R.string.delete),
-                                    color = MaterialTheme.colorScheme.onSurface,
+                                    color = Color.Red,
                                     fontSize = DIALOG_OPTION_FONT_SIZE,
                                     fontWeight = FontWeight.SemiBold
                             )

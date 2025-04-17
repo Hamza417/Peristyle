@@ -15,10 +15,10 @@ fun SureDialog(
         title: String = stringResource(R.string.delete),
         message: String,
         onSure: () -> Unit,
-        onDismissRequest: () -> Unit
+        onDismiss: () -> Unit
 ) {
     AlertDialog(
-            onDismissRequest = { onDismissRequest() },
+            onDismissRequest = { onDismiss() },
             title = {
                 Text(text = title)
             },
@@ -38,7 +38,7 @@ fun SureDialog(
                 }
             },
             dismissButton = {
-                Button(onClick = { onDismissRequest() }) {
+                Button(onClick = { onDismiss() }) {
                     Text(stringResource(id = R.string.no))
                 }
             },

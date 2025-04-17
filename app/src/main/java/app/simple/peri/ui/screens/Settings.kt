@@ -224,7 +224,7 @@ fun Settings(navController: NavController? = null) {
                             composeWallpaperViewModel.recreateDatabase()
                             showRecreateDatabaseDialog.value = false
                         },
-                        onDismissRequest = {
+                        onDismiss = {
                             showRecreateDatabaseDialog.value = false
                         }
                 )

@@ -69,8 +69,8 @@ import app.simple.peri.R
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.ui.dialogs.common.AddTagDialog
+import app.simple.peri.ui.dialogs.common.SureDialog
 import app.simple.peri.ui.dialogs.menus.WallpaperMenu
-import app.simple.peri.ui.dialogs.settings.SureDialog
 import app.simple.peri.ui.nav.Routes
 import app.simple.peri.utils.FileUtils.toFile
 import app.simple.peri.utils.FileUtils.toSize
@@ -394,8 +394,8 @@ fun SelectionMenu(
 
     if (showDeleteSureDialog) {
         SureDialog(title = stringResource(R.string.delete),
-                   text = stringResource(R.string.delete_message, selectedWallpapers.count { it.isSelected }),
-                   onConfirm = {
+                   message = stringResource(R.string.delete_message, selectedWallpapers.count { it.isSelected }),
+                   onSure = {
                        // Delete the selected wallpapers
                        showDeleteSureDialog = false
                        wallpaperListViewModel.deleteSelectedWallpapers(selectedWallpapers.toMutableList())
