@@ -53,6 +53,7 @@ import app.simple.peri.ui.dialogs.autowallpaper.FoldersDialog
 import app.simple.peri.ui.dialogs.autowallpaper.TagsDialog
 import app.simple.peri.ui.dialogs.autowallpaper.TimeSelectionDialog
 import app.simple.peri.ui.dialogs.wallpaper.AutoWallpaperEffectsDialog
+import app.simple.peri.ui.settings.SkipColumn
 
 @Composable
 fun LiveAutoWallpaper(navController: NavController? = null) {
@@ -329,22 +330,6 @@ fun LiveAutoWallpaper(navController: NavController? = null) {
                 MainComposePreferences.setAutoWallpaperNotification(it)
             }
 
-            SwitchPreference(
-                    title = context.getString(R.string.skip_when_portrait),
-                    description = context.getString(R.string.skip_when_portrait_summary),
-                    checked = MainComposePreferences.getDontChangeWhenPortrait()
-            ) {
-                MainComposePreferences.setDontChangeWhenPortrait(it)
-            }
-
-            SwitchPreference(
-                    title = context.getString(R.string.skip_when_landscape),
-                    description = context.getString(R.string.skip_when_landscape_summary),
-                    checked = MainComposePreferences.getDontChangeWhenLandscape()
-            ) {
-                MainComposePreferences.setDontChangeWhenLandscape(it)
-            }
-
             if (showEffectsDialog.value) {
                 AutoWallpaperEffectsDialog(
                         setShowDialog = { showEffectsDialog.value = it },
@@ -372,6 +357,9 @@ fun LiveAutoWallpaper(navController: NavController? = null) {
                         }
                 )
             }
+        }
+        item {
+            SkipColumn()
         }
     }
 }
