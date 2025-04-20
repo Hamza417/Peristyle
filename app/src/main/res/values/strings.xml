@@ -226,4 +226,8 @@
     <string name="show_lock_screen_wallpaper_summary">Show or hide lock screen wallpaper from the main screen.</string>
     <string name="every_3_days">Every 3 Days</string>
     <string name="every_7_days">Every 7 Days</string>
+    <string name="skip_when_portrait">Skip When Portrait</string>
+    <string name="skip_when_portrait_summary">Skip changing wallpaper when device is in portrait mode and wait for next cycle.</string>
+    <string name="skip_when_landscape">Skip When Landscape</string>
+    <string name="skip_when_landscape_summary">Skip changing wallpaper when device is in landscape mode and wait for next cycle.</string>
 </resources>

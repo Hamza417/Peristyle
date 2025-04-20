@@ -8,6 +8,8 @@ import app.simple.peri.R
 import app.simple.peri.abstraction.AbstractAutoLiveWallpaperService
 import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.preferences.SharedPreferences
+import app.simple.peri.utils.ScreenUtils.isLandscape
+import app.simple.peri.utils.ScreenUtils.isPortrait
 import java.io.File
 
 class AutoWallpaperService : AbstractAutoLiveWallpaperService() {
@@ -82,6 +84,11 @@ class AutoWallpaperService : AbstractAutoLiveWallpaperService() {
     private fun init() {
         SharedPreferences.init(applicationContext)
 
+        if (shouldSkip()) {
+            stopSelf()
+            return
+        }
+
         if (isWallpaperServiceRunning()) {
             Log.i(TAG, "Wallpaper service is running, setting next wallpaper through live wallpaper service")
             postLiveWallpaper {
@@ -93,6 +100,24 @@ class AutoWallpaperService : AbstractAutoLiveWallpaperService() {
                 isNextWallpaperActionRunning = false
             }
         }
+    }
+
+    private fun shouldSkip(): Boolean {
+        if (MainComposePreferences.getDontChangeWhenPortrait()) {
+            if (applicationContext.isPortrait()) {
+                Log.d(TAG, "Skipping wallpaper change because device is in portrait mode")
+                return true
+            }
+        }
+
+        if (MainComposePreferences.getDontChangeWhenLandscape()) {
+            if (applicationContext.isLandscape()) {
+                Log.d(TAG, "Skipping wallpaper change because device is locked")
+                return true
+            }
+        }
+
+        return false
     }
 
     companion object {

@@ -120,6 +120,10 @@ object ScreenUtils {
         return resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
     }
 
+    fun Context.isPortrait(): Boolean {
+        return resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+    }
+
     fun isDeviceLocked(context: Context): Boolean {
         return (context.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager).isDeviceLocked
     }

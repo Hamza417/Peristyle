@@ -329,6 +329,22 @@ fun LiveAutoWallpaper(navController: NavController? = null) {
                 MainComposePreferences.setAutoWallpaperNotification(it)
             }
 
+            SwitchPreference(
+                    title = context.getString(R.string.skip_when_portrait),
+                    description = context.getString(R.string.skip_when_portrait_summary),
+                    checked = MainComposePreferences.getDontChangeWhenPortrait()
+            ) {
+                MainComposePreferences.setDontChangeWhenPortrait(it)
+            }
+
+            SwitchPreference(
+                    title = context.getString(R.string.skip_when_landscape),
+                    description = context.getString(R.string.skip_when_landscape_summary),
+                    checked = MainComposePreferences.getDontChangeWhenLandscape()
+            ) {
+                MainComposePreferences.setDontChangeWhenLandscape(it)
+            }
+
             if (showEffectsDialog.value) {
                 AutoWallpaperEffectsDialog(
                         setShowDialog = { showEffectsDialog.value = it },
