@@ -227,4 +227,8 @@
     <string name="show_lock_screen_wallpaper_summary">Ana ekrandan kilit ekranı duvar kağıdını gösterin veya gizleyin.</string>
     <string name="every_3_days">Her 3 Günde Bir</string>
     <string name="every_7_days">Her 7 Günde Bir</string>
+    <string name="skip_when_portrait">Dikey Moddayken Atla</string>
+    <string name="skip_when_landscape">Yatay Moddayken Atla</string>
+    <string name="skip_when_condition_summary">Belirli koşullar altında duvar kağıdını ayarlamayı atla ve bir sonraki döngüyü bekle.</string>
+    <string name="skip">Atla</string>
 </resources>
