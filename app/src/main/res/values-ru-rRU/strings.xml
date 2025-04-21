@@ -227,4 +227,8 @@
     <string name="show_lock_screen_wallpaper_summary">Показывает или скрывает обои экрана блокировки в списке.</string>
     <string name="every_3_days">Каждые 3 дня</string>
     <string name="every_7_days">Каждые 7 дней</string>
+    <string name="skip_when_portrait">Пропустить при портретной ориентации</string>
+    <string name="skip_when_landscape">Пропустить при альбомной ориентации</string>
+    <string name="skip_when_condition_summary">Пропустить установку обоев при определенных условиях и дождаться следующего цикла.</string>
+    <string name="skip">Пропустить</string>
 </resources>
