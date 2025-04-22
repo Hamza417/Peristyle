@@ -67,6 +67,7 @@ object MainComposePreferences {
     private const val SHOW_LOCK_SCREEN_WALLPAPER = "show_lock_screen_wallpaper"
     private const val DONT_CHANGE_WHEN_LANDSCAPE = "dont_change_when_landscape"
     private const val DONT_CHANGE_WHEN_PORTRAIT = "dont_change_when_portrait"
+    private const val DONT_CHANGE_WHEN_LOW_BATTERY = "dont_change_when_low_battery"
 
     // ----------------------------------------------------------------------------------------------------- //
 
@@ -771,5 +772,15 @@ object MainComposePreferences {
 
     fun setDontChangeWhenPortrait(value: Boolean) {
         getSharedPreferences().edit().putBoolean(DONT_CHANGE_WHEN_PORTRAIT, value).apply()
+    }
+
+    // ----------------------------------------------------------------------------------------------------- //
+
+    fun getDontChangeWhenLowBattery(): Boolean {
+        return getSharedPreferences().getBoolean(DONT_CHANGE_WHEN_LOW_BATTERY, false)
+    }
+
+    fun setDontChangeWhenLowBattery(value: Boolean) {
+        getSharedPreferences().edit().putBoolean(DONT_CHANGE_WHEN_LOW_BATTERY, value).apply()
     }
 }

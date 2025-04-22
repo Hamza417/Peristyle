@@ -8,6 +8,8 @@ import app.simple.peri.R
 import app.simple.peri.abstraction.AbstractAutoLiveWallpaperService
 import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.preferences.SharedPreferences
+import app.simple.peri.utils.BatteryUtils.getBatteryPercentage
+import app.simple.peri.utils.BatteryUtils.isLowBattery
 import app.simple.peri.utils.ScreenUtils.isLandscape
 import app.simple.peri.utils.ScreenUtils.isPortrait
 import java.io.File
@@ -113,6 +115,13 @@ class AutoWallpaperService : AbstractAutoLiveWallpaperService() {
         if (MainComposePreferences.getDontChangeWhenLandscape()) {
             if (applicationContext.isLandscape()) {
                 Log.d(TAG, "Skipping wallpaper change because device is locked")
+                return true
+            }
+        }
+
+        if (MainComposePreferences.getDontChangeWhenLowBattery()) {
+            if (applicationContext.isLowBattery()) {
+                Log.d(TAG, "Skipping wallpaper change because battery is low: ${applicationContext.getBatteryPercentage()}%")
                 return true
             }
         }

@@ -29,4 +29,12 @@ fun SkipColumn() {
     ) {
         MainComposePreferences.setDontChangeWhenLandscape(it)
     }
+
+    SwitchPreference(
+            title = stringResource(R.string.skip_when_low_battery),
+            checked = MainComposePreferences.getDontChangeWhenLowBattery(),
+            topPadding = 4.dp
+    ) {
+        MainComposePreferences.setDontChangeWhenLowBattery(it)
+    }
 }
