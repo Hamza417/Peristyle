@@ -207,7 +207,7 @@
     <string name="max_process">Макс. одновременных процессов</string>
     <string name="max_process_summary">Выберите максимальное количество одновременных процессов.</string>
     <string name="max_process_desc">Измените эти настройки, только если ваше устройство может справиться с этим, установка значения вне возможности может сделать приложение непригодным и в некоторых случаях может заморозить или сбой устройства.</string>
-    <string name="no_sd_card_found">SD карта не найдена!</string>
+    <string name="no_sd_card_found">Карта памяти не найдена!</string>
     <string name="done">Готово</string>
     <string name="revoke">Отозвать</string>
     <string name="move">Переместить</string>
