@@ -231,4 +231,5 @@
     <string name="skip_when_landscape">Пропустить при альбомной ориентации</string>
     <string name="skip_when_condition_summary">Пропустить установку обоев при определенных условиях и дождаться следующего цикла.</string>
     <string name="skip">Пропустить</string>
+    <string name="skip_when_low_battery">Пропустить при низком заряде батареи</string>
 </resources>
