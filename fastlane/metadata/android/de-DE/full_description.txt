@@ -1,0 +1,21 @@
+Peristyle wurde als ebenso einfacher wie durchdachter Hintergrundbild-Manager und -Browser für Android entwickelt. Er löst die Problematik komplexer und überladener Apps mit mangelhafter Unterstützung für lokal gespeicherte Hintergrundbilder. Was wäre, wenn Du nur eine App brauchst, um Deine lokal gespeicherten Hintergrundbilder zu durchstöbern, auszuwählen und sie von dort zu verwalten und anzuwenden? Dann ist Peristyle das Richtige für Dich :)
+
+Merkmale:
+
+- Einfache Architektur: durchsuche Hintergrundbilder und verwende die Hintergrund-Verwaltung des Systems, um sie festzulegen.
+- Unterstützung unterschiedlicher Ordner.
+- Möglichkeit, jedem Hintergrund Tags zuzuordnen.
+- Kann .nomedia-Verzeichnisse durchsuchen; nützlich, um Hintergrundbilder von der Galerie fernzuhalten.
+- Unschärfe und Farbfilter dynamisch auf jedes Hintergrundbild anwenden, bevor es festgelegt wird.
+- Einfache aber schöne Animationen mit den richtigen Optimierungen.
+- Komprimiere oder verkleinerte Bilder ganz nebenbei.
+- Keine Werbung, kein Tracking, keine Analytics, kein Internet-Zugriff, keine unnötigen Berechtigungen.
+- Unterstützt automatische Hintergrund-Änderung mit dedizierten Ordnern und Tags für jeden Bildschirm.
+- Hintergrund-Änderung mittels des Live-Hintergrunds der App
+- Bearbeite Hintergrundbilder verlustfrei und wende Filter in Echtzeit an.
+- Integrierte Live-Hintergrundauswahl.
+- Unterstützung von Dunklem Design.
+- Glasmorphe Benutzeroberfläche, basierend auf Echtzeit-Unschärfeeffekten und kausalen Schatten.
+- Material You-Farbthema.
+- Vollständig reproduzierbarer Build.
+- Ladefreie Software-Architektur.
