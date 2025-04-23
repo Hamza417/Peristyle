@@ -227,4 +227,9 @@
     <string name="show_lock_screen_wallpaper_summary">Sperrbildschirm-Hintergrund im Startbildschirm anzeigen oder ausblenden.</string>
     <string name="every_3_days">Alle 3 Tage</string>
     <string name="every_7_days">Wöchentlich</string>
+    <string name="skip_when_portrait">Im Hochformat überspringen</string>
+    <string name="skip_when_landscape">Im Querformat überspringen</string>
+    <string name="skip_when_condition_summary">Festlegen eines Hintergrundbildes unter bestimmten Voraussetzungen überspringen und nächsten Durchlauf abwarten.</string>
+    <string name="skip">Überspringen</string>
+    <string name="skip_when_low_battery">Bei niedrigem Akkustand überspringen</string>
 </resources>
