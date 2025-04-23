@@ -15,11 +15,11 @@
     <string name="order">Reihenfolge</string>
     <string name="ascending">Aufsteigend</string>
     <string name="descending">Absteigend</string>
-    <string name="full_info">Peri ist eine einfache Wallpaper Manager App.\nEntwickelt von Hamza Rizwan.\n%1$s</string>
+    <string name="full_info">Peristyle ist eine einfache Hintergrundverwaltungs-App.\nEntwickelt von Hamza Rizwan.\n%1$s</string>
     <string name="close">Schließen</string>
-    <string name="delete_message">Sind Sie sicher, dass Sie %1$s Hintergrundbilder löschen möchten?</string>
+    <string name="delete_message">Bist Du sicher, dass Du %1$s Hintergrundbilder löschen möchtest?</string>
     <string name="no_wallpaper_selected">Kein Hintergrundbild ausgewählt</string>
-    <string name="send_message">Sind Sie sicher, dass Sie %1$s Hintergrundbilder versenden möchten?</string>
+    <string name="send_message">Bist Du sicher, dass Du %1$s Hintergrundbilder versenden möchtest?</string>
     <string name="show_wallpaper_names_on_the_main_screen">Zeige Namen von Hintergrundbildern auf dem Hauptbildschirm</string>
     <string name="enabled_wallpaper_names">Hintergrundbild-Namen aktivieren</string>
     <string name="home">Startseite</string>
