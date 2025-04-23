@@ -227,4 +227,9 @@
     <string name="show_lock_screen_wallpaper_summary">عرض أو إخفاء خلفية شاشة القفل على الشاشة الرئيسة.</string>
     <string name="every_3_days">كل 3 أيام</string>
     <string name="every_7_days">كل 7 أيام</string>
+    <string name="skip_when_portrait">التخطي إذا كانت رأسية</string>
+    <string name="skip_when_landscape">التخطي إذا كانت أفقية</string>
+    <string name="skip_when_condition_summary">تخطي إعداد الخلفية تحت ظروف معينة وانتظار الدورة التالية.</string>
+    <string name="skip">تخطي</string>
+    <string name="skip_when_low_battery">التخطي إذا كانت البطارية منخفضة</string>
 </resources>
