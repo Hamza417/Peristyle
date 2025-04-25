@@ -39,26 +39,32 @@ abstract class AbstractAutoWallpaperService : Service() {
         }
     }
 
-    protected suspend fun getRandomWallpaperFromDatabase(): Wallpaper {
+    @Throws(NoSuchElementException::class)
+    protected suspend fun getRandomWallpaperFromDatabase(): Wallpaper? {
         return withContext(Dispatchers.IO) {
-            val dao = WallpaperDatabase.getInstance(applicationContext)?.wallpaperDao()!!
-            val dupDao = LastWallpapersDatabase.getInstance(applicationContext)?.wallpaperDao()!!
+            try {
+                val dao = WallpaperDatabase.getInstance(applicationContext)?.wallpaperDao()!!
+                val dupDao = LastWallpapersDatabase.getInstance(applicationContext)?.wallpaperDao()!!
 
-            if (dao.getWallpapers().deepEquals(dupDao.getWallpapers())) {
-                LastWallpapersDatabase.getInstance(applicationContext)?.clearAllTables()
-                Log.i(TAG, "LastWallpapersDatabase cleared because it was equal to WallpaperDatabase")
-            }
+                if (dao.getWallpapers().deepEquals(dupDao.getWallpapers())) {
+                    LastWallpapersDatabase.getInstance(applicationContext)?.clearAllTables()
+                    Log.i(TAG, "LastWallpapersDatabase cleared because it was equal to WallpaperDatabase")
+                }
 
-            val wallpaper = try {
-                dao.getWallpapers().filterNot { it in dupDao.getWallpapers() }.random()
+                val wallpaper = try {
+                    dao.getWallpapers().filterNot { it in dupDao.getWallpapers() }.random()
+                } catch (e: NoSuchElementException) {
+                    dao.getWallpapers().random()
+                }
+
+                wallpaper.let { dupDao.insert(it) }
+                LastWallpapersDatabase.destroyInstance()
+
+                wallpaper
             } catch (e: NoSuchElementException) {
-                dao.getWallpapers().random()
+                Log.e(TAG, "No wallpapers found in database")
+                null
             }
-
-            wallpaper.let { dupDao.insert(it) }
-            LastWallpapersDatabase.destroyInstance()
-
-            wallpaper
         }
     }
 

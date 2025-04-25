@@ -27,9 +27,7 @@ abstract class AbstractAutoLiveWallpaperService : AbstractComposeAutoWallpaperSe
                     }
                     else -> {
                         Log.d(TAG, "Setting wallpaper for both home and lock screen")
-                        getRandomWallpaperFromDatabase().let { wallpaper ->
-                            setSameWallpaper(wallpaper)
-                        }
+                        setSameWallpaper(getRandomWallpaperFromDatabase()!!)
                     }
                 }
 
@@ -88,10 +86,14 @@ abstract class AbstractAutoLiveWallpaperService : AbstractComposeAutoWallpaperSe
 
     protected fun setPreviewWallpaper() {
         CoroutineScope(Dispatchers.Default).launch {
-            val wallpaper = getRandomWallpaperFromDatabase()
-            val intent = LiveAutoWallpaperService.getIntent(applicationContext, LiveAutoWallpaperService.PREVIEW_WALLPAPER)
-            intent.putExtra(LiveAutoWallpaperService.EXTRA_WALLPAPER, wallpaper as Parcelable)
-            applicationContext.startService(intent)
+            try {
+                val wallpaper = getRandomWallpaperFromDatabase() ?: throw NoSuchElementException("No wallpapers found in database")
+                val intent = LiveAutoWallpaperService.getIntent(applicationContext, LiveAutoWallpaperService.PREVIEW_WALLPAPER)
+                intent.putExtra(LiveAutoWallpaperService.EXTRA_WALLPAPER, wallpaper as Parcelable)
+                applicationContext.startService(intent)
+            } catch (e: NoSuchElementException) {
+                Log.e(TAG, e.stackTraceToString())
+            }
         }
     }
 
