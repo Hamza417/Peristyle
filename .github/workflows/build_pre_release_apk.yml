@@ -28,7 +28,7 @@ jobs:
             -   name: Build GitHub Release APK
                 run: |
                     chmod +x ./gradlew
-                    ./gradlew clean assemblePreRelease --no-build-cache --no-configuration-cache --no-daemon --rerun-tasks
+                    ./gradlew clean assembleProdRelease --no-build-cache --no-configuration-cache --no-daemon --rerun-tasks
                 env:
                     SIGNING_KEY_ALIAS: ${{ secrets.ALIAS }}
                     SIGNING_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
@@ -47,14 +47,8 @@ jobs:
                     echo "VERSION_NAME=$VERSION_NAME" >> $GITHUB_ENV
                     echo "VERSION_CODE=$VERSION_CODE" >> $GITHUB_ENV
 
-            -   name: Set Tag
-                run: |
-                    TAG=$(echo ${{ env.VERSION_NAME }} | tr '[:upper:]' '[:lower:]')
-                    echo "TAG=${TAG}" >> $GITHUB_ENV
-                    echo "Tag: ${TAG}" # Print tag to console
-
             -   name: Archive APKs
                 uses: actions/upload-artifact@v4
                 with:
                     name: ${{ env.VERSION_NAME }} APKs
-                    path: app/build/outputs/apk/pre/release/app-pre-release.apk
+                    path: app/build/outputs/apk/prod/release/app-prod-release.apk
