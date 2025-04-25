@@ -68,6 +68,15 @@ abstract class AbstractAutoWallpaperService : Service() {
         }
     }
 
+    protected suspend fun validateCollection() {
+        withContext(Dispatchers.IO) {
+            kotlin.runCatching {
+                val dao = WallpaperDatabase.getInstance(applicationContext)?.wallpaperDao()
+                dao?.purgeNonExistingWallpapers(WallpaperDatabase.getInstance(applicationContext)!!)
+            }
+        }
+    }
+
     companion object {
         private const val TAG = "AbstractAutoWallpaperService"
     }

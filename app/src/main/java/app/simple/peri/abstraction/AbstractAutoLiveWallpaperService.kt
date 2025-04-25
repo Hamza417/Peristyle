@@ -17,6 +17,8 @@ abstract class AbstractAutoLiveWallpaperService : AbstractComposeAutoWallpaperSe
 
     protected fun postLiveWallpaper(onComplete: () -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
+            validateCollection()
+
             runCatching {
                 when {
                     MainPreferences.isSettingForHomeScreen() -> {

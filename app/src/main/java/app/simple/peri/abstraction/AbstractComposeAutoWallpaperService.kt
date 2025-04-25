@@ -26,6 +26,8 @@ abstract class AbstractComposeAutoWallpaperService : AbstractAutoWallpaperServic
 
     protected fun setComposeWallpaper(onComplete: () -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
+            validateCollection()
+
             runCatching {
                 when {
                     MainPreferences.isSettingForBoth() -> {

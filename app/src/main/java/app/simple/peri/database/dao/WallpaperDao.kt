@@ -13,7 +13,6 @@ import app.simple.peri.models.Wallpaper
 import app.simple.peri.preferences.MainComposePreferences
 import kotlinx.coroutines.flow.Flow
 import java.io.File
-import kotlin.system.measureTimeMillis
 
 @Dao
 interface WallpaperDao {
@@ -129,20 +128,19 @@ interface WallpaperDao {
     fun removeByPathHashcode(hashcode: Int)
 
     fun purgeNonExistingWallpapers(wallpaperDatabase: WallpaperDatabase) {
-        Log.i("WallpaperDao", "Purged non-existing or non-permitted wallpapers in: ${
-            measureTimeMillis {
-                val allPaths = MainComposePreferences.getAllowedPaths()
-                val validHashcode = allPaths.map { it.hashCode() }.toSet()
+        val allPaths = MainComposePreferences.getAllowedPaths()
+        val validHashcode = allPaths
+            .filter { File(it).exists() } // Check if the allowed path exists
+            .map { it.hashCode() }
+            .toSet()
 
-                val wallpaperDao = wallpaperDatabase.wallpaperDao()
-                val allWallpapers = wallpaperDao.getWallpapers()
+        val wallpaperDao = wallpaperDatabase.wallpaperDao()
+        val allWallpapers = wallpaperDao.getWallpapers()
 
-                allWallpapers.forEach { wallpaper ->
-                    if (wallpaper.folderID !in validHashcode || !File(wallpaper.filePath).exists()) {
-                        wallpaperDao.delete(wallpaper)
-                    }
-                }
+        allWallpapers.forEach { wallpaper ->
+            if (wallpaper.folderID !in validHashcode || !File(wallpaper.filePath).exists()) {
+                wallpaperDao.delete(wallpaper)
             }
-        }")
+        }
     }
 }
