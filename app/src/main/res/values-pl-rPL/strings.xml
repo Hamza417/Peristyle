@@ -227,4 +227,9 @@
     <string name="show_lock_screen_wallpaper_summary">Pokaż lub ukryj tapetę z ekranu blokady na ekranie głównym.</string>
     <string name="every_3_days">Co 3 dni</string>
     <string name="every_7_days">Co tydzień</string>
+    <string name="skip_when_portrait">Pomiń portrety</string>
+    <string name="skip_when_landscape">Pomiń krajobrazy</string>
+    <string name="skip_when_condition_summary">Pomiń ustawianie tapety w określonych warunkach i poczekaj na następny cykl.</string>
+    <string name="skip">Pomiń</string>
+    <string name="skip_when_low_battery">Pomiń przy niskim poziomie baterii</string>
 </resources>
