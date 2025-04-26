@@ -1,0 +1,1 @@
+Einfache Hintergrundverwaltungs-App mit Auto-Hintergrund- und Mehrfachordner-Unterstützung.

@@ -231,4 +231,5 @@
     <string name="skip_when_landscape">Yatay Moddayken Atla</string>
     <string name="skip_when_condition_summary">Belirli koşullar altında duvar kağıdını ayarlamayı atla ve bir sonraki döngüyü bekle.</string>
     <string name="skip">Atla</string>
+    <string name="skip_when_low_battery">Düşük Pildeyken Atla</string>
 </resources>
