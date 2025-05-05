@@ -96,7 +96,7 @@
     <string name="hue">Farbton</string>
     <string name="scheduling">Planung</string>
     <string name="auto_wallpaper">Auto-Hintergrund</string>
-    <string name="auto_wallpaper_summary">Ändere System- und Sperrbildschirmhintergründe automatisch über einen bestimmten Zeitraum.</string>
+    <string name="auto_wallpaper_summary">Ändere System- und Sperrbildschirmhintergründe automatisch für einen bestimmten Zeitraum.</string>
     <string name="auto_wallpaper_warning">Möchten Sie Auto-Hintergrund deaktivieren, bevor Sie manuell ein Hintergrundbild einstellen?</string>
     <string name="cancel">Abbrechen</string>
     <string name="crop_wallpaper_summary">Hintergrundbild auf Bildschirmgröße zuschneiden, deaktiviert Hintergrundscrollen.</string>
