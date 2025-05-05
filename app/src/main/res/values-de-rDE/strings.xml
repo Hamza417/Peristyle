@@ -42,7 +42,7 @@
     <string name="clear_cache">Cache leeren</string>
     <string name="recreate_database">Datenbank neu erstellen</string>
     <string name="recreate_database_summary">Erstelle eine neue Hintergrundbild-Datenbank, wenn falsche Daten angezeigt werden.</string>
-    <string name="recreate_database_message">Dies kann je nach Anzahl der Dateien einige Zeit in Anspruch nehmen. Sind Sie sicher?</string>
+    <string name="recreate_database_message">Dies kann je nach Anzahl der Dateien einige Zeit in Anspruch nehmen. Bist Du sicher?</string>
     <string name="edit">Bearbeiten</string>
     <string name="brightness">Helligkeit</string>
     <string name="contrast">Kontrast</string>
@@ -54,7 +54,7 @@
     <string name="error">Fehler</string>
     <string name="still_loading">Hintergrundbilder werden aktualisiert, versuche es in Kürze erneut.</string>
     <string name="no_wallpaper_found">Keine Hintergrundbilder gefunden. Wenn die Liste noch nicht geladen ist, lasse die Liste zuerst laden oder versuche das Verzeichnis zu wechseln.</string>
-    <string name="change_directory">Verzeichnis wechseln</string>
+    <string name="change_directory">Verzeichnis ändern</string>
     <string name="change_directory_desc">Ändere das Verzeichnis des aktuellen Hintergrundbilds.\nDas Ändern des Verzeichnisses erstellt auch die Hintergrundbild-Datenbank neu.\n\n%1$s</string>
     <string name="home_screen">Startbildschirm</string>
     <string name="lock_screen">Sperrbildschirm</string>
