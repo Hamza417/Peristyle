@@ -31,6 +31,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import java.io.File
+import java.io.FileNotFoundException
 
 class HomeScreenViewModel(application: Application) : AndroidViewModel(application), OnSharedPreferenceChangeListener {
 
@@ -58,7 +59,7 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
     private val randomWallpaperData: MutableLiveData<Wallpaper> by lazy {
         MutableLiveData<Wallpaper>().also {
             if (ServiceUtils.isWallpaperServiceRunning(getApplication())) {
-                postlastLiveWallpaper()
+                postLastLiveWallpaper()
             }
         }
     }
@@ -184,7 +185,7 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
         startCountDownFlow()
     }
 
-    private fun postlastLiveWallpaper() {
+    private fun postLastLiveWallpaper() {
         viewModelScope.launch(Dispatchers.Default) {
             try {
                 MainComposePreferences.getLastLiveWallpaperPath()?.toFile()?.let {
@@ -193,6 +194,7 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
                     }
                 }
             } catch (_: NullPointerException) {
+            } catch (_: FileNotFoundException) {
             }
         }
 
@@ -249,7 +251,7 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
         when (key) {
             MainComposePreferences.LAST_LIVE_WALLPAPER_PATH -> {
-                postlastLiveWallpaper()
+                postLastLiveWallpaper()
             }
         }
     }
