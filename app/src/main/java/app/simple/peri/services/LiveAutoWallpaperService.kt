@@ -25,6 +25,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okio.FileNotFoundException
 
 class LiveAutoWallpaperService : WallpaperService() {
 
@@ -133,6 +134,9 @@ class LiveAutoWallpaperService : WallpaperService() {
                             if (localBitmap == null) {
                                 localBitmap = bitmap
                             }
+                        } catch (e: FileNotFoundException) {
+                            Log.e(TAG, "File not found: $filePath", e)
+                            localBitmap = bitmap
                         }
                     }
 
@@ -159,6 +163,7 @@ class LiveAutoWallpaperService : WallpaperService() {
                 fadeStartTime = System.currentTimeMillis()
                 transitionProgress = 0f
             }
+
             bitmap = newBitmap.applyEffects(MainComposePreferences.getWallpaperEffects())
             onSurfaceRedrawNeeded(surfaceHolder) // Trigger the fade animation
         }
