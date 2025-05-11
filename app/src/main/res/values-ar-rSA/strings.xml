@@ -48,7 +48,7 @@
     <string name="contrast">التباين</string>
     <string name="saturation">التشبع</string>
     <string name="data">البيانات</string>
-    <string name="enabled_wallpaper_details">تفعيل تفاصيل الخلفية</string>
+    <string name="enabled_wallpaper_details">تفاصيل الخلفية</string>
     <string name="show_wallpaper_details_on_the_main_screen">عرض تفاصيل الخلفية على الشاشة الرئيسة.</string>
     <string name="high_definition">معاينة عالية الدقة</string>
     <string name="error">خطأ</string>
@@ -87,7 +87,7 @@
     <string name="size_info">قيد حساب الحجم</string>
     <string name="remember_scroll_position_summary">تذكر آخر موضع تمرير للقائمة الرئيسة.</string>
     <string name="remember_scroll_position">تذكر موضع التمرير</string>
-    <string name="margin_between_wallpapers_summary">إضافة مساحة صغيرة بين الخلفيات على الشاشة الرئيسة.</string>
+    <string name="margin_between_wallpapers_summary">إضافة مسافة بين الخلفيات في القائمة.</string>
     <string name="margin_between_wallpapers">هامش بين الخلفيات</string>
     <string name="main_screen_background_summary">وضع لون خلفية الشاشة الرئيسة.</string>
     <string name="main_screen_background">خلفية الشاشة الرئيسة</string>
