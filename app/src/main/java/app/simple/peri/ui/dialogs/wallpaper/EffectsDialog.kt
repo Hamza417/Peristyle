@@ -5,14 +5,20 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Lock
+import androidx.compose.material.icons.rounded.LockOpen
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -50,6 +56,8 @@ fun EffectsDialog(
     val scaleRedValue = remember { mutableFloatStateOf(initialScaleRedValue) }
     val scaleGreenValue = remember { mutableFloatStateOf(initialScaleGreenValue) }
     val scaleBlueValue = remember { mutableFloatStateOf(initialScaleBlueValue) }
+    val isHueLocked = remember { mutableStateOf(false) }
+    val isScaleLocked = remember { mutableStateOf(false) }
 
     LaunchedEffect(blurValue.floatValue,
                    brightnessValue.floatValue,
@@ -165,7 +173,15 @@ fun EffectsDialog(
                     Row {
                         Slider(
                                 value = hueRedValue.floatValue,
-                                onValueChange = { hueRedValue.floatValue = it },
+                                onValueChange = {
+                                    if (isHueLocked.value) {
+                                        hueRedValue.floatValue = it
+                                        hueGreenValue.floatValue = it
+                                        hueBlueValue.floatValue = it
+                                    } else {
+                                        hueRedValue.floatValue = it
+                                    }
+                                },
                                 valueRange = 0F..360F,
                                 colors = SliderDefaults.colors(
                                         thumbColor = RED,
@@ -177,7 +193,15 @@ fun EffectsDialog(
                         Spacer(modifier = Modifier.width(16.dp))
                         Slider(
                                 value = hueGreenValue.floatValue,
-                                onValueChange = { hueGreenValue.floatValue = it },
+                                onValueChange = {
+                                    if (isHueLocked.value) {
+                                        hueRedValue.floatValue = it
+                                        hueGreenValue.floatValue = it
+                                        hueBlueValue.floatValue = it
+                                    } else {
+                                        hueGreenValue.floatValue = it
+                                    }
+                                },
                                 valueRange = 0F..360F,
                                 colors = SliderDefaults.colors(
                                         thumbColor = GREEN,
@@ -189,7 +213,15 @@ fun EffectsDialog(
                         Spacer(modifier = Modifier.width(16.dp))
                         Slider(
                                 value = hueBlueValue.floatValue,
-                                onValueChange = { hueBlueValue.floatValue = it },
+                                onValueChange = {
+                                    if (isHueLocked.value) {
+                                        hueRedValue.floatValue = it
+                                        hueGreenValue.floatValue = it
+                                        hueBlueValue.floatValue = it
+                                    } else {
+                                        hueBlueValue.floatValue = it
+                                    }
+                                },
                                 valueRange = 0F..360F,
                                 colors = SliderDefaults.colors(
                                         thumbColor = BLUE,
@@ -198,6 +230,21 @@ fun EffectsDialog(
                                 ),
                                 modifier = Modifier.weight(1F)
                         )
+                        IconButton(
+                                onClick = {
+                                    isHueLocked.value = !isHueLocked.value
+                                },
+                        ) {
+                            Icon(
+                                    imageVector = if (isHueLocked.value) {
+                                        Icons.Rounded.Lock
+                                    } else {
+                                        Icons.Rounded.LockOpen
+                                    },
+                                    contentDescription = stringResource(id = R.string.lock),
+                                    tint = Color.White
+                            )
+                        }
                     }
                     Spacer(modifier = Modifier.height(16.dp))
 
@@ -209,7 +256,15 @@ fun EffectsDialog(
                     Row {
                         Slider(
                                 value = scaleRedValue.floatValue,
-                                onValueChange = { scaleRedValue.floatValue = it },
+                                onValueChange = {
+                                    if (isScaleLocked.value) {
+                                        scaleRedValue.floatValue = it
+                                        scaleGreenValue.floatValue = it
+                                        scaleBlueValue.floatValue = it
+                                    } else {
+                                        scaleRedValue.floatValue = it
+                                    }
+                                },
                                 valueRange = 0F..1F,
                                 colors = SliderDefaults.colors(
                                         thumbColor = RED,
@@ -221,7 +276,15 @@ fun EffectsDialog(
                         Spacer(modifier = Modifier.width(16.dp))
                         Slider(
                                 value = scaleGreenValue.floatValue,
-                                onValueChange = { scaleGreenValue.floatValue = it },
+                                onValueChange = {
+                                    if (isScaleLocked.value) {
+                                        scaleRedValue.floatValue = it
+                                        scaleGreenValue.floatValue = it
+                                        scaleBlueValue.floatValue = it
+                                    } else {
+                                        scaleGreenValue.floatValue = it
+                                    }
+                                },
                                 valueRange = 0F..1F,
                                 colors = SliderDefaults.colors(
                                         thumbColor = GREEN,
@@ -233,7 +296,15 @@ fun EffectsDialog(
                         Spacer(modifier = Modifier.width(16.dp))
                         Slider(
                                 value = scaleBlueValue.floatValue,
-                                onValueChange = { scaleBlueValue.floatValue = it },
+                                onValueChange = {
+                                    if (isScaleLocked.value) {
+                                        scaleRedValue.floatValue = it
+                                        scaleGreenValue.floatValue = it
+                                        scaleBlueValue.floatValue = it
+                                    } else {
+                                        scaleBlueValue.floatValue = it
+                                    }
+                                },
                                 valueRange = 0F..1F,
                                 colors = SliderDefaults.colors(
                                         thumbColor = BLUE,
@@ -242,6 +313,21 @@ fun EffectsDialog(
                                 ),
                                 modifier = Modifier.weight(1F)
                         )
+                        IconButton(
+                                onClick = {
+                                    isScaleLocked.value = !isScaleLocked.value
+                                },
+                        ) {
+                            Icon(
+                                    imageVector = if (isScaleLocked.value) {
+                                        Icons.Rounded.Lock
+                                    } else {
+                                        Icons.Rounded.LockOpen
+                                    },
+                                    contentDescription = stringResource(id = R.string.lock),
+                                    tint = Color.White
+                            )
+                        }
                     }
                 }
             },
@@ -298,6 +384,8 @@ fun AutoWallpaperEffectsDialog(
     val scaleRedValue = remember { mutableFloatStateOf(initialScaleRedValue) }
     val scaleGreenValue = remember { mutableFloatStateOf(initialScaleGreenValue) }
     val scaleBlueValue = remember { mutableFloatStateOf(initialScaleBlueValue) }
+    val isHueLocked = remember { mutableStateOf(false) }
+    val isScaleLocked = remember { mutableStateOf(false) }
 
     LaunchedEffect(blurValue.floatValue,
                    brightnessValue.floatValue,
@@ -371,7 +459,15 @@ fun AutoWallpaperEffectsDialog(
                     Row {
                         Slider(
                                 value = hueRedValue.floatValue,
-                                onValueChange = { hueRedValue.floatValue = it },
+                                onValueChange = {
+                                    if (isHueLocked.value) {
+                                        hueRedValue.floatValue = it
+                                        hueGreenValue.floatValue = it
+                                        hueBlueValue.floatValue = it
+                                    } else {
+                                        hueRedValue.floatValue = it
+                                    }
+                                },
                                 valueRange = 0F..360F,
                                 colors = SliderDefaults.colors(
                                         thumbColor = RED,
@@ -381,7 +477,15 @@ fun AutoWallpaperEffectsDialog(
                         Spacer(modifier = Modifier.width(16.dp))
                         Slider(
                                 value = hueGreenValue.floatValue,
-                                onValueChange = { hueGreenValue.floatValue = it },
+                                onValueChange = {
+                                    if (isHueLocked.value) {
+                                        hueRedValue.floatValue = it
+                                        hueGreenValue.floatValue = it
+                                        hueBlueValue.floatValue = it
+                                    } else {
+                                        hueGreenValue.floatValue = it
+                                    }
+                                },
                                 valueRange = 0F..360F,
                                 colors = SliderDefaults.colors(
                                         thumbColor = GREEN,
@@ -391,20 +495,51 @@ fun AutoWallpaperEffectsDialog(
                         Spacer(modifier = Modifier.width(16.dp))
                         Slider(
                                 value = hueBlueValue.floatValue,
-                                onValueChange = { hueBlueValue.floatValue = it },
+                                onValueChange = {
+                                    if (isHueLocked.value) {
+                                        hueRedValue.floatValue = it
+                                        hueGreenValue.floatValue = it
+                                        hueBlueValue.floatValue = it
+                                    } else {
+                                        hueBlueValue.floatValue = it
+                                    }
+                                },
                                 valueRange = 0F..360F,
                                 colors = SliderDefaults.colors(
                                         thumbColor = BLUE,
                                 ),
                                 modifier = Modifier.weight(1F)
                         )
+                        IconButton(
+                                onClick = {
+                                    isHueLocked.value = !isHueLocked.value
+                                },
+                        ) {
+                            Icon(
+                                    imageVector = if (isHueLocked.value) {
+                                        Icons.Rounded.Lock
+                                    } else {
+                                        Icons.Rounded.LockOpen
+                                    },
+                                    contentDescription = stringResource(id = R.string.lock),
+                                    tint = Color.White
+                            )
+                        }
                     }
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(text = stringResource(id = R.string.scale))
                     Row {
                         Slider(
                                 value = scaleRedValue.floatValue,
-                                onValueChange = { scaleRedValue.floatValue = it },
+                                onValueChange = {
+                                    if (isScaleLocked.value) {
+                                        scaleRedValue.floatValue = it
+                                        scaleGreenValue.floatValue = it
+                                        scaleBlueValue.floatValue = it
+                                    } else {
+                                        scaleRedValue.floatValue = it
+                                    }
+                                },
                                 valueRange = 0F..1F,
                                 colors = SliderDefaults.colors(
                                         thumbColor = RED,
@@ -414,7 +549,15 @@ fun AutoWallpaperEffectsDialog(
                         Spacer(modifier = Modifier.width(16.dp))
                         Slider(
                                 value = scaleGreenValue.floatValue,
-                                onValueChange = { scaleGreenValue.floatValue = it },
+                                onValueChange = {
+                                    if (isScaleLocked.value) {
+                                        scaleRedValue.floatValue = it
+                                        scaleGreenValue.floatValue = it
+                                        scaleBlueValue.floatValue = it
+                                    } else {
+                                        scaleGreenValue.floatValue = it
+                                    }
+                                },
                                 valueRange = 0F..1F,
                                 colors = SliderDefaults.colors(
                                         thumbColor = GREEN,
@@ -424,13 +567,36 @@ fun AutoWallpaperEffectsDialog(
                         Spacer(modifier = Modifier.width(16.dp))
                         Slider(
                                 value = scaleBlueValue.floatValue,
-                                onValueChange = { scaleBlueValue.floatValue = it },
+                                onValueChange = {
+                                    if (isScaleLocked.value) {
+                                        scaleRedValue.floatValue = it
+                                        scaleGreenValue.floatValue = it
+                                        scaleBlueValue.floatValue = it
+                                    } else {
+                                        scaleBlueValue.floatValue = it
+                                    }
+                                },
                                 valueRange = 0F..1F,
                                 colors = SliderDefaults.colors(
                                         thumbColor = BLUE,
                                 ),
                                 modifier = Modifier.weight(1F)
                         )
+                        IconButton(
+                                onClick = {
+                                    isScaleLocked.value = !isScaleLocked.value
+                                },
+                        ) {
+                            Icon(
+                                    imageVector = if (isScaleLocked.value) {
+                                        Icons.Rounded.Lock
+                                    } else {
+                                        Icons.Rounded.LockOpen
+                                    },
+                                    contentDescription = stringResource(id = R.string.lock),
+                                    tint = Color.White
+                            )
+                        }
                     }
                 }
             },
