@@ -68,6 +68,7 @@ object MainComposePreferences {
     private const val DONT_CHANGE_WHEN_LANDSCAPE = "dont_change_when_landscape"
     private const val DONT_CHANGE_WHEN_PORTRAIT = "dont_change_when_portrait"
     private const val DONT_CHANGE_WHEN_LOW_BATTERY = "dont_change_when_low_battery"
+    private const val DOUBLE_TAP_TO_CHANGE = "double_tap_to_change"
 
     // ----------------------------------------------------------------------------------------------------- //
 
@@ -782,5 +783,15 @@ object MainComposePreferences {
 
     fun setDontChangeWhenLowBattery(value: Boolean) {
         getSharedPreferences().edit().putBoolean(DONT_CHANGE_WHEN_LOW_BATTERY, value).apply()
+    }
+
+    // ----------------------------------------------------------------------------------------------------- //
+
+    fun getDoubleTapToChange(): Boolean {
+        return getSharedPreferences().getBoolean(DOUBLE_TAP_TO_CHANGE, false)
+    }
+
+    fun setDoubleTapToChange(value: Boolean) {
+        getSharedPreferences().edit().putBoolean(DOUBLE_TAP_TO_CHANGE, value).apply()
     }
 }

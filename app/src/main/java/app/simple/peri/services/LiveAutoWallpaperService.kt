@@ -279,8 +279,13 @@ class LiveAutoWallpaperService : WallpaperService() {
         }
 
         override fun onDoubleTap(e: MotionEvent): Boolean {
-            askNextWallpaper()
-            return true
+            if (MainComposePreferences.getDoubleTapToChange()) {
+                askNextWallpaper()
+                return true
+            } else {
+                Log.w(TAG, "Double tap to change wallpaper is disabled in preferences")
+                return false
+            }
         }
 
         override fun onDoubleTapEvent(e: MotionEvent): Boolean {

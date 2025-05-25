@@ -232,4 +232,6 @@
     <string name="skip">Skip</string>
     <string name="skip_when_low_battery">Skip When Low Battery</string>
     <string name="lock">Lock</string>
+    <string name="double_tap_to_change_wallpaper">Double Tap to Change</string>
+    <string name="double_tap_to_change_wallpaper_summary">Double tapping the home or lock screen should change to next wallpaper.</string>
 </resources>

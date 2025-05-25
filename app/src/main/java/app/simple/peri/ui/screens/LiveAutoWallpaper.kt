@@ -330,6 +330,14 @@ fun LiveAutoWallpaper(navController: NavController? = null) {
                 MainComposePreferences.setAutoWallpaperNotification(it)
             }
 
+            SwitchPreference(
+                    title = context.getString(R.string.double_tap_to_change_wallpaper),
+                    description = context.getString(R.string.double_tap_to_change_wallpaper_summary),
+                    checked = MainComposePreferences.getDoubleTapToChange()
+            ) {
+                MainComposePreferences.setDoubleTapToChange(it)
+            }
+
             if (showEffectsDialog.value) {
                 AutoWallpaperEffectsDialog(
                         setShowDialog = { showEffectsDialog.value = it },
