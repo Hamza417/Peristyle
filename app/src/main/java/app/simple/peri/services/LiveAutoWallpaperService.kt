@@ -11,6 +11,8 @@ import android.os.Handler
 import android.os.Looper
 import android.service.wallpaper.WallpaperService
 import android.util.Log
+import android.view.GestureDetector
+import android.view.MotionEvent
 import android.view.SurfaceHolder
 import androidx.core.content.IntentCompat
 import app.simple.peri.abstraction.AutoWallpaperUtils.getBitmapFromFile
@@ -116,7 +118,9 @@ class LiveAutoWallpaperService : WallpaperService() {
 
     // --------------------------------------------------------------------------------------------- //
 
-    private inner class LiveAutoWallpaperEngine : Engine() {
+    private inner class LiveAutoWallpaperEngine : Engine(), GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener {
+
+        private val gestureDetector = GestureDetector(applicationContext, this)
         private var bitmap: Bitmap? = null
 
         fun setWallpaper(filePath: String) {
@@ -243,6 +247,51 @@ class LiveAutoWallpaperService : WallpaperService() {
                 oldBitmap = null
             } else {
                 Log.i(TAG, "Preview mode, skipping destruction")
+            }
+        }
+
+        override fun onDown(e: MotionEvent): Boolean {
+            return false
+        }
+
+        override fun onShowPress(e: MotionEvent) {
+            /* no-op */
+        }
+
+        override fun onSingleTapUp(e: MotionEvent): Boolean {
+            return false
+        }
+
+        override fun onScroll(e1: MotionEvent?, e2: MotionEvent, distanceX: Float, distanceY: Float): Boolean {
+            return false
+        }
+
+        override fun onLongPress(e: MotionEvent) {
+            /* no-op */
+        }
+
+        override fun onFling(e1: MotionEvent?, e2: MotionEvent, velocityX: Float, velocityY: Float): Boolean {
+            return false
+        }
+
+        override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
+            return false
+        }
+
+        override fun onDoubleTap(e: MotionEvent): Boolean {
+            askNextWallpaper()
+            return true
+        }
+
+        override fun onDoubleTapEvent(e: MotionEvent): Boolean {
+            return true
+        }
+
+        override fun onTouchEvent(event: MotionEvent?) {
+            if (event != null) {
+                gestureDetector.onTouchEvent(event)
+            } else {
+                Log.w(TAG, "Received null MotionEvent in onTouchEvent")
             }
         }
     }
