@@ -232,4 +232,5 @@
     <string name="skip_when_condition_summary">Belirli koşullar altında duvar kağıdı ayarlamayı atla ve bir sonraki döngüyü bekle.</string>
     <string name="skip">Atla</string>
     <string name="skip_when_low_battery">Pil Düşükken Atla</string>
+    <string name="lock">Kilitle</string>
 </resources>
