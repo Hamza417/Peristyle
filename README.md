@@ -74,13 +74,6 @@ The `REQUEST_IGNORE_BATTERY_OPTIMIZATIONS` is used to run Auto Wallpaper service
 
 And an access to all the wallpaper directories whichever the user specifies.
 
-## Roadmap
-
-- Setting specific wallpaper for night mode and day mode (eta: v9)
-- Auto assign night/day tags to wallpapers based on their luminance data (eta: v9)
-- Minimal (sfw only) integration of WallHaven API (eta: v10 onwards)
-- [Speculated] Integration of other wallpaper APIs (eta: v11 onwards)
-
 ## Translate
 
 [![Crowdin](https://badges.crowdin.net/peristyle/localized.svg)](https://crowdin.com/project/peristyle)
