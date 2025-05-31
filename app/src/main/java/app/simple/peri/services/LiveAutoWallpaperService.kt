@@ -16,6 +16,7 @@ import android.view.MotionEvent
 import android.view.SurfaceHolder
 import androidx.core.content.IntentCompat
 import app.simple.peri.abstraction.AutoWallpaperUtils.getBitmapFromFile
+import app.simple.peri.extensions.DoubleTapListener
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.preferences.SharedPreferences
@@ -118,9 +119,22 @@ class LiveAutoWallpaperService : WallpaperService() {
 
     // --------------------------------------------------------------------------------------------- //
 
-    private inner class LiveAutoWallpaperEngine : Engine(), GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener {
+    private inner class LiveAutoWallpaperEngine : Engine() {
 
-        private val gestureDetector = GestureDetector(applicationContext, this)
+        // Simplified gesture detector for double-tap functionality
+        private val gestureDetector = GestureDetector(
+                applicationContext,
+                DoubleTapListener {
+                    if (MainComposePreferences.getDoubleTapToChange()) {
+                        askNextWallpaper()
+                        true
+                    } else {
+                        Log.w(TAG, "Double tap to change wallpaper is disabled in preferences")
+                        false
+                    }
+                }
+        )
+
         private var bitmap: Bitmap? = null
 
         fun setWallpaper(filePath: String) {
@@ -248,48 +262,6 @@ class LiveAutoWallpaperService : WallpaperService() {
             } else {
                 Log.i(TAG, "Preview mode, skipping destruction")
             }
-        }
-
-        override fun onDown(e: MotionEvent): Boolean {
-            return false
-        }
-
-        override fun onShowPress(e: MotionEvent) {
-            /* no-op */
-        }
-
-        override fun onSingleTapUp(e: MotionEvent): Boolean {
-            return false
-        }
-
-        override fun onScroll(e1: MotionEvent?, e2: MotionEvent, distanceX: Float, distanceY: Float): Boolean {
-            return false
-        }
-
-        override fun onLongPress(e: MotionEvent) {
-            /* no-op */
-        }
-
-        override fun onFling(e1: MotionEvent?, e2: MotionEvent, velocityX: Float, velocityY: Float): Boolean {
-            return false
-        }
-
-        override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
-            return false
-        }
-
-        override fun onDoubleTap(e: MotionEvent): Boolean {
-            if (MainComposePreferences.getDoubleTapToChange()) {
-                askNextWallpaper()
-                return true
-            } else {
-                Log.w(TAG, "Double tap to change wallpaper is disabled in preferences")
-                return false
-            }
-        }
-
-        override fun onDoubleTapEvent(e: MotionEvent): Boolean {
-            return true
         }
 
         override fun onTouchEvent(event: MotionEvent?) {
