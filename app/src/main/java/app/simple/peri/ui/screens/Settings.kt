@@ -293,6 +293,13 @@ fun Settings(navController: NavController? = null) {
             ) {
                 MainComposePreferences.setShowLockScreenWallpaper(it)
             }
+
+            SwitchPreference(
+                    title = context.getString(R.string.disable_animations),
+                    checked = MainComposePreferences.getDisableAnimations()
+            ) {
+                MainComposePreferences.setDisableAnimations(it)
+            }
         }
         item {
             val showDeveloperProfileDialog = remember { mutableStateOf(false) }
