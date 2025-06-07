@@ -7,13 +7,13 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
 import androidx.annotation.StringRes
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -30,6 +30,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Label
 import androidx.compose.material.icons.rounded.Circle
+import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.FastForward
 import androidx.compose.material.icons.rounded.Folder
 import androidx.compose.material.icons.rounded.MotionPhotosOn
@@ -40,7 +41,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
@@ -82,8 +82,10 @@ import app.simple.peri.models.DisplayDimension
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.ui.commons.CircularCountdownProgress
+import app.simple.peri.ui.commons.CircularIconButton
 import app.simple.peri.ui.commons.InitDisplayDimension
 import app.simple.peri.ui.dialogs.autowallpaper.AutoWallpaperPageSelectionDialog
+import app.simple.peri.ui.dialogs.common.SureDialog
 import app.simple.peri.ui.nav.Routes
 import app.simple.peri.utils.FileUtils.toFile
 import app.simple.peri.utils.ServiceUtils
@@ -247,6 +249,11 @@ fun Home(navController: NavController? = null) {
                     wallpaper = wallpaper,
                     onNextWallpaper = {
                         homeScreenViewModel.nextRandomWallpaper()
+                    },
+                    onDeleteWallpaper = {
+                        homeScreenViewModel.deleteWallpaper(wallpaper) {
+                            homeScreenViewModel.nextRandomWallpaper()
+                        }
                     }
             )
         }
@@ -262,12 +269,26 @@ fun Home(navController: NavController? = null) {
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun WallpaperItem(title: String, position: Int, onClick: () -> Unit, onNextWallpaper: () -> Unit, modifier: Modifier = Modifier, wallpaper: Wallpaper?) {
+fun WallpaperItem(title: String, position: Int, onClick: () -> Unit, onNextWallpaper: () -> Unit, onDeleteWallpaper: () -> Unit, modifier: Modifier = Modifier, wallpaper: Wallpaper?) {
     val currentScale = remember {
         mutableStateOf(ContentScale.Crop)
     }
 
     val hazeState = remember { HazeState() }
+    val showDeleteDialog = remember { mutableStateOf(false) }
+
+    if (showDeleteDialog.value) {
+        SureDialog(
+                message = wallpaper?.name ?: wallpaper?.filePath ?: "",
+                onSure = {
+                    onDeleteWallpaper()
+                    showDeleteDialog.value = false
+                },
+                onDismiss = {
+                    showDeleteDialog.value = false
+                }
+        )
+    }
 
     ElevatedCard(
             elevation = CardDefaults.cardElevation(
@@ -323,21 +344,25 @@ fun WallpaperItem(title: String, position: Int, onClick: () -> Unit, onNextWallp
                                 .padding(16.dp)
                     )
 
-                    IconButton(
-                            onClick = {
-                                onNextWallpaper()
-                            },
+                    CircularIconButton(
+                            onClick = { onNextWallpaper() },
+                            imageVector = Icons.Rounded.FastForward,
                             modifier = Modifier
-                                .align(Alignment.CenterVertically),
-                            colors = IconButtonDefaults.iconButtonColors(
-                                    contentColor = Color.White
-                            )
-                    ) {
-                        Icon(
-                                imageVector = Icons.Rounded.FastForward,
-                                contentDescription = null
-                        )
-                    }
+                                .align(Alignment.CenterVertically)
+                                .padding(end = 8.dp)
+                    )
+
+                    Spacer(
+                            modifier = Modifier.weight(1F)
+                    )
+
+                    CircularIconButton(
+                            onClick = { showDeleteDialog.value = true },
+                            imageVector = Icons.Rounded.Delete,
+                            modifier = Modifier
+                                .align(Alignment.CenterVertically)
+                                .padding(end = 8.dp)
+                    )
                 }
             }
 
@@ -431,7 +456,6 @@ fun Header(title: String, modifier: Modifier = Modifier, navController: NavContr
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun BottomMenu(modifier: Modifier = Modifier, navController: NavController? = null) {
     val height = 60.dp
@@ -535,7 +559,6 @@ fun BottomMenu(modifier: Modifier = Modifier, navController: NavController? = nu
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun BottomMenuItem(modifier: Modifier = Modifier, @StringRes title: Int = 0, imageVector: ImageVector = Icons.Rounded.Circle, onClick: () -> Unit = {}) {
     val context = LocalContext.current

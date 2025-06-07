@@ -261,6 +261,20 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
         postRandomWallpaper()
     }
 
+    fun deleteWallpaper(wallpaper: Wallpaper?, onDelete: () -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            if (wallpaper != null) {
+                if (wallpaper.filePath.toFile().delete()) {
+                    val wallpaperDatabase = WallpaperDatabase.getInstance(getApplication())
+                    wallpaperDatabase?.wallpaperDao()?.delete(wallpaper)
+                    onDelete()
+                } else {
+                    Log.e("HomeScreenViewModel", "Failed to delete wallpaper: ${wallpaper.name}")
+                }
+            }
+        }
+    }
+
     companion object {
         private const val SYSTEM_WALLPAPER = "system_wallpaper_$.png"
         private const val LOCK_WALLPAPER = "lock_wallpaper_$.png"
