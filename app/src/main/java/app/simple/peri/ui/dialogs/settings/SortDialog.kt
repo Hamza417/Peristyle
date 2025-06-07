@@ -24,7 +24,8 @@ fun SortDialog(onDismiss: () -> Unit) {
             Pair(stringResource(R.string.date), WallpaperSort.DATE),
             Pair(stringResource(R.string.size), WallpaperSort.SIZE),
             Pair(stringResource(R.string.width), WallpaperSort.WIDTH),
-            Pair(stringResource(R.string.height), WallpaperSort.HEIGHT)
+            Pair(stringResource(R.string.height), WallpaperSort.HEIGHT),
+            Pair(stringResource(R.string.random), WallpaperSort.RANDOM)
     )
 
     AlertDialog(

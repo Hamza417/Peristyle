@@ -234,4 +234,5 @@
     <string name="lock">Lock</string>
     <string name="double_tap_to_change_wallpaper">Double Tap to Change</string>
     <string name="double_tap_to_change_wallpaper_summary">Double tapping the home or lock screen should change to next wallpaper.</string>
+    <string name="random">Random</string>
 </resources>

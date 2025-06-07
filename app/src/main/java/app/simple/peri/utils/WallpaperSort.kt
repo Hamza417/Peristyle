@@ -2,6 +2,7 @@ package app.simple.peri.utils
 
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.preferences.MainPreferences
+import kotlin.random.Random
 
 object WallpaperSort {
 
@@ -10,9 +11,16 @@ object WallpaperSort {
     const val SIZE = "size"
     const val WIDTH = "width"
     const val HEIGHT = "height"
+    const val RANDOM = "random"
 
     const val ASC = "asc"
     const val DESC = "desc"
+
+    private var seed = System.currentTimeMillis()
+
+    fun setSeed(newSeed: Long) {
+        seed = newSeed
+    }
 
     fun ArrayList<Wallpaper>.getSortedList() {
         when (MainPreferences.getSort()) {
@@ -21,6 +29,7 @@ object WallpaperSort {
             SIZE -> sortBySize()
             WIDTH -> sortByWidth()
             HEIGHT -> sortByHeight()
+            RANDOM -> randomize()
         }
     }
 
@@ -68,6 +77,11 @@ object WallpaperSort {
         } else {
             sortByDescending { it.height }
         }
+    }
+
+    private fun ArrayList<Wallpaper>.randomize() {
+        sortByName() // Add a deterministic order first
+        shuffle(Random(seed))
     }
 
     private fun isOrderAsc(): Boolean {
