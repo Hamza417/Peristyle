@@ -1,6 +1,7 @@
 package app.simple.peri.ui.nav
 
 import android.content.Context
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
@@ -12,11 +13,15 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import app.simple.peri.preferences.MainComposePreferences
+import app.simple.peri.preferences.SharedPreferences
 import app.simple.peri.ui.screens.AutoWallpaper
 import app.simple.peri.ui.screens.Folders
 import app.simple.peri.ui.screens.Home
@@ -35,51 +40,68 @@ private const val DELAY = 100
 
 @Composable
 fun PeristyleNavigation(context: Context) {
+
     val navController = rememberNavController()
+    val disableAnimations = remember {
+        mutableStateOf(MainComposePreferences.getDisableAnimations())
+    }
     val startDestination = if (isSetupComplete(context)) Routes.HOME else Routes.SETUP
 
-    NavHost(navController = navController, startDestination = startDestination) {
+    SharedPreferences.getSharedPreferences().registerOnSharedPreferenceChangeListener { sharedPreferences, key ->
+        if (key == MainComposePreferences.DISABLE_ANIMATIONS) {
+            disableAnimations.value = sharedPreferences.getBoolean(MainComposePreferences.DISABLE_ANIMATIONS, false)
+        }
+    }
+
+    NavHost(
+            navController = navController,
+            startDestination = startDestination,
+            enterTransition = { if (disableAnimations.value) EnterTransition.None else scaleIntoContainer() },
+            exitTransition = { if (disableAnimations.value) ExitTransition.None else scaleOutOfContainer(direction = ScaleTransitionDirection.INWARDS) },
+            popEnterTransition = { if (disableAnimations.value) EnterTransition.None else scaleIntoContainer(direction = ScaleTransitionDirection.OUTWARDS) },
+            popExitTransition = { if (disableAnimations.value) ExitTransition.None else scaleOutOfContainer() },
+    ) {
         composable(Routes.SETUP) {
             Setup(context, navController)
         }
 
-        composableWithTransitions(Routes.HOME) {
+        composable(Routes.HOME) {
             Home(navController)
         }
 
-        composableWithTransitions(Routes.WALLPAPER) {
+        composable(Routes.WALLPAPER) {
             Wallpaper(navController)
         }
 
-        composableWithTransitions(Routes.WALLPAPERS_LIST) {
+        composable(Routes.WALLPAPERS_LIST) {
             WallpaperList(navController)
         }
 
-        composableWithTransitions(Routes.SETTINGS) {
+        composable(Routes.SETTINGS) {
             Settings(navController)
         }
 
-        composableWithTransitions(Routes.AUTO_WALLPAPER) {
+        composable(Routes.AUTO_WALLPAPER) {
             AutoWallpaper(navController)
         }
 
-        composableWithTransitions(Routes.LIVE_AUTO_WALLPAPER) {
+        composable(Routes.LIVE_AUTO_WALLPAPER) {
             LiveAutoWallpaper(navController)
         }
 
-        composableWithTransitions(Routes.TAGS) {
+        composable(Routes.TAGS) {
             Tags(navController)
         }
 
-        composableWithTransitions(Routes.FOLDERS) {
+        composable(Routes.FOLDERS) {
             Folders(navController)
         }
 
-        composableWithTransitions(Routes.TAGGED_WALLPAPERS) { backStackEntry ->
+        composable(Routes.TAGGED_WALLPAPERS) { backStackEntry ->
             TaggedWallpapers(navController)
         }
 
-        composableWithTransitions(Routes.LIVE_WALLPAPERS) {
+        composable(Routes.LIVE_WALLPAPERS) {
             LiveWallpapers(navController)
         }
     }
