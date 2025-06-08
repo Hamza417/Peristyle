@@ -19,7 +19,6 @@ import app.simple.peri.abstraction.AbstractComposeAutoWallpaperService.Companion
 import app.simple.peri.abstraction.AbstractComposeAutoWallpaperService.Companion.EXTRA_IS_HOME_SCREEN
 import app.simple.peri.abstraction.AbstractComposeAutoWallpaperService.Companion.EXTRA_NOTIFICATION_ID
 import app.simple.peri.abstraction.AbstractComposeAutoWallpaperService.Companion.EXTRA_WALLPAPER_PATH
-import app.simple.peri.abstraction.AbstractComposeAutoWallpaperService.Companion.TAG
 import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.receivers.CopyActionReceiver
 import app.simple.peri.receivers.WallpaperActionReceiver
@@ -28,11 +27,15 @@ import java.io.File
 
 object WallpaperServiceNotification {
 
+    private const val TAG = "WallpaperServiceNotification"
+
+    private const val CHANNEL_ID_NORMAL = "wallpaper_normal_channel"
     private const val CHANNEL_ID_HOME = "wallpaper_home_channel"
     private const val CHANNEL_ID_LOCK = "wallpaper_lock_channel"
 
     private const val PENDING_INTENT_FLAGS = PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
 
+    const val NORMAL_NOTIFICATION_ID = 1000
     const val HOME_NOTIFICATION_ID = 1234
     const val LOCK_NOTIFICATION_ID = 5367
     const val ERROR_NOTIFICATION_ID = 12345
@@ -63,11 +66,20 @@ object WallpaperServiceNotification {
                 description = "Notifications for errors"
             }
 
+            val normalChannel = NotificationChannel(
+                    CHANNEL_ID_NORMAL,
+                    "Normal Notifications",
+                    NotificationManager.IMPORTANCE_DEFAULT
+            ).apply {
+                description = "Notifications for normal operations"
+            }
+
             val notificationManager: NotificationManager =
                 getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(homeChannel)
             notificationManager.createNotificationChannel(lockChannel)
             notificationManager.createNotificationChannel(errorChannel)
+            notificationManager.createNotificationChannel(normalChannel)
         }
     }
 
@@ -154,6 +166,35 @@ object WallpaperServiceNotification {
             .build()
 
         notificationManager.notify(notificationId, notification)
+    }
+
+    fun postChangingWallpaperNotification(context: Context, text: String) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (PermissionUtils.checkNotificationPermission(context).invert()) {
+                Log.i(TAG, "Notification permission not granted, skipping notification")
+                return
+            }
+        }
+
+        if (MainComposePreferences.getAutoWallpaperNotification().invert()) {
+            return
+        }
+
+        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        val notification = NotificationCompat.Builder(context, CHANNEL_ID_NORMAL)
+            .setSmallIcon(R.drawable.ic_peristyle)
+            .setContentText(text)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setSilent(true)
+            .build()
+
+        notificationManager.notify(NORMAL_NOTIFICATION_ID, notification)
+    }
+
+    fun cancelNotification(context: Context, notificationId: Int) {
+        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.cancel(notificationId)
     }
 
     private fun createSendIntent(file: File, context: Context): Intent {

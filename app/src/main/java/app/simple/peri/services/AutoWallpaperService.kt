@@ -3,7 +3,6 @@ package app.simple.peri.services
 import android.content.Intent
 import android.os.IBinder
 import android.util.Log
-import android.widget.Toast
 import app.simple.peri.R
 import app.simple.peri.abstraction.AbstractAutoLiveWallpaperService
 import app.simple.peri.preferences.MainComposePreferences
@@ -12,6 +11,7 @@ import app.simple.peri.utils.BatteryUtils.getBatteryPercentage
 import app.simple.peri.utils.BatteryUtils.isLowBattery
 import app.simple.peri.utils.ScreenUtils.isLandscape
 import app.simple.peri.utils.ScreenUtils.isPortrait
+import app.simple.peri.utils.WallpaperServiceNotification
 import java.io.File
 
 class AutoWallpaperService : AbstractAutoLiveWallpaperService() {
@@ -35,18 +35,14 @@ class AutoWallpaperService : AbstractAutoLiveWallpaperService() {
                 if (!isNextWallpaperActionRunning) {
                     isNextWallpaperActionRunning = true
                     runCatching {
-                        if (MainComposePreferences.getAutoWallpaperNotification()) {
-                            Toast.makeText(applicationContext, R.string.changing_wallpaper, Toast.LENGTH_SHORT)
-                                .show()
-                        }
+                        WallpaperServiceNotification.postChangingWallpaperNotification(
+                                applicationContext, applicationContext.getString(R.string.changing_wallpaper))
                     }
                     init()
                 } else {
                     Log.d(TAG, "Next wallpaper action already running, ignoring")
-                    if (MainComposePreferences.getAutoWallpaperNotification()) {
-                        Toast.makeText(applicationContext, R.string.next_wallpaper_already_running, Toast.LENGTH_SHORT)
-                            .show()
-                    }
+                    WallpaperServiceNotification.postChangingWallpaperNotification(
+                            applicationContext, applicationContext.getString(R.string.next_wallpaper_already_running))
                 }
             }
             ACTION_DELETE_WALLPAPER -> {
@@ -95,11 +91,15 @@ class AutoWallpaperService : AbstractAutoLiveWallpaperService() {
             Log.i(TAG, "Wallpaper service is running, setting next wallpaper through live wallpaper service")
             postLiveWallpaper {
                 isNextWallpaperActionRunning = false
+                WallpaperServiceNotification.cancelNotification(
+                        applicationContext, WallpaperServiceNotification.NORMAL_NOTIFICATION_ID)
             }
         } else {
             Log.d(TAG, "Wallpaper service is not running, setting next wallpaper through compose service")
             setComposeWallpaper {
                 isNextWallpaperActionRunning = false
+                WallpaperServiceNotification.cancelNotification(
+                        applicationContext, WallpaperServiceNotification.NORMAL_NOTIFICATION_ID)
             }
         }
     }
