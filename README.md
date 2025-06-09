@@ -56,9 +56,9 @@ The legacy interface is planned to be removed in v8.0.0.
 |:----------------------------:|:----------------------------:|:----------------------------:|
 | ![004](./screenshots/04.png) | ![005](./screenshots/05.png) | ![006](./screenshots/06.gif) |
 
-## Triggering AutoWallpaperService from Other Apps
+## Triggering AutoWallpaperService externally
 
-Peristyle supports triggering the AutoWallpaperService from other apps using the following
+Peristyle supports triggering the AutoWallpaperService externally using the following
 intent: `app.peristyle.START_AUTO_WALLPAPER_SERVICE`
 
 **_You can use any automation or scheduling tool and create your own scenario to change wallpaper for any custom event such as locking/unlocking or as you need._**
