@@ -235,4 +235,5 @@
     <string name="lock">Zablokuj</string>
     <string name="double_tap_to_change_wallpaper">Kliknij dwukrotnie, by zmienić</string>
     <string name="double_tap_to_change_wallpaper_summary">Podwójne kliknięcie ekranu głównego lub ekranu blokady powinno zmienić tapetę na następną.</string>
+    <string name="random">Losowe</string>
 </resources>
