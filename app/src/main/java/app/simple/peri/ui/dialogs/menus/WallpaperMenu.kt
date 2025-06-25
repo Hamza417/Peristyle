@@ -37,6 +37,7 @@ import app.simple.peri.models.Wallpaper
 import app.simple.peri.ui.commons.FolderBrowser
 import app.simple.peri.ui.constants.DIALOG_OPTION_FONT_SIZE
 import app.simple.peri.ui.dialogs.common.SureDialog
+import app.simple.peri.utils.ConditionUtils.invert
 import app.simple.peri.utils.FileUtils.toFile
 import app.simple.peri.viewmodels.ComposeWallpaperViewModel
 import kotlinx.coroutines.Dispatchers
@@ -294,28 +295,30 @@ fun WallpaperMenu(
                                     .fillMaxWidth()
                         )
 
-                        Button(
-                                onClick = {
-                                    onCompress().also {
-                                        setShowDialog(false)
-                                    }
-                                },
-                                colors = ButtonDefaults.buttonColors(
-                                        containerColor = Color.Transparent,
-                                        contentColor = MaterialTheme.colorScheme.onSurface
-                                ),
-                                modifier = Modifier
-                                    .fillMaxWidth(),
-                        ) {
-                            Text(
-                                    text = context.getString(R.string.compress),
-                                    fontSize = DIALOG_OPTION_FONT_SIZE,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = MaterialTheme.colorScheme.onSurface
-                            )
-                        }
+                        if (wallpaper.isNotCompressible().invert()) {
+                            Button(
+                                    onClick = {
+                                        onCompress().also {
+                                            setShowDialog(false)
+                                        }
+                                    },
+                                    colors = ButtonDefaults.buttonColors(
+                                            containerColor = Color.Transparent,
+                                            contentColor = MaterialTheme.colorScheme.onSurface
+                                    ),
+                                    modifier = Modifier
+                                        .fillMaxWidth(),
+                            ) {
+                                Text(
+                                        text = context.getString(R.string.compress),
+                                        fontSize = DIALOG_OPTION_FONT_SIZE,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = MaterialTheme.colorScheme.onSurface
+                                )
+                            }
 
-                        Spacer(modifier = Modifier.height(space))
+                            Spacer(modifier = Modifier.height(space))
+                        }
 
                         Button(
                                 onClick = {

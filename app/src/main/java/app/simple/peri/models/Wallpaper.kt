@@ -117,6 +117,13 @@ class Wallpaper() : Comparable<Wallpaper>, Serializable, Parcelable {
         return name == null || uri.isEmpty() || width == null || height == null
     }
 
+    /**
+     * Checks if the wallpaper is in compressible format.
+     */
+    fun isNotCompressible(): Boolean {
+        return filePath.isNotEmpty() && filePath.endsWith(".png")
+    }
+
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(name)
         parcel.writeString(uri)
