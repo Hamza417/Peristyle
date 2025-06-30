@@ -232,4 +232,8 @@
     <string name="skip_when_condition_summary">Festlegen eines Hintergrundbildes unter bestimmten Voraussetzungen überspringen und nächsten Durchlauf abwarten.</string>
     <string name="skip">Überspringen</string>
     <string name="skip_when_low_battery">Bei niedrigem Akkustand überspringen</string>
+    <string name="lock">Sperren</string>
+    <string name="double_tap_to_change_wallpaper">Doppeltippen zum Ändern</string>
+    <string name="double_tap_to_change_wallpaper_summary">Doppeltippen auf dem Start- oder Sperrbildschirm sollte zum nächsten Hintergrund wechseln.</string>
+    <string name="random">Zufällig</string>
 </resources>
