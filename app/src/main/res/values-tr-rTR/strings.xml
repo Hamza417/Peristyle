@@ -235,5 +235,6 @@
     <string name="lock">Kilitle</string>
     <string name="double_tap_to_change_wallpaper">Değiştirmek için Çift Dokun</string>
     <string name="double_tap_to_change_wallpaper_summary">Ana ekran veya kilit ekranına çift dokunulduğunda bir sonraki duvar kâğıdına geçilmelidir.</string>
+    <string name="disable_animations">Animasyonları Devre Dışı Bırak</string>
     <string name="random">Rastgele</string>
 </resources>
