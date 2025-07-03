@@ -159,6 +159,7 @@ fun LiveWallpapers(navController: NavHostController) {
                                 when (option) {
                                     context.getString(R.string.delete) -> {
                                         packageNameToUninstall = liveWallpaperInfo.resolveInfo.serviceInfo.packageName
+                                        @Suppress("DEPRECATION")
                                         val intent = Intent(Intent.ACTION_UNINSTALL_PACKAGE).apply {
                                             putExtra(Intent.EXTRA_RETURN_RESULT, true)
                                             data = "package:$packageNameToUninstall".toUri()

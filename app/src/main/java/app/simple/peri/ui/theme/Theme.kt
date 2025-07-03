@@ -91,6 +91,7 @@ class BooleanPreviewParameterProvider : PreviewParameterProvider<Boolean> {
     override val values: Sequence<Boolean> = sequenceOf(true, false)
 }
 
+@Suppress("DEPRECATION")
 private fun makeAppFullScreen(window: Window) {
     WindowCompat.setDecorFitsSystemWindows(window, false)
     window.statusBarColor = Color.TRANSPARENT
