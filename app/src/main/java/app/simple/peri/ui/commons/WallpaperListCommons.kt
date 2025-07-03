@@ -54,7 +54,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -66,6 +65,7 @@ import androidx.core.content.FileProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import app.simple.peri.R
+import app.simple.peri.activities.main.LocalDisplaySize
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.ui.dialogs.common.AddTagDialog
@@ -112,8 +112,8 @@ fun WallpaperItem(
     var displayWidth by remember { mutableIntStateOf(0) }
     var displayHeight by remember { mutableIntStateOf(0) }
 
-    displayWidth = LocalView.current.width
-    displayHeight = LocalView.current.height
+    displayWidth = LocalDisplaySize.current.width
+    displayHeight = LocalDisplaySize.current.height
 
     val aspectRatio by remember {
         mutableFloatStateOf(

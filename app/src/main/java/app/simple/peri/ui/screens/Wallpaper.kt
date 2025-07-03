@@ -33,7 +33,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -52,7 +51,6 @@ import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -119,8 +117,6 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
     val tagsViewModel: TagsViewModel = viewModel(
             factory = TagsViewModelFactory(wallpaper?.id ?: "")
     )
-    var displayWidth by remember { mutableIntStateOf(0) }
-    var displayHeight by remember { mutableIntStateOf(0) }
     val showEditDialog = remember { mutableStateOf(false) }
     val showDetailsCard = remember { mutableStateOf(true) }
     val launchEffectActivity = remember { mutableStateOf(false) }
@@ -185,9 +181,6 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
                     })
         }
     }
-
-    displayWidth = LocalView.current.width
-    displayHeight = LocalView.current.height
 
     tagsViewModel.getWallpaperTags().observeAsState().value?.let {
         tags = it

@@ -19,8 +19,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.core.view.WindowCompat
 
-private var statusBarHeight: Int = 0
-
 private val DarkColorScheme = darkColorScheme(
         primary = Purple80,
         secondary = PurpleGrey80,

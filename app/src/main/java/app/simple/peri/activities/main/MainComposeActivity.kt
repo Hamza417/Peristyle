@@ -11,7 +11,11 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalWindowInfo
+import androidx.compose.ui.unit.IntSize
 import androidx.lifecycle.lifecycleScope
 import app.simple.peri.BuildConfig
 import app.simple.peri.crash.CrashReport
@@ -27,6 +31,8 @@ import app.simple.peri.viewmodels.ComposeWallpaperViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
+val LocalDisplaySize = staticCompositionLocalOf { IntSize(0, 0) }
+
 class MainComposeActivity : BaseComponentActivity(), OnSharedPreferenceChangeListener {
 
     private val composeWallpaperViewModel: ComposeWallpaperViewModel by viewModels()
@@ -38,11 +44,13 @@ class MainComposeActivity : BaseComponentActivity(), OnSharedPreferenceChangeLis
         CrashReport(this).initialize()
 
         setContent {
-            PeristyleTheme {
-                Surface(
-                        modifier = Modifier.fillMaxSize()
-                ) {
-                    PeristyleNavigation(this)
+            CompositionLocalProvider(LocalDisplaySize provides LocalWindowInfo.current.containerSize) {
+                PeristyleTheme {
+                    Surface(
+                            modifier = Modifier.fillMaxSize()
+                    ) {
+                        PeristyleNavigation(this)
+                    }
                 }
             }
         }
