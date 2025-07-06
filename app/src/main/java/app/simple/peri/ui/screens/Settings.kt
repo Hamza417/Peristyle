@@ -303,7 +303,7 @@ fun Settings(navController: NavController? = null) {
 
             SwitchPreference(
                     title = context.getString(R.string.predictive_back),
-                    checked = MainComposePreferences.isPredictiveBack() || MainComposePreferences.getDisableAnimations().invert(),
+                    checked = MainComposePreferences.isPredictiveBack(),
             ) {
                 MainComposePreferences.setPredictiveBack(it)
             }
