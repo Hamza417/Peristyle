@@ -1,7 +1,6 @@
 package app.simple.peri.ui.dialogs.settings
 
 import android.content.Intent
-import android.net.Uri
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.AlertDialog
@@ -11,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.window.DialogProperties
+import androidx.core.net.toUri
 import app.simple.peri.R
 
 private const val POSITIONAL_GITHUB_URL = "https://github.com/Hamza417/Positional"
@@ -38,7 +38,7 @@ fun ShowPositionalDialog(onDismiss: () -> Unit) {
                                         1 -> POSITIONAL_PLAY_STORE_URL
                                         else -> POSITIONAL_GITHUB_URL
                                     }
-                                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                                    val intent = Intent(Intent.ACTION_VIEW, url.toUri())
                                     context.startActivity(intent)
                                     onDismiss()
                                 }) {
