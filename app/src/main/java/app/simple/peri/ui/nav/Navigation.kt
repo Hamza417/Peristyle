@@ -13,6 +13,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.navigation.compose.NavHost
@@ -32,7 +33,6 @@ import app.simple.peri.ui.screens.Wallpaper
 import app.simple.peri.ui.screens.isSetupComplete
 import app.simple.peri.ui.subscreens.TaggedWallpapers
 import app.simple.peri.ui.subscreens.WallpaperList
-import app.simple.peri.utils.ConditionUtils.invert
 
 private const val ANIMATION_DURATION = 400
 private const val DELAY = 100
@@ -47,19 +47,44 @@ fun PeristyleNavigation(context: Context) {
     val predictiveBack = remember { mutableStateOf(MainComposePreferences.isPredictiveBack()) }
     val startDestination = if (isSetupComplete(context)) Routes.HOME else Routes.SETUP
 
-    SharedPreferences.getSharedPreferences().registerOnSharedPreferenceChangeListener { sharedPreferences, key ->
-        if (key == MainComposePreferences.DISABLE_ANIMATIONS) {
-            disableAnimations.value = sharedPreferences.getBoolean(MainComposePreferences.DISABLE_ANIMATIONS, false)
+    DisposableEffect(Unit) {
+        val listener = android.content.SharedPreferences.OnSharedPreferenceChangeListener { sharedPreferences, key ->
+            when (key) {
+                MainComposePreferences.DISABLE_ANIMATIONS -> {
+                    disableAnimations.value = MainComposePreferences.getDisableAnimations()
+                }
+                MainComposePreferences.PREDICTIVE_BACK -> {
+                    predictiveBack.value = MainComposePreferences.isPredictiveBack()
+                }
+            }
+        }
+
+        val prefs = SharedPreferences.getSharedPreferences()
+        prefs.registerOnSharedPreferenceChangeListener(listener)
+
+        onDispose {
+            prefs.unregisterOnSharedPreferenceChangeListener(listener)
         }
     }
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        if (disableAnimations.value || predictiveBack.value.invert()) {
-            disablePredictiveBack(context as ComponentActivity) {
-                navController.popBackStack()
+    DisposableEffect(predictiveBack.value) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val activity = context as ComponentActivity
+            if (predictiveBack.value) {
+                enablePredictiveBack(activity)
+                onDispose {
+                    // No-op, already unregistered in enablePredictiveBack
+                }
+            } else {
+                disablePredictiveBack(activity) {
+                    activity.onBackPressedDispatcher.onBackPressed()
+                }
+                onDispose {
+                    enablePredictiveBack(activity) // Unregister on dispose
+                }
             }
         } else {
-            enablePredictiveBack(context as ComponentActivity)
+            onDispose { }
         }
     }
 
