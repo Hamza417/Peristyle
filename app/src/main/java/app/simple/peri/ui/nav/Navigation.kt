@@ -5,7 +5,6 @@ import android.os.Build
 import android.window.OnBackInvokedCallback
 import android.window.OnBackInvokedDispatcher
 import androidx.activity.ComponentActivity
-import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.tween
@@ -13,13 +12,9 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.navigation.NavBackStackEntry
-import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -122,20 +117,6 @@ fun PeristyleNavigation(context: Context) {
     }
 }
 
-fun NavGraphBuilder.composableWithTransitions(
-        route: String,
-        content: @Composable AnimatedContentScope.(NavBackStackEntry) -> Unit
-) {
-    composable(
-            route = route,
-            enterTransition = { scaleIntoContainer() },
-            exitTransition = { scaleOutOfContainer(direction = ScaleTransitionDirection.INWARDS) },
-            popEnterTransition = { scaleIntoContainer(direction = ScaleTransitionDirection.OUTWARDS) },
-            popExitTransition = { scaleOutOfContainer() },
-            content = content
-    )
-}
-
 fun scaleIntoContainer(
         direction: ScaleTransitionDirection = ScaleTransitionDirection.INWARDS,
         initialScale: Float = if (direction == ScaleTransitionDirection.OUTWARDS) 0.9f else 1.1f
@@ -155,26 +136,6 @@ fun scaleOutOfContainer(
                     durationMillis = ANIMATION_DURATION,
                     delayMillis = DELAY
             ), targetScale = targetScale
-    ) + fadeOut(tween(delayMillis = DELAY))
-}
-
-fun slideIntoContainer(
-        direction: SlideTransitionDirection = SlideTransitionDirection.LEFT,
-        offset: Int = 1000
-): EnterTransition {
-    return slideInHorizontally(
-            initialOffsetX = { if (direction == SlideTransitionDirection.LEFT) offset else -offset },
-            animationSpec = tween(ANIMATION_DURATION, delayMillis = DELAY)
-    ) + fadeIn(animationSpec = tween(ANIMATION_DURATION, delayMillis = DELAY))
-}
-
-fun slideOutOfContainer(
-        direction: SlideTransitionDirection = SlideTransitionDirection.LEFT,
-        offset: Int = 1000
-): ExitTransition {
-    return slideOutHorizontally(
-            targetOffsetX = { if (direction == SlideTransitionDirection.LEFT) -offset else offset },
-            animationSpec = tween(ANIMATION_DURATION, delayMillis = DELAY)
     ) + fadeOut(tween(delayMillis = DELAY))
 }
 
@@ -200,9 +161,4 @@ fun enablePredictiveBack(activity: ComponentActivity) {
 enum class ScaleTransitionDirection {
     INWARDS,
     OUTWARDS
-}
-
-enum class SlideTransitionDirection {
-    LEFT,
-    RIGHT
 }
