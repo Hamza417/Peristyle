@@ -296,7 +296,8 @@ fun Settings(navController: NavController? = null) {
 
             SwitchPreference(
                     title = context.getString(R.string.disable_animations),
-                    checked = MainComposePreferences.getDisableAnimations()
+                    checked = MainComposePreferences.getDisableAnimations(),
+                    topPadding = 8.dp
             ) {
                 MainComposePreferences.setDisableAnimations(it)
             }
@@ -304,6 +305,7 @@ fun Settings(navController: NavController? = null) {
             SwitchPreference(
                     title = context.getString(R.string.predictive_back),
                     checked = MainComposePreferences.isPredictiveBack(),
+                    topPadding = 8.dp
             ) {
                 MainComposePreferences.setPredictiveBack(it)
             }
