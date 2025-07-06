@@ -1,7 +1,10 @@
 package app.simple.peri.ui.nav
 
 import android.content.Context
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener
+import android.os.Build
+import android.window.OnBackInvokedCallback
+import android.window.OnBackInvokedDispatcher
+import androidx.activity.ComponentActivity
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
@@ -34,22 +37,34 @@ import app.simple.peri.ui.screens.Wallpaper
 import app.simple.peri.ui.screens.isSetupComplete
 import app.simple.peri.ui.subscreens.TaggedWallpapers
 import app.simple.peri.ui.subscreens.WallpaperList
+import app.simple.peri.utils.ConditionUtils.invert
 
 private const val ANIMATION_DURATION = 400
 private const val DELAY = 100
+
+private var predictiveBackCallback: OnBackInvokedCallback? = null
 
 @Composable
 fun PeristyleNavigation(context: Context) {
 
     val navController = rememberNavController()
-    val disableAnimations = remember {
-        mutableStateOf(MainComposePreferences.getDisableAnimations())
-    }
+    val disableAnimations = remember { mutableStateOf(MainComposePreferences.getDisableAnimations()) }
+    val predictiveBack = remember { mutableStateOf(MainComposePreferences.isPredictiveBack()) }
     val startDestination = if (isSetupComplete(context)) Routes.HOME else Routes.SETUP
 
     SharedPreferences.getSharedPreferences().registerOnSharedPreferenceChangeListener { sharedPreferences, key ->
         if (key == MainComposePreferences.DISABLE_ANIMATIONS) {
             disableAnimations.value = sharedPreferences.getBoolean(MainComposePreferences.DISABLE_ANIMATIONS, false)
+        }
+    }
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        if (disableAnimations.value || predictiveBack.value.invert()) {
+            disablePredictiveBack(context as ComponentActivity) {
+                navController.popBackStack()
+            }
+        } else {
+            enablePredictiveBack(context as ComponentActivity)
         }
     }
 
@@ -161,6 +176,25 @@ fun slideOutOfContainer(
             targetOffsetX = { if (direction == SlideTransitionDirection.LEFT) -offset else offset },
             animationSpec = tween(ANIMATION_DURATION, delayMillis = DELAY)
     ) + fadeOut(tween(delayMillis = DELAY))
+}
+
+fun disablePredictiveBack(activity: ComponentActivity, onBack: () -> Unit) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && predictiveBackCallback == null) {
+        predictiveBackCallback = OnBackInvokedCallback {
+            onBack()
+        }
+        activity.onBackInvokedDispatcher.registerOnBackInvokedCallback(
+                OnBackInvokedDispatcher.PRIORITY_OVERLAY,
+                predictiveBackCallback!!
+        )
+    }
+}
+
+fun enablePredictiveBack(activity: ComponentActivity) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && predictiveBackCallback != null) {
+        activity.onBackInvokedDispatcher.unregisterOnBackInvokedCallback(predictiveBackCallback!!)
+        predictiveBackCallback = null
+    }
 }
 
 enum class ScaleTransitionDirection {

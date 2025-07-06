@@ -300,6 +300,13 @@ fun Settings(navController: NavController? = null) {
             ) {
                 MainComposePreferences.setDisableAnimations(it)
             }
+
+            SwitchPreference(
+                    title = context.getString(R.string.predictive_back),
+                    checked = MainComposePreferences.isPredictiveBack() || MainComposePreferences.getDisableAnimations().invert(),
+            ) {
+                MainComposePreferences.setPredictiveBack(it)
+            }
         }
         item {
             val showDeveloperProfileDialog = remember { mutableStateOf(false) }

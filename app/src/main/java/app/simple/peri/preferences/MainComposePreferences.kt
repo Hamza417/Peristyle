@@ -69,7 +69,9 @@ object MainComposePreferences {
     private const val DONT_CHANGE_WHEN_PORTRAIT = "dont_change_when_portrait"
     private const val DONT_CHANGE_WHEN_LOW_BATTERY = "dont_change_when_low_battery"
     private const val DOUBLE_TAP_TO_CHANGE = "double_tap_to_change"
+
     const val DISABLE_ANIMATIONS = "disable_animations"
+    const val PREDICTIVE_BACK = "predictive_back"
 
     // ----------------------------------------------------------------------------------------------------- //
 
@@ -804,5 +806,13 @@ object MainComposePreferences {
 
     fun setDisableAnimations(value: Boolean) {
         getSharedPreferences().edit().putBoolean(DISABLE_ANIMATIONS, value).apply()
+    }
+
+    fun isPredictiveBack(): Boolean {
+        return getSharedPreferences().getBoolean(PREDICTIVE_BACK, true)
+    }
+
+    fun setPredictiveBack(value: Boolean) {
+        getSharedPreferences().edit().putBoolean(PREDICTIVE_BACK, value).apply()
     }
 }
