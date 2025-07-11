@@ -13,6 +13,7 @@ import com.bumptech.glide.load.data.DataFetcher
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.FutureTarget
 import com.bumptech.glide.signature.ObjectKey
+import android.graphics.Bitmapimport androidx.core.graphics.createBitmap
 
 class FolderFetcher(private val contextFolder: ContextFolder) : DataFetcher<Bitmap> {
     override fun loadData(priority: Priority, callback: DataFetcher.DataCallback<in Bitmap>) {
@@ -50,7 +51,7 @@ class FolderFetcher(private val contextFolder: ContextFolder) : DataFetcher<Bitm
                 })
         val bitmapWidth = displayDimension.getReducedWidth()
         val bitmapHeight = displayDimension.getReducedHeight()
-        val gridBitmap = Bitmap.createBitmap(GRID_WIDTH * bitmapWidth, gridHeight * bitmapHeight, Bitmap.Config.ARGB_8888)
+        val gridBitmap = createBitmap(GRID_WIDTH * bitmapWidth, gridHeight * bitmapHeight)
         val canvas = Canvas(gridBitmap)
         canvas.drawColor(Color.TRANSPARENT)
 
