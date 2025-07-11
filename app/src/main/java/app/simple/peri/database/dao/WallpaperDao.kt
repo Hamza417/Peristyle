@@ -10,6 +10,7 @@ import androidx.room.Transaction
 import androidx.room.Update
 import app.simple.peri.database.instances.WallpaperDatabase
 import app.simple.peri.models.Wallpaper
+import app.simple.peri.models.WallpaperUsage
 import app.simple.peri.preferences.MainComposePreferences
 import kotlinx.coroutines.flow.Flow
 import java.io.File
@@ -21,6 +22,9 @@ interface WallpaperDao {
 
     @Query("SELECT * FROM wallpapers ORDER BY dateModified DESC")
     fun getWallpapersFlow(): Flow<List<Wallpaper>>
+
+    @Query("SELECT * FROM wallpaper_usage ORDER BY usage_count DESC")
+    fun getMostUsedWallpapers(): List<Wallpaper>
 
     fun getWallpapersByWidthAndHeight(width: Int, height: Int): List<Wallpaper> {
         return getWallpapers().filter { it.width == width && it.height == height }
@@ -97,14 +101,25 @@ interface WallpaperDao {
     @Update
     fun update(wallpaper: Wallpaper)
 
+    @Update
+    suspend fun update(wallpaperUsage: WallpaperUsage)
+
+    suspend fun incrementUsageCount(wallpaperUsage: WallpaperUsage) {
+        wallpaperUsage.usageCount += 1
+        update(wallpaperUsage)
+    }
+
     /**
      * Insert a wallpaper into the database
      */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(wallpaper: Wallpaper)
+    suspend fun insert(wallpaper: Wallpaper)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(wallpaperUsage: WallpaperUsage)
 
     @Transaction
-    fun insertWithConflictHandling(wallpaper: Wallpaper) {
+    suspend fun insertWithConflictHandling(wallpaper: Wallpaper) {
         val existingWallpaper = getWallpaperByID(wallpaper.id)
         if (existingWallpaper != null) {
             wallpaper.id += "duplicate"
