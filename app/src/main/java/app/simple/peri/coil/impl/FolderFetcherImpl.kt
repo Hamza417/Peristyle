@@ -21,17 +21,16 @@ class FolderFetcherImpl(private val data: ContextFolder) : Fetcher {
         val wallpaperDatabase = WallpaperDatabase.getInstance(context)!!
         val wallpaperList = wallpaperDatabase.wallpaperDao().getWallpapersByPathHashcode(data.folder.hashcode)
         val topWallpapers = wallpaperList.shuffled().take(GRID_COUNT)
-
         val bitmapWidth = displayDimension.getReducedWidth()
         val bitmapHeight = displayDimension.getReducedHeight()
         val gridHeight = (topWallpapers.size / GRID_WIDTH) + if (topWallpapers.size % GRID_WIDTH == 0) 0 else 1
         val gridBitmap = createBitmap(GRID_WIDTH * bitmapWidth, gridHeight * bitmapHeight)
         val canvas = Canvas(gridBitmap)
+
         canvas.drawColor(Color.TRANSPARENT)
 
         topWallpapers.forEachIndexed { i, wallpaper ->
-            val bmp = /* load bitmap from wallpaper.filePath, e.g. BitmapFactory.decodeFile(wallpaper.filePath) */
-                android.graphics.BitmapFactory.decodeFile(wallpaper.filePath)
+            val bmp = android.graphics.BitmapFactory.decodeFile(wallpaper.filePath)
             val x = (i % GRID_WIDTH) * bitmapWidth
             val y = (i / GRID_WIDTH) * bitmapHeight
             bmp?.let {
@@ -41,14 +40,13 @@ class FolderFetcherImpl(private val data: ContextFolder) : Fetcher {
             }
         }
 
-        // Convert Bitmap to Okio Source
         val buffer = Buffer()
         gridBitmap.compress(Bitmap.CompressFormat.PNG, 100, buffer.outputStream())
 
         return ImageFetchResult(
                 image = gridBitmap.asImage(),
                 isSampled = false,
-                dataSource = DataSource.DISK
+                dataSource = DataSource.NETWORK
         )
     }
 

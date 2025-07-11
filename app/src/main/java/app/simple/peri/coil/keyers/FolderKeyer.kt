@@ -6,6 +6,6 @@ import coil3.request.Options
 
 class FolderKeyer : Keyer<ContextFolder> {
     override fun key(data: ContextFolder, options: Options): String? {
-        return "context_folder_${data.hashCode()}"
+        return data.hashCode().toString()
     }
 }
