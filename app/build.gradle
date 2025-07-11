@@ -186,6 +186,7 @@ dependencies {
     implementation 'com.github.bumptech.glide:okhttp3-integration:4.16.0'
     implementation "com.github.bumptech.glide:compose:1.0.0-beta01"
     ksp 'com.github.bumptech.glide:ksp:4.16.0'
+    implementation("me.saket.telephoto:zoomable-image-glide:0.16.0")
 
     // Room
     implementation "androidx.room:room-ktx:2.7.2"
