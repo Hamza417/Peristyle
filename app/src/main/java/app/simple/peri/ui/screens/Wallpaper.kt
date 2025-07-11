@@ -31,6 +31,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -74,6 +75,7 @@ import app.simple.peri.utils.FileUtils.toFile
 import app.simple.peri.utils.FileUtils.toSize
 import app.simple.peri.viewmodels.StateViewModel
 import app.simple.peri.viewmodels.TagsViewModel
+import app.simple.peri.viewmodels.WallpaperUsageViewModel
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
 import dev.chrisbanes.haze.HazeDefaults
 import dev.chrisbanes.haze.HazeState
@@ -87,6 +89,7 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
     val context = LocalContext.current
     val savedStateHandle = navController.previousBackStackEntry?.savedStateHandle
     val stateViewModel: StateViewModel = viewModel()
+    val wallpaperUsageViewModel: WallpaperUsageViewModel = viewModel()
 
     val wallpaper by rememberSaveable(savedStateHandle) {
         if (stateViewModel.wallpaper == null) {
@@ -112,6 +115,9 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
     var scaleValueGreen by remember { stateViewModel::scaleValueGreen } // 0F..1F
     var scaleValueBlue by remember { stateViewModel::scaleValueBlue } // 0F..1F
     var tags by remember { mutableStateOf(emptyList<String>()) }
+    val setTimes = wallpaperUsageViewModel.dataFlow.collectAsState().value.find {
+        it.wallpaperId == wallpaper?.id
+    }
     val coroutineScope = rememberCoroutineScope()
     val graphicsLayer = rememberGraphicsLayer()
     val tagsViewModel: TagsViewModel = viewModel(
@@ -306,6 +312,8 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
                             append(wallpaper?.height ?: 0)
                             append(", ")
                             append(wallpaper?.size?.toSize() ?: "")
+                            append(", ")
+                            append(context.getString(R.string.times, setTimes?.usageCount ?: 0))
                         },
                         fontWeight = FontWeight.Light,
                         color = Color.White,
