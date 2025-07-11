@@ -1,5 +1,7 @@
 package app.simple.peri.models;
 
+import java.io.Serializable;
+
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
@@ -10,8 +12,9 @@ import androidx.room.PrimaryKey;
         foreignKeys = @ForeignKey (entity = Wallpaper.class,
                 parentColumns = "id",
                 childColumns = "wallpaper_id",
-                onDelete = ForeignKey.CASCADE))
-public class WallpaperUsage {
+                onDelete = ForeignKey.CASCADE)
+)
+public class WallpaperUsage implements Serializable {
     
     @PrimaryKey
     @NonNull

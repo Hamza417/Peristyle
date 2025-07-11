@@ -9,6 +9,7 @@ import app.simple.peri.database.instances.LastLockWallpapersDatabase
 import app.simple.peri.database.instances.TagsDatabase
 import app.simple.peri.database.instances.WallpaperDatabase
 import app.simple.peri.models.Wallpaper
+import app.simple.peri.models.WallpaperUsage
 import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.utils.BitmapUtils.applyEffects
@@ -147,7 +148,7 @@ abstract class AbstractComposeAutoWallpaperService : AbstractAutoWallpaperServic
 
         when {
             tagId.isNotNull() -> {
-                kotlin.runCatching {
+                runCatching {
                     val tagsDatabase = TagsDatabase.getInstance(applicationContext)
                     val tagsDao = tagsDatabase?.tagsDao()
                     val tag = tagsDao?.getTagByID(tagId!!)
@@ -161,7 +162,7 @@ abstract class AbstractComposeAutoWallpaperService : AbstractAutoWallpaperServic
             }
 
             folderId != -1 -> {
-                kotlin.runCatching {
+                runCatching {
                     val wallpapers = wallpaperDao?.getWallpapersByPathHashcode(folderId)
                     wallpaper = getWallpaperFromList(wallpapers, position, isHomeScreen = true)
                 }.getOrElse {
@@ -173,6 +174,10 @@ abstract class AbstractComposeAutoWallpaperService : AbstractAutoWallpaperServic
             else -> {
                 wallpaper = getRandomWallpaperFromDatabase()
             }
+        }
+
+        wallpaper?.let {
+            insertOrUpdateWallpaperUsage(it)
         }
 
         return wallpaper
@@ -189,7 +194,7 @@ abstract class AbstractComposeAutoWallpaperService : AbstractAutoWallpaperServic
 
         when {
             tagId.isNotNull() -> {
-                kotlin.runCatching {
+                runCatching {
                     val tagsDatabase = TagsDatabase.getInstance(applicationContext)
                     val tagsDao = tagsDatabase?.tagsDao()
                     val tag = tagsDao?.getTagByID(tagId!!)
@@ -204,7 +209,7 @@ abstract class AbstractComposeAutoWallpaperService : AbstractAutoWallpaperServic
             }
 
             folderId != -1 -> {
-                kotlin.runCatching {
+                runCatching {
                     val wallpapers = wallpaperDao?.getWallpapersByPathHashcode(folderId)
                     wallpaper = getWallpaperFromList(wallpapers, position, false)
                 }.getOrElse {
@@ -219,10 +224,14 @@ abstract class AbstractComposeAutoWallpaperService : AbstractAutoWallpaperServic
             }
         }
 
+        wallpaper?.let {
+            insertOrUpdateWallpaperUsage(it)
+        }
+
         return wallpaper
     }
 
-    private fun getWallpaperFromList(wallpapers: List<Wallpaper>?, position: Int, isHomeScreen: Boolean): Wallpaper? {
+    private suspend fun getWallpaperFromList(wallpapers: List<Wallpaper>?, position: Int, isHomeScreen: Boolean): Wallpaper? {
         return if (MainPreferences.isLinearAutoWallpaper()) {
             try {
                 wallpapers?.get(position).also {
@@ -272,13 +281,29 @@ abstract class AbstractComposeAutoWallpaperService : AbstractAutoWallpaperServic
         }
     }
 
-    private fun insertWallpaperToLastUsedDatabase(wallpaper: Wallpaper, homeScreen: Boolean) {
+    private suspend fun insertWallpaperToLastUsedDatabase(wallpaper: Wallpaper, homeScreen: Boolean) {
         if (homeScreen) {
             LastHomeWallpapersDatabase.getInstance(applicationContext)
                 ?.wallpaperDao()?.insert(wallpaper)
         } else {
             LastLockWallpapersDatabase.getInstance(applicationContext)
                 ?.wallpaperDao()?.insert(wallpaper)
+        }
+    }
+
+    private suspend fun insertOrUpdateWallpaperUsage(wallpaper: Wallpaper) {
+        val wallpaperDatabase = WallpaperDatabase.getInstance(applicationContext)
+        val wallpaperUsage: WallpaperUsage? = wallpaperDatabase?.wallpaperDao()?.getWallpaperUsageById(wallpaper.id)
+
+        if (wallpaperUsage != null) {
+            wallpaperDatabase.wallpaperDao().incrementUsageCountAndUpdate(wallpaperUsage)
+            Log.i(TAG, "Incremented usage count for wallpaper: ${wallpaper.id} to ${wallpaperUsage.usageCount}")
+        } else {
+            val newWallpaperUsage = WallpaperUsage(
+                    wallpaper.id, 1,
+            )
+
+            wallpaperDatabase?.wallpaperDao()?.insert(newWallpaperUsage)
         }
     }
 

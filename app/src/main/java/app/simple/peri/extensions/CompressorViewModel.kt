@@ -81,5 +81,5 @@ abstract class CompressorViewModel(application: Application) : AndroidViewModel(
         }
     }
 
-    abstract fun onCompressionDone(wallpaper: Wallpaper, file: File): Wallpaper
+    abstract suspend fun onCompressionDone(wallpaper: Wallpaper, file: File): Wallpaper
 }

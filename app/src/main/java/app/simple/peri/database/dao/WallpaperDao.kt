@@ -24,7 +24,14 @@ interface WallpaperDao {
     fun getWallpapersFlow(): Flow<List<Wallpaper>>
 
     @Query("SELECT * FROM wallpaper_usage ORDER BY usage_count DESC")
-    fun getMostUsedWallpapers(): List<Wallpaper>
+    fun getAllWallpaperUsage(): List<WallpaperUsage>
+
+    @Query("SELECT * FROM wallpaper_usage WHERE wallpaper_id = :id")
+    fun getWallpaperUsageById(id: String): WallpaperUsage? {
+        return getAllWallpaperUsage().find {
+            it.wallpaperId == id
+        } ?: WallpaperUsage(id, 0)
+    }
 
     fun getWallpapersByWidthAndHeight(width: Int, height: Int): List<Wallpaper> {
         return getWallpapers().filter { it.width == width && it.height == height }
@@ -104,7 +111,7 @@ interface WallpaperDao {
     @Update
     suspend fun update(wallpaperUsage: WallpaperUsage)
 
-    suspend fun incrementUsageCount(wallpaperUsage: WallpaperUsage) {
+    suspend fun incrementUsageCountAndUpdate(wallpaperUsage: WallpaperUsage) {
         wallpaperUsage.usageCount += 1
         update(wallpaperUsage)
     }

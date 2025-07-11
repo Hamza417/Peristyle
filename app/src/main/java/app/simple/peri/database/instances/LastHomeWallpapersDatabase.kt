@@ -6,9 +6,10 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import app.simple.peri.database.dao.WallpaperDao
 import app.simple.peri.models.Wallpaper
+import app.simple.peri.models.WallpaperUsage
 import app.simple.peri.utils.ConditionUtils.invert
 
-@Database(entities = [Wallpaper::class], version = 9)
+@Database(entities = [Wallpaper::class, WallpaperUsage::class], version = 9)
 abstract class LastHomeWallpapersDatabase : RoomDatabase() {
 
     abstract fun wallpaperDao(): WallpaperDao

@@ -158,11 +158,11 @@ class TagsViewModel(application: Application, private val id: String? = null, pr
         }
     }
 
-    override fun onCompressionDone(wallpaper: Wallpaper, file: File): Wallpaper {
+    override suspend fun onCompressionDone(wallpaper: Wallpaper, file: File): Wallpaper {
         return postNewWallpaper(file, wallpaper)
     }
 
-    private fun postNewWallpaper(file: File, previousWallpaper: Wallpaper): Wallpaper {
+    private suspend fun postNewWallpaper(file: File, previousWallpaper: Wallpaper): Wallpaper {
         val wallpaper = Wallpaper.createFromFile(file)
         wallpaper.id = previousWallpaper.id
         wallpaper.folderID = previousWallpaper.folderID
