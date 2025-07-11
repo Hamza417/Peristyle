@@ -297,7 +297,8 @@ abstract class AbstractComposeAutoWallpaperService : AbstractAutoWallpaperServic
         val wallpaperUsage: WallpaperUsage? = wallpaperDatabase?.wallpaperDao()?.getWallpaperUsageById(wallpaper.id)
 
         if (wallpaperUsage != null) {
-            wallpaperDatabase.wallpaperDao().incrementUsageCountAndUpdate(wallpaperUsage)
+            wallpaperUsage.usageCount += 1
+            wallpaperDatabase.wallpaperDao().insert(wallpaperUsage)
             Log.i(TAG, "Incremented usage count for wallpaper: ${wallpaper.id} to ${wallpaperUsage.usageCount}")
         } else {
             val newWallpaperUsage = WallpaperUsage(

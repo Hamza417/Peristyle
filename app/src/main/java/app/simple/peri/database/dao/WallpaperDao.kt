@@ -114,11 +114,6 @@ interface WallpaperDao {
     @Update
     suspend fun update(wallpaperUsage: WallpaperUsage)
 
-    suspend fun incrementUsageCountAndUpdate(wallpaperUsage: WallpaperUsage) {
-        wallpaperUsage.usageCount += 1
-        update(wallpaperUsage)
-    }
-
     /**
      * Insert a wallpaper into the database
      */

@@ -33,14 +33,6 @@ abstract class AbstractAutoWallpaperService : Service() {
         ScreenUtils.getScreenSize(applicationContext).height
     }
 
-    protected suspend fun getWallpapersFromDatabase(): List<Wallpaper>? {
-        return withContext(Dispatchers.IO) {
-            val dao = WallpaperDatabase.getInstance(applicationContext)?.wallpaperDao()
-            dao?.sanitizeEntries()
-            dao?.getWallpapers()
-        }
-    }
-
     @Throws(NoSuchElementException::class)
     protected suspend fun getRandomWallpaperFromDatabase(): Wallpaper? {
         return withContext(Dispatchers.IO) {
@@ -55,7 +47,7 @@ abstract class AbstractAutoWallpaperService : Service() {
 
                 val wallpaper = try {
                     dao.getWallpapers().filterNot { it in dupDao.getWallpapers() }.random()
-                } catch (e: NoSuchElementException) {
+                } catch (_: NoSuchElementException) {
                     dao.getWallpapers().random()
                 }
 
@@ -63,7 +55,7 @@ abstract class AbstractAutoWallpaperService : Service() {
                 LastWallpapersDatabase.destroyInstance()
 
                 wallpaper
-            } catch (e: NoSuchElementException) {
+            } catch (_: NoSuchElementException) {
                 Log.e(TAG, "No wallpapers found in database")
                 null
             }
@@ -87,6 +79,7 @@ abstract class AbstractAutoWallpaperService : Service() {
                 if (MainComposePreferences.getMaxSetCount() > 0) {
                     Log.i(TAG, "Max set count is enabled, checking wallpaper usage")
                     val dao = WallpaperDatabase.getInstance(applicationContext)?.wallpaperDao()
+                    Log.i(TAG, "Checking wallpaper usage in database ${dao?.getAllWallpaperUsage()?.size ?: 0} entries")
                     dao!!.getAllWallpaperUsage().forEach {
                         Log.i(TAG, "Wallpaper ID: ${it.wallpaperId}, Usage Count: ${it.usageCount}")
                         if (it.usageCount >= MainComposePreferences.getMaxSetCount()) {
@@ -94,6 +87,7 @@ abstract class AbstractAutoWallpaperService : Service() {
                             if (wallpaper != null) {
                                 Log.i(TAG, "Deleting wallpaper with ID: ${wallpaper.id} due to usage count limit")
                                 if (File(wallpaper.filePath).delete()) {
+                                    Log.i(TAG, "Wallpaper file deleted: ${wallpaper.filePath}")
                                     dao.delete(it)
                                 }
                             } else {
