@@ -6,11 +6,14 @@ import android.util.Log
 import app.simple.peri.database.instances.LastWallpapersDatabase
 import app.simple.peri.database.instances.WallpaperDatabase
 import app.simple.peri.models.Wallpaper
+import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.utils.ListUtils.deepEquals
 import app.simple.peri.utils.ScreenUtils
 import app.simple.peri.utils.WallpaperServiceNotification.createNotificationChannels
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import java.io.File
 
 abstract class AbstractAutoWallpaperService : Service() {
 
@@ -73,6 +76,27 @@ abstract class AbstractAutoWallpaperService : Service() {
             kotlin.runCatching {
                 val dao = WallpaperDatabase.getInstance(applicationContext)?.wallpaperDao()
                 dao?.purgeNonExistingWallpapers(WallpaperDatabase.getInstance(applicationContext)!!)
+            }
+        }
+    }
+
+    protected fun validateUsage() {
+        runBlocking {
+            kotlin.runCatching {
+                val dao = WallpaperDatabase.getInstance(applicationContext)?.wallpaperDao()
+                dao?.getAllWallpaperUsage()?.forEach {
+                    if (it.usageCount >= MainComposePreferences.getMaxSetCount() && MainComposePreferences.getMaxSetCount() != 0) {
+                        val wallpaper = dao.getWallpaperByID(it.wallpaperId)
+                        if (wallpaper != null) {
+                            Log.i("WallpaperDao", "Deleting wallpaper with ID: ${wallpaper.id} due to usage count limit")
+                            if (File(wallpaper.filePath).delete()) {
+                                dao.delete(it)
+                            }
+                        } else {
+                            Log.w("WallpaperDao", "Wallpaper with ID: ${it.wallpaperId} not found for deletion")
+                        }
+                    }
+                }
             }
         }
     }

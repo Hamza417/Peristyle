@@ -90,6 +90,9 @@ interface WallpaperDao {
     @Delete
     fun delete(wallpaper: Wallpaper)
 
+    @Delete
+    fun delete(wallpaperUsage: WallpaperUsage)
+
     /**
      * Delete wallpaper by URI
      */

@@ -59,6 +59,7 @@ abstract class AbstractComposeAutoWallpaperService : AbstractAutoWallpaperServic
 
                 withContext(Dispatchers.Main) {
                     onComplete()
+                    validateUsage()
                     stopSelf()
                 }
             }.getOrElse {
