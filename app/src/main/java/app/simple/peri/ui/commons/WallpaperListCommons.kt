@@ -79,7 +79,6 @@ import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.allowHardware
 import coil3.request.crossfade
-import coil3.size.Scale
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import dev.chrisbanes.haze.HazeDefaults
 import dev.chrisbanes.haze.HazeState
@@ -170,14 +169,13 @@ fun WallpaperItem(
                     model = ImageRequest.Builder(LocalContext.current)
                         .data(wallpaper.filePath.toFile())
                         .crossfade(true)
-                        .allowHardware(false)
+                        .allowHardware(true)
                         .size(512, 512)
-                        .scale(Scale.FILL)
                         .build(),
                     contentDescription = null,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .wrapContentHeight()
+                        .aspectRatio(1f) // Ensures the image stays square
                         .padding(16.dp)
                         .blur(30.dp, edgeTreatment = BlurredEdgeTreatment.Unbounded)
                         .alpha(0.5f)

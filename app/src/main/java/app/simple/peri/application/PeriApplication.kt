@@ -2,7 +2,7 @@ package app.simple.peri.application
 
 import android.app.Application
 import app.simple.peri.coil.fetchers.FolderFetcher
-import app.simple.peri.coil.keyers.ContextFolderKeyer
+import app.simple.peri.coil.keyers.FolderKeyer
 import app.simple.peri.utils.WallpaperSort.setSeed
 import coil3.ImageLoader
 import coil3.PlatformContext
@@ -20,7 +20,7 @@ class PeriApplication : Application(), SingletonImageLoader.Factory {
         return ImageLoader.Builder(context)
             .components {
                 add(FolderFetcher())
-                add(ContextFolderKeyer())
+                add(FolderKeyer())
             }
             .build()
     }
