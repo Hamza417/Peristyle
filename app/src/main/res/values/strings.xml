@@ -236,4 +236,8 @@
     <string name="double_tap_to_change_wallpaper_summary">Double tapping the home or lock screen should change to next wallpaper.</string>
     <string name="disable_animations">Disable Animations</string>
     <string name="random">Random</string>
+    <string name="delete_summary">Delete wallpaper after it has been set for a number of times.</string>
+    <string name="times">%1$d times</string>
+    <string name="disable">Disable</string>
+    <string name="delete_after">Delete After</string>
 </resources>
