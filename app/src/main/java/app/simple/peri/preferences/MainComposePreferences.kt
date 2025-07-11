@@ -820,7 +820,7 @@ object MainComposePreferences {
     // ----------------------------------------------------------------------------------------------------- //
 
     fun getMaxSetCount(): Int {
-        return getSharedPreferences().getInt(MAX_SET_COUNT, -1)
+        return getSharedPreferences().getInt(MAX_SET_COUNT, 0)
     }
 
     fun setMaxSetCount(value: Int) {

@@ -44,6 +44,7 @@ abstract class AbstractAutoLiveWallpaperService : AbstractComposeAutoWallpaperSe
                 withContext(Dispatchers.Main) {
                     showErrorNotification(it.stackTraceToString())
                     onComplete()
+                    validateUsage()
                     stopSelf()
                 }
             }

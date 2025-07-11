@@ -11,7 +11,6 @@ import app.simple.peri.utils.ListUtils.deepEquals
 import app.simple.peri.utils.ScreenUtils
 import app.simple.peri.utils.WallpaperServiceNotification.createNotificationChannels
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import java.io.File
 
@@ -80,23 +79,31 @@ abstract class AbstractAutoWallpaperService : Service() {
         }
     }
 
-    protected fun validateUsage() {
-        runBlocking {
+    protected suspend fun validateUsage() {
+        withContext(Dispatchers.IO) {
             kotlin.runCatching {
-                val dao = WallpaperDatabase.getInstance(applicationContext)?.wallpaperDao()
-                dao?.getAllWallpaperUsage()?.forEach {
-                    if (it.usageCount >= MainComposePreferences.getMaxSetCount() && MainComposePreferences.getMaxSetCount() != 0) {
-                        val wallpaper = dao.getWallpaperByID(it.wallpaperId)
-                        if (wallpaper != null) {
-                            Log.i("WallpaperDao", "Deleting wallpaper with ID: ${wallpaper.id} due to usage count limit")
-                            if (File(wallpaper.filePath).delete()) {
-                                dao.delete(it)
+                Log.i(TAG, "Validating wallpaper usage counts")
+
+                if (MainComposePreferences.getMaxSetCount() > 0) {
+                    Log.i(TAG, "Max set count is enabled, checking wallpaper usage")
+                    val dao = WallpaperDatabase.getInstance(applicationContext)?.wallpaperDao()
+                    dao!!.getAllWallpaperUsage().forEach {
+                        Log.i(TAG, "Wallpaper ID: ${it.wallpaperId}, Usage Count: ${it.usageCount}")
+                        if (it.usageCount >= MainComposePreferences.getMaxSetCount()) {
+                            val wallpaper = dao.getWallpaperByID(it.wallpaperId)
+                            if (wallpaper != null) {
+                                Log.i(TAG, "Deleting wallpaper with ID: ${wallpaper.id} due to usage count limit")
+                                if (File(wallpaper.filePath).delete()) {
+                                    dao.delete(it)
+                                }
+                            } else {
+                                Log.w(TAG, "Wallpaper with ID: ${it.wallpaperId} not found for deletion")
                             }
-                        } else {
-                            Log.w("WallpaperDao", "Wallpaper with ID: ${it.wallpaperId} not found for deletion")
                         }
                     }
                 }
+            }.onFailure {
+                Log.e(TAG, "Error validating wallpaper usage: ${it.message}", it)
             }
         }
     }
