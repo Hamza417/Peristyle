@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.util.Log
+import androidx.core.graphics.createBitmap
 import app.simple.peri.database.instances.WallpaperDatabase
 import app.simple.peri.ui.screens.displayDimension
 import com.bumptech.glide.Glide
@@ -13,7 +14,6 @@ import com.bumptech.glide.load.data.DataFetcher
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.FutureTarget
 import com.bumptech.glide.signature.ObjectKey
-import android.graphics.Bitmapimport androidx.core.graphics.createBitmap
 
 class FolderFetcher(private val contextFolder: ContextFolder) : DataFetcher<Bitmap> {
     override fun loadData(priority: Priority, callback: DataFetcher.DataCallback<in Bitmap>) {

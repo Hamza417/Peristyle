@@ -5,6 +5,10 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 
 public class WallpaperMigration_9_10 extends Migration {
     
+    public WallpaperMigration_9_10() {
+        super(9, 10);
+    }
+    
     public WallpaperMigration_9_10(int startVersion, int endVersion) {
         super(startVersion, endVersion);
     }

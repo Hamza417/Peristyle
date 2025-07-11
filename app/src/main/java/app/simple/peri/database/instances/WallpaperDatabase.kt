@@ -10,7 +10,7 @@ import app.simple.peri.models.Wallpaper
 import app.simple.peri.models.WallpaperUsage
 import app.simple.peri.utils.ConditionUtils.invert
 
-@Database(entities = [Wallpaper::class, WallpaperUsage::class], version = 9)
+@Database(entities = [Wallpaper::class, WallpaperUsage::class], version = 10)
 abstract class WallpaperDatabase : RoomDatabase() {
     abstract fun wallpaperDao(): WallpaperDao
 
@@ -23,10 +23,12 @@ abstract class WallpaperDatabase : RoomDatabase() {
             kotlin.runCatching {
                 if (instance!!.isOpen.invert()) {
                     instance = Room.databaseBuilder(context, WallpaperDatabase::class.java, DATABASE_NAME)
+                        .addMigrations(WallpaperMigration_9_10())
                         .build()
                 }
             }.getOrElse {
                 instance = Room.databaseBuilder(context, WallpaperDatabase::class.java, DATABASE_NAME)
+                    .addMigrations(WallpaperMigration_9_10())
                     .build()
             }
 
