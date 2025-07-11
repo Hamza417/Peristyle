@@ -54,7 +54,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import app.simple.peri.R
-import app.simple.peri.glide.folders.ContextFolder
+import app.simple.peri.coil.models.ContextFolder
 import app.simple.peri.models.Folder
 import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.ui.commons.BottomHeader
@@ -66,9 +66,9 @@ import app.simple.peri.ui.dialogs.folders.FolderMenu
 import app.simple.peri.ui.nav.Routes
 import app.simple.peri.utils.ConditionUtils.invert
 import app.simple.peri.viewmodels.ComposeWallpaperViewModel
-import com.bumptech.glide.integration.compose.CrossFade
+import coil3.SingletonImageLoader
+import coil3.compose.AsyncImage
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
-import com.bumptech.glide.integration.compose.GlideImage
 import dev.chrisbanes.haze.HazeDefaults
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeEffect
@@ -267,15 +267,12 @@ fun FolderItem(folder: Folder, navController: NavController? = null, composeWall
                 modifier = Modifier.wrapContentHeight(),
                 contentAlignment = Alignment.Center,
         ) {
-            GlideImage(
+            AsyncImage(
                     model = ContextFolder(folder, context = LocalContext.current.applicationContext),
                     contentDescription = null,
-                    transition = CrossFade,
-                    modifier = Modifier.hazeSource(hazeState),
-            ) {
-                it
-                    .disallowHardwareConfig()
-            }
+                    imageLoader = SingletonImageLoader.get(context),
+                    modifier = Modifier.hazeSource(hazeState)
+            )
 
             Column(
                     modifier = Modifier

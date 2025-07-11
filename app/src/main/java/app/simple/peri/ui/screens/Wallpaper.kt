@@ -74,13 +74,16 @@ import app.simple.peri.utils.FileUtils.toFile
 import app.simple.peri.utils.FileUtils.toSize
 import app.simple.peri.viewmodels.StateViewModel
 import app.simple.peri.viewmodels.TagsViewModel
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
+import coil3.request.ImageRequest
+import coil3.request.allowHardware
+import coil3.request.crossfade
+import coil3.size.Scale
 import dev.chrisbanes.haze.HazeDefaults
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeEffect
 import dev.chrisbanes.haze.hazeSource
 import kotlinx.coroutines.launch
-import me.saket.telephoto.zoomable.glide.ZoomableGlideImage
+import me.saket.telephoto.zoomable.coil3.ZoomableAsyncImage
 
 @Composable
 fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? = null) {
@@ -250,8 +253,13 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
                         drawLayer(graphicsLayer)
                     },
         ) {
-            ZoomableGlideImage(
-                    model = wallpaper?.filePath?.toFile(),
+            ZoomableAsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(wallpaper?.filePath?.toFile())
+                        .crossfade(true)
+                        .allowHardware(false)
+                        .scale(Scale.FIT)
+                        .build(),
                     contentDescription = null,
                     modifier = Modifier
                         .fillMaxSize()
@@ -265,13 +273,8 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
                     onLongClick = {
                         showEditDialog.value = true
                         showDetailsCard.value = false
-                    },
+                    }
             )
-            {
-                it.transition(withCrossFade())
-                    .disallowHardwareConfig()
-                    .fitCenter()
-            }
         }
 
         if (showDetailsCard.value) {

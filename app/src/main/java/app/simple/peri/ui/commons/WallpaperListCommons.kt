@@ -1,7 +1,6 @@
 package app.simple.peri.ui.commons
 
 import android.content.Intent
-import android.graphics.drawable.Drawable
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
@@ -76,15 +75,11 @@ import app.simple.peri.utils.FileUtils.toFile
 import app.simple.peri.utils.FileUtils.toSize
 import app.simple.peri.viewmodels.ComposeWallpaperViewModel
 import app.simple.peri.viewmodels.WallpaperListViewModel
-import com.bumptech.glide.integration.compose.CrossFade
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.allowHardware
+import coil3.request.crossfade
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
-import com.bumptech.glide.integration.compose.GlideImage
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
-import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.target.Target
 import dev.chrisbanes.haze.HazeDefaults
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeEffect
@@ -170,27 +165,27 @@ fun WallpaperItem(
         }
 
         if (imageShadow) {
-            GlideImage(
-                    model = wallpaper.filePath.toFile(),
+            AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(wallpaper.filePath.toFile())
+                        .crossfade(true)
+                        .allowHardware(true)
+                        .size(512, 512)
+                        .build(),
                     contentDescription = null,
-                    transition = CrossFade,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .wrapContentHeight()
+                        .aspectRatio(1f) // Ensures the image stays square
                         .padding(16.dp)
                         .blur(30.dp, edgeTreatment = BlurredEdgeTreatment.Unbounded)
                         .alpha(0.5f)
-                        .graphicsLayer {
-                            clip = false
-                        }
+                        .graphicsLayer { clip = false }
                         .align(Alignment.BottomCenter),
                     alignment = Alignment.BottomCenter,
-            ) {
-                it.override(512, 512)
-                    .transition(withCrossFade())
-                    .disallowHardwareConfig()
-                    .centerCrop()
-            }
+                    contentScale = ContentScale.Crop,
+                    onSuccess = { /* handle success if needed */ },
+                    onError = { /* handle error if needed */ }
+            )
         }
 
         ElevatedCard(
@@ -240,38 +235,19 @@ fun WallpaperItem(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center,
             ) {
-                GlideImage(
-                        model = wallpaper.filePath.toFile(),
+                AsyncImage(
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(wallpaper.filePath.toFile())
+                            .crossfade(true)
+                            .build(),
                         contentDescription = null,
-                        transition = CrossFade,
                         modifier = Modifier
                             .hazeSource(hazeState)
                             .fillMaxSize(),
-                        contentScale = ContentScale.Crop
-                ) {
-                    it.addListener(object : RequestListener<Drawable> {
-                        override fun onLoadFailed(
-                                e: GlideException?,
-                                model: Any?,
-                                target: Target<Drawable>,
-                                isFirstResource: Boolean
-                        ): Boolean {
-                            return false
-                        }
-
-                        override fun onResourceReady(
-                                resource: Drawable,
-                                model: Any,
-                                target: Target<Drawable>?,
-                                dataSource: DataSource,
-                                isFirstResource: Boolean
-                        ): Boolean {
-                            return false
-                        }
-                    })
-                        .disallowHardwareConfig()
-                        .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
-                }
+                        contentScale = ContentScale.Crop,
+                        onSuccess = { /* handle success if needed */ },
+                        onError = { /* handle error if needed */ }
+                )
 
                 if (MainComposePreferences.getWallpaperDetails()) {
                     Column(

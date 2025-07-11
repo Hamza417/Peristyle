@@ -1,4 +1,4 @@
-package app.simple.peri.glide.folders
+package app.simple.peri.coil.models
 
 import android.content.Context
 import app.simple.peri.models.Folder
