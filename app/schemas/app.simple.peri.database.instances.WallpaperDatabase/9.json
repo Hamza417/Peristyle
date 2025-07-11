@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 9,
-    "identityHash": "c119ac5fab1f40ad7d352c977c29c77d",
+    "identityHash": "83d5cb55a0307106636923e133326eac",
     "entities": [
       {
         "tableName": "wallpapers",
@@ -11,8 +11,7 @@
           {
             "fieldPath": "name",
             "columnName": "name",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "uri",
@@ -41,14 +40,12 @@
           {
             "fieldPath": "width",
             "columnName": "width",
-            "affinity": "INTEGER",
-            "notNull": false
+            "affinity": "INTEGER"
           },
           {
             "fieldPath": "height",
             "columnName": "height",
-            "affinity": "INTEGER",
-            "notNull": false
+            "affinity": "INTEGER"
           },
           {
             "fieldPath": "dateModified",
@@ -80,15 +77,49 @@
           "columnNames": [
             "id"
           ]
+        }
+      },
+      {
+        "tableName": "wallpaper_usage",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`wallpaper_id` TEXT NOT NULL, `usage_count` INTEGER NOT NULL, PRIMARY KEY(`wallpaper_id`), FOREIGN KEY(`wallpaper_id`) REFERENCES `wallpapers`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "wallpaperId",
+            "columnName": "wallpaper_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "usageCount",
+            "columnName": "usage_count",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "wallpaper_id"
+          ]
         },
-        "indices": [],
-        "foreignKeys": []
+        "foreignKeys": [
+          {
+            "table": "wallpapers",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "wallpaper_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
       }
     ],
-    "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c119ac5fab1f40ad7d352c977c29c77d')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '83d5cb55a0307106636923e133326eac')"
     ]
   }
 }

@@ -50,6 +50,7 @@ import app.simple.peri.ui.dialogs.autowallpaper.FoldersDialog
 import app.simple.peri.ui.dialogs.autowallpaper.ScreenSelectionDialog
 import app.simple.peri.ui.dialogs.autowallpaper.TagsDialog
 import app.simple.peri.ui.dialogs.autowallpaper.TimeSelectionDialog
+import app.simple.peri.ui.dialogs.autowallpaper.UsageTimesDeleteDialog
 import app.simple.peri.ui.dialogs.wallpaper.AutoWallpaperEffectsDialog
 import app.simple.peri.ui.settings.SkipColumn
 
@@ -504,6 +505,7 @@ fun AutoWallpaper(navController: NavController? = null) {
         }
         item {
             val showEffectsDialog = remember { mutableStateOf(false) }
+            val showDeleteDialog = remember { mutableStateOf(false) }
 
             SecondaryHeader(title = context.getString(R.string.settings))
 
@@ -512,6 +514,14 @@ fun AutoWallpaper(navController: NavController? = null) {
                     description = context.getString(R.string.default_effects_summary),
                     onClick = {
                         showEffectsDialog.value = true
+                    }
+            )
+
+            ClickablePreference(
+                    title = context.getString(R.string.delete_after),
+                    description = context.getString(R.string.delete_summary),
+                    onClick = {
+                        showDeleteDialog.value = true
                     }
             )
 
@@ -527,7 +537,7 @@ fun AutoWallpaper(navController: NavController? = null) {
             SwitchPreference(
                     title = context.getString(R.string.linear_auto_wallpaper),
                     description = context.getString(R.string.linear_auto_wallpaper_summary),
-                    checked = MainPreferences.isLinearAutoWallpaper()
+                    checked = MainPreferences.isLinearAutoWallpaper(),
             ) {
                 MainPreferences.setLinearAutoWallpaper(it)
             }
@@ -535,9 +545,15 @@ fun AutoWallpaper(navController: NavController? = null) {
             SwitchPreference(
                     title = context.getString(R.string.notifications),
                     description = context.getString(R.string.notifications_summary),
-                    checked = MainComposePreferences.getAutoWallpaperNotification()
+                    checked = MainComposePreferences.getAutoWallpaperNotification(),
             ) {
                 MainComposePreferences.setAutoWallpaperNotification(it)
+            }
+
+            if (showDeleteDialog.value) {
+                UsageTimesDeleteDialog {
+                    showDeleteDialog.value = false
+                }
             }
 
             if (showEffectsDialog.value) {
