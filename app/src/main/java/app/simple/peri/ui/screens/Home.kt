@@ -1,6 +1,5 @@
 package app.simple.peri.ui.screens
 
-import android.graphics.drawable.Drawable
 import android.os.Build
 import android.util.Log
 import android.widget.Toast
@@ -90,13 +89,11 @@ import app.simple.peri.ui.nav.Routes
 import app.simple.peri.utils.FileUtils.toFile
 import app.simple.peri.utils.ServiceUtils
 import app.simple.peri.viewmodels.HomeScreenViewModel
-import com.bumptech.glide.integration.compose.CrossFade
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
+import coil3.size.Scale
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
-import com.bumptech.glide.integration.compose.GlideImage
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.target.Target
 import dev.chrisbanes.haze.HazeDefaults
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeEffect
@@ -309,30 +306,21 @@ fun WallpaperItem(title: String, position: Int, onClick: () -> Unit, onNextWallp
             shape = RoundedCornerShape(32.dp),
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
-            GlideImage(
-                    model = wallpaper?.filePath?.toFile(),
+            AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(wallpaper?.filePath?.toFile())
+                        .crossfade(true)
+                        .scale(Scale.FIT)
+                        .build(),
                     contentDescription = null,
-                    transition = CrossFade,
                     modifier = Modifier
                         .fillMaxSize()
                         .hazeSource(state = hazeState),
                     alignment = Alignment.Center,
                     contentScale = currentScale.value,
-            ) {
-                it.addListener(object : RequestListener<Drawable> {
-                    override fun onLoadFailed(
-                            e: GlideException?, model: Any?, target: Target<Drawable>, isFirstResource: Boolean): Boolean {
-                        return false
-                    }
-
-                    override fun onResourceReady(
-                            resource: Drawable, model: Any, target: Target<Drawable>?, dataSource: DataSource, isFirstResource: Boolean): Boolean {
-                        return false
-                    }
-                })
-                    .disallowHardwareConfig()
-                    .fitCenter()
-            }
+                    onSuccess = { /* handle success if needed */ },
+                    onError = { /* handle error if needed */ }
+            )
 
             if (position == RANDOM_WALLPAPER_POSITION) {
                 Row(
