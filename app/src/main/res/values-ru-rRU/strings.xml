@@ -237,4 +237,8 @@
     <string name="double_tap_to_change_wallpaper_summary">Двойное нажатие на домашнем экране или экране блокировки для переключения на следующие обои.</string>
     <string name="disable_animations">Отключить анимацию</string>
     <string name="random">Случайная</string>
+    <string name="delete_summary">Окончательно удалить обои после того, как они были установлены несколько раз.</string>
+    <string name="times">%1$d раз</string>
+    <string name="disable">Отключить</string>
+    <string name="delete_after">Удалить после</string>
 </resources>
