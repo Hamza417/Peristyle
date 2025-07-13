@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Schedule
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -14,9 +15,12 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -26,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import app.simple.peri.R
+import app.simple.peri.ui.dialogs.autowallpaper.AutoWallpaperPageSelectionDialog
 import app.simple.peri.ui.nav.Routes
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeEffect
@@ -35,11 +40,29 @@ import dev.chrisbanes.haze.materials.HazeMaterials
 val COMMON_PADDING = 16.dp
 
 @Composable
-fun TopHeader(title: String,
-              modifier: Modifier = Modifier,
-              count: Int = 0,
-              navController: NavController? = null,
-              isSettings: Boolean = false) {
+fun TopHeader(title: String, modifier: Modifier = Modifier, count: Int = 0, navController: NavController? = null, isSettings: Boolean = false, isAutoWallpaper: Boolean = false) {
+    val context = LocalContext.current
+    val autoWallpaperScreenSelection = remember { mutableStateOf(false) }
+
+    if (autoWallpaperScreenSelection.value) {
+        AutoWallpaperPageSelectionDialog(
+                onDismiss = {
+                    autoWallpaperScreenSelection.value = false
+                },
+                onOptionSelected = { option ->
+                    when (option) {
+                        context.getString(R.string.wallpaper_manager) -> {
+                            navController?.navigate(Routes.AUTO_WALLPAPER)
+                        }
+
+                        context.getString(R.string.live_auto_wallpaper) -> {
+                            navController?.navigate(Routes.LIVE_AUTO_WALLPAPER)
+                        }
+                    }
+                }
+        )
+    }
+
     Row(
             modifier = modifier
                 .fillMaxWidth()
@@ -64,9 +87,24 @@ fun TopHeader(title: String,
                     text = count.toString(),
                     textAlign = TextAlign.End,
                     fontSize = 24.sp,
-                    modifier = Modifier.wrapContentWidth(),
+                    modifier = Modifier
+                        .wrapContentWidth()
+                        .padding(end = 8.dp),
                     fontWeight = FontWeight.Thin,
             )
+        }
+
+        if (isAutoWallpaper.not()) {
+            IconButton(
+                    onClick = {
+                        autoWallpaperScreenSelection.value = true
+                    },
+            ) {
+                Icon(
+                        imageVector = Icons.Rounded.Schedule,
+                        contentDescription = null
+                )
+            }
         }
 
         if (isSettings.not()) {

@@ -33,6 +33,7 @@ import androidx.compose.material.icons.rounded.Circle
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.FastForward
 import androidx.compose.material.icons.rounded.Folder
+import androidx.compose.material.icons.rounded.ImageSearch
 import androidx.compose.material.icons.rounded.MotionPhotosOn
 import androidx.compose.material.icons.rounded.Schedule
 import androidx.compose.material.icons.rounded.Settings
@@ -429,37 +430,6 @@ fun WallpaperItem(title: String, position: Int, onClick: () -> Unit, onNextWallp
 
 @Composable
 fun Header(title: String, modifier: Modifier = Modifier, navController: NavController? = null) {
-    Row(
-            modifier = modifier
-                .fillMaxWidth()
-                .wrapContentHeight(),
-            verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-                text = title,
-                textAlign = TextAlign.Start,
-                fontSize = 32.sp, // Set the font size
-                modifier = Modifier.weight(1f), // Set the weight
-                fontWeight = FontWeight.Bold, // Make the text bold
-        )
-
-        IconButton(
-                onClick = {
-                    navController?.navigate(Routes.SETTINGS)
-                },
-        ) {
-            Icon(
-                    imageVector = Icons.Rounded.Settings,
-                    contentDescription = null
-            )
-        }
-    }
-}
-
-@Composable
-fun BottomMenu(modifier: Modifier = Modifier, navController: NavController? = null) {
-    val height = 60.dp
-    val rowPadding = 16.dp
     val context = LocalContext.current
     val autoWallpaperScreenSelection = remember { mutableStateOf(false) }
 
@@ -484,6 +454,50 @@ fun BottomMenu(modifier: Modifier = Modifier, navController: NavController? = nu
 
     Row(
             modifier = modifier
+                .fillMaxWidth()
+                .wrapContentHeight(),
+            verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+                text = title,
+                textAlign = TextAlign.Start,
+                fontSize = 32.sp, // Set the font size
+                modifier = Modifier.weight(1f), // Set the weight
+                fontWeight = FontWeight.Bold, // Make the text bold
+        )
+
+        IconButton(
+                onClick = {
+                    autoWallpaperScreenSelection.value = true
+                },
+        ) {
+            Icon(
+                    imageVector = Icons.Rounded.Schedule,
+                    contentDescription = null
+            )
+        }
+
+        IconButton(
+                onClick = {
+                    navController?.navigate(Routes.SETTINGS)
+                },
+        ) {
+            Icon(
+                    imageVector = Icons.Rounded.Settings,
+                    contentDescription = null
+            )
+        }
+    }
+}
+
+@Composable
+fun BottomMenu(modifier: Modifier = Modifier, navController: NavController? = null) {
+    val height = 60.dp
+    val rowPadding = 16.dp
+    val context = LocalContext.current
+
+    Row(
+            modifier = modifier
                 .fillMaxHeight()
                 .padding(start = rowPadding, end = rowPadding),
             verticalAlignment = Alignment.CenterVertically
@@ -502,10 +516,10 @@ fun BottomMenu(modifier: Modifier = Modifier, navController: NavController? = nu
                 modifier = Modifier
                     .weight(0.2F)
                     .height(height),
-                imageVector = Icons.Rounded.Schedule,
-                title = R.string.auto_wallpaper
+                imageVector = Icons.Rounded.ImageSearch,
+                title = R.string.wallpapers
         ) {
-            autoWallpaperScreenSelection.value = true
+            // TODO: Implement wallpaper search functionality
         }
 
         BottomMenuItem(

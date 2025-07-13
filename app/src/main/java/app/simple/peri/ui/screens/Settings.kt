@@ -84,7 +84,11 @@ fun Settings(navController: NavController? = null) {
                     bottom = bottomPadding)
     ) {
         item { // Header
-            TopHeader(title = stringResource(R.string.settings), modifier = Modifier.padding(COMMON_PADDING), isSettings = true)
+            TopHeader(
+                    title = stringResource(R.string.settings),
+                    modifier = Modifier.padding(COMMON_PADDING),
+                    navController = navController,
+                    isSettings = true)
         }
         item { // Interface
             val numberSelectionDialog = remember { mutableStateOf(false) }
