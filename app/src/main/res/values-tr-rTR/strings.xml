@@ -237,4 +237,8 @@
     <string name="double_tap_to_change_wallpaper_summary">Ana ekran veya kilit ekranına çift dokunulduğunda bir sonraki duvar kâğıdına geçilmelidir.</string>
     <string name="disable_animations">Animasyonları Devre Dışı Bırak</string>
     <string name="random">Rastgele</string>
+    <string name="delete_summary">Duvar kağıdı belirli bir kez ayarlandıktan sonra kalıcı olarak silinsin.</string>
+    <string name="times">%1$d kez</string>
+    <string name="disable">Devre Dışı Bırak</string>
+    <string name="delete_after">Sonrasında Sil</string>
 </resources>
