@@ -46,6 +46,9 @@ public class WallhavenResponse {
         @SerializedName ("uploader")
         private Uploader uploader;
         
+        @SerializedName ("file_size")
+        private long fileSize;
+        
         public String getId() {
             return id;
         }
@@ -76,6 +79,14 @@ public class WallhavenResponse {
         
         public Uploader getUploader() {
             return uploader;
+        }
+        
+        public long getFileSize() {
+            return fileSize;
+        }
+        
+        public void setId(String id) {
+            this.id = id;
         }
     }
     

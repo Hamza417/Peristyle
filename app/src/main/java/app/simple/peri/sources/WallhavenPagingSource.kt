@@ -37,12 +37,13 @@ class WallhavenPagingSource(
         return WallhavenWallpaper(
                 item.id,
                 item.url,
-                item.thumbs.getOrDefault("small", item.path),
                 item.thumbs.getOrDefault("original", item.path),
+                item.path,
                 item.category,
                 item.resolution,
                 item.ratio,
-                if (item.uploader != null) item.uploader.username else "Unknown"
+                if (item.uploader != null) item.uploader.username else "Unknown",
+                item.fileSize
         )
     }
 }

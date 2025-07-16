@@ -1,6 +1,11 @@
 package app.simple.peri.models;
 
-public class WallhavenWallpaper {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import androidx.annotation.NonNull;
+
+public class WallhavenWallpaper implements Parcelable {
     private String id;
     private String url;
     private String thumbnailUrl;
@@ -9,8 +14,9 @@ public class WallhavenWallpaper {
     private String resolution;
     private String aspectRatio;
     private String uploader;
+    private long fileSize;
     
-    public WallhavenWallpaper(String id, String url, String thumbnailUrl, String originalUrl, String category, String resolution, String aspectRatio, String uploader) {
+    public WallhavenWallpaper(String id, String url, String thumbnailUrl, String originalUrl, String category, String resolution, String aspectRatio, String uploader, long fileSize) {
         this.id = id;
         this.url = url;
         this.thumbnailUrl = thumbnailUrl;
@@ -19,7 +25,32 @@ public class WallhavenWallpaper {
         this.resolution = resolution;
         this.aspectRatio = aspectRatio;
         this.uploader = uploader;
+        this.fileSize = fileSize;
     }
+    
+    protected WallhavenWallpaper(Parcel in) {
+        id = in.readString();
+        url = in.readString();
+        thumbnailUrl = in.readString();
+        originalUrl = in.readString();
+        category = in.readString();
+        resolution = in.readString();
+        aspectRatio = in.readString();
+        uploader = in.readString();
+        fileSize = in.readLong();
+    }
+    
+    public static final Creator <WallhavenWallpaper> CREATOR = new Creator <WallhavenWallpaper>() {
+        @Override
+        public WallhavenWallpaper createFromParcel(Parcel in) {
+            return new WallhavenWallpaper(in);
+        }
+        
+        @Override
+        public WallhavenWallpaper[] newArray(int size) {
+            return new WallhavenWallpaper[size];
+        }
+    };
     
     // Getters and setters
     public String getId() {
@@ -84,5 +115,32 @@ public class WallhavenWallpaper {
     
     public void setUploader(String uploader) {
         this.uploader = uploader;
+    }
+    
+    public long getFileSize() {
+        return fileSize;
+    }
+    
+    public void setFileSize(long fileSize) {
+        this.fileSize = fileSize;
+    }
+    
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+    
+    @Override
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
+        
+        dest.writeString(id);
+        dest.writeString(url);
+        dest.writeString(thumbnailUrl);
+        dest.writeString(originalUrl);
+        dest.writeString(category);
+        dest.writeString(resolution);
+        dest.writeString(aspectRatio);
+        dest.writeString(uploader);
+        dest.writeLong(fileSize);
     }
 }

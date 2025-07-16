@@ -1,5 +1,9 @@
 package app.simple.peri.viewmodels
 
+import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
@@ -24,7 +28,8 @@ class WallhavenViewModel @Inject constructor(
         private val repository: WallhavenRepository
 ) : ViewModel() {
 
-    private val _query = MutableStateFlow("nature")
+    var lazyGridState: LazyStaggeredGridState by mutableStateOf(LazyStaggeredGridState(0, 0))
+    private val _query = MutableStateFlow("forest") // default query
     val query: StateFlow<String> = _query.asStateFlow()
 
     @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)

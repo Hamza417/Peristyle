@@ -62,6 +62,7 @@ import app.simple.peri.R
 import app.simple.peri.constants.Misc
 import app.simple.peri.factories.TagsViewModelFactory
 import app.simple.peri.models.Effect
+import app.simple.peri.models.WallhavenWallpaper
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.services.LiveAutoWallpaperService
 import app.simple.peri.ui.commons.LaunchEffectActivity
@@ -91,16 +92,20 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
     val stateViewModel: StateViewModel = viewModel()
     val wallpaperUsageViewModel: WallpaperUsageViewModel = viewModel()
 
-    val wallpaper by rememberSaveable(savedStateHandle) {
-        if (stateViewModel.wallpaper == null) {
-            mutableStateOf(savedStateHandle?.get<Wallpaper>(Routes.WALLPAPER_ARG)
-                               ?: associatedWallpaper)
+    val wallpaper: Any? by rememberSaveable(savedStateHandle) {
+        if (stateViewModel.getWallpaper() == null) {
+            try {
+                mutableStateOf(savedStateHandle?.get<Wallpaper>(Routes.WALLPAPER_ARG)
+                                   ?: associatedWallpaper)
+            } catch (e: ClassCastException) {
+                mutableStateOf(savedStateHandle?.get<WallhavenWallpaper>(Routes.WALLPAPER_ARG))
+            }
         } else {
-            mutableStateOf(stateViewModel.wallpaper)
+            mutableStateOf(stateViewModel.getWallpaper())
         }
     }
 
-    stateViewModel.wallpaper = wallpaper // Manually save state?
+    stateViewModel.setWallpaper(wallpaper) // Manually save state?
 
     var showScreenSelectionDialog by remember { mutableStateOf(false) }
     var drawable by remember { mutableStateOf<Drawable?>(null) }
@@ -116,12 +121,20 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
     var scaleValueBlue by remember { stateViewModel::scaleValueBlue } // 0F..1F
     var tags by remember { mutableStateOf(emptyList<String>()) }
     val setTimes = wallpaperUsageViewModel.dataFlow.collectAsState().value.find {
-        it.wallpaperId == wallpaper?.id
+        it.wallpaperId == if (wallpaper is Wallpaper) {
+            (wallpaper as Wallpaper).id
+        } else {
+            (wallpaper as WallhavenWallpaper).id
+        }
     }
     val coroutineScope = rememberCoroutineScope()
     val graphicsLayer = rememberGraphicsLayer()
     val tagsViewModel: TagsViewModel = viewModel(
-            factory = TagsViewModelFactory(wallpaper?.id ?: "")
+            factory = TagsViewModelFactory(if (wallpaper is Wallpaper) {
+                (wallpaper as Wallpaper).id
+            } else {
+                (wallpaper as WallhavenWallpaper).id
+            }, "")
     )
     val showEditDialog = remember { mutableStateOf(false) }
     val showDetailsCard = remember { mutableStateOf(true) }
@@ -165,9 +178,9 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
     }
 
     if (launchEffectActivity.value) {
-        if (wallpaper.isNotNull()) {
+        if (wallpaper.isNotNull() && wallpaper is Wallpaper) {
             LaunchEffectActivity(
-                    wallpaper = wallpaper!!,
+                    wallpaper = wallpaper as Wallpaper,
                     onEffect = { effect ->
                         blurValue = effect.blurValue
                         brightnessValue = effect.brightnessValue
@@ -256,27 +269,55 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
                         drawLayer(graphicsLayer)
                     },
         ) {
-            ZoomableGlideImage(
-                    model = wallpaper?.filePath?.toFile(),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .blur(blurValue.dp),
-                    alignment = Alignment.Center,
-                    contentScale = currentScale.value,
-                    colorFilter = ColorMatrixColorFilter(colorMatrix),
-                    onClick = {
-                        showDetailsCard.value = !showDetailsCard.value
-                    },
-                    onLongClick = {
-                        showEditDialog.value = true
-                        showDetailsCard.value = false
-                    },
-            )
-            {
-                it.transition(withCrossFade())
-                    .disallowHardwareConfig()
-                    .fitCenter()
+            when (wallpaper) {
+                is Wallpaper -> {
+                    ZoomableGlideImage(
+                            model = (wallpaper as Wallpaper).filePath.toFile(),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .blur(blurValue.dp),
+                            alignment = Alignment.Center,
+                            contentScale = currentScale.value,
+                            colorFilter = ColorMatrixColorFilter(colorMatrix),
+                            onClick = {
+                                showDetailsCard.value = !showDetailsCard.value
+                            },
+                            onLongClick = {
+                                showEditDialog.value = true
+                                showDetailsCard.value = false
+                            },
+                    )
+                    {
+                        it.transition(withCrossFade())
+                            .disallowHardwareConfig()
+                            .fitCenter()
+                    }
+                }
+                is WallhavenWallpaper -> {
+                    ZoomableGlideImage(
+                            model = (wallpaper as WallhavenWallpaper).originalUrl,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .blur(blurValue.dp),
+                            alignment = Alignment.Center,
+                            contentScale = currentScale.value,
+                            colorFilter = ColorMatrixColorFilter(colorMatrix),
+                            onClick = {
+                                showDetailsCard.value = !showDetailsCard.value
+                            },
+                            onLongClick = {
+                                showEditDialog.value = true
+                                showDetailsCard.value = false
+                            },
+                    )
+                    {
+                        it.transition(withCrossFade())
+                            .disallowHardwareConfig()
+                            .fitCenter()
+                    }
+                }
             }
         }
 
@@ -298,7 +339,7 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
                     )
             ) {
                 Text(
-                        text = wallpaper?.name ?: "",
+                        text = stateViewModel.getWallpaperName() ?: "",
                         fontWeight = FontWeight.Bold,
                         color = Color.White,
                         modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp),
@@ -307,11 +348,11 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
 
                 Text(
                         text = buildString {
-                            append(wallpaper?.width ?: 0)
+                            append(stateViewModel.getWallpaperWidth() ?: 0)
                             append(" x ")
-                            append(wallpaper?.height ?: 0)
+                            append(stateViewModel.getWallpaperHeight() ?: 0)
                             append(", ")
-                            append(wallpaper?.size?.toSize() ?: "")
+                            append(stateViewModel.getWallpaperSize()?.toSize() ?: "")
                             append(", ")
                             append(context.getString(R.string.times, setTimes?.usageCount ?: 0))
                         },
@@ -464,7 +505,7 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
                     setShowDialog = { showScreenSelectionDialog = it },
                     context = context,
                     drawable = drawable,
-                    wallpaper = wallpaper!!
+                    wallpaper = wallpaper as Wallpaper
             )
         }
     }
