@@ -66,6 +66,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import app.simple.peri.R
 import app.simple.peri.activities.main.LocalDisplaySize
+import app.simple.peri.models.WallhavenWallpaper
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.ui.dialogs.common.AddTagDialog
@@ -310,10 +311,10 @@ fun WallpaperItem(
 
 @Composable
 fun WallpaperDimensionsText(
-        wallpaper: Wallpaper,
+        wallpaper: Any,
         displayWidth: Int,
         displayHeight: Int,
-        isSelected: Boolean
+        isSelected: Boolean = false
 ) {
     val showWarningIndicator = remember { MainComposePreferences.getShowWarningIndicator() }
 
@@ -322,19 +323,44 @@ fun WallpaperDimensionsText(
                 .padding(start = 16.dp, top = 4.dp, bottom = 16.dp, end = 16.dp),
             verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(
-                text = "${wallpaper.width ?: 0}x${wallpaper.height ?: 0}, ${wallpaper.size.toSize()}",
-                textAlign = TextAlign.Start,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Light,
-                color = Color.White,
-                modifier = Modifier.weight(1f)
-        )
+        when (wallpaper) {
+            is Wallpaper -> {
+                Text(
+                        text = "${wallpaper.width ?: 0}x${wallpaper.height ?: 0}, ${wallpaper.size.toSize()}",
+                        textAlign = TextAlign.Start,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Light,
+                        color = Color.White,
+                        modifier = Modifier.weight(1f)
+                )
+            }
+            is WallhavenWallpaper -> {
+                Text(
+                        text = "${wallpaper.resolution}, ${wallpaper.fileSize.toSize()}",
+                        textAlign = TextAlign.Start,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Light,
+                        color = Color.White,
+                        modifier = Modifier.weight(1f)
+                )
+            }
+        }
 
         if (showWarningIndicator) {
+            val width = when (wallpaper) {
+                is Wallpaper -> wallpaper.width ?: 0
+                is WallhavenWallpaper -> wallpaper.resolution.split("x").firstOrNull()?.toIntOrNull() ?: 0
+                else -> 0
+            }
+
+            val height = when (wallpaper) {
+                is Wallpaper -> wallpaper.height ?: 0
+                is WallhavenWallpaper -> wallpaper.resolution.split("x").lastOrNull()?.toIntOrNull() ?: 0
+                else -> 0
+            }
+
             when {
-                (wallpaper.width ?: 0) > displayWidth || (wallpaper.height
-                    ?: 0) > displayHeight -> {
+                width > displayWidth || height > displayHeight -> {
                     Icon(
                             imageVector = Icons.Rounded.Warning,
                             contentDescription = null,
@@ -343,8 +369,7 @@ fun WallpaperDimensionsText(
                     )
                 }
 
-                (wallpaper.width ?: 0) < displayWidth || (wallpaper.height
-                    ?: 0) < displayHeight -> {
+                width < displayWidth || height < displayHeight -> {
                     Icon(
                             imageVector = Icons.Rounded.Warning,
                             contentDescription = null,

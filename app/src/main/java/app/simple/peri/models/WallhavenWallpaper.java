@@ -3,6 +3,8 @@ package app.simple.peri.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.List;
+
 import androidx.annotation.NonNull;
 
 public class WallhavenWallpaper implements Parcelable {
@@ -17,8 +19,9 @@ public class WallhavenWallpaper implements Parcelable {
     private String aspectRatio;
     private String uploader;
     private long fileSize;
+    private List <String> colors = List.of("#FF444444", "#FF444444");
     
-    public WallhavenWallpaper(String id, String url, String thumbnailUrl, String originalUrl, String path, String category, String resolution, String aspectRatio, String uploader, long fileSize) {
+    public WallhavenWallpaper(String id, String url, String thumbnailUrl, String originalUrl, String path, String category, String resolution, String aspectRatio, String uploader, long fileSize, List <String> colors) {
         this.id = id;
         this.url = url;
         this.thumbnailUrl = thumbnailUrl;
@@ -29,6 +32,7 @@ public class WallhavenWallpaper implements Parcelable {
         this.aspectRatio = aspectRatio;
         this.uploader = uploader;
         this.fileSize = fileSize;
+        this.colors = colors;
     }
     
     protected WallhavenWallpaper(Parcel in) {
@@ -136,6 +140,16 @@ public class WallhavenWallpaper implements Parcelable {
         this.path = path;
     }
     
+    public List <String> getColors() {
+        return colors;
+    }
+    
+    public void setColors(List <String> colors) {
+        if (!colors.isEmpty()) {
+            this.colors = colors;
+        }
+    }
+    
     @Override
     public int describeContents() {
         return 0;
@@ -152,5 +166,16 @@ public class WallhavenWallpaper implements Parcelable {
         dest.writeString(aspectRatio);
         dest.writeString(uploader);
         dest.writeLong(fileSize);
+        dest.writeString(path);
+        
+        // Write colors list to parcel
+        if (colors != null) {
+            dest.writeInt(colors.size());
+            for (String color : colors) {
+                dest.writeString(color);
+            }
+        } else {
+            dest.writeInt(0); // Write size 0 if colors is null
+        }
     }
 }

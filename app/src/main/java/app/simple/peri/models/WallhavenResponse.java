@@ -49,6 +49,9 @@ public class WallhavenResponse {
         @SerializedName ("file_size")
         private long fileSize;
         
+        @SerializedName ("colors")
+        private List <String> colors;
+        
         public String getId() {
             return id;
         }
@@ -87,6 +90,46 @@ public class WallhavenResponse {
         
         public void setId(String id) {
             this.id = id;
+        }
+        
+        public void setUrl(String url) {
+            this.url = url;
+        }
+        
+        public void setPath(String path) {
+            this.path = path;
+        }
+        
+        public void setThumbs(Map <String, String> thumbs) {
+            this.thumbs = thumbs;
+        }
+        
+        public void setCategory(String category) {
+            this.category = category;
+        }
+        
+        public void setResolution(String resolution) {
+            this.resolution = resolution;
+        }
+        
+        public void setRatio(String ratio) {
+            this.ratio = ratio;
+        }
+        
+        public void setUploader(Uploader uploader) {
+            this.uploader = uploader;
+        }
+        
+        public void setFileSize(long fileSize) {
+            this.fileSize = fileSize;
+        }
+        
+        public List <String> getColors() {
+            return colors;
+        }
+        
+        public void setColors(List <String> colors) {
+            this.colors = colors;
         }
     }
     

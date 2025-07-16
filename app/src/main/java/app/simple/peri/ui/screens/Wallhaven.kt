@@ -2,15 +2,22 @@ package app.simple.peri.ui.screens
 
 import android.content.res.Configuration
 import android.graphics.drawable.Drawable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
-import androidx.compose.material3.Card
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -19,13 +26,24 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.BlurredEdgeTreatment
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.blur
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.core.graphics.toColorInt
 import androidx.core.view.WindowInsetsCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -37,6 +55,7 @@ import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.ui.commons.BottomHeader
 import app.simple.peri.ui.commons.COMMON_PADDING
 import app.simple.peri.ui.commons.TopHeader
+import app.simple.peri.ui.commons.WallpaperDimensionsText
 import app.simple.peri.ui.dialogs.wallhaven.SearchDialog
 import app.simple.peri.ui.nav.Routes
 import app.simple.peri.utils.ConditionUtils.invert
@@ -47,9 +66,12 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
+import dev.chrisbanes.haze.HazeDefaults
 import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.hazeEffect
 import dev.chrisbanes.haze.hazeSource
 
 @Composable
@@ -176,52 +198,147 @@ fun WallhavenScreen(navController: NavController? = null) {
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun ImageCard(wallpaper: WallhavenWallpaper, navController: NavController? = null) {
-    Card(
-            modifier = Modifier
-                .aspectRatio(wallpaper.aspectRatio?.toFloat()
-                                 ?: wallpaper.resolution.let { it ->
-                                     val (width, height) = it.split("x").map { it.toFloat() }
-                                     width / height
-                                 })
-                .fillMaxSize()
-                .padding(8.dp),
-            onClick = {
-                navController?.navigate(Routes.WALLPAPER) {
-                    navController.currentBackStackEntry
-                        ?.savedStateHandle?.set(Routes.WALLPAPER_ARG, wallpaper)
-                }
+    val hazeState = remember { HazeState() }
+
+    Box {
+        val imageShadow = remember {
+            MainComposePreferences.getShowImageShadow()
+                    && MainComposePreferences.getMarginBetween()
+        }
+
+        if (imageShadow) {
+            GlideImage(
+                    model = wallpaper.originalUrl,
+                    contentDescription = null,
+                    transition = CrossFade,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                        .padding(16.dp)
+                        .blur(30.dp, edgeTreatment = BlurredEdgeTreatment.Unbounded)
+                        .alpha(0.5f)
+                        .graphicsLayer {
+                            clip = false
+                        }
+                        .align(Alignment.BottomCenter),
+                    alignment = Alignment.BottomCenter,
+            ) {
+                it.override(512, 512)
+                    .transition(withCrossFade())
+                    .disallowHardwareConfig()
+                    .centerCrop()
             }
-    ) {
-        GlideImage(
-                model = wallpaper.originalUrl,
-                contentDescription = null,
-                transition = CrossFade,
+        }
+
+        ElevatedCard(
+                elevation = CardDefaults.cardElevation(
+                        defaultElevation = if (imageShadow) 24.dp else 0.dp,
+                ),
                 modifier = Modifier
-                    .fillMaxSize(),
-                contentScale = ContentScale.Crop
+                    .aspectRatio(wallpaper.aspectRatio.toFloat())
+                    .padding(
+                            start = if (MainComposePreferences.getMarginBetween()) 8.dp else 0.dp,
+                            bottom = if (imageShadow) 35.dp else if (MainComposePreferences.getMarginBetween()) 8.dp else 0.dp,
+                            end = if (MainComposePreferences.getMarginBetween()) 8.dp else 0.dp,
+                            top = if (MainComposePreferences.getMarginBetween()) 8.dp else 0.dp
+                    )
+                    .shadow(
+                            if (imageShadow) 0.dp else 24.dp,
+                            shape = RoundedCornerShape(16.dp),
+                            clip = false,
+                            spotColor = try {
+                                Color(wallpaper.colors[0].toColorInt())
+                            } catch (e: IndexOutOfBoundsException) {
+                                Color(0xFF444444)
+                            },
+                            ambientColor = try {
+                                Color(wallpaper.colors[1].toColorInt())
+                            } catch (e: IndexOutOfBoundsException) {
+                                Color(0xFF444444)
+                            }
+                    )
+                    .combinedClickable(
+                            onClick = {
+                                navController?.navigate(Routes.WALLPAPER) {
+                                    navController.currentBackStackEntry
+                                        ?.savedStateHandle?.set(Routes.WALLPAPER_ARG, wallpaper)
+                                }
+                            },
+                    ),
+                shape = if (MainComposePreferences.getMarginBetween()) {
+                    RoundedCornerShape(16.dp)
+                } else {
+                    RoundedCornerShape(0.dp)
+                },
         ) {
-            it.addListener(object : RequestListener<Drawable> {
-                override fun onLoadFailed(
-                        e: GlideException?,
-                        model: Any?,
-                        target: Target<Drawable>,
-                        isFirstResource: Boolean
-                ): Boolean {
-                    return false
+            Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center,
+            ) {
+                GlideImage(
+                        model = wallpaper.originalUrl,
+                        contentDescription = null,
+                        transition = CrossFade,
+                        modifier = Modifier
+                            .hazeSource(hazeState)
+                            .fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                ) {
+                    it.addListener(object : RequestListener<Drawable> {
+                        override fun onLoadFailed(
+                                e: GlideException?,
+                                model: Any?,
+                                target: Target<Drawable>,
+                                isFirstResource: Boolean
+                        ): Boolean {
+                            return false
+                        }
+
+                        override fun onResourceReady(
+                                resource: Drawable,
+                                model: Any,
+                                target: Target<Drawable>?,
+                                dataSource: DataSource,
+                                isFirstResource: Boolean
+                        ): Boolean {
+                            return false
+                        }
+                    })
+                        .disallowHardwareConfig()
+                        .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                 }
 
-                override fun onResourceReady(
-                        resource: Drawable,
-                        model: Any,
-                        target: Target<Drawable>?,
-                        dataSource: DataSource,
-                        isFirstResource: Boolean
-                ): Boolean {
-                    return false
+                if (MainComposePreferences.getWallpaperDetails()) {
+                    Column(
+                            modifier = Modifier
+                                .wrapContentHeight()
+                                .fillMaxWidth()
+                                .hazeEffect(
+                                        state = hazeState,
+                                        style = HazeDefaults.style(
+                                                backgroundColor = Color(0x50000000),
+                                                blurRadius = 5.dp
+                                        )
+                                )
+                                .align(Alignment.BottomCenter)
+                    ) {
+                        Text(
+                                text = wallpaper.path.substringAfterLast("/"),
+                                modifier = Modifier
+                                    .padding(start = 16.dp, top = 16.dp, end = 16.dp),
+                                textAlign = TextAlign.Start,
+                                fontSize = 18.sp, // Set the font size
+                                fontWeight = FontWeight.Bold, // Make the text bold
+                                color = Color.White, // Set the text color
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                softWrap = false,
+                        )
+
+                        WallpaperDimensionsText(wallpaper, LocalDisplaySize.current.width, LocalDisplaySize.current.height)
+                    }
                 }
-            })
-                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
-                .disallowHardwareConfig()
+            }
         }
     }
 }
