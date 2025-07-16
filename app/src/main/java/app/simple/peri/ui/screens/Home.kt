@@ -519,7 +519,7 @@ fun BottomMenu(modifier: Modifier = Modifier, navController: NavController? = nu
                 imageVector = Icons.Rounded.ImageSearch,
                 title = R.string.wallpapers
         ) {
-            // TODO: Implement wallpaper search functionality
+            navController?.navigate(Routes.WALLHAVEN)
         }
 
         BottomMenuItem(

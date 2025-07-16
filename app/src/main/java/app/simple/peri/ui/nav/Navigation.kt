@@ -29,6 +29,7 @@ import app.simple.peri.ui.screens.LiveWallpapers
 import app.simple.peri.ui.screens.Settings
 import app.simple.peri.ui.screens.Setup
 import app.simple.peri.ui.screens.Tags
+import app.simple.peri.ui.screens.WallhavenScreen
 import app.simple.peri.ui.screens.Wallpaper
 import app.simple.peri.ui.screens.isSetupComplete
 import app.simple.peri.ui.subscreens.TaggedWallpapers
@@ -138,6 +139,10 @@ fun PeristyleNavigation(context: Context) {
 
         composable(Routes.LIVE_WALLPAPERS) {
             LiveWallpapers(navController)
+        }
+
+        composable(Routes.WALLHAVEN) {
+            WallhavenScreen(navController)
         }
     }
 }
