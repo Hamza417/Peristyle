@@ -1,6 +1,7 @@
 package app.simple.peri.ui.nav
 
 object Routes {
+    const val WALLHAVEN_ARG = "wallhaven_arg"
     const val SETUP = "setup"
     const val HOME = "home"
     const val LIST = "list"

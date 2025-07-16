@@ -87,6 +87,7 @@ import app.simple.peri.ui.commons.CircularIconButton
 import app.simple.peri.ui.commons.InitDisplayDimension
 import app.simple.peri.ui.dialogs.autowallpaper.AutoWallpaperPageSelectionDialog
 import app.simple.peri.ui.dialogs.common.SureDialog
+import app.simple.peri.ui.dialogs.wallhaven.SearchDialog
 import app.simple.peri.ui.nav.Routes
 import app.simple.peri.utils.FileUtils.toFile
 import app.simple.peri.utils.ServiceUtils
@@ -495,6 +496,20 @@ fun BottomMenu(modifier: Modifier = Modifier, navController: NavController? = nu
     val height = 60.dp
     val rowPadding = 16.dp
     val context = LocalContext.current
+    val wallhavenSearchParametersDialog = remember { mutableStateOf(false) }
+
+    if (wallhavenSearchParametersDialog.value) {
+        SearchDialog(
+                onDismiss = {
+                    wallhavenSearchParametersDialog.value = false
+                },
+                onSearch = { filter ->
+                    navController?.navigate(Routes.WALLHAVEN) {
+                        navController.currentBackStackEntry?.savedStateHandle?.set(Routes.WALLHAVEN_ARG, filter)
+                    }
+                }
+        )
+    }
 
     Row(
             modifier = modifier
@@ -519,7 +534,7 @@ fun BottomMenu(modifier: Modifier = Modifier, navController: NavController? = nu
                 imageVector = Icons.Rounded.Search,
                 title = R.string.wallhaven
         ) {
-            navController?.navigate(Routes.WALLHAVEN)
+            wallhavenSearchParametersDialog.value = true
         }
 
         BottomMenuItem(

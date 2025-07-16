@@ -50,6 +50,7 @@ import androidx.navigation.NavController
 import androidx.paging.compose.collectAsLazyPagingItems
 import app.simple.peri.R
 import app.simple.peri.activities.main.LocalDisplaySize
+import app.simple.peri.models.WallhavenFilter
 import app.simple.peri.models.WallhavenWallpaper
 import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.ui.commons.BottomHeader
@@ -79,12 +80,20 @@ fun WallhavenScreen(navController: NavController? = null) {
 
     val viewModel: WallhavenViewModel = hiltViewModel()
     val wallpapers = viewModel.wallpapers.collectAsLazyPagingItems()
+    val savedStateHandle = navController?.previousBackStackEntry?.savedStateHandle
+    val presetFilter = savedStateHandle?.get<WallhavenFilter>(Routes.WALLHAVEN_ARG)
 
     val size = LocalDisplaySize.current.width.toString() + "x" + LocalDisplaySize.current.height
     viewModel.updateFilter {
         copy(
-                atleast = size,
-                ratios = "portrait"
+                atleast = presetFilter?.atleast ?: size,
+                ratios = presetFilter?.ratios ?: "16x9",
+                resolution = presetFilter?.resolution ?: size,
+                purity = presetFilter?.purity ?: "100",
+                categories = presetFilter?.categories ?: "111",
+                query = presetFilter?.query ?: "",
+                sorting = presetFilter?.sorting ?: "date_added",
+                order = presetFilter?.order ?: "desc"
         )
     }
 
