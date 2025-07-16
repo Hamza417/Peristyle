@@ -33,9 +33,9 @@ import androidx.compose.material.icons.rounded.Circle
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.FastForward
 import androidx.compose.material.icons.rounded.Folder
-import androidx.compose.material.icons.rounded.ImageSearch
 import androidx.compose.material.icons.rounded.MotionPhotosOn
 import androidx.compose.material.icons.rounded.Schedule
+import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -516,8 +516,8 @@ fun BottomMenu(modifier: Modifier = Modifier, navController: NavController? = nu
                 modifier = Modifier
                     .weight(0.2F)
                     .height(height),
-                imageVector = Icons.Rounded.ImageSearch,
-                title = R.string.wallpapers
+                imageVector = Icons.Rounded.Search,
+                title = R.string.wallhaven
         ) {
             navController?.navigate(Routes.WALLHAVEN)
         }
