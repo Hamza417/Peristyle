@@ -241,4 +241,5 @@
     <string name="times">%1$d раз</string>
     <string name="disable">Отключить</string>
     <string name="delete_after">Удалить после</string>
+    <string name="interval">Интервал</string>
 </resources>
