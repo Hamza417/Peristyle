@@ -2,7 +2,6 @@ package app.simple.peri.ui.screens
 
 import android.content.res.Configuration
 import android.graphics.drawable.Drawable
-import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
@@ -38,8 +37,8 @@ import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.ui.commons.BottomHeader
 import app.simple.peri.ui.commons.COMMON_PADDING
 import app.simple.peri.ui.commons.TopHeader
+import app.simple.peri.ui.dialogs.wallhaven.SearchDialog
 import app.simple.peri.ui.nav.Routes
-import app.simple.peri.utils.CommonUtils
 import app.simple.peri.utils.ConditionUtils.invert
 import app.simple.peri.viewmodels.WallhavenViewModel
 import com.bumptech.glide.integration.compose.CrossFade
@@ -58,8 +57,8 @@ fun WallhavenScreen(navController: NavController? = null) {
 
     val viewModel: WallhavenViewModel = hiltViewModel()
     val wallpapers = viewModel.wallpapers.collectAsLazyPagingItems()
+
     val size = LocalDisplaySize.current.width.toString() + "x" + LocalDisplaySize.current.height
-    Log.d("WallhavenScreen", "Display Size: $size ${CommonUtils.sizeToRatio(size)}")
     viewModel.updateFilter {
         copy(
                 atleast = size,
@@ -70,6 +69,7 @@ fun WallhavenScreen(navController: NavController? = null) {
     val hazeState = remember { HazeState() }
     var statusBarHeight by remember { mutableIntStateOf(0) }
     var navigationBarHeight by remember { mutableIntStateOf(0) }
+    var searchDialog by remember { mutableStateOf(false) }
     val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
 
     statusBarHeight = WindowInsetsCompat.toWindowInsetsCompat(LocalView.current.rootWindowInsets)
@@ -88,6 +88,19 @@ fun WallhavenScreen(navController: NavController? = null) {
         bottomHeaderHeight
     } else {
         navigationBarHeightDp
+    }
+
+    if (searchDialog) {
+        SearchDialog(
+                onDismiss = { searchDialog = false },
+                onSearch = {
+                    viewModel.updateFilter {
+                        copy(
+                                query = it,
+                        )
+                    }
+                }
+        )
     }
 
     Box(
@@ -125,7 +138,11 @@ fun WallhavenScreen(navController: NavController? = null) {
                     TopHeader(
                             title = stringResource(R.string.wallhaven),
                             modifier = Modifier.padding(COMMON_PADDING),
-                            navController = navController
+                            navController = navController,
+                            isSearch = true,
+                            onSearch = {
+                                searchDialog = true
+                            }
                     )
                 }
             }

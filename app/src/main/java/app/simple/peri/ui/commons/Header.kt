@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Schedule
+import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -40,7 +41,15 @@ import dev.chrisbanes.haze.materials.HazeMaterials
 val COMMON_PADDING = 16.dp
 
 @Composable
-fun TopHeader(title: String, modifier: Modifier = Modifier, count: Int = 0, navController: NavController? = null, isSettings: Boolean = false, isAutoWallpaper: Boolean = false) {
+fun TopHeader(title: String,
+              modifier: Modifier = Modifier,
+              count: Int = 0,
+              navController: NavController? = null,
+              isSettings: Boolean = false,
+              isSearch: Boolean = false,
+              isAutoWallpaper: Boolean = false,
+              onSearch: (() -> Unit)? = null) {
+
     val context = LocalContext.current
     val autoWallpaperScreenSelection = remember { mutableStateOf(false) }
 
@@ -115,6 +124,19 @@ fun TopHeader(title: String, modifier: Modifier = Modifier, count: Int = 0, navC
             ) {
                 Icon(
                         imageVector = Icons.Rounded.Settings,
+                        contentDescription = stringResource(id = R.string.settings),
+                )
+            }
+        }
+
+        if (isSearch) {
+            IconButton(
+                    onClick = {
+                        onSearch?.invoke()
+                    },
+            ) {
+                Icon(
+                        imageVector = Icons.Rounded.Search,
                         contentDescription = stringResource(id = R.string.settings),
                 )
             }
