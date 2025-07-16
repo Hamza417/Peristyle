@@ -82,8 +82,14 @@ import dev.chrisbanes.haze.HazeDefaults
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeEffect
 import dev.chrisbanes.haze.hazeSource
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import me.saket.telephoto.zoomable.glide.ZoomableGlideImage
+import java.io.File
+import java.io.FileOutputStream
+import java.net.HttpURLConnection
+import java.net.URL
 
 @Composable
 fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? = null) {
@@ -501,12 +507,68 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
         }
 
         if (showScreenSelectionDialog) {
-            ScreenSelectionDialog(
-                    setShowDialog = { showScreenSelectionDialog = it },
-                    context = context,
-                    drawable = drawable,
-                    wallpaper = wallpaper as Wallpaper
-            )
+            when (wallpaper) {
+                is Wallpaper -> {
+                    ScreenSelectionDialog(
+                            setShowDialog = { showScreenSelectionDialog = it },
+                            context = context,
+                            drawable = drawable,
+                            wallpaper = wallpaper as Wallpaper
+                    )
+                }
+                is WallhavenWallpaper -> {
+                    var downloadedWallpaper by remember { mutableStateOf<Wallpaper?>(null) }
+                    val context = LocalContext.current
+                    val url = (wallpaper as WallhavenWallpaper).originalUrl
+                    val fileName = "/wallhaven_${(wallpaper as WallhavenWallpaper).id}.jpg"
+
+                    LaunchedEffect(url) {
+                        val file = downloadWallpaper(url, context.cacheDir.absolutePath + fileName)
+                        if (file != null) {
+                            downloadedWallpaper = Wallpaper.createFromFile(file)
+                        }
+                    }
+
+                    if (downloadedWallpaper != null) {
+                        ScreenSelectionDialog(
+                                setShowDialog = { showScreenSelectionDialog = it },
+                                context = context,
+                                drawable = null, // or provide a drawable if needed
+                                wallpaper = downloadedWallpaper!!
+                        )
+                    }
+                }
+            }
         }
     }
 }
+
+suspend fun downloadWallpaper(imageUrl: String, absolutePath: String): File? = withContext(Dispatchers.IO) {
+    try {
+        val url = URL(imageUrl)
+        val connection = url.openConnection() as HttpURLConnection
+        connection.connect()
+
+        if (connection.responseCode != HttpURLConnection.HTTP_OK) {
+            Log.e("Download", "Server returned HTTP ${connection.responseCode}")
+            return@withContext null
+        }
+
+        val file = File(absolutePath)
+        file.parentFile?.let { if (!it.exists()) it.mkdirs() }
+
+        FileOutputStream(file).use { output ->
+            connection.inputStream.use { input ->
+                input.copyTo(output)
+            }
+        }
+
+        Log.d("Download", "Downloaded to ${file.absolutePath}")
+        return@withContext file
+    } catch (e: Exception) {
+        Log.e("Download", "Error: ${e.message}", e)
+        null
+    }
+}
+
+
