@@ -3,6 +3,7 @@ package app.simple.peri.ui.screens
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -65,6 +66,7 @@ import app.simple.peri.models.Effect
 import app.simple.peri.models.WallhavenWallpaper
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.services.LiveAutoWallpaperService
+import app.simple.peri.ui.commons.FolderBrowser
 import app.simple.peri.ui.commons.LaunchEffectActivity
 import app.simple.peri.ui.dialogs.wallpaper.EffectsDialog
 import app.simple.peri.ui.dialogs.wallpaper.ScreenSelectionDialog
@@ -103,7 +105,7 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
             try {
                 mutableStateOf(savedStateHandle?.get<Wallpaper>(Routes.WALLPAPER_ARG)
                                    ?: associatedWallpaper)
-            } catch (e: ClassCastException) {
+            } catch (_: ClassCastException) {
                 mutableStateOf(savedStateHandle?.get<WallhavenWallpaper>(Routes.WALLPAPER_ARG))
             }
         } else {
@@ -114,6 +116,9 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
     stateViewModel.setWallpaper(wallpaper) // Manually save state?
 
     var showScreenSelectionDialog by remember { mutableStateOf(false) }
+    var showDownloadFolderScreen by remember { mutableStateOf(false) }
+    var launchedEffectDownloader by remember { mutableStateOf(false) }
+    var path by remember { mutableStateOf("") }
     var drawable by remember { mutableStateOf<Drawable?>(null) }
     var blurValue by remember { stateViewModel::blurValue } // 0F..25F
     var brightnessValue by remember { stateViewModel::brightnessValue } // -255F..255F
@@ -181,6 +186,31 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
                     }
                 }
         )
+    }
+
+    if (showDownloadFolderScreen) {
+        FolderBrowser(
+                onStorageGranted = { s ->
+                    path = s
+                    showDownloadFolderScreen = false
+                    launchedEffectDownloader = true
+
+                },
+                onCancel = {
+                    showDownloadFolderScreen = false
+                }
+        )
+    }
+
+    if (launchedEffectDownloader) {
+        val url = (wallpaper as WallhavenWallpaper).originalUrl
+        val fileName = "/wallhaven_${(wallpaper as WallhavenWallpaper).id}.jpg"
+
+        LaunchedEffect(url) {
+            downloadWallpaper(url, path + fileName)
+            launchedEffectDownloader = false
+            Toast.makeText(context, "Done", Toast.LENGTH_SHORT).show()
+        }
     }
 
     if (launchEffectActivity.value) {
@@ -481,26 +511,52 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
                         }
                     }
 
-                    Button(
-                            onClick = {
-                                showWallpaperLaunchedEffect.value = true
-                            },
-                            shape = RoundedCornerShape(20.dp),
-                            modifier = Modifier
-                                .wrapContentHeight()
-                                .fillMaxWidth()
-                                .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color.White,
+                    Row {
+                        Button(
+                                onClick = {
+                                    showWallpaperLaunchedEffect.value = true
+                                },
+                                shape = RoundedCornerShape(20.dp),
+                                modifier = Modifier
+                                    .wrapContentHeight()
+                                    .weight(1F)
+                                    .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                        containerColor = Color.White,
+                                )
+                        ) {
+                            Text(
+                                    text = context.getString(R.string.set_as_wallpaper),
+                                    color = Color.Black,
+                                    fontSize = 18.sp,
+                                    modifier = Modifier.padding(12.dp),
+                                    fontWeight = FontWeight.SemiBold
                             )
-                    ) {
-                        Text(
-                                text = context.getString(R.string.set_as_wallpaper),
-                                color = Color.Black,
-                                fontSize = 18.sp,
-                                modifier = Modifier.padding(12.dp),
-                                fontWeight = FontWeight.SemiBold
-                        )
+                        }
+
+                        if (wallpaper is WallhavenWallpaper) {
+                            Button(
+                                    onClick = {
+                                        showDownloadFolderScreen = true
+                                    },
+                                    shape = RoundedCornerShape(20.dp),
+                                    modifier = Modifier
+                                        .wrapContentHeight()
+                                        .wrapContentWidth()
+                                        .padding(start = 0.dp, end = 16.dp, bottom = 16.dp),
+                                    colors = ButtonDefaults.buttonColors(
+                                            containerColor = Color.White,
+                                    )
+                            ) {
+                                Text(
+                                        text = context.getString(R.string.save),
+                                        color = Color.Black,
+                                        fontSize = 18.sp,
+                                        modifier = Modifier.padding(12.dp),
+                                        fontWeight = FontWeight.SemiBold
+                                )
+                            }
+                        }
                     }
                 }
             }
