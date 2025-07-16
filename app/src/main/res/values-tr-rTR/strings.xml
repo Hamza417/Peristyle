@@ -241,4 +241,5 @@
     <string name="times">%1$d kez</string>
     <string name="disable">Devre Dışı Bırak</string>
     <string name="delete_after">Sonrasında Sil</string>
+    <string name="interval">Aralık</string>
 </resources>
