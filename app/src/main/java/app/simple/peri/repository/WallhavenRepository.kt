@@ -1,0 +1,22 @@
+package app.simple.peri.repository
+
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import app.simple.peri.interfaces.WallhavenApi
+import app.simple.peri.models.WallhavenWallpaper
+import app.simple.peri.sources.WallhavenPagingSource
+import jakarta.inject.Inject
+import kotlinx.coroutines.flow.Flow
+
+class WallhavenRepository @Inject constructor(
+        private val api: WallhavenApi
+) {
+
+    fun getWallpapers(query: String): Flow<PagingData<WallhavenWallpaper>> {
+        return Pager(
+                config = PagingConfig(pageSize = 24),
+                pagingSourceFactory = { WallhavenPagingSource(api, query) }
+        ).flow
+    }
+}

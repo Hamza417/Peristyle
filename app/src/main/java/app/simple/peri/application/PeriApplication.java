@@ -5,7 +5,9 @@ import android.app.Application;
 import com.google.android.material.color.DynamicColors;
 
 import app.simple.peri.utils.WallpaperSort;
+import dagger.hilt.android.HiltAndroidApp;
 
+@HiltAndroidApp
 public class PeriApplication extends Application {
     
     @Override
