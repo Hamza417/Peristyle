@@ -79,6 +79,7 @@ import app.simple.peri.utils.FileUtils.toSize
 import app.simple.peri.viewmodels.StateViewModel
 import app.simple.peri.viewmodels.TagsViewModel
 import app.simple.peri.viewmodels.WallpaperUsageViewModel
+import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
 import dev.chrisbanes.haze.HazeDefaults
 import dev.chrisbanes.haze.HazeState
@@ -332,7 +333,7 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
                 }
                 is WallhavenWallpaper -> {
                     ZoomableGlideImage(
-                            model = (wallpaper as WallhavenWallpaper).originalUrl,
+                            model = (wallpaper as WallhavenWallpaper).path,
                             contentDescription = null,
                             modifier = Modifier
                                 .fillMaxSize()
@@ -352,6 +353,10 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
                         it.transition(withCrossFade())
                             .disallowHardwareConfig()
                             .fitCenter()
+                            .thumbnail(
+                                    Glide.with(context)
+                                        .load((wallpaper as WallhavenWallpaper).originalUrl)
+                            )
                     }
                 }
             }

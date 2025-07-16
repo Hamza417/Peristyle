@@ -51,6 +51,7 @@ class WallhavenPagingSource(
         return WallhavenWallpaper(
                 item.id,
                 item.url,
+                item.thumbs.getOrDefault("small", item.path),
                 item.thumbs.getOrDefault("original", item.path),
                 item.path,
                 item.category,

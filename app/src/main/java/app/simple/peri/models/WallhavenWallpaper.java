@@ -6,21 +6,24 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 
 public class WallhavenWallpaper implements Parcelable {
+    
     private String id;
     private String url;
     private String thumbnailUrl;
     private String originalUrl;
+    private String path;
     private String category;
     private String resolution;
     private String aspectRatio;
     private String uploader;
     private long fileSize;
     
-    public WallhavenWallpaper(String id, String url, String thumbnailUrl, String originalUrl, String category, String resolution, String aspectRatio, String uploader, long fileSize) {
+    public WallhavenWallpaper(String id, String url, String thumbnailUrl, String originalUrl, String path, String category, String resolution, String aspectRatio, String uploader, long fileSize) {
         this.id = id;
         this.url = url;
         this.thumbnailUrl = thumbnailUrl;
         this.originalUrl = originalUrl;
+        this.path = path;
         this.category = category;
         this.resolution = resolution;
         this.aspectRatio = aspectRatio;
@@ -125,6 +128,14 @@ public class WallhavenWallpaper implements Parcelable {
         this.fileSize = fileSize;
     }
     
+    public String getPath() {
+        return path;
+    }
+    
+    public void setPath(String path) {
+        this.path = path;
+    }
+    
     @Override
     public int describeContents() {
         return 0;
@@ -132,7 +143,6 @@ public class WallhavenWallpaper implements Parcelable {
     
     @Override
     public void writeToParcel(@NonNull Parcel dest, int flags) {
-        
         dest.writeString(id);
         dest.writeString(url);
         dest.writeString(thumbnailUrl);

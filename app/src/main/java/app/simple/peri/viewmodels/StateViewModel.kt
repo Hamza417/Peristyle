@@ -55,7 +55,7 @@ class StateViewModel(application: Application) : AndroidViewModel(application) {
     fun getWallpaperName(): String? {
         return when (_wallpaper) {
             is Wallpaper -> (_wallpaper as Wallpaper).name
-            is WallhavenWallpaper -> (_wallpaper as WallhavenWallpaper).id
+            is WallhavenWallpaper -> (_wallpaper as WallhavenWallpaper).path.substringAfterLast('/')
             else -> ""
         }
     }

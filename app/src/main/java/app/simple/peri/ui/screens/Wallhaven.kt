@@ -193,7 +193,7 @@ fun ImageCard(wallpaper: WallhavenWallpaper, navController: NavController? = nul
             }
     ) {
         GlideImage(
-                model = wallpaper.thumbnailUrl,
+                model = wallpaper.originalUrl,
                 contentDescription = null,
                 transition = CrossFade,
                 modifier = Modifier
@@ -220,8 +220,8 @@ fun ImageCard(wallpaper: WallhavenWallpaper, navController: NavController? = nul
                     return false
                 }
             })
-                .disallowHardwareConfig()
                 .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                .disallowHardwareConfig()
         }
     }
 }
