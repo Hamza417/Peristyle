@@ -32,4 +32,11 @@ object CommonUtils {
     fun Double.toSeconds(): Double {
         return this / 1000
     }
+
+    fun sizeToRatio(size: String): String {
+        val (width, height) = size.split("x").map { it.toInt() }
+        fun gcd(a: Int, b: Int): Int = if (b == 0) a else gcd(b, a % b)
+        val divisor = gcd(width, height)
+        return "${width / divisor}x${height / divisor}"
+    }
 }

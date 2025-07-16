@@ -1,14 +1,16 @@
 package app.simple.peri.sources
 
+import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import app.simple.peri.interfaces.WallhavenApi
+import app.simple.peri.models.WallhavenFilter
 import app.simple.peri.models.WallhavenResponse.WallhavenItem
 import app.simple.peri.models.WallhavenWallpaper
 
 class WallhavenPagingSource(
         private val api: WallhavenApi,
-        private val query: String
+        private val filter: WallhavenFilter
 ) : PagingSource<Int, WallhavenWallpaper>() {
     override fun getRefreshKey(state: PagingState<Int, WallhavenWallpaper>): Int? {
         return state.anchorPosition?.let { anchor ->
@@ -18,9 +20,20 @@ class WallhavenPagingSource(
     }
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, WallhavenWallpaper> {
+        val page = params.key ?: 1
         return try {
-            val page = params.key ?: 1
-            val response = api.searchWallpapers(query, page)
+            val response = api.searchWallpapers(
+                    filter.query,
+                    filter.categories,
+                    filter.purity,
+                    filter.atleast,
+                    filter.resolution,
+                    filter.ratios,
+                    filter.sorting,
+                    filter.order,
+                    page
+            )
+
             val wallpapers = response.data.map { mapToWallpaper(it) }
 
             LoadResult.Page(
@@ -29,6 +42,7 @@ class WallhavenPagingSource(
                     nextKey = if (response.data.isEmpty()) null else page + 1
             )
         } catch (e: Exception) {
+            Log.e("WallhavenPagingSource", "Error loading page $page", e)
             LoadResult.Error(e)
         }
     }

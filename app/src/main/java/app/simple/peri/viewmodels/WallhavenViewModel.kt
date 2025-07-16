@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import app.simple.peri.models.WallhavenFilter
 import app.simple.peri.models.WallhavenWallpaper
 import app.simple.peri.repository.WallhavenRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -29,15 +30,15 @@ class WallhavenViewModel @Inject constructor(
 ) : ViewModel() {
 
     var lazyGridState: LazyStaggeredGridState by mutableStateOf(LazyStaggeredGridState(0, 0))
-    private val _query = MutableStateFlow("forest") // default query
-    val query: StateFlow<String> = _query.asStateFlow()
+    private val _filter = MutableStateFlow(WallhavenFilter(query = "forest"))
+    val filter: StateFlow<WallhavenFilter> = _filter.asStateFlow()
 
     @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
-    val wallpapers: StateFlow<PagingData<WallhavenWallpaper>> = _query
-        .debounce(300) // avoid flooding API with requests
+    val wallpapers: StateFlow<PagingData<WallhavenWallpaper>> = _filter
+        .debounce(300)
         .distinctUntilChanged()
-        .flatMapLatest { query ->
-            repository.getWallpapers(query)
+        .flatMapLatest { filter ->
+            repository.getWallpapers(filter)
         }
         .cachedIn(viewModelScope)
         .stateIn(
@@ -47,6 +48,10 @@ class WallhavenViewModel @Inject constructor(
         )
 
     fun search(newQuery: String) {
-        _query.value = newQuery
+        _filter.value = _filter.value.copy(query = newQuery)
+    }
+
+    fun updateFilter(modifier: WallhavenFilter.() -> WallhavenFilter) {
+        _filter.value = _filter.value.modifier()
     }
 }

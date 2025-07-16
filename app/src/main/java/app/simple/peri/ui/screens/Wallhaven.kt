@@ -2,6 +2,7 @@ package app.simple.peri.ui.screens
 
 import android.content.res.Configuration
 import android.graphics.drawable.Drawable
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
@@ -31,12 +32,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.paging.compose.collectAsLazyPagingItems
 import app.simple.peri.R
+import app.simple.peri.activities.main.LocalDisplaySize
 import app.simple.peri.models.WallhavenWallpaper
 import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.ui.commons.BottomHeader
 import app.simple.peri.ui.commons.COMMON_PADDING
 import app.simple.peri.ui.commons.TopHeader
 import app.simple.peri.ui.nav.Routes
+import app.simple.peri.utils.CommonUtils
 import app.simple.peri.utils.ConditionUtils.invert
 import app.simple.peri.viewmodels.WallhavenViewModel
 import com.bumptech.glide.integration.compose.CrossFade
@@ -55,6 +58,14 @@ fun WallhavenScreen(navController: NavController? = null) {
 
     val viewModel: WallhavenViewModel = hiltViewModel()
     val wallpapers = viewModel.wallpapers.collectAsLazyPagingItems()
+    val size = LocalDisplaySize.current.width.toString() + "x" + LocalDisplaySize.current.height
+    Log.d("WallhavenScreen", "Display Size: $size ${CommonUtils.sizeToRatio(size)}")
+    viewModel.updateFilter {
+        copy(
+                atleast = size,
+                ratios = "portrait"
+        )
+    }
 
     val hazeState = remember { HazeState() }
     var statusBarHeight by remember { mutableIntStateOf(0) }
@@ -150,10 +161,12 @@ fun WallhavenScreen(navController: NavController? = null) {
 fun ImageCard(wallpaper: WallhavenWallpaper, navController: NavController? = null) {
     Card(
             modifier = Modifier
-                .aspectRatio(wallpaper.resolution.let { it ->
-                    val (width, height) = it.split("x").map { it.toFloat() }
-                    width / height
-                })
+                .aspectRatio(wallpaper.aspectRatio?.toFloat()
+                                 ?: wallpaper.resolution.let { it ->
+                                     val (width, height) = it.split("x").map { it.toFloat() }
+                                     width / height
+                                 })
+                .fillMaxSize()
                 .padding(8.dp),
             onClick = {
                 navController?.navigate(Routes.WALLPAPER) {
