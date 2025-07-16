@@ -118,7 +118,14 @@ fun WallhavenScreen(navController: NavController? = null) {
                 onSearch = {
                     viewModel.updateFilter {
                         copy(
-                                query = it,
+                                query = it.query,
+                                categories = it.categories,
+                                purity = it.purity,
+                                atleast = it.atleast,
+                                resolution = it.resolution,
+                                ratios = it.ratios,
+                                sorting = it.sorting,
+                                order = it.order
                         )
                     }
                 }
