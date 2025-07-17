@@ -3,7 +3,6 @@ package app.simple.peri.ui.screens
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -53,6 +52,7 @@ import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -68,6 +68,7 @@ import app.simple.peri.models.Wallpaper
 import app.simple.peri.services.LiveAutoWallpaperService
 import app.simple.peri.ui.commons.FolderBrowser
 import app.simple.peri.ui.commons.LaunchEffectActivity
+import app.simple.peri.ui.dialogs.common.PleaseWaitDialog
 import app.simple.peri.ui.dialogs.wallpaper.EffectsDialog
 import app.simple.peri.ui.dialogs.wallpaper.ScreenSelectionDialog
 import app.simple.peri.ui.nav.Routes
@@ -207,10 +208,13 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
         val url = (wallpaper as WallhavenWallpaper).originalUrl
         val fileName = "/wallhaven_${(wallpaper as WallhavenWallpaper).id}.jpg"
 
+        PleaseWaitDialog(stateText = stringResource(R.string.downloading)) {
+            /* no-op */
+        }
+
         LaunchedEffect(url) {
             downloadWallpaper(url, path + fileName)
             launchedEffectDownloader = false
-            Toast.makeText(context, "Done", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -579,22 +583,29 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
                 }
                 is WallhavenWallpaper -> {
                     var downloadedWallpaper by remember { mutableStateOf<Wallpaper?>(null) }
+                    var showPleaseWaitDialog by remember { mutableStateOf(false) }
                     val context = LocalContext.current
                     val url = (wallpaper as WallhavenWallpaper).originalUrl
                     val fileName = "/wallhaven_${(wallpaper as WallhavenWallpaper).id}.jpg"
 
                     LaunchedEffect(url) {
+                        showPleaseWaitDialog = true
                         val file = downloadWallpaper(url, context.cacheDir.absolutePath + fileName)
                         if (file != null) {
                             downloadedWallpaper = Wallpaper.createFromFile(file)
                         }
+                        showPleaseWaitDialog = false
+                    }
+
+                    if (showPleaseWaitDialog) {
+                        PleaseWaitDialog(stateText = stringResource(R.string.downloading)) { /* no-op */ }
                     }
 
                     if (downloadedWallpaper != null) {
                         ScreenSelectionDialog(
                                 setShowDialog = { showScreenSelectionDialog = it },
                                 context = context,
-                                drawable = null, // or provide a drawable if needed
+                                drawable = null,
                                 wallpaper = downloadedWallpaper!!
                         )
                     }
@@ -605,10 +616,23 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
 }
 
 suspend fun downloadWallpaper(imageUrl: String, absolutePath: String): File? = withContext(Dispatchers.IO) {
+    var connection: HttpURLConnection? = null
     try {
         val url = URL(imageUrl)
-        val connection = url.openConnection() as HttpURLConnection
-        connection.connect()
+        connection = (url.openConnection() as HttpURLConnection).apply {
+            connectTimeout = 10000
+            readTimeout = 15000
+            instanceFollowRedirects = true
+            requestMethod = "GET"
+            connect()
+        }
+
+        // Handle HTTP redirects manually if needed
+        if (connection.responseCode in 300..399) {
+            val newUrl = connection.getHeaderField("Location")
+            connection.disconnect()
+            return@withContext downloadWallpaper(newUrl, absolutePath)
+        }
 
         if (connection.responseCode != HttpURLConnection.HTTP_OK) {
             Log.e("Download", "Server returned HTTP ${connection.responseCode}")
@@ -617,6 +641,10 @@ suspend fun downloadWallpaper(imageUrl: String, absolutePath: String): File? = w
 
         val file = File(absolutePath)
         file.parentFile?.let { if (!it.exists()) it.mkdirs() }
+        if (file.exists()) {
+            Log.w("Download", "File already exists: ${file.absolutePath}")
+            return@withContext file
+        }
 
         FileOutputStream(file).use { output ->
             connection.inputStream.use { input ->
@@ -625,10 +653,12 @@ suspend fun downloadWallpaper(imageUrl: String, absolutePath: String): File? = w
         }
 
         Log.d("Download", "Downloaded to ${file.absolutePath}")
-        return@withContext file
+        file
     } catch (e: Exception) {
         Log.e("Download", "Error: ${e.message}", e)
         null
+    } finally {
+        connection?.disconnect()
     }
 }
 
