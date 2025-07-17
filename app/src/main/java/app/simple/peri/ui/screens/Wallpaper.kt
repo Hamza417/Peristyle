@@ -1,5 +1,6 @@
 package app.simple.peri.ui.screens
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.util.Log
@@ -82,6 +83,7 @@ import app.simple.peri.viewmodels.TagsViewModel
 import app.simple.peri.viewmodels.WallpaperUsageViewModel
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
+import com.bumptech.glide.request.target.Target
 import dev.chrisbanes.haze.HazeDefaults
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeEffect
@@ -213,7 +215,7 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
         }
 
         LaunchedEffect(url) {
-            downloadWallpaper(url, path + fileName)
+            getCachedOrDownloadWallpaper(context, url, path + fileName)
             launchedEffectDownloader = false
         }
     }
@@ -590,7 +592,7 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
 
                     LaunchedEffect(url) {
                         showPleaseWaitDialog = true
-                        val file = downloadWallpaper(url, context.cacheDir.absolutePath + fileName)
+                        val file = getCachedOrDownloadWallpaper(context, url, context.cacheDir.absolutePath + fileName)
                         if (file != null) {
                             downloadedWallpaper = Wallpaper.createFromFile(file)
                         }
@@ -613,6 +615,30 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
             }
         }
     }
+}
+
+suspend fun getCachedOrDownloadWallpaper(context: Context, imageUrl: String, absolutePath: String): File? = withContext(Dispatchers.IO) {
+    try {
+        // Try to get the cached file from Glide
+        val future = Glide.with(context)
+            .downloadOnly()
+            .load(imageUrl)
+            .submit(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
+        val cachedFile = future.get() // This is blocking, so it's safe in Dispatchers.IO
+
+        if (cachedFile != null && cachedFile.exists()) {
+            val destFile = File(absolutePath)
+            if (cachedFile.absolutePath != destFile.absolutePath) {
+                destFile.parentFile?.let { if (!it.exists()) it.mkdirs() }
+                cachedFile.copyTo(destFile, overwrite = true)
+            }
+            return@withContext destFile
+        }
+    } catch (_: Exception) {
+        // Ignore and fallback to download
+    }
+    // Fallback to your download logic
+    downloadWallpaper(imageUrl, absolutePath)
 }
 
 suspend fun downloadWallpaper(imageUrl: String, absolutePath: String): File? = withContext(Dispatchers.IO) {
