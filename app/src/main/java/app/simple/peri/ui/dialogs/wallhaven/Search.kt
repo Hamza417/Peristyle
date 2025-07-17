@@ -74,7 +74,7 @@ fun SearchDialog(
                     OutlinedTextField(
                             value = query,
                             onValueChange = {
-                                query = it.trim()
+                                query = it
                                 WallHavenPreferences.setQuery(it)
                             },
                             label = { Text(stringResource(R.string.query)) },
@@ -207,7 +207,10 @@ fun SearchDialog(
                     ) {
                         OutlinedTextField(
                                 value = ratios,
-                                onValueChange = {},
+                                onValueChange = {
+                                    ratios = it
+                                    WallHavenPreferences.setRatio(it)
+                                },
                                 readOnly = false,
                                 label = { Text(stringResource(R.string.ratios)) },
                                 trailingIcon = {
@@ -249,7 +252,7 @@ fun SearchDialog(
                                     categories = categories,
                                     purity = purity,
                                     atleast = atleast,
-                                    resolution = "${resolutionWidth}x${resolutionHeight}",
+                                    resolution = resolution,
                                     ratios = ratios,
                                     sorting = sorting,
                                     order = order
