@@ -11,10 +11,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Text
@@ -78,8 +81,6 @@ import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeEffect
 import dev.chrisbanes.haze.hazeSource
 
-private var presetFilter: WallhavenFilter? = null
-
 @Composable
 fun WallhavenScreen(navController: NavController? = null) {
 
@@ -87,8 +88,7 @@ fun WallhavenScreen(navController: NavController? = null) {
     val wallpapers = viewModel.wallpapers.collectAsLazyPagingItems()
     val savedStateHandle = navController?.previousBackStackEntry?.savedStateHandle
     val meta: WallhavenResponse.Meta? by viewModel.meta.collectAsStateWithLifecycle()
-
-    presetFilter = savedStateHandle?.get<WallhavenFilter>(Routes.WALLHAVEN_ARG)
+    var presetFilter by remember { mutableStateOf(savedStateHandle?.get<WallhavenFilter>(Routes.WALLHAVEN_ARG)) }
 
     LaunchedEffect(presetFilter) {
         val filterApplied = savedStateHandle?.get<Boolean>("WALLHAVEN_FILTER_APPLIED") ?: false
@@ -151,6 +151,8 @@ fun WallhavenScreen(navController: NavController? = null) {
                                 order = it.order
                         )
                     }
+
+                    presetFilter = it
                 }
         )
     }
@@ -200,9 +202,44 @@ fun WallhavenScreen(navController: NavController? = null) {
                 }
             }
 
+            // Show current filter params
+            item(span = StaggeredGridItemSpan.FullLine) {
+                if (presetFilter != null) {
+                    val filterParams = buildList {
+                        add("${stringResource(R.string.query)}: ${presetFilter?.query ?: "All"}")
+                        add("${stringResource(R.string.purity)}: ${presetFilter?.purity}")
+                        add("${stringResource(R.string.category)}: ${presetFilter?.categories}")
+                        add("${stringResource(R.string.ratios)}: ${presetFilter?.ratios}")
+                        add("${stringResource(R.string.resolution)}: ${presetFilter?.resolution ?: "Any"}")
+                        add("${stringResource(R.string.at_least)}: ${presetFilter?.atleast ?: "Any"}")
+                        add("${stringResource(R.string.sort)}: ${presetFilter?.sorting ?: "Default"}")
+                        add("${stringResource(R.string.order)}: ${presetFilter?.order ?: "Default"}")
+                    }
+
+                    LazyRow {
+                        items(filterParams.size) { pos ->
+                            AssistChip(
+                                    onClick = {}, // non-clickable
+                                    label = { Text(filterParams[pos]) },
+                                    enabled = false,
+                                    modifier = Modifier
+                                        .padding(
+                                                start = if (pos == 0) 8.dp else 4.dp,
+                                                end = if (pos == filterParams.size - 1) 8.dp else 4.dp
+                                        ),
+                                    colors = AssistChipDefaults.assistChipColors(
+                                            containerColor = Color.White.copy(alpha = 0.15f),
+                                            labelColor = Color.Gray
+                                    )
+                            )
+                        }
+                    }
+                }
+            }
+
             items(wallpapers.itemCount) { index ->
                 wallpapers[index]?.let { wallpaper ->
-                    ImageCard(wallpaper, navController)
+                    ImageCard(wallpaper, navController, presetFilter)
                 }
             }
         }
@@ -234,7 +271,7 @@ fun WallhavenScreen(navController: NavController? = null) {
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun ImageCard(wallpaper: WallhavenWallpaper, navController: NavController? = null) {
+fun ImageCard(wallpaper: WallhavenWallpaper, navController: NavController? = null, presetFilter: WallhavenFilter? = null) {
     val hazeState = remember { HazeState() }
 
     Box {

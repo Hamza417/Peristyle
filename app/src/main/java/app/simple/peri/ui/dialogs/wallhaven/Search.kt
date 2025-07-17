@@ -184,7 +184,7 @@ fun SearchDialog(
                                 atleast = it
                                 WallHavenPreferences.setAtleast(atleast)
                             },
-                            label = { Text(stringResource(R.string.at_least_e_g)) },
+                            label = { Text(stringResource(R.string.at_least)) },
                             modifier = Modifier.fillMaxWidth(),
                             trailingIcon = {
                                 IconButton(onClick = {

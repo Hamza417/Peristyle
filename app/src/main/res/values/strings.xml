@@ -247,11 +247,12 @@
     <string name="people">People</string>
     <string name="query">Query</string>
     <string name="resolution">Resolution</string>
-    <string name="at_least_e_g">At least (e.g., 1920x1080)</string>
+    <string name="at_least">At least</string>
     <string name="ratios">Ratios</string>
     <string name="set_phone_resolution">Set Phone Resolution</string>
     <string name="interval">Interval</string>
     <string name="donate">Donate</string>
     <string name="donate_summary">Love this project? Help it keep growing with a small donation!</string>
     <string name="downloading">Downloading</string>
+    <string name="purity">Purity</string>
 </resources>
