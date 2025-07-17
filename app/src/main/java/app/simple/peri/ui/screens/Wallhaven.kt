@@ -91,23 +91,17 @@ fun WallhavenScreen(navController: NavController? = null) {
     var presetFilter by remember { mutableStateOf(savedStateHandle?.get<WallhavenFilter>(Routes.WALLHAVEN_ARG)) }
 
     LaunchedEffect(presetFilter) {
-        val filterApplied = savedStateHandle?.get<Boolean>("WALLHAVEN_FILTER_APPLIED") ?: false
-
-        if (presetFilter != null && !filterApplied) {
-            viewModel.updateFilter {
-                copy(
-                        atleast = presetFilter!!.atleast,
-                        ratios = presetFilter!!.ratios,
-                        resolution = presetFilter!!.resolution,
-                        purity = presetFilter!!.purity,
-                        categories = presetFilter!!.categories,
-                        query = presetFilter!!.query,
-                        sorting = presetFilter!!.sorting,
-                        order = presetFilter!!.order
-                )
-            }
-
-            savedStateHandle?.set("WALLHAVEN_FILTER_APPLIED", true)
+        viewModel.updateFilter {
+            copy(
+                    atleast = presetFilter!!.atleast,
+                    ratios = presetFilter!!.ratios,
+                    resolution = presetFilter!!.resolution,
+                    purity = presetFilter!!.purity,
+                    categories = presetFilter!!.categories,
+                    query = presetFilter!!.query,
+                    sorting = presetFilter!!.sorting,
+                    order = presetFilter!!.order
+            )
         }
     }
 
@@ -137,6 +131,7 @@ fun WallhavenScreen(navController: NavController? = null) {
 
     if (searchDialog) {
         SearchDialog(
+                filter = presetFilter,
                 onDismiss = { searchDialog = false },
                 onSearch = {
                     viewModel.updateFilter {
@@ -153,6 +148,7 @@ fun WallhavenScreen(navController: NavController? = null) {
                     }
 
                     presetFilter = it
+                    savedStateHandle?.set(Routes.WALLHAVEN_ARG, it)
                 }
         )
     }

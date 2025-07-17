@@ -36,32 +36,26 @@ import app.simple.peri.preferences.WallHavenPreferences
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchDialog(
+        filter: WallhavenFilter? = null,
         onDismiss: () -> Unit,
         onSearch: (WallhavenFilter) -> Unit
 ) {
     val resolutionWidth = LocalDisplaySize.current.width
     val resolutionHeight = LocalDisplaySize.current.height
 
-    var query by remember { mutableStateOf(WallHavenPreferences.getQuery()) }
-    var categories by remember { mutableStateOf(WallHavenPreferences.getCategory()) }
-    var purity by remember { mutableStateOf("100") }
-    var atleast by remember { mutableStateOf(WallHavenPreferences.getAtleast() ?: "$resolutionWidth x $resolutionHeight") }
-    var resolution by remember { mutableStateOf(WallHavenPreferences.getResolution() ?: "") }
-    var ratios by remember { mutableStateOf(WallHavenPreferences.getRatio()) }
-    var sorting by remember { mutableStateOf(WallHavenPreferences.getSort()) }
-    var order by remember { mutableStateOf(WallHavenPreferences.getOrder()) }
+    var query by remember { mutableStateOf(filter?.query ?: WallHavenPreferences.getQuery()) }
+    var categories by remember { mutableStateOf(filter?.categories ?: WallHavenPreferences.getCategory()) }
+    var purity by remember { mutableStateOf(filter?.purity ?: "100") }
+    var atleast by remember { mutableStateOf(filter?.atleast ?: WallHavenPreferences.getAtleast() ?: "$resolutionWidth x $resolutionHeight") }
+    var resolution by remember { mutableStateOf(filter?.resolution ?: WallHavenPreferences.getResolution() ?: "") }
+    var ratios by remember { mutableStateOf(filter?.ratios ?: WallHavenPreferences.getRatio()) }
+    var sorting by remember { mutableStateOf(filter?.sorting ?: WallHavenPreferences.getSort()) }
+    var order by remember { mutableStateOf(filter?.order ?: WallHavenPreferences.getOrder()) }
 
     val sortingOptions = listOf("date_added", "relevance", "random", "views", "favorites", "toplist")
     val catLabels = listOf(stringResource(R.string.general), stringResource(R.string.anime), stringResource(R.string.people))
     val orderLabels = listOf(stringResource(R.string.descending), stringResource(R.string.ascending))
-    val portraitRatios = listOf("portrait", "landscape", "9x16", "3x4", "1x2")
-    val landscapeRatios = listOf("portrait", "landscape", "16x9", "4x3", "21x9", "2x1")
-
-    val ratioOptions = if (LocalDisplaySize.current.height > LocalDisplaySize.current.width) {
-        portraitRatios
-    } else {
-        landscapeRatios
-    }
+    val ratioOptions = listOf("portrait", "landscape", "any")
 
     var ratioExpanded by remember { mutableStateOf(false) }
     var sortingExpanded by remember { mutableStateOf(false) }
