@@ -45,12 +45,8 @@ fun SearchDialog(
     var query by remember { mutableStateOf(WallHavenPreferences.getQuery()) }
     var categories by remember { mutableStateOf(WallHavenPreferences.getCategory()) }
     var purity by remember { mutableStateOf("100") }
-    var atleast by remember {
-        mutableStateOf(WallHavenPreferences.getAtleast() ?: "$resolutionWidth x $resolutionHeight")
-    }
-    var resolution by remember {
-        mutableStateOf(WallHavenPreferences.getResolution() ?: "${resolutionWidth}x${resolutionHeight}")
-    }
+    var atleast by remember { mutableStateOf(WallHavenPreferences.getAtleast() ?: "$resolutionWidth x $resolutionHeight") }
+    var resolution by remember { mutableStateOf(WallHavenPreferences.getResolution() ?: "") }
     var ratios by remember { mutableStateOf(WallHavenPreferences.getRatio()) }
     var sorting by remember { mutableStateOf(WallHavenPreferences.getSort()) }
     var order by remember { mutableStateOf(WallHavenPreferences.getOrder()) }
@@ -78,7 +74,7 @@ fun SearchDialog(
                     OutlinedTextField(
                             value = query,
                             onValueChange = {
-                                query = it
+                                query = it.trim()
                                 WallHavenPreferences.setQuery(it)
                             },
                             label = { Text(stringResource(R.string.query)) },
@@ -163,21 +159,17 @@ fun SearchDialog(
                     OutlinedTextField(
                             value = resolution,
                             onValueChange = {
-                                if (it.all { c -> c.isDigit() || c == 'x' }) {
-                                    resolution = it
-                                    val parts = it.split("x")
-                                    if (parts.size == 2 && parts[0].isNotEmpty() && parts[1].isNotEmpty()) {
-                                        WallHavenPreferences.setResolution("${parts[0]}x${parts[1]}")
-                                    }
-                                }
+                                resolution = it
+                                WallHavenPreferences.setResolution(it)
                             },
                             label = { Text(stringResource(R.string.resolution)) },
                             modifier = Modifier.fillMaxWidth(),
                             trailingIcon = {
-                                IconButton(onClick = {
-                                    resolution = "${resolutionWidth}x${resolutionHeight}"
-                                    WallHavenPreferences.setResolution(resolution)
-                                }) {
+                                IconButton(
+                                        onClick = {
+                                            resolution = "${resolutionWidth}x${resolutionHeight}"
+                                            WallHavenPreferences.setResolution(resolution)
+                                        }) {
                                     Icon(
                                             imageVector = Icons.Default.PhoneAndroid,
                                             contentDescription = stringResource(R.string.set_phone_resolution)
