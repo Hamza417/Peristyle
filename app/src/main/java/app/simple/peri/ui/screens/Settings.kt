@@ -343,6 +343,15 @@ fun Settings(navController: NavController? = null) {
             {
                 showDeveloperProfileDialog.value = true
             }
+
+            ClickablePreference(
+                    title = stringResource(R.string.donate),
+                    description = stringResource(R.string.donate_summary)
+            ) {
+                val intent = Intent(Intent.ACTION_VIEW)
+                intent.data = "https://ko-fi.com/hamza417".toUri()
+                context.startActivity(intent)
+            }
         }
         item {
             val inureDialog = remember { mutableStateOf(false) }

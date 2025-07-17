@@ -25,7 +25,7 @@
     <string name="about">About</string>
     <string name="grid_span_summary">Span count of the main screen grid.</string>
     <string name="grid_span">Grid Span</string>
-    <string name="other_apps">Other Apps</string>
+    <string name="other_apps">Checkout My Other Projects</string>
     <string name="preparing">Preparing</string>
     <string name="copying">Copying wallpaper to system directory.</string>
     <string name="deleting">Deleting</string>
@@ -250,4 +250,7 @@
     <string name="at_least_e_g">At least (e.g., 1920x1080)</string>
     <string name="ratios">Ratios</string>
     <string name="set_phone_resolution">Set Phone Resolution</string>
+    <string name="interval">Interval</string>
+    <string name="donate">Donate</string>
+    <string name="donate_summary">Love this project? Help it keep growing with a small donation!</string>
 </resources>

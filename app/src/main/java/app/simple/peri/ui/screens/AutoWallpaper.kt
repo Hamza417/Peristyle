@@ -102,7 +102,7 @@ fun AutoWallpaper(navController: NavController? = null) {
                     })
 
             ClickablePreference(
-                    title = context.getString(R.string.duration),
+                    title = context.getString(R.string.interval),
                     description = context.getString(R.string.duration_summary),
                     onClick = {
                         autoWallpaperDialog.value = true
