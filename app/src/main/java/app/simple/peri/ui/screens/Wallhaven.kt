@@ -19,6 +19,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -59,7 +60,6 @@ import app.simple.peri.ui.commons.TopHeader
 import app.simple.peri.ui.commons.WallpaperDimensionsText
 import app.simple.peri.ui.dialogs.wallhaven.SearchDialog
 import app.simple.peri.ui.nav.Routes
-import app.simple.peri.utils.CommonUtils
 import app.simple.peri.utils.ConditionUtils.invert
 import app.simple.peri.viewmodels.WallhavenViewModel
 import com.bumptech.glide.integration.compose.CrossFade
@@ -84,18 +84,23 @@ fun WallhavenScreen(navController: NavController? = null) {
     val savedStateHandle = navController?.previousBackStackEntry?.savedStateHandle
     val presetFilter = savedStateHandle?.get<WallhavenFilter>(Routes.WALLHAVEN_ARG)
 
-    val size = LocalDisplaySize.current.width.toString() + "x" + LocalDisplaySize.current.height
-    viewModel.updateFilter {
-        copy(
-                atleast = presetFilter?.atleast ?: size,
-                ratios = presetFilter?.ratios ?: CommonUtils.sizeToRatio(size),
-                resolution = presetFilter?.resolution ?: size,
-                purity = presetFilter?.purity ?: "100",
-                categories = presetFilter?.categories ?: "111",
-                query = presetFilter?.query ?: "",
-                sorting = presetFilter?.sorting ?: "date_added",
-                order = presetFilter?.order ?: "desc"
-        )
+    LaunchedEffect(presetFilter) {
+        if (presetFilter != null) {
+            viewModel.updateFilter {
+                copy(
+                        atleast = presetFilter.atleast,
+                        ratios = presetFilter.ratios,
+                        resolution = presetFilter.resolution,
+                        purity = presetFilter.purity,
+                        categories = presetFilter.categories,
+                        query = presetFilter.query,
+                        sorting = presetFilter.sorting,
+                        order = presetFilter.order
+                )
+            }
+
+            savedStateHandle.remove<WallhavenFilter>(Routes.WALLHAVEN_ARG)
+        }
     }
 
     val hazeState = remember { HazeState() }
