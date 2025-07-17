@@ -469,6 +469,26 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
                                             .fillMaxWidth()
                                             .padding(start = 8.dp, bottom = 8.dp)
                                 ) {
+                                    item {
+                                        AssistChip(
+                                                onClick = {
+                                                    val wallpaperId = (wallpaper as? WallhavenWallpaper)?.id ?: ""
+                                                    val filter = navController.previousBackStackEntry?.savedStateHandle
+                                                        ?.get<WallhavenFilter>(Routes.WALLHAVEN_FILTER)
+                                                        ?.copy(query = "like:$wallpaperId")
+                                                    navController.navigate(Routes.WALLHAVEN) {
+                                                        navController.currentBackStackEntry?.savedStateHandle
+                                                            ?.set(Routes.WALLHAVEN_ARG, filter)
+                                                    }
+                                                },
+                                                label = { Text("like:${(wallpaper as WallhavenWallpaper).id}") },
+                                                modifier = Modifier.padding(end = 8.dp),
+                                                colors = AssistChipDefaults.assistChipColors(
+                                                        containerColor = Color.White.copy(alpha = 0.15f),
+                                                        labelColor = Color.White
+                                                )
+                                        )
+                                    }
                                     items(wallhavenTags.size) { position ->
                                         AssistChip(
                                                 onClick = {
