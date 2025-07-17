@@ -10,6 +10,7 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import app.simple.peri.models.WallhavenFilter
 import app.simple.peri.models.WallhavenResponse
+import app.simple.peri.models.WallhavenTag
 import app.simple.peri.models.WallhavenWallpaper
 import app.simple.peri.repository.WallhavenRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,6 +25,7 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 @HiltViewModel
 class WallhavenViewModel @Inject constructor(
@@ -36,6 +38,9 @@ class WallhavenViewModel @Inject constructor(
 
     private val _meta = MutableStateFlow<WallhavenResponse.Meta?>(null)
     val meta: StateFlow<WallhavenResponse.Meta?> = _meta.asStateFlow()
+
+    private val _tags = MutableStateFlow<List<WallhavenTag>>(emptyList())
+    val tags: StateFlow<List<WallhavenTag>> = _tags.asStateFlow()
 
     @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
     val wallpapers: StateFlow<PagingData<WallhavenWallpaper>> = _filter
@@ -59,5 +64,12 @@ class WallhavenViewModel @Inject constructor(
 
     fun updateFilter(modifier: WallhavenFilter.() -> WallhavenFilter) {
         _filter.value = _filter.value.modifier()
+    }
+
+    fun fetchWallpaperTags(wallpaperId: String) {
+        viewModelScope.launch {
+            val response: List<WallhavenTag> = repository.getWallpaperTags(wallpaperId)
+            _tags.value = response
+        }
     }
 }

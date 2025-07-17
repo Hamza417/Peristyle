@@ -19,11 +19,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Label
 import androidx.compose.material.icons.rounded.Bookmarks
 import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -58,6 +61,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.drawable.toDrawable
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import app.simple.peri.R
@@ -80,6 +84,7 @@ import app.simple.peri.utils.FileUtils.toFile
 import app.simple.peri.utils.FileUtils.toSize
 import app.simple.peri.viewmodels.StateViewModel
 import app.simple.peri.viewmodels.TagsViewModel
+import app.simple.peri.viewmodels.WallhavenViewModel
 import app.simple.peri.viewmodels.WallpaperUsageViewModel
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
@@ -103,6 +108,7 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
     val savedStateHandle = navController.previousBackStackEntry?.savedStateHandle
     val stateViewModel: StateViewModel = viewModel()
     val wallpaperUsageViewModel: WallpaperUsageViewModel = viewModel()
+    val wallhavenViewModel: WallhavenViewModel = hiltViewModel()
 
     val wallpaper: Any? by rememberSaveable(savedStateHandle) {
         if (stateViewModel.getWallpaper() == null) {
@@ -135,6 +141,7 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
     var scaleValueGreen by remember { stateViewModel::scaleValueGreen } // 0F..1F
     var scaleValueBlue by remember { stateViewModel::scaleValueBlue } // 0F..1F
     var tags by remember { mutableStateOf(emptyList<String>()) }
+    var wallhavenTags = wallhavenViewModel.tags.collectAsState().value
     val setTimes = wallpaperUsageViewModel.dataFlow.collectAsState().value.find {
         it.wallpaperId == if (wallpaper is Wallpaper) {
             (wallpaper as Wallpaper).id
@@ -154,6 +161,10 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
     val showEditDialog = remember { mutableStateOf(false) }
     val showDetailsCard = remember { mutableStateOf(true) }
     val launchEffectActivity = remember { mutableStateOf(false) }
+
+    LaunchedEffect((wallpaper as WallhavenWallpaper).id) {
+        wallhavenViewModel.fetchWallpaperTags((wallpaper as WallhavenWallpaper).id)
+    }
 
     if (showEditDialog.value) {
         EffectsDialog(
@@ -409,28 +420,70 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
                         fontSize = 18.sp
                 )
 
-                if (tags.isNotEmpty()) {
-                    Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.Start,
-                            verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                                imageVector = Icons.AutoMirrored.Rounded.Label,
-                                contentDescription = "",
-                                tint = Color.White,
-                                modifier = Modifier
-                                    .width(32.dp)
-                                    .height(32.dp)
-                                    .padding(start = 12.dp, bottom = 16.dp)
-                        )
-                        Text(
-                                text = tags.joinToString(", "),
-                                fontWeight = FontWeight.Light,
-                                color = Color.White,
-                                modifier = Modifier.padding(start = 8.dp, bottom = 16.dp),
-                                fontSize = 18.sp
-                        )
+                if (tags.isNotEmpty() || wallhavenTags.isNotEmpty()) {
+                    when (wallpaper) {
+                        is Wallpaper -> {
+                            Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.Start,
+                                    verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                        imageVector = Icons.AutoMirrored.Rounded.Label,
+                                        contentDescription = "",
+                                        tint = Color.White,
+                                        modifier = Modifier
+                                            .width(32.dp)
+                                            .height(32.dp)
+                                            .padding(start = 12.dp, bottom = 16.dp)
+                                )
+                                Text(
+                                        text = tags.joinToString(", "),
+                                        fontWeight = FontWeight.Light,
+                                        color = Color.White,
+                                        modifier = Modifier.padding(start = 8.dp, bottom = 16.dp),
+                                        fontSize = 18.sp
+                                )
+                            }
+                        }
+                        is WallhavenWallpaper -> {
+                            Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.Start,
+                                    verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                        imageVector = Icons.AutoMirrored.Rounded.Label,
+                                        contentDescription = "",
+                                        tint = Color.White,
+                                        modifier = Modifier
+                                            .width(32.dp)
+                                            .height(32.dp)
+                                            .padding(start = 12.dp, bottom = 8.dp)
+                                )
+                                LazyRow(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(start = 8.dp, bottom = 8.dp)
+                                ) {
+                                    items(wallhavenTags.size) { position ->
+                                        AssistChip(
+                                                onClick = {
+                                                    /* handle tag click if needed */
+                                                },
+                                                label = {
+                                                    Text(wallhavenTags[position].name)
+                                                },
+                                                modifier = Modifier.padding(end = 8.dp),
+                                                colors = AssistChipDefaults.assistChipColors(
+                                                        containerColor = Color.White.copy(alpha = 0.15f),
+                                                        labelColor = Color.White
+                                                )
+                                        )
+                                    }
+                                }
+                            }
+                        }
                     }
                 } else {
                     Spacer(modifier = Modifier.height(16.dp))

@@ -6,6 +6,7 @@ import androidx.paging.PagingData
 import app.simple.peri.interfaces.WallhavenApi
 import app.simple.peri.models.WallhavenFilter
 import app.simple.peri.models.WallhavenResponse
+import app.simple.peri.models.WallhavenTag
 import app.simple.peri.models.WallhavenWallpaper
 import app.simple.peri.sources.WallhavenPagingSource
 import jakarta.inject.Inject
@@ -27,4 +28,17 @@ class WallhavenRepository @Inject constructor(
         ).flow
     }
 
+    suspend fun getWallpaperTags(id: String): List<WallhavenTag> {
+        return try {
+            val response = api.getWallpaperDetails(id)
+            if (response.isSuccessful) {
+                response.body()?.data?.tags ?: emptyList()
+            } else {
+                emptyList()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emptyList()
+        }
+    }
 }
