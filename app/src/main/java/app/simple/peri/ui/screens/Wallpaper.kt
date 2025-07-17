@@ -493,7 +493,7 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
                                         AssistChip(
                                                 onClick = {
                                                     val filter = navController.previousBackStackEntry?.savedStateHandle?.get<WallhavenFilter>(Routes.WALLHAVEN_FILTER)?.copy(
-                                                            query = wallhavenTags[position].name
+                                                            query = "id:" + wallhavenTags[position].id.toString()
                                                     )
                                                     navController.navigate(Routes.WALLHAVEN) {
                                                         navController.currentBackStackEntry?.savedStateHandle?.set(Routes.WALLHAVEN_ARG, filter)
