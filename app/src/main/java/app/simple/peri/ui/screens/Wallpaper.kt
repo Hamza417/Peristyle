@@ -221,7 +221,7 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
     }
 
     if (launchedEffectDownloader) {
-        val url = (wallpaper as WallhavenWallpaper).originalUrl
+        val url = (wallpaper as WallhavenWallpaper).path
         val fileName = "/wallhaven_${(wallpaper as WallhavenWallpaper).id}.jpg"
 
         PleaseWaitDialog(stateText = stringResource(R.string.downloading)) {
@@ -648,7 +648,7 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
                     var downloadedWallpaper by remember { mutableStateOf<Wallpaper?>(null) }
                     var showPleaseWaitDialog by remember { mutableStateOf(false) }
                     val context = LocalContext.current
-                    val url = (wallpaper as WallhavenWallpaper).originalUrl
+                    val url = (wallpaper as WallhavenWallpaper).path
                     val fileName = "/wallhaven_${(wallpaper as WallhavenWallpaper).id}.jpg"
 
                     LaunchedEffect(url) {
