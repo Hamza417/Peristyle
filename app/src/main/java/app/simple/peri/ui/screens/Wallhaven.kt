@@ -47,11 +47,13 @@ import androidx.compose.ui.unit.sp
 import androidx.core.graphics.toColorInt
 import androidx.core.view.WindowInsetsCompat
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.paging.compose.collectAsLazyPagingItems
 import app.simple.peri.R
 import app.simple.peri.activities.main.LocalDisplaySize
 import app.simple.peri.models.WallhavenFilter
+import app.simple.peri.models.WallhavenResponse
 import app.simple.peri.models.WallhavenWallpaper
 import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.ui.commons.BottomHeader
@@ -83,6 +85,7 @@ fun WallhavenScreen(navController: NavController? = null) {
     val wallpapers = viewModel.wallpapers.collectAsLazyPagingItems()
     val savedStateHandle = navController?.previousBackStackEntry?.savedStateHandle
     val presetFilter = savedStateHandle?.get<WallhavenFilter>(Routes.WALLHAVEN_ARG)
+    val meta: WallhavenResponse.Meta? by viewModel.meta.collectAsStateWithLifecycle()
 
     LaunchedEffect(presetFilter) {
         if (presetFilter != null) {
@@ -186,7 +189,8 @@ fun WallhavenScreen(navController: NavController? = null) {
                             isSearch = true,
                             onSearch = {
                                 searchDialog = true
-                            }
+                            },
+                            count = meta?.total ?: 0,
                     )
                 }
             }
@@ -217,6 +221,7 @@ fun WallhavenScreen(navController: NavController? = null) {
                     onSearch = {
                         searchDialog = true
                     },
+                    count = meta?.total ?: 0,
             )
         }
     }

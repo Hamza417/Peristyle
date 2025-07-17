@@ -5,12 +5,14 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import app.simple.peri.interfaces.WallhavenApi
 import app.simple.peri.models.WallhavenFilter
+import app.simple.peri.models.WallhavenResponse
 import app.simple.peri.models.WallhavenResponse.WallhavenItem
 import app.simple.peri.models.WallhavenWallpaper
 
 class WallhavenPagingSource(
         private val api: WallhavenApi,
-        private val filter: WallhavenFilter
+        private val filter: WallhavenFilter,
+        private val onMetaReceived: (WallhavenResponse.Meta) -> Unit = {}
 ) : PagingSource<Int, WallhavenWallpaper>() {
     override fun getRefreshKey(state: PagingState<Int, WallhavenWallpaper>): Int? {
         return state.anchorPosition?.let { anchor ->
@@ -35,6 +37,7 @@ class WallhavenPagingSource(
             )
 
             val wallpapers = response.data.map { mapToWallpaper(it) }
+            onMetaReceived(response.meta)
 
             LoadResult.Page(
                     data = wallpapers,

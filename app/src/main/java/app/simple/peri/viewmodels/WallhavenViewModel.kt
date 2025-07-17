@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import app.simple.peri.models.WallhavenFilter
+import app.simple.peri.models.WallhavenResponse
 import app.simple.peri.models.WallhavenWallpaper
 import app.simple.peri.repository.WallhavenRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -33,12 +34,17 @@ class WallhavenViewModel @Inject constructor(
     private val _filter = MutableStateFlow(WallhavenFilter(query = "forest"))
     val filter: StateFlow<WallhavenFilter> = _filter.asStateFlow()
 
+    private val _meta = MutableStateFlow<WallhavenResponse.Meta?>(null)
+    val meta: StateFlow<WallhavenResponse.Meta?> = _meta.asStateFlow()
+
     @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
     val wallpapers: StateFlow<PagingData<WallhavenWallpaper>> = _filter
         .debounce(300)
         .distinctUntilChanged()
         .flatMapLatest { filter ->
-            repository.getWallpapers(filter)
+            repository.getWallpapers(filter) { meta ->
+                _meta.value = meta
+            }
         }
         .cachedIn(viewModelScope)
         .stateIn(
