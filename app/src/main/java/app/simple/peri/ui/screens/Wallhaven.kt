@@ -78,31 +78,36 @@ import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeEffect
 import dev.chrisbanes.haze.hazeSource
 
+private var presetFilter: WallhavenFilter? = null
+
 @Composable
 fun WallhavenScreen(navController: NavController? = null) {
 
     val viewModel: WallhavenViewModel = hiltViewModel()
     val wallpapers = viewModel.wallpapers.collectAsLazyPagingItems()
     val savedStateHandle = navController?.previousBackStackEntry?.savedStateHandle
-    val presetFilter = savedStateHandle?.get<WallhavenFilter>(Routes.WALLHAVEN_ARG)
     val meta: WallhavenResponse.Meta? by viewModel.meta.collectAsStateWithLifecycle()
 
+    presetFilter = savedStateHandle?.get<WallhavenFilter>(Routes.WALLHAVEN_ARG)
+
     LaunchedEffect(presetFilter) {
-        if (presetFilter != null) {
+        val filterApplied = savedStateHandle?.get<Boolean>("WALLHAVEN_FILTER_APPLIED") ?: false
+
+        if (presetFilter != null && !filterApplied) {
             viewModel.updateFilter {
                 copy(
-                        atleast = presetFilter.atleast,
-                        ratios = presetFilter.ratios,
-                        resolution = presetFilter.resolution,
-                        purity = presetFilter.purity,
-                        categories = presetFilter.categories,
-                        query = presetFilter.query,
-                        sorting = presetFilter.sorting,
-                        order = presetFilter.order
+                        atleast = presetFilter!!.atleast,
+                        ratios = presetFilter!!.ratios,
+                        resolution = presetFilter!!.resolution,
+                        purity = presetFilter!!.purity,
+                        categories = presetFilter!!.categories,
+                        query = presetFilter!!.query,
+                        sorting = presetFilter!!.sorting,
+                        order = presetFilter!!.order
                 )
             }
 
-            savedStateHandle.remove<WallhavenFilter>(Routes.WALLHAVEN_ARG)
+            savedStateHandle?.set("WALLHAVEN_FILTER_APPLIED", true)
         }
     }
 
@@ -294,6 +299,8 @@ fun ImageCard(wallpaper: WallhavenWallpaper, navController: NavController? = nul
                                 navController?.navigate(Routes.WALLPAPER) {
                                     navController.currentBackStackEntry
                                         ?.savedStateHandle?.set(Routes.WALLPAPER_ARG, wallpaper)
+                                    navController.currentBackStackEntry
+                                        ?.savedStateHandle?.set(Routes.WALLHAVEN_FILTER, presetFilter)
                                 }
                             },
                     ),

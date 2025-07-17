@@ -68,6 +68,7 @@ import app.simple.peri.R
 import app.simple.peri.constants.Misc
 import app.simple.peri.factories.TagsViewModelFactory
 import app.simple.peri.models.Effect
+import app.simple.peri.models.WallhavenFilter
 import app.simple.peri.models.WallhavenWallpaper
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.services.LiveAutoWallpaperService
@@ -162,8 +163,10 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
     val showDetailsCard = remember { mutableStateOf(true) }
     val launchEffectActivity = remember { mutableStateOf(false) }
 
-    LaunchedEffect((wallpaper as WallhavenWallpaper).id) {
-        wallhavenViewModel.fetchWallpaperTags((wallpaper as WallhavenWallpaper).id)
+    if (wallpaper is WallhavenWallpaper && (wallpaper as WallhavenWallpaper).id.isNotEmpty()) {
+        LaunchedEffect((wallpaper as WallhavenWallpaper).id) {
+            wallhavenViewModel.fetchWallpaperTags((wallpaper as WallhavenWallpaper).id)
+        }
     }
 
     if (showEditDialog.value) {
@@ -469,7 +472,12 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
                                     items(wallhavenTags.size) { position ->
                                         AssistChip(
                                                 onClick = {
-                                                    /* handle tag click if needed */
+                                                    val filter = navController.previousBackStackEntry?.savedStateHandle?.get<WallhavenFilter>(Routes.WALLHAVEN_FILTER)?.copy(
+                                                            query = wallhavenTags[position].name
+                                                    )
+                                                    navController.navigate(Routes.WALLHAVEN) {
+                                                        navController.currentBackStackEntry?.savedStateHandle?.set(Routes.WALLHAVEN_ARG, filter)
+                                                    }
                                                 },
                                                 label = {
                                                     Text(wallhavenTags[position].name)
