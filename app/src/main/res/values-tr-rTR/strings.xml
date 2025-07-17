@@ -26,7 +26,7 @@
     <string name="about">Hakkında</string>
     <string name="grid_span_summary">Ana ekran ızgarasının sütun sayısı.</string>
     <string name="grid_span">Izgara Sütun Sayısı</string>
-    <string name="other_apps">Diğer Uygulamalar</string>
+    <string name="other_apps">Diğer Projelerime Bakın</string>
     <string name="preparing">Hazırlanıyor</string>
     <string name="copying">Duvar kağıdını sistem dizinine kopyalıyor.</string>
     <string name="deleting">Siliniyor</string>
@@ -242,4 +242,6 @@
     <string name="disable">Devre Dışı Bırak</string>
     <string name="delete_after">Sonrasında Sil</string>
     <string name="interval">Aralık</string>
+    <string name="donate">Bağış Yap</string>
+    <string name="donate_summary">Bu projeyi sevdiniz mi? Küçük bir bağışla büyümeye devam etmesine destek olun!</string>
 </resources>
