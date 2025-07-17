@@ -151,9 +151,34 @@ fun BottomHeader(title: String,
                  count: Int = 0,
                  navController: NavController? = null,
                  isSettings: Boolean = false,
+                 isSearch: Boolean = false,
+                 isAutoWallpaper: Boolean = false,
+                 onSearch: (() -> Unit)? = null,
                  hazeState: HazeState,
-                 navigationBarHeight: Dp,
-                 statusBarHeight: Dp) {
+                 navigationBarHeight: Dp
+) {
+
+    val context = LocalContext.current
+    val autoWallpaperScreenSelection = remember { mutableStateOf(false) }
+
+    if (autoWallpaperScreenSelection.value) {
+        AutoWallpaperPageSelectionDialog(
+                onDismiss = {
+                    autoWallpaperScreenSelection.value = false
+                },
+                onOptionSelected = { option ->
+                    when (option) {
+                        context.getString(R.string.wallpaper_manager) -> {
+                            navController?.navigate(Routes.AUTO_WALLPAPER)
+                        }
+
+                        context.getString(R.string.live_auto_wallpaper) -> {
+                            navController?.navigate(Routes.LIVE_AUTO_WALLPAPER)
+                        }
+                    }
+                }
+        )
+    }
 
     val navHeight = if (navigationBarHeight == 0.dp) {
         COMMON_PADDING
@@ -205,15 +230,46 @@ fun BottomHeader(title: String,
                 )
             }
 
+            if (isAutoWallpaper.not()) {
+                IconButton(
+                        onClick = {
+                            autoWallpaperScreenSelection.value = true
+                        },
+                        modifier = Modifier.padding(end = 4.dp, bottom = navHeight, top = COMMON_PADDING),
+                ) {
+                    Icon(
+                            imageVector = Icons.Rounded.Schedule,
+                            contentDescription = null
+                    )
+                }
+            }
+
             if (isSettings.not()) {
                 IconButton(
                         onClick = {
                             navController?.navigate(Routes.SETTINGS)
                         },
-                        modifier = Modifier.padding(end = COMMON_PADDING, bottom = navHeight, top = COMMON_PADDING),
+                        modifier = Modifier.padding(
+                                end = if (isSearch) 4.dp else COMMON_PADDING,
+                                bottom = navHeight,
+                                top = COMMON_PADDING),
                 ) {
                     Icon(
                             imageVector = Icons.Rounded.Settings,
+                            contentDescription = stringResource(id = R.string.settings),
+                    )
+                }
+            }
+
+            if (isSearch) {
+                IconButton(
+                        onClick = {
+                            onSearch?.invoke()
+                        },
+                        modifier = Modifier.padding(end = COMMON_PADDING, bottom = navHeight, top = COMMON_PADDING),
+                ) {
+                    Icon(
+                            imageVector = Icons.Rounded.Search,
                             contentDescription = stringResource(id = R.string.settings),
                     )
                 }

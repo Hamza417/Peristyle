@@ -213,7 +213,10 @@ fun WallhavenScreen(navController: NavController? = null) {
                     navController = navController,
                     hazeState = hazeState,
                     navigationBarHeight = navigationBarHeightDp,
-                    statusBarHeight = statusBarHeightDp
+                    isSearch = true,
+                    onSearch = {
+                        searchDialog = true
+                    },
             )
         }
     }

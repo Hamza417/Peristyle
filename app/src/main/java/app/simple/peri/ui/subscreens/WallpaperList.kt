@@ -269,8 +269,7 @@ fun WallpaperList(navController: NavController? = null) {
                         },
                     navController = navController,
                     hazeState = hazeState,
-                    navigationBarHeight = navigationBarHeightDp,
-                    statusBarHeight = statusBarHeightDp
+                    navigationBarHeight = navigationBarHeightDp
             )
         }
     }
