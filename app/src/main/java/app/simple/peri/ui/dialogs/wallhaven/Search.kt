@@ -1,19 +1,19 @@
 package app.simple.peri.ui.dialogs.wallhaven
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.PhoneAndroid
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SegmentedButton
@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import app.simple.peri.R
 import app.simple.peri.activities.main.LocalDisplaySize
 import app.simple.peri.models.WallhavenFilter
+import app.simple.peri.preferences.WallHavenPreferences
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -38,15 +39,21 @@ fun SearchDialog(
         onDismiss: () -> Unit,
         onSearch: (WallhavenFilter) -> Unit
 ) {
-    var query by remember { mutableStateOf("") }
-    var categories by remember { mutableStateOf("111") }
+    val resolutionWidth = LocalDisplaySize.current.width
+    val resolutionHeight = LocalDisplaySize.current.height
+
+    var query by remember { mutableStateOf(WallHavenPreferences.getQuery()) }
+    var categories by remember { mutableStateOf(WallHavenPreferences.getCategory()) }
     var purity by remember { mutableStateOf("100") }
-    var atleast by remember { mutableStateOf("1920x1080") }
-    var resolutionWidth by remember { mutableStateOf("1920") }
-    var resolutionHeight by remember { mutableStateOf("1080") }
-    var ratios by remember { mutableStateOf("portrait") }
-    var sorting by remember { mutableStateOf("date_added") }
-    var order by remember { mutableStateOf("desc") }
+    var atleast by remember {
+        mutableStateOf(WallHavenPreferences.getAtleast() ?: "$resolutionWidth x $resolutionHeight")
+    }
+    var resolution by remember {
+        mutableStateOf(WallHavenPreferences.getResolution() ?: "${resolutionWidth}x${resolutionHeight}")
+    }
+    var ratios by remember { mutableStateOf(WallHavenPreferences.getRatio()) }
+    var sorting by remember { mutableStateOf(WallHavenPreferences.getSort()) }
+    var order by remember { mutableStateOf(WallHavenPreferences.getOrder()) }
 
     val sortingOptions = listOf("date_added", "relevance", "random", "views", "favorites", "toplist")
     val catLabels = listOf(stringResource(R.string.general), stringResource(R.string.anime), stringResource(R.string.people))
@@ -70,7 +77,10 @@ fun SearchDialog(
                 Column(modifier = Modifier.fillMaxWidth()) {
                     OutlinedTextField(
                             value = query,
-                            onValueChange = { query = it },
+                            onValueChange = {
+                                query = it
+                                WallHavenPreferences.setQuery(it)
+                            },
                             label = { Text(stringResource(R.string.query)) },
                             modifier = Modifier.fillMaxWidth()
                     )
@@ -81,7 +91,11 @@ fun SearchDialog(
                             SegmentedButton(
                                     selected = categories[i] == '1',
                                     onClick = {
-                                        categories = categories.toCharArray().also { it[i] = if (categories[i] == '1') '0' else '1' }.concatToString()
+                                        categories = categories.toCharArray().also {
+                                            it[i] = if (categories[i] == '1') '0' else '1'
+                                        }.concatToString()
+
+                                        WallHavenPreferences.setCategory(categories)
                                     },
                                     label = { Text(label) },
                                     shape = SegmentedButtonDefaults.itemShape(
@@ -91,15 +105,14 @@ fun SearchDialog(
                         }
                     }
                     Spacer(Modifier.height(8.dp))
-                    Text(
-                            text = stringResource(R.string.order)
-                    )
+                    Text(text = stringResource(R.string.order))
                     SingleChoiceSegmentedButtonRow {
                         orderLabels.forEachIndexed { i, label ->
                             SegmentedButton(
                                     selected = order == if (i == 0) "desc" else "asc",
                                     onClick = {
                                         order = if (i == 0) "desc" else "asc"
+                                        WallHavenPreferences.setOrder(order)
                                     },
                                     label = { Text(label) },
                                     shape = SegmentedButtonDefaults.itemShape(
@@ -139,6 +152,7 @@ fun SearchDialog(
                                         text = { Text(option) },
                                         onClick = {
                                             sorting = option
+                                            WallHavenPreferences.setSort(option)
                                             sortingExpanded = false
                                         }
                                 )
@@ -146,29 +160,53 @@ fun SearchDialog(
                         }
                     }
                     Spacer(Modifier.height(8.dp))
-                    Text("Resolution")
-                    Row {
-                        OutlinedTextField(
-                                value = resolutionWidth,
-                                onValueChange = { if (it.all(Char::isDigit)) resolutionWidth = it },
-                                label = { Text("Width") },
-                                modifier = Modifier.weight(1f)
-                        )
-                        Spacer(Modifier.width(8.dp))
-                        OutlinedTextField(
-                                value = resolutionHeight,
-                                onValueChange = { if (it.all(Char::isDigit)) resolutionHeight = it },
-                                label = { Text("Height") },
-                                modifier = Modifier.weight(1f)
-                        )
-                    }
+                    OutlinedTextField(
+                            value = resolution,
+                            onValueChange = {
+                                if (it.all { c -> c.isDigit() || c == 'x' }) {
+                                    resolution = it
+                                    val parts = it.split("x")
+                                    if (parts.size == 2 && parts[0].isNotEmpty() && parts[1].isNotEmpty()) {
+                                        WallHavenPreferences.setResolution("${parts[0]}x${parts[1]}")
+                                    }
+                                }
+                            },
+                            label = { Text(stringResource(R.string.resolution)) },
+                            modifier = Modifier.fillMaxWidth(),
+                            trailingIcon = {
+                                IconButton(onClick = {
+                                    resolution = "${resolutionWidth}x${resolutionHeight}"
+                                    WallHavenPreferences.setResolution(resolution)
+                                }) {
+                                    Icon(
+                                            imageVector = Icons.Default.PhoneAndroid,
+                                            contentDescription = stringResource(R.string.set_phone_resolution)
+                                    )
+                                }
+                            }
+                    )
                     Spacer(Modifier.height(8.dp))
                     OutlinedTextField(
                             value = atleast,
-                            onValueChange = { atleast = it },
-                            label = { Text("At least (e.g., 1920x1080)") },
-                            modifier = Modifier.fillMaxWidth()
+                            onValueChange = {
+                                atleast = it
+                                WallHavenPreferences.setAtleast(atleast)
+                            },
+                            label = { Text(stringResource(R.string.at_least_e_g)) },
+                            modifier = Modifier.fillMaxWidth(),
+                            trailingIcon = {
+                                IconButton(onClick = {
+                                    atleast = "${resolutionWidth}x${resolutionHeight}"
+                                    WallHavenPreferences.setAtleast(atleast)
+                                }) {
+                                    Icon(
+                                            imageVector = Icons.Default.PhoneAndroid,
+                                            contentDescription = stringResource(R.string.set_phone_resolution)
+                                    )
+                                }
+                            }
                     )
+
                     Spacer(Modifier.height(8.dp))
 
                     ExposedDropdownMenuBox(
@@ -178,8 +216,8 @@ fun SearchDialog(
                         OutlinedTextField(
                                 value = ratios,
                                 onValueChange = {},
-                                readOnly = true,
-                                label = { Text("Ratios") },
+                                readOnly = false,
+                                label = { Text(stringResource(R.string.ratios)) },
                                 trailingIcon = {
                                     Icon(
                                             imageVector = Icons.Filled.ArrowDropDown,
@@ -202,6 +240,7 @@ fun SearchDialog(
                                         text = { Text(option.replaceFirstChar { it.uppercase() }) },
                                         onClick = {
                                             ratios = option
+                                            WallHavenPreferences.setRatio(option)
                                             ratioExpanded = false
                                         }
                                 )
@@ -226,12 +265,12 @@ fun SearchDialog(
                     )
                     onDismiss()
                 }) {
-                    Text("Search")
+                    Text(stringResource(R.string.search))
                 }
             },
             dismissButton = {
                 Button(onClick = onDismiss) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.cancel))
                 }
             }
     )

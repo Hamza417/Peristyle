@@ -246,4 +246,8 @@
     <string name="anime">Anime</string>
     <string name="people">People</string>
     <string name="query">Query</string>
+    <string name="resolution">Resolution</string>
+    <string name="at_least_e_g">At least (e.g., 1920x1080)</string>
+    <string name="ratios">Ratios</string>
+    <string name="set_phone_resolution">Set Phone Resolution</string>
 </resources>

@@ -59,6 +59,7 @@ import app.simple.peri.ui.commons.TopHeader
 import app.simple.peri.ui.commons.WallpaperDimensionsText
 import app.simple.peri.ui.dialogs.wallhaven.SearchDialog
 import app.simple.peri.ui.nav.Routes
+import app.simple.peri.utils.CommonUtils
 import app.simple.peri.utils.ConditionUtils.invert
 import app.simple.peri.viewmodels.WallhavenViewModel
 import com.bumptech.glide.integration.compose.CrossFade
@@ -87,7 +88,7 @@ fun WallhavenScreen(navController: NavController? = null) {
     viewModel.updateFilter {
         copy(
                 atleast = presetFilter?.atleast ?: size,
-                ratios = presetFilter?.ratios ?: "16x9",
+                ratios = presetFilter?.ratios ?: CommonUtils.sizeToRatio(size),
                 resolution = presetFilter?.resolution ?: size,
                 purity = presetFilter?.purity ?: "100",
                 categories = presetFilter?.categories ?: "111",
@@ -200,7 +201,9 @@ fun WallhavenScreen(navController: NavController? = null) {
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
                         .onGloballyPositioned {
-                            bottomHeaderHeight = with(density) { it.size.height.toDp() }
+                            bottomHeaderHeight = with(density) {
+                                it.size.height.toDp()
+                            }
                         },
                     navController = navController,
                     hazeState = hazeState,
