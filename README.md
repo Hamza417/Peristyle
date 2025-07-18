@@ -24,6 +24,7 @@ from there? then Peristyle is for you :)
 - Change wallpaper using app's live wallpaper
 - Edit and apply filters on wallpapers losslessly in realtime.
 - Built-in live wallpaper picker.
+- Built-in Wallhaven client for browsing and downloading wallpapers from the internet.
 - Dark mode support.
 - Glassmorphic UI based on realtime blur effects and caustic shadows.
 - Material You color theme.
