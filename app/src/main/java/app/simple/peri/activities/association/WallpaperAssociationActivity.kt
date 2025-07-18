@@ -13,6 +13,7 @@ import app.simple.peri.extensions.BaseComponentActivity
 import app.simple.peri.preferences.SharedPreferences
 import app.simple.peri.ui.screens.Wallpaper
 import app.simple.peri.ui.theme.PeristyleTheme
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -21,6 +22,7 @@ import java.io.FileOutputStream
 import java.io.InputStream
 import app.simple.peri.models.Wallpaper as ModelWallpaper
 
+@AndroidEntryPoint
 class WallpaperAssociationActivity : BaseComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
