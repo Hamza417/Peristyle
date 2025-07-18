@@ -255,8 +255,7 @@ fun LiveWallpapers(navController: NavHostController) {
                         },
                     navController = navController,
                     hazeState = hazeState,
-                    navigationBarHeight = navigationBarHeightDp,
-                    statusBarHeight = statusBarHeightDp
+                    navigationBarHeight = navigationBarHeightDp
             )
         }
     }

@@ -141,8 +141,7 @@ fun Tags(navController: NavController? = null) {
                         },
                     navController = navController,
                     hazeState = hazeState,
-                    navigationBarHeight = navigationBarHeightDp,
-                    statusBarHeight = statusBarHeightDp
+                    navigationBarHeight = navigationBarHeightDp
             )
         }
     }

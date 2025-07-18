@@ -11,6 +11,7 @@ import app.simple.peri.database.instances.EffectsDatabase
 import app.simple.peri.models.Effect
 import app.simple.peri.models.Folder
 import app.simple.peri.models.Tag
+import app.simple.peri.models.WallhavenWallpaper
 import app.simple.peri.models.Wallpaper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -18,7 +19,7 @@ import kotlinx.coroutines.withContext
 
 class StateViewModel(application: Application) : AndroidViewModel(application) {
 
-    var wallpaper by mutableStateOf<Wallpaper?>(null)
+    private var _wallpaper by mutableStateOf<Any?>(null)
     var tag by mutableStateOf<Tag?>(null)
     var folder by mutableStateOf<Folder?>(null)
     var blurValue by mutableFloatStateOf(0f) // 0F..25F
@@ -40,6 +41,46 @@ class StateViewModel(application: Application) : AndroidViewModel(application) {
             withContext(Dispatchers.Main) {
                 onEffectSaved()
             }
+        }
+    }
+
+    fun setWallpaper(newWallpaper: Any?) {
+        _wallpaper = newWallpaper
+    }
+
+    fun getWallpaper(): Any? {
+        return _wallpaper
+    }
+
+    fun getWallpaperName(): String? {
+        return when (_wallpaper) {
+            is Wallpaper -> (_wallpaper as Wallpaper).name
+            is WallhavenWallpaper -> (_wallpaper as WallhavenWallpaper).path.substringAfterLast('/')
+            else -> ""
+        }
+    }
+
+    fun getWallpaperWidth(): Int? {
+        return when (_wallpaper) {
+            is Wallpaper -> (_wallpaper as Wallpaper).width
+            is WallhavenWallpaper -> (_wallpaper as WallhavenWallpaper).resolution.split("x").firstOrNull()?.toIntOrNull()
+            else -> null
+        }
+    }
+
+    fun getWallpaperHeight(): Int? {
+        return when (_wallpaper) {
+            is Wallpaper -> (_wallpaper as Wallpaper).height
+            is WallhavenWallpaper -> (_wallpaper as WallhavenWallpaper).resolution.split("x").lastOrNull()?.toIntOrNull()
+            else -> null
+        }
+    }
+
+    fun getWallpaperSize(): Long? {
+        return when (_wallpaper) {
+            is Wallpaper -> (_wallpaper as Wallpaper).size
+            is WallhavenWallpaper -> (_wallpaper as WallhavenWallpaper).fileSize
+            else -> null
         }
     }
 }

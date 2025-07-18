@@ -240,7 +240,20 @@
     <string name="times">%1$d times</string>
     <string name="disable">Disable</string>
     <string name="delete_after">Delete After</string>
+    <string name="search">Search</string>
+    <string name="category">Category</string>
+    <string name="general">General</string>
+    <string name="anime">Anime</string>
+    <string name="people">People</string>
+    <string name="query">Query</string>
+    <string name="resolution">Resolution</string>
+    <string name="at_least">At least</string>
+    <string name="ratios">Ratios</string>
+    <string name="set_phone_resolution">Set Phone Resolution</string>
     <string name="interval">Interval</string>
     <string name="donate">Donate</string>
     <string name="donate_summary">Love this project? Help it keep growing with a small donation!</string>
+    <string name="downloading">Downloading</string>
+    <string name="purity">Purity</string>
+    <string name="views">%1$d Views</string>
 </resources>

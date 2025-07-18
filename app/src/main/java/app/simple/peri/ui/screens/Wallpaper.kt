@@ -1,5 +1,6 @@
 package app.simple.peri.ui.screens
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.util.Log
@@ -18,11 +19,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Label
 import androidx.compose.material.icons.rounded.Bookmarks
 import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -52,19 +56,25 @@ import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.drawable.toDrawable
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import app.simple.peri.R
 import app.simple.peri.constants.Misc
 import app.simple.peri.factories.TagsViewModelFactory
 import app.simple.peri.models.Effect
+import app.simple.peri.models.WallhavenFilter
+import app.simple.peri.models.WallhavenWallpaper
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.services.LiveAutoWallpaperService
+import app.simple.peri.ui.commons.FolderBrowser
 import app.simple.peri.ui.commons.LaunchEffectActivity
+import app.simple.peri.ui.dialogs.common.PleaseWaitDialog
 import app.simple.peri.ui.dialogs.wallpaper.EffectsDialog
 import app.simple.peri.ui.dialogs.wallpaper.ScreenSelectionDialog
 import app.simple.peri.ui.nav.Routes
@@ -75,14 +85,23 @@ import app.simple.peri.utils.FileUtils.toFile
 import app.simple.peri.utils.FileUtils.toSize
 import app.simple.peri.viewmodels.StateViewModel
 import app.simple.peri.viewmodels.TagsViewModel
+import app.simple.peri.viewmodels.WallhavenViewModel
 import app.simple.peri.viewmodels.WallpaperUsageViewModel
+import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
+import com.bumptech.glide.request.target.Target
 import dev.chrisbanes.haze.HazeDefaults
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeEffect
 import dev.chrisbanes.haze.hazeSource
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import me.saket.telephoto.zoomable.glide.ZoomableGlideImage
+import java.io.File
+import java.io.FileOutputStream
+import java.net.HttpURLConnection
+import java.net.URL
 
 @Composable
 fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? = null) {
@@ -90,19 +109,27 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
     val savedStateHandle = navController.previousBackStackEntry?.savedStateHandle
     val stateViewModel: StateViewModel = viewModel()
     val wallpaperUsageViewModel: WallpaperUsageViewModel = viewModel()
+    val wallhavenViewModel: WallhavenViewModel = hiltViewModel()
 
-    val wallpaper by rememberSaveable(savedStateHandle) {
-        if (stateViewModel.wallpaper == null) {
-            mutableStateOf(savedStateHandle?.get<Wallpaper>(Routes.WALLPAPER_ARG)
-                               ?: associatedWallpaper)
+    val wallpaper: Any? by rememberSaveable(savedStateHandle) {
+        if (stateViewModel.getWallpaper() == null) {
+            try {
+                mutableStateOf(savedStateHandle?.get<Wallpaper>(Routes.WALLPAPER_ARG)
+                                   ?: associatedWallpaper)
+            } catch (_: ClassCastException) {
+                mutableStateOf(savedStateHandle?.get<WallhavenWallpaper>(Routes.WALLPAPER_ARG))
+            }
         } else {
-            mutableStateOf(stateViewModel.wallpaper)
+            mutableStateOf(stateViewModel.getWallpaper())
         }
     }
 
-    stateViewModel.wallpaper = wallpaper // Manually save state?
+    stateViewModel.setWallpaper(wallpaper) // Manually save state?
 
     var showScreenSelectionDialog by remember { mutableStateOf(false) }
+    var showDownloadFolderScreen by remember { mutableStateOf(false) }
+    var launchedEffectDownloader by remember { mutableStateOf(false) }
+    var path by remember { mutableStateOf("") }
     var drawable by remember { mutableStateOf<Drawable?>(null) }
     var blurValue by remember { stateViewModel::blurValue } // 0F..25F
     var brightnessValue by remember { stateViewModel::brightnessValue } // -255F..255F
@@ -115,17 +142,32 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
     var scaleValueGreen by remember { stateViewModel::scaleValueGreen } // 0F..1F
     var scaleValueBlue by remember { stateViewModel::scaleValueBlue } // 0F..1F
     var tags by remember { mutableStateOf(emptyList<String>()) }
+    val wallhavenTags = wallhavenViewModel.tags.collectAsState().value
     val setTimes = wallpaperUsageViewModel.dataFlow.collectAsState().value.find {
-        it.wallpaperId == wallpaper?.id
+        it.wallpaperId == if (wallpaper is Wallpaper) {
+            (wallpaper as Wallpaper).id
+        } else {
+            (wallpaper as WallhavenWallpaper).id
+        }
     }
     val coroutineScope = rememberCoroutineScope()
     val graphicsLayer = rememberGraphicsLayer()
     val tagsViewModel: TagsViewModel = viewModel(
-            factory = TagsViewModelFactory(wallpaper?.id ?: "")
+            factory = TagsViewModelFactory(if (wallpaper is Wallpaper) {
+                (wallpaper as Wallpaper).id
+            } else {
+                (wallpaper as WallhavenWallpaper).id
+            }, "")
     )
     val showEditDialog = remember { mutableStateOf(false) }
     val showDetailsCard = remember { mutableStateOf(true) }
     val launchEffectActivity = remember { mutableStateOf(false) }
+
+    if (wallpaper is WallhavenWallpaper && (wallpaper as WallhavenWallpaper).id.isNotEmpty()) {
+        LaunchedEffect((wallpaper as WallhavenWallpaper).id) {
+            wallhavenViewModel.fetchWallpaperTags((wallpaper as WallhavenWallpaper).id)
+        }
+    }
 
     if (showEditDialog.value) {
         EffectsDialog(
@@ -164,27 +206,98 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
         )
     }
 
+    if (showDownloadFolderScreen) {
+        FolderBrowser(
+                onStorageGranted = { s ->
+                    path = s
+                    showDownloadFolderScreen = false
+                    launchedEffectDownloader = true
+
+                },
+                onCancel = {
+                    showDownloadFolderScreen = false
+                }
+        )
+    }
+
+    if (launchedEffectDownloader) {
+        val url = (wallpaper as WallhavenWallpaper).path
+        val fileName = "/wallhaven_${(wallpaper as WallhavenWallpaper).id}.jpg"
+
+        PleaseWaitDialog(stateText = stringResource(R.string.downloading)) {
+            /* no-op */
+        }
+
+        LaunchedEffect(url) {
+            getCachedOrDownloadWallpaper(context, url, path + fileName)
+            launchedEffectDownloader = false
+        }
+    }
+
     if (launchEffectActivity.value) {
-        if (wallpaper.isNotNull()) {
-            LaunchEffectActivity(
-                    wallpaper = wallpaper!!,
-                    onEffect = { effect ->
-                        blurValue = effect.blurValue
-                        brightnessValue = effect.brightnessValue
-                        contrastValue = effect.contrastValue
-                        saturationValue = effect.saturationValue
-                        hueValueRed = effect.hueRedValue
-                        hueValueGreen = effect.hueGreenValue
-                        hueValueBlue = effect.hueBlueValue
-                        scaleValueRed = effect.scaleRedValue
-                        scaleValueGreen = effect.scaleGreenValue
-                        scaleValueBlue = effect.scaleBlueValue
-                        Log.i("Wallpaper", "Effect launched: $effect")
-                        launchEffectActivity.value = false
-                    },
-                    onCanceled = {
-                        launchEffectActivity.value = false
-                    })
+        when {
+            wallpaper.isNotNull() && wallpaper is Wallpaper -> {
+                LaunchEffectActivity(
+                        wallpaper = wallpaper as Wallpaper,
+                        onEffect = { effect ->
+                            blurValue = effect.blurValue
+                            brightnessValue = effect.brightnessValue
+                            contrastValue = effect.contrastValue
+                            saturationValue = effect.saturationValue
+                            hueValueRed = effect.hueRedValue
+                            hueValueGreen = effect.hueGreenValue
+                            hueValueBlue = effect.hueBlueValue
+                            scaleValueRed = effect.scaleRedValue
+                            scaleValueGreen = effect.scaleGreenValue
+                            scaleValueBlue = effect.scaleBlueValue
+                            Log.i("Wallpaper", "Effect launched: $effect")
+                            launchEffectActivity.value = false
+                        },
+                        onCanceled = {
+                            launchEffectActivity.value = false
+                        })
+            }
+            wallpaper.isNotNull() && wallpaper is WallhavenWallpaper -> {
+                val url = (wallpaper as WallhavenWallpaper).originalUrl
+                val fileName = "/thumb_wallhaven_${(wallpaper as WallhavenWallpaper).id}.jpg"
+                var loadedWallpaper by remember { mutableStateOf<Wallpaper?>(null) }
+
+                LaunchedEffect(url) {
+                    val file = getCachedOrDownloadWallpaper(context, url, context.cacheDir.absolutePath + fileName)
+                    if (file != null) {
+                        loadedWallpaper = Wallpaper.createFromFile(file)
+                    }
+                }
+
+                if (loadedWallpaper == null && !launchedEffectDownloader) {
+                    PleaseWaitDialog(stateText = stringResource(R.string.downloading)) {
+                        /* no-op */
+                    }
+                }
+
+                if (loadedWallpaper != null) {
+                    LaunchEffectActivity(
+                            wallpaper = loadedWallpaper!!,
+                            onEffect = { effect ->
+                                blurValue = effect.blurValue
+                                brightnessValue = effect.brightnessValue
+                                contrastValue = effect.contrastValue
+                                saturationValue = effect.saturationValue
+                                hueValueRed = effect.hueRedValue
+                                hueValueGreen = effect.hueGreenValue
+                                hueValueBlue = effect.hueBlueValue
+                                scaleValueRed = effect.scaleRedValue
+                                scaleValueGreen = effect.scaleGreenValue
+                                scaleValueBlue = effect.scaleBlueValue
+                                Log.i("Wallpaper", "Effect launched: $effect")
+                                launchEffectActivity.value = false
+                            },
+                            onCanceled = {
+                                launchEffectActivity.value = false
+                            }
+                    )
+                }
+            }
         }
     }
 
@@ -256,27 +369,59 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
                         drawLayer(graphicsLayer)
                     },
         ) {
-            ZoomableGlideImage(
-                    model = wallpaper?.filePath?.toFile(),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .blur(blurValue.dp),
-                    alignment = Alignment.Center,
-                    contentScale = currentScale.value,
-                    colorFilter = ColorMatrixColorFilter(colorMatrix),
-                    onClick = {
-                        showDetailsCard.value = !showDetailsCard.value
-                    },
-                    onLongClick = {
-                        showEditDialog.value = true
-                        showDetailsCard.value = false
-                    },
-            )
-            {
-                it.transition(withCrossFade())
-                    .disallowHardwareConfig()
-                    .fitCenter()
+            when (wallpaper) {
+                is Wallpaper -> {
+                    ZoomableGlideImage(
+                            model = (wallpaper as Wallpaper).filePath.toFile(),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .blur(blurValue.dp),
+                            alignment = Alignment.Center,
+                            contentScale = currentScale.value,
+                            colorFilter = ColorMatrixColorFilter(colorMatrix),
+                            onClick = {
+                                showDetailsCard.value = !showDetailsCard.value
+                            },
+                            onLongClick = {
+                                showEditDialog.value = true
+                                showDetailsCard.value = false
+                            },
+                    )
+                    {
+                        it.transition(withCrossFade())
+                            .disallowHardwareConfig()
+                            .fitCenter()
+                    }
+                }
+                is WallhavenWallpaper -> {
+                    ZoomableGlideImage(
+                            model = (wallpaper as WallhavenWallpaper).path,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .blur(blurValue.dp),
+                            alignment = Alignment.Center,
+                            contentScale = currentScale.value,
+                            colorFilter = ColorMatrixColorFilter(colorMatrix),
+                            onClick = {
+                                showDetailsCard.value = !showDetailsCard.value
+                            },
+                            onLongClick = {
+                                showEditDialog.value = true
+                                showDetailsCard.value = false
+                            },
+                    )
+                    {
+                        it.transition(withCrossFade())
+                            .disallowHardwareConfig()
+                            .fitCenter()
+                            .thumbnail(
+                                    Glide.with(context)
+                                        .load((wallpaper as WallhavenWallpaper).originalUrl)
+                            )
+                    }
+                }
             }
         }
 
@@ -298,7 +443,7 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
                     )
             ) {
                 Text(
-                        text = wallpaper?.name ?: "",
+                        text = stateViewModel.getWallpaperName() ?: "",
                         fontWeight = FontWeight.Bold,
                         color = Color.White,
                         modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp),
@@ -307,13 +452,22 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
 
                 Text(
                         text = buildString {
-                            append(wallpaper?.width ?: 0)
+                            append(stateViewModel.getWallpaperWidth() ?: 0)
                             append(" x ")
-                            append(wallpaper?.height ?: 0)
+                            append(stateViewModel.getWallpaperHeight() ?: 0)
                             append(", ")
-                            append(wallpaper?.size?.toSize() ?: "")
+                            append(stateViewModel.getWallpaperSize()?.toSize() ?: "")
                             append(", ")
-                            append(context.getString(R.string.times, setTimes?.usageCount ?: 0))
+                            when (wallpaper) {
+                                is Wallpaper -> {
+                                    append(context.getString(R.string.times, setTimes?.usageCount ?: 0))
+                                }
+                                is WallhavenWallpaper -> {
+                                    append((wallpaper as WallhavenWallpaper).category)
+                                    append(", ")
+                                    append(context.getString(R.string.views, (wallpaper as WallhavenWallpaper).viewsCount))
+                                }
+                            }
                         },
                         fontWeight = FontWeight.Light,
                         color = Color.White,
@@ -321,28 +475,97 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
                         fontSize = 18.sp
                 )
 
-                if (tags.isNotEmpty()) {
-                    Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.Start,
-                            verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                                imageVector = Icons.AutoMirrored.Rounded.Label,
-                                contentDescription = "",
-                                tint = Color.White,
-                                modifier = Modifier
-                                    .width(32.dp)
-                                    .height(32.dp)
-                                    .padding(start = 12.dp, bottom = 16.dp)
-                        )
-                        Text(
-                                text = tags.joinToString(", "),
-                                fontWeight = FontWeight.Light,
-                                color = Color.White,
-                                modifier = Modifier.padding(start = 8.dp, bottom = 16.dp),
-                                fontSize = 18.sp
-                        )
+                if (tags.isNotEmpty() || wallhavenTags.isNotEmpty()) {
+                    when (wallpaper) {
+                        is Wallpaper -> {
+                            Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.Start,
+                                    verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                        imageVector = Icons.AutoMirrored.Rounded.Label,
+                                        contentDescription = "",
+                                        tint = Color.White,
+                                        modifier = Modifier
+                                            .width(32.dp)
+                                            .height(32.dp)
+                                            .padding(start = 12.dp, bottom = 16.dp)
+                                )
+                                Text(
+                                        text = tags.joinToString(", "),
+                                        fontWeight = FontWeight.Light,
+                                        color = Color.White,
+                                        modifier = Modifier.padding(start = 8.dp, bottom = 16.dp),
+                                        fontSize = 18.sp
+                                )
+                            }
+                        }
+                        is WallhavenWallpaper -> {
+                            Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.Start,
+                                    verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                        imageVector = Icons.AutoMirrored.Rounded.Label,
+                                        contentDescription = "",
+                                        tint = Color.White,
+                                        modifier = Modifier
+                                            .width(32.dp)
+                                            .height(32.dp)
+                                            .padding(start = 16.dp, bottom = 8.dp)
+                                )
+                                LazyRow(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(start = 8.dp, bottom = 8.dp)
+                                ) {
+                                    item {
+                                        AssistChip(
+                                                onClick = {
+                                                    val wallpaperId = (wallpaper as? WallhavenWallpaper)?.id ?: ""
+                                                    val filter = navController.previousBackStackEntry?.savedStateHandle
+                                                        ?.get<WallhavenFilter>(Routes.WALLHAVEN_FILTER)
+                                                        ?.copy(query = "like:$wallpaperId")
+                                                    navController.navigate(Routes.WALLHAVEN) {
+                                                        navController.currentBackStackEntry?.savedStateHandle
+                                                            ?.set(Routes.WALLHAVEN_ARG, filter)
+                                                    }
+                                                },
+                                                label = { Text("like:${(wallpaper as WallhavenWallpaper).id}") },
+                                                modifier = Modifier.padding(end = 8.dp),
+                                                colors = AssistChipDefaults.assistChipColors(
+                                                        containerColor = Color.White.copy(alpha = 0.15f),
+                                                        labelColor = Color.White
+                                                )
+                                        )
+                                    }
+                                    items(wallhavenTags.size) { position ->
+                                        AssistChip(
+                                                onClick = {
+                                                    val filter = navController.previousBackStackEntry?.savedStateHandle?.get<WallhavenFilter>(Routes.WALLHAVEN_FILTER)?.copy(
+                                                            query = "id:" + wallhavenTags[position].id.toString()
+                                                    )
+                                                    navController.navigate(Routes.WALLHAVEN) {
+                                                        navController.currentBackStackEntry?.savedStateHandle?.set(Routes.WALLHAVEN_ARG, filter)
+                                                    }
+                                                },
+                                                label = {
+                                                    Text(wallhavenTags[position].name)
+                                                },
+                                                modifier = Modifier.padding(
+                                                        end = if (position == wallhavenTags.size - 1) 16.dp else 8.dp
+                                                ),
+                                                colors = AssistChipDefaults.assistChipColors(
+                                                        containerColor = Color.White.copy(alpha = 0.15f),
+                                                        labelColor = Color.White
+                                                )
+                                        )
+                                    }
+                                }
+                            }
+                        }
                     }
                 } else {
                     Spacer(modifier = Modifier.height(16.dp))
@@ -434,38 +657,170 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
                         }
                     }
 
-                    Button(
-                            onClick = {
-                                showWallpaperLaunchedEffect.value = true
-                            },
-                            shape = RoundedCornerShape(20.dp),
-                            modifier = Modifier
-                                .wrapContentHeight()
-                                .fillMaxWidth()
-                                .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color.White,
+                    Row {
+                        Button(
+                                onClick = {
+                                    showWallpaperLaunchedEffect.value = true
+                                },
+                                shape = RoundedCornerShape(20.dp),
+                                modifier = Modifier
+                                    .wrapContentHeight()
+                                    .weight(1F)
+                                    .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                        containerColor = Color.White,
+                                )
+                        ) {
+                            Text(
+                                    text = context.getString(R.string.set_as_wallpaper),
+                                    color = Color.Black,
+                                    fontSize = 18.sp,
+                                    modifier = Modifier.padding(12.dp),
+                                    fontWeight = FontWeight.SemiBold
                             )
-                    ) {
-                        Text(
-                                text = context.getString(R.string.set_as_wallpaper),
-                                color = Color.Black,
-                                fontSize = 18.sp,
-                                modifier = Modifier.padding(12.dp),
-                                fontWeight = FontWeight.SemiBold
-                        )
+                        }
+
+                        if (wallpaper is WallhavenWallpaper) {
+                            Button(
+                                    onClick = {
+                                        showDownloadFolderScreen = true
+                                    },
+                                    shape = RoundedCornerShape(20.dp),
+                                    modifier = Modifier
+                                        .wrapContentHeight()
+                                        .wrapContentWidth()
+                                        .padding(start = 0.dp, end = 16.dp, bottom = 16.dp),
+                                    colors = ButtonDefaults.buttonColors(
+                                            containerColor = Color.White,
+                                    )
+                            ) {
+                                Text(
+                                        text = context.getString(R.string.save),
+                                        color = Color.Black,
+                                        fontSize = 18.sp,
+                                        modifier = Modifier.padding(12.dp),
+                                        fontWeight = FontWeight.SemiBold
+                                )
+                            }
+                        }
                     }
                 }
             }
         }
 
         if (showScreenSelectionDialog) {
-            ScreenSelectionDialog(
-                    setShowDialog = { showScreenSelectionDialog = it },
-                    context = context,
-                    drawable = drawable,
-                    wallpaper = wallpaper!!
-            )
+            when (wallpaper) {
+                is Wallpaper -> {
+                    ScreenSelectionDialog(
+                            setShowDialog = { showScreenSelectionDialog = it },
+                            context = context,
+                            drawable = drawable,
+                            wallpaper = wallpaper as Wallpaper
+                    )
+                }
+                is WallhavenWallpaper -> {
+                    var downloadedWallpaper by remember { mutableStateOf<Wallpaper?>(null) }
+                    var showPleaseWaitDialog by remember { mutableStateOf(false) }
+                    val context = LocalContext.current
+                    val url = (wallpaper as WallhavenWallpaper).path
+                    val fileName = "/wallhaven_${(wallpaper as WallhavenWallpaper).id}.jpg"
+
+                    LaunchedEffect(url) {
+                        showPleaseWaitDialog = true
+                        val file = getCachedOrDownloadWallpaper(context, url, context.cacheDir.absolutePath + fileName)
+                        if (file != null) {
+                            downloadedWallpaper = Wallpaper.createFromFile(file)
+                        }
+                        showPleaseWaitDialog = false
+                    }
+
+                    if (showPleaseWaitDialog) {
+                        PleaseWaitDialog(stateText = stringResource(R.string.downloading)) { /* no-op */ }
+                    }
+
+                    if (downloadedWallpaper != null) {
+                        ScreenSelectionDialog(
+                                setShowDialog = { showScreenSelectionDialog = it },
+                                context = context,
+                                drawable = null,
+                                wallpaper = downloadedWallpaper!!
+                        )
+                    }
+                }
+            }
         }
     }
 }
+
+suspend fun getCachedOrDownloadWallpaper(context: Context, imageUrl: String, absolutePath: String): File? = withContext(Dispatchers.IO) {
+    try {
+        // Try to get the cached file from Glide
+        val future = Glide.with(context)
+            .downloadOnly()
+            .load(imageUrl)
+            .submit(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
+        val cachedFile = future.get() // This is blocking, so it's safe in Dispatchers.IO
+
+        if (cachedFile != null && cachedFile.exists()) {
+            val destFile = File(absolutePath)
+            if (cachedFile.absolutePath != destFile.absolutePath) {
+                destFile.parentFile?.let { if (!it.exists()) it.mkdirs() }
+                cachedFile.copyTo(destFile, overwrite = true)
+            }
+            return@withContext destFile
+        }
+    } catch (_: Exception) {
+        // Ignore and fallback to download
+    }
+    // Fallback to your download logic
+    downloadWallpaper(imageUrl, absolutePath)
+}
+
+suspend fun downloadWallpaper(imageUrl: String, absolutePath: String): File? = withContext(Dispatchers.IO) {
+    var connection: HttpURLConnection? = null
+    try {
+        val url = URL(imageUrl)
+        connection = (url.openConnection() as HttpURLConnection).apply {
+            connectTimeout = 10000
+            readTimeout = 15000
+            instanceFollowRedirects = true
+            requestMethod = "GET"
+            connect()
+        }
+
+        // Handle HTTP redirects manually if needed
+        if (connection.responseCode in 300..399) {
+            val newUrl = connection.getHeaderField("Location")
+            connection.disconnect()
+            return@withContext downloadWallpaper(newUrl, absolutePath)
+        }
+
+        if (connection.responseCode != HttpURLConnection.HTTP_OK) {
+            Log.e("Download", "Server returned HTTP ${connection.responseCode}")
+            return@withContext null
+        }
+
+        val file = File(absolutePath)
+        file.parentFile?.let { if (!it.exists()) it.mkdirs() }
+        if (file.exists()) {
+            Log.w("Download", "File already exists: ${file.absolutePath}")
+            return@withContext file
+        }
+
+        FileOutputStream(file).use { output ->
+            connection.inputStream.use { input ->
+                input.copyTo(output)
+            }
+        }
+
+        Log.d("Download", "Downloaded to ${file.absolutePath}")
+        file
+    } catch (e: Exception) {
+        Log.e("Download", "Error: ${e.message}", e)
+        null
+    } finally {
+        connection?.disconnect()
+    }
+}
+
+

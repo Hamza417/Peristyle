@@ -35,6 +35,7 @@ import androidx.compose.material.icons.rounded.FastForward
 import androidx.compose.material.icons.rounded.Folder
 import androidx.compose.material.icons.rounded.MotionPhotosOn
 import androidx.compose.material.icons.rounded.Schedule
+import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -86,6 +87,7 @@ import app.simple.peri.ui.commons.CircularIconButton
 import app.simple.peri.ui.commons.InitDisplayDimension
 import app.simple.peri.ui.dialogs.autowallpaper.AutoWallpaperPageSelectionDialog
 import app.simple.peri.ui.dialogs.common.SureDialog
+import app.simple.peri.ui.dialogs.wallhaven.SearchDialog
 import app.simple.peri.ui.nav.Routes
 import app.simple.peri.utils.FileUtils.toFile
 import app.simple.peri.utils.ServiceUtils
@@ -429,6 +431,28 @@ fun WallpaperItem(title: String, position: Int, onClick: () -> Unit, onNextWallp
 
 @Composable
 fun Header(title: String, modifier: Modifier = Modifier, navController: NavController? = null) {
+    val context = LocalContext.current
+    val autoWallpaperScreenSelection = remember { mutableStateOf(false) }
+
+    if (autoWallpaperScreenSelection.value) {
+        AutoWallpaperPageSelectionDialog(
+                onDismiss = {
+                    autoWallpaperScreenSelection.value = false
+                },
+                onOptionSelected = { option ->
+                    when (option) {
+                        context.getString(R.string.wallpaper_manager) -> {
+                            navController?.navigate(Routes.AUTO_WALLPAPER)
+                        }
+
+                        context.getString(R.string.live_auto_wallpaper) -> {
+                            navController?.navigate(Routes.LIVE_AUTO_WALLPAPER)
+                        }
+                    }
+                }
+        )
+    }
+
     Row(
             modifier = modifier
                 .fillMaxWidth()
@@ -442,6 +466,17 @@ fun Header(title: String, modifier: Modifier = Modifier, navController: NavContr
                 modifier = Modifier.weight(1f), // Set the weight
                 fontWeight = FontWeight.Bold, // Make the text bold
         )
+
+        IconButton(
+                onClick = {
+                    autoWallpaperScreenSelection.value = true
+                },
+        ) {
+            Icon(
+                    imageVector = Icons.Rounded.Schedule,
+                    contentDescription = null
+            )
+        }
 
         IconButton(
                 onClick = {
@@ -461,22 +496,16 @@ fun BottomMenu(modifier: Modifier = Modifier, navController: NavController? = nu
     val height = 60.dp
     val rowPadding = 16.dp
     val context = LocalContext.current
-    val autoWallpaperScreenSelection = remember { mutableStateOf(false) }
+    val wallhavenSearchParametersDialog = remember { mutableStateOf(false) }
 
-    if (autoWallpaperScreenSelection.value) {
-        AutoWallpaperPageSelectionDialog(
+    if (wallhavenSearchParametersDialog.value) {
+        SearchDialog(
                 onDismiss = {
-                    autoWallpaperScreenSelection.value = false
+                    wallhavenSearchParametersDialog.value = false
                 },
-                onOptionSelected = { option ->
-                    when (option) {
-                        context.getString(R.string.wallpaper_manager) -> {
-                            navController?.navigate(Routes.AUTO_WALLPAPER)
-                        }
-
-                        context.getString(R.string.live_auto_wallpaper) -> {
-                            navController?.navigate(Routes.LIVE_AUTO_WALLPAPER)
-                        }
+                onSearch = { filter ->
+                    navController?.navigate(Routes.WALLHAVEN) {
+                        navController.currentBackStackEntry?.savedStateHandle?.set(Routes.WALLHAVEN_ARG, filter)
                     }
                 }
         )
@@ -502,10 +531,10 @@ fun BottomMenu(modifier: Modifier = Modifier, navController: NavController? = nu
                 modifier = Modifier
                     .weight(0.2F)
                     .height(height),
-                imageVector = Icons.Rounded.Schedule,
-                title = R.string.auto_wallpaper
+                imageVector = Icons.Rounded.Search,
+                title = R.string.wallhaven
         ) {
-            autoWallpaperScreenSelection.value = true
+            wallhavenSearchParametersDialog.value = true
         }
 
         BottomMenuItem(

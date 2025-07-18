@@ -9,4 +9,5 @@
     <string name="play_store" translatable="false">Play Store</string>
     <string name="wallpaper_manager" translatable="false">Wallpaper Manager API</string>
     <string name="predictive_back" translatable="false">Predictive Back</string>
+    <string name="wallhaven" translatable="false">Wallhaven</string>
 </resources>

@@ -1,6 +1,8 @@
 package app.simple.peri.ui.nav
 
 object Routes {
+    const val WALLHAVEN_FILTER = "wallpaper_filter"
+    const val WALLHAVEN_ARG = "wallhaven_arg"
     const val SETUP = "setup"
     const val HOME = "home"
     const val LIST = "list"
@@ -10,6 +12,7 @@ object Routes {
     const val AUTO_WALLPAPER = "auto_wallpaper"
     const val LIVE_AUTO_WALLPAPER = "live_auto_wallpaper"
     const val TAGS = "tags"
+    const val WALLHAVEN = "wallhaven"
     const val TAGGED_WALLPAPERS = "tagged_wallpapers"
     const val FOLDERS = "folders"
     const val LIVE_WALLPAPERS = "live_wallpapers"

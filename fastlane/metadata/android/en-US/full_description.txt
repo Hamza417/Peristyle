@@ -19,3 +19,4 @@ Features:
 - Material You color theme.
 - Fully reproducible build.
 - Zero loading software architecture.
+- Built-in WallHaven client to browse and download wallpapers.

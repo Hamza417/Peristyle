@@ -28,11 +28,13 @@ import app.simple.peri.services.AutoWallpaperService
 import app.simple.peri.ui.nav.PeristyleNavigation
 import app.simple.peri.ui.theme.PeristyleTheme
 import app.simple.peri.viewmodels.ComposeWallpaperViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 val LocalDisplaySize = staticCompositionLocalOf { IntSize(0, 0) }
 
+@AndroidEntryPoint
 class MainComposeActivity : BaseComponentActivity(), OnSharedPreferenceChangeListener {
 
     private val composeWallpaperViewModel: ComposeWallpaperViewModel by viewModels()
