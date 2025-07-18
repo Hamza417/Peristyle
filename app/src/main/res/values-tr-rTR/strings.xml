@@ -241,7 +241,20 @@
     <string name="times">%1$d kez</string>
     <string name="disable">Devre Dışı Bırak</string>
     <string name="delete_after">Sonrasında Sil</string>
+    <string name="search">Ara</string>
+    <string name="category">Kategori</string>
+    <string name="general">Genel</string>
+    <string name="anime">Anime</string>
+    <string name="people">İnsan</string>
+    <string name="query">Sorgu</string>
+    <string name="resolution">Çözünürlük</string>
+    <string name="at_least">En az</string>
+    <string name="ratios">Oranlar</string>
+    <string name="set_phone_resolution">Telefon Çözünürlüğünü Ayarla</string>
     <string name="interval">Aralık</string>
     <string name="donate">Bağış Yap</string>
     <string name="donate_summary">Bu projeyi sevdiniz mi? Küçük bir bağışla büyümeye devam etmesine destek olun!</string>
+    <string name="downloading">İndiriliyor</string>
+    <string name="purity">Saflık</string>
+    <string name="views">%1$d Görüntülenme</string>
 </resources>
