@@ -235,26 +235,69 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
     }
 
     if (launchEffectActivity.value) {
-        if (wallpaper.isNotNull() && wallpaper is Wallpaper) {
-            LaunchEffectActivity(
-                    wallpaper = wallpaper as Wallpaper,
-                    onEffect = { effect ->
-                        blurValue = effect.blurValue
-                        brightnessValue = effect.brightnessValue
-                        contrastValue = effect.contrastValue
-                        saturationValue = effect.saturationValue
-                        hueValueRed = effect.hueRedValue
-                        hueValueGreen = effect.hueGreenValue
-                        hueValueBlue = effect.hueBlueValue
-                        scaleValueRed = effect.scaleRedValue
-                        scaleValueGreen = effect.scaleGreenValue
-                        scaleValueBlue = effect.scaleBlueValue
-                        Log.i("Wallpaper", "Effect launched: $effect")
-                        launchEffectActivity.value = false
-                    },
-                    onCanceled = {
-                        launchEffectActivity.value = false
-                    })
+        when {
+            wallpaper.isNotNull() && wallpaper is Wallpaper -> {
+                LaunchEffectActivity(
+                        wallpaper = wallpaper as Wallpaper,
+                        onEffect = { effect ->
+                            blurValue = effect.blurValue
+                            brightnessValue = effect.brightnessValue
+                            contrastValue = effect.contrastValue
+                            saturationValue = effect.saturationValue
+                            hueValueRed = effect.hueRedValue
+                            hueValueGreen = effect.hueGreenValue
+                            hueValueBlue = effect.hueBlueValue
+                            scaleValueRed = effect.scaleRedValue
+                            scaleValueGreen = effect.scaleGreenValue
+                            scaleValueBlue = effect.scaleBlueValue
+                            Log.i("Wallpaper", "Effect launched: $effect")
+                            launchEffectActivity.value = false
+                        },
+                        onCanceled = {
+                            launchEffectActivity.value = false
+                        })
+            }
+            wallpaper.isNotNull() && wallpaper is WallhavenWallpaper -> {
+                val url = (wallpaper as WallhavenWallpaper).originalUrl
+                val fileName = "/thumb_wallhaven_${(wallpaper as WallhavenWallpaper).id}.jpg"
+                var loadedWallpaper by remember { mutableStateOf<Wallpaper?>(null) }
+
+                LaunchedEffect(url) {
+                    val file = getCachedOrDownloadWallpaper(context, url, context.cacheDir.absolutePath + fileName)
+                    if (file != null) {
+                        loadedWallpaper = Wallpaper.createFromFile(file)
+                    }
+                }
+
+                if (loadedWallpaper == null && !launchedEffectDownloader) {
+                    PleaseWaitDialog(stateText = stringResource(R.string.downloading)) {
+                        /* no-op */
+                    }
+                }
+
+                if (loadedWallpaper != null) {
+                    LaunchEffectActivity(
+                            wallpaper = loadedWallpaper!!,
+                            onEffect = { effect ->
+                                blurValue = effect.blurValue
+                                brightnessValue = effect.brightnessValue
+                                contrastValue = effect.contrastValue
+                                saturationValue = effect.saturationValue
+                                hueValueRed = effect.hueRedValue
+                                hueValueGreen = effect.hueGreenValue
+                                hueValueBlue = effect.hueBlueValue
+                                scaleValueRed = effect.scaleRedValue
+                                scaleValueGreen = effect.scaleGreenValue
+                                scaleValueBlue = effect.scaleBlueValue
+                                Log.i("Wallpaper", "Effect launched: $effect")
+                                launchEffectActivity.value = false
+                            },
+                            onCanceled = {
+                                launchEffectActivity.value = false
+                            }
+                    )
+                }
+            }
         }
     }
 
