@@ -1,1 +1,1 @@
-Einfache Hintergrundverwaltungs-App mit Auto-Hintergrund- und Mehrfachordner-Unterstützung.
+Einfache Wallpaper-App mit Auto-Wechsel & Ordner-Unterstützung.

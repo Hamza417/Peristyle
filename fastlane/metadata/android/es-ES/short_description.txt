@@ -1,1 +1,1 @@
-Aplicación simple de gestor de fondos de pantalla con fondo de pantalla automático y soporte para múltiples carpetas.
+App de fondos simple con cambio automático y carpetas múltiples.
