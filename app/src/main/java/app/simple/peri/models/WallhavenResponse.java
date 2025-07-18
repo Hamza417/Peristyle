@@ -52,6 +52,9 @@ public class WallhavenResponse {
         @SerializedName ("colors")
         private List <String> colors;
         
+        @SerializedName ("views")
+        private int viewsCount;
+        
         public String getId() {
             return id;
         }
@@ -130,6 +133,14 @@ public class WallhavenResponse {
         
         public void setColors(List <String> colors) {
             this.colors = colors;
+        }
+        
+        public int getViewsCount() {
+            return viewsCount;
+        }
+        
+        public void setViewsCount(int viewsCount) {
+            this.viewsCount = viewsCount;
         }
     }
     

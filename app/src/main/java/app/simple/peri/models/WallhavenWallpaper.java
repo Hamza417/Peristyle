@@ -20,8 +20,21 @@ public class WallhavenWallpaper implements Parcelable {
     private String uploader;
     private long fileSize;
     private List <String> colors = List.of("#FF444444", "#FF444444");
+    private int viewsCount;
     
-    public WallhavenWallpaper(String id, String url, String thumbnailUrl, String originalUrl, String path, String category, String resolution, String aspectRatio, String uploader, long fileSize, List <String> colors) {
+    public WallhavenWallpaper(String id,
+            String url,
+            String thumbnailUrl,
+            String originalUrl,
+            String path,
+            String category,
+            String resolution,
+            String aspectRatio,
+            String uploader,
+            long fileSize,
+            List <String> colors,
+            int viewsCount
+                             ) {
         this.id = id;
         this.url = url;
         this.thumbnailUrl = thumbnailUrl;
@@ -33,6 +46,7 @@ public class WallhavenWallpaper implements Parcelable {
         this.uploader = uploader;
         this.fileSize = fileSize;
         this.colors = colors;
+        this.viewsCount = viewsCount;
     }
     
     protected WallhavenWallpaper(Parcel in) {
@@ -150,6 +164,14 @@ public class WallhavenWallpaper implements Parcelable {
         }
     }
     
+    public int getViewsCount() {
+        return viewsCount;
+    }
+    
+    public void setViewsCount(int viewsCount) {
+        this.viewsCount = viewsCount;
+    }
+    
     @Override
     public int describeContents() {
         return 0;
@@ -157,6 +179,16 @@ public class WallhavenWallpaper implements Parcelable {
     
     @Override
     public void writeToParcel(@NonNull Parcel dest, int flags) {
+        dest.writeString(id);
+        dest.writeString(url);
+        dest.writeString(thumbnailUrl);
+        dest.writeString(originalUrl);
+        dest.writeString(category);
+        dest.writeString(resolution);
+        dest.writeString(aspectRatio);
+        dest.writeString(uploader);
+        dest.writeLong(fileSize);
+        
         dest.writeString(id);
         dest.writeString(url);
         dest.writeString(thumbnailUrl);
@@ -177,5 +209,7 @@ public class WallhavenWallpaper implements Parcelable {
         } else {
             dest.writeInt(0); // Write size 0 if colors is null
         }
+        
+        dest.writeInt(viewsCount);
     }
 }

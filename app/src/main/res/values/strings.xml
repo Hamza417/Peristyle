@@ -255,4 +255,5 @@
     <string name="donate_summary">Love this project? Help it keep growing with a small donation!</string>
     <string name="downloading">Downloading</string>
     <string name="purity">Purity</string>
+    <string name="views">%1$d Views</string>
 </resources>

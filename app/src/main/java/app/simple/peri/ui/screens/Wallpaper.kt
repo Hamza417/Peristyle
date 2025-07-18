@@ -142,7 +142,7 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
     var scaleValueGreen by remember { stateViewModel::scaleValueGreen } // 0F..1F
     var scaleValueBlue by remember { stateViewModel::scaleValueBlue } // 0F..1F
     var tags by remember { mutableStateOf(emptyList<String>()) }
-    var wallhavenTags = wallhavenViewModel.tags.collectAsState().value
+    val wallhavenTags = wallhavenViewModel.tags.collectAsState().value
     val setTimes = wallpaperUsageViewModel.dataFlow.collectAsState().value.find {
         it.wallpaperId == if (wallpaper is Wallpaper) {
             (wallpaper as Wallpaper).id
@@ -458,7 +458,14 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
                             append(", ")
                             append(stateViewModel.getWallpaperSize()?.toSize() ?: "")
                             append(", ")
-                            append(context.getString(R.string.times, setTimes?.usageCount ?: 0))
+                            when (wallpaper) {
+                                is Wallpaper -> {
+                                    append(context.getString(R.string.times, setTimes?.usageCount ?: 0))
+                                }
+                                is WallhavenWallpaper -> {
+                                    append(context.getString(R.string.views, (wallpaper as WallhavenWallpaper).viewsCount))
+                                }
+                            }
                         },
                         fontWeight = FontWeight.Light,
                         color = Color.White,

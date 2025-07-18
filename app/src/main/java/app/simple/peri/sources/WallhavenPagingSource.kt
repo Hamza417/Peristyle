@@ -63,6 +63,7 @@ class WallhavenPagingSource(
                 if (item.uploader != null) item.uploader.username else "Unknown",
                 item.fileSize,
                 item.colors,
+                item.viewsCount,
         )
     }
 }
