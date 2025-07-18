@@ -19,3 +19,4 @@ Peristyle, Android için son derece basit ve sofistike bir duvar kağıdı yöne
 - Material You renk teması.
 - Tamamen yeniden üretilebilir (reproducible) yapı.
 - Sıfır yükleme yazılım mimarisi.
+- Duvar kağıtlarını incelemek ve indirmek için yerleşik WallHaven istemcisi.
