@@ -463,6 +463,8 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
                                     append(context.getString(R.string.times, setTimes?.usageCount ?: 0))
                                 }
                                 is WallhavenWallpaper -> {
+                                    append((wallpaper as WallhavenWallpaper).category)
+                                    append(", ")
                                     append(context.getString(R.string.views, (wallpaper as WallhavenWallpaper).viewsCount))
                                 }
                             }
