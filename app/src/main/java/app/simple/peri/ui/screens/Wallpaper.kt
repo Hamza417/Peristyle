@@ -462,7 +462,7 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
                                         modifier = Modifier
                                             .width(32.dp)
                                             .height(32.dp)
-                                            .padding(start = 12.dp, bottom = 8.dp)
+                                            .padding(start = 16.dp, bottom = 8.dp)
                                 )
                                 LazyRow(
                                         modifier = Modifier
@@ -502,7 +502,9 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
                                                 label = {
                                                     Text(wallhavenTags[position].name)
                                                 },
-                                                modifier = Modifier.padding(end = 8.dp),
+                                                modifier = Modifier.padding(
+                                                        end = if (position == wallhavenTags.size - 1) 16.dp else 8.dp
+                                                ),
                                                 colors = AssistChipDefaults.assistChipColors(
                                                         containerColor = Color.White.copy(alpha = 0.15f),
                                                         labelColor = Color.White
