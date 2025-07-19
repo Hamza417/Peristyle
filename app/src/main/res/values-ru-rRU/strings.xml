@@ -26,7 +26,7 @@
     <string name="about">О приложении</string>
     <string name="grid_span_summary">Количество столбцов основной сетки экрана.</string>
     <string name="grid_span">Количество столбцов</string>
-    <string name="other_apps">Другие приложения</string>
+    <string name="other_apps">Оцените мои другие проекты</string>
     <string name="preparing">Подготовка</string>
     <string name="copying">Копирование обоев в системный каталог.</string>
     <string name="deleting">Удаление</string>
@@ -76,7 +76,7 @@
     <string name="small">Маленький</string>
     <string name="extra_large">Очень большой</string>
     <string name="unknown">Неизвестно</string>
-    <string name="landscape">Ориентация</string>
+    <string name="landscape">Альбомная</string>
     <string name="portrait">Портретная</string>
     <string name="library_stats">Статистика библиотеки</string>
     <string name="library_stats_desc">Подробная информация о вашей библиотеке обоев.</string>
@@ -241,5 +241,21 @@
     <string name="times">%1$d раз</string>
     <string name="disable">Отключить</string>
     <string name="delete_after">Удалить после</string>
+    <string name="search">Поиск</string>
+    <string name="category">Категория</string>
+    <string name="general">Общие</string>
+    <string name="anime">Аниме</string>
+    <string name="people">Люди</string>
+    <string name="query">Запрос</string>
+    <string name="resolution">Разрешение</string>
+    <string name="at_least">Не менее</string>
+    <string name="ratios">Соотношение</string>
+    <string name="set_phone_resolution">Установить разрешение телефона</string>
     <string name="interval">Интервал</string>
+    <string name="donate">Поддержать</string>
+    <string name="donate_summary">Нравится этот проект? Помогите ему развиваться, сделав небольшое пожертвование!</string>
+    <string name="downloading">Прогресс загрузки</string>
+    <string name="purity">Чистота</string>
+    <string name="views">%1$d Просмотров</string>
+    <string name="skipping_wallpaper_change">Событие смены обоев пропущено и перенесено на следующий цикл!</string>
 </resources>
