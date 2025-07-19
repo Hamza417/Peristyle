@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Rect
 import android.os.Build
 import android.util.Log
+import androidx.core.graphics.scale
 import app.simple.peri.utils.BitmapUtils
 import app.simple.peri.utils.FileUtils.toFile
 import java.io.ByteArrayInputStream
@@ -34,46 +35,49 @@ object AutoWallpaperUtils {
     }
 
     fun calculateVisibleCropHint(bitmap: Bitmap, displayWidth: Int, displayHeight: Int): Rect {
-        // Calculate the aspect ratios
         val aspectRatio = displayWidth.toFloat() / displayHeight.toFloat()
         val bitmapAspectRatio = bitmap.width.toFloat() / bitmap.height.toFloat()
 
-        // Fit the image entirely within the display
-        val (cropWidth, cropHeight) = if (bitmapAspectRatio > aspectRatio) {
-            // Bitmap is wider: scale height to fit, crop sides
-            val width = (bitmap.height * aspectRatio).toInt()
-            width to bitmap.height
+        val cropWidth: Int
+        val cropHeight: Int
+
+        if (bitmapAspectRatio > aspectRatio) {
+            cropHeight = bitmap.height
+            cropWidth = (bitmap.height * aspectRatio).toInt().coerceAtMost(bitmap.width)
         } else {
-            // Bitmap is taller: scale width to fit, crop top/bottom
-            bitmap.width to (bitmap.width / aspectRatio).toInt()
+            cropWidth = bitmap.width
+            cropHeight = (bitmap.width / aspectRatio).toInt().coerceAtMost(bitmap.height)
         }
 
-        // Ensure there is no loss of any part of the image by calculating the crop from the center
-        val left = (bitmap.width - cropWidth) / 2
-        val top = (bitmap.height - cropHeight) / 2
-        val right = left + cropWidth
-        val bottom = top + cropHeight
+        val left = ((bitmap.width - cropWidth) / 2).coerceAtLeast(0)
+        val top = ((bitmap.height - cropHeight) / 2).coerceAtLeast(0)
+        val right = (left + cropWidth).coerceAtMost(bitmap.width)
+        val bottom = (top + cropHeight).coerceAtMost(bitmap.height)
 
         return Rect(left, top, right, bottom)
     }
 
     fun cropAndScaleToFit(bitmap: Bitmap, displayWidth: Int, displayHeight: Int): Bitmap {
-        // Calculate the crop rectangle
+        if (bitmap.width < displayWidth || bitmap.height < displayHeight) {
+            // If the bitmap is smaller than the target, scale directly
+            return bitmap.scale(displayWidth, displayHeight)
+        }
+
         val cropRect = calculateVisibleCropHint(bitmap, displayWidth, displayHeight)
 
-        // Crop the bitmap
-        val croppedBitmap = Bitmap.createBitmap(
-                bitmap,
-                cropRect.left,
-                cropRect.top,
-                cropRect.width(),
-                cropRect.height()
-        )
+        // Ensure cropRect is within bitmap bounds
+        val left = cropRect.left.coerceAtLeast(0)
+        val top = cropRect.top.coerceAtLeast(0)
+        val width = cropRect.width().coerceAtMost(bitmap.width - left)
+        val height = cropRect.height().coerceAtMost(bitmap.height - top)
 
-        // Scale the cropped bitmap to fit the display exactly
-        return Bitmap.createScaledBitmap(croppedBitmap, displayWidth, displayHeight, true)
+        val croppedBitmap = Bitmap.createBitmap(bitmap, left, top, width, height)
+        val scaledBitmap = croppedBitmap.scale(displayWidth, displayHeight)
+        if (croppedBitmap != bitmap) {
+            croppedBitmap.recycle()
+        }
+        return scaledBitmap
     }
-
 
     fun decodeBitmap(byteArray: ByteArray, displayWidth: Int, displayHeight: Int): Bitmap {
         val bitmapOptions = BitmapFactory.Options().apply {
