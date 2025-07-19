@@ -83,6 +83,8 @@ class AutoWallpaperService : AbstractAutoLiveWallpaperService() {
         SharedPreferences.init(applicationContext)
 
         if (shouldSkip()) {
+            WallpaperServiceNotification.postChangingWallpaperNotification(
+                    applicationContext, applicationContext.getString(R.string.skipping_wallpaper_change))
             stopSelf()
             return
         }
