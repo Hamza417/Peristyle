@@ -252,8 +252,6 @@
     <string name="ratios">Oranlar</string>
     <string name="set_phone_resolution">Telefon Çözünürlüğünü Ayarla</string>
     <string name="interval">Aralık</string>
-    <string name="donate">Bağış Yap</string>
-    <string name="donate_summary">Bu projeyi sevdiniz mi? Küçük bir bağışla büyümeye devam etmesine destek olun!</string>
     <string name="downloading">İndiriliyor</string>
     <string name="purity">Saflık</string>
     <string name="views">%1$d Görüntülenme</string>

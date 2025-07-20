@@ -252,8 +252,6 @@
     <string name="ratios">Соотношение</string>
     <string name="set_phone_resolution">Установить разрешение телефона</string>
     <string name="interval">Интервал</string>
-    <string name="donate">Поддержать</string>
-    <string name="donate_summary">Нравится этот проект? Помогите ему развиваться, сделав небольшое пожертвование!</string>
     <string name="downloading">Прогресс загрузки</string>
     <string name="purity">Чистота</string>
     <string name="views">%1$d Просмотров</string>

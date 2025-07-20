@@ -251,8 +251,6 @@
     <string name="ratios">Ratios</string>
     <string name="set_phone_resolution">Set Phone Resolution</string>
     <string name="interval">Interval</string>
-    <string name="donate">Donate</string>
-    <string name="donate_summary">Love this project? Help it keep growing with a small donation!</string>
     <string name="downloading">Downloading</string>
     <string name="purity">Purity</string>
     <string name="views">%1$d Views</string>
