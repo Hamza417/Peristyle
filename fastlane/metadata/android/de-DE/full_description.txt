@@ -19,3 +19,4 @@ Merkmale:
 - Material You-Farbthema.
 - Vollständig reproduzierbarer Build.
 - Ladefreie Software-Architektur.
+- Integrierter WallHaven-Client zum Durchsuchen und Herunterladen von Wallpapern.

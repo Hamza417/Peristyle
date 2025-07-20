@@ -26,7 +26,7 @@
     <string name="about">Über</string>
     <string name="grid_span_summary">Spaltenanzahl im Hauptbildschirms.</string>
     <string name="grid_span">Rasterweite</string>
-    <string name="other_apps">Weitere Apps</string>
+    <string name="other_apps">Schau dir meine anderen Projekte an</string>
     <string name="preparing">Wird vorbereitet</string>
     <string name="copying">Hintergrundbild wird in Systemverzeichnis kopiert.</string>
     <string name="deleting">Wird gelöscht</string>
@@ -235,5 +235,25 @@
     <string name="lock">Sperren</string>
     <string name="double_tap_to_change_wallpaper">Doppeltippen zum Ändern</string>
     <string name="double_tap_to_change_wallpaper_summary">Doppeltippen auf dem Start- oder Sperrbildschirm sollte zum nächsten Hintergrund wechseln.</string>
+    <string name="disable_animations">Animationen deaktivieren</string>
     <string name="random">Zufällig</string>
+    <string name="delete_summary">Lösche das Hintergrundbild, nachdem es mehrmals eingestellt wurde.</string>
+    <string name="times">%1$d Mal</string>
+    <string name="disable">Deaktivieren</string>
+    <string name="delete_after">Löschen nach</string>
+    <string name="search">Suche</string>
+    <string name="category">Kategorie</string>
+    <string name="general">Allgemein</string>
+    <string name="anime">Anime</string>
+    <string name="people">Personen</string>
+    <string name="query">Anfrage</string>
+    <string name="resolution">Auflösung</string>
+    <string name="at_least">Mindestens</string>
+    <string name="ratios">Verhältnisse</string>
+    <string name="set_phone_resolution">Telefonauflösung festlegen</string>
+    <string name="interval">Intervall</string>
+    <string name="downloading">Wird heruntergeladen</string>
+    <string name="purity">Reinheit</string>
+    <string name="views">%1$d Aufrufe</string>
+    <string name="skipping_wallpaper_change">Wallpaper Änderung Ereignis übersprungen zum nächsten Zyklus!</string>
 </resources>
