@@ -63,7 +63,7 @@ import app.simple.peri.ui.commons.BottomHeader
 import app.simple.peri.ui.commons.COMMON_PADDING
 import app.simple.peri.ui.commons.TopHeader
 import app.simple.peri.ui.commons.WallpaperDimensionsText
-import app.simple.peri.ui.dialogs.wallhaven.SearchDialog
+import app.simple.peri.ui.dialogs.wallhaven.WallhavenSearchDialog
 import app.simple.peri.ui.nav.Routes
 import app.simple.peri.utils.ConditionUtils.invert
 import app.simple.peri.viewmodels.WallhavenViewModel
@@ -130,7 +130,7 @@ fun WallhavenScreen(navController: NavController? = null) {
     }
 
     if (searchDialog) {
-        SearchDialog(
+        WallhavenSearchDialog(
                 filter = presetFilter,
                 onDismiss = { searchDialog = false },
                 onSearch = {

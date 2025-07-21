@@ -87,7 +87,7 @@ import app.simple.peri.ui.commons.CircularIconButton
 import app.simple.peri.ui.commons.InitDisplayDimension
 import app.simple.peri.ui.dialogs.autowallpaper.AutoWallpaperPageSelectionDialog
 import app.simple.peri.ui.dialogs.common.SureDialog
-import app.simple.peri.ui.dialogs.wallhaven.SearchDialog
+import app.simple.peri.ui.dialogs.wallhaven.WallhavenSearchDialog
 import app.simple.peri.ui.nav.Routes
 import app.simple.peri.utils.FileUtils.toFile
 import app.simple.peri.utils.ServiceUtils
@@ -499,7 +499,7 @@ fun BottomMenu(modifier: Modifier = Modifier, navController: NavController? = nu
     val wallhavenSearchParametersDialog = remember { mutableStateOf(false) }
 
     if (wallhavenSearchParametersDialog.value) {
-        SearchDialog(
+        WallhavenSearchDialog(
                 onDismiss = {
                     wallhavenSearchParametersDialog.value = false
                 },

@@ -38,7 +38,7 @@ import app.simple.peri.preferences.WallHavenPreferences
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchDialog(
+fun WallhavenSearchDialog(
         filter: WallhavenFilter? = null,
         onDismiss: () -> Unit,
         onSearch: (WallhavenFilter) -> Unit
