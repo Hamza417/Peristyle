@@ -36,69 +36,55 @@ object AutoWallpaperUtils {
         }
     }
 
-    fun calculateVisibleCropHint(bitmap: Bitmap, displayWidth: Int, displayHeight: Int): Rect {
-        val aspectRatio = displayWidth.toFloat() / displayHeight.toFloat()
-        val bitmapAspectRatio = bitmap.width.toFloat() / bitmap.height.toFloat()
+    fun calculateVisibleCropHint(bitmap: Bitmap, targetWidth: Int, targetHeight: Int): Rect {
+        val targetAspect = targetWidth.toFloat() / targetHeight
+        val bitmapAspect = bitmap.width.toFloat() / bitmap.height
 
-        val cropWidth: Int
-        val cropHeight: Int
-
-        if (bitmapAspectRatio > aspectRatio) {
-            cropHeight = bitmap.height
-            cropWidth = (bitmap.height * aspectRatio).toInt().coerceAtMost(bitmap.width)
+        val (cropWidth, cropHeight) = if (bitmapAspect > targetAspect) {
+            val height = bitmap.height
+            val width = (height * targetAspect).toInt().coerceAtMost(bitmap.width)
+            width to height
         } else {
-            cropWidth = bitmap.width
-            cropHeight = (bitmap.width / aspectRatio).toInt().coerceAtMost(bitmap.height)
+            val width = bitmap.width
+            val height = (width / targetAspect).toInt().coerceAtMost(bitmap.height)
+            width to height
         }
 
         val left = ((bitmap.width - cropWidth) / 2).coerceAtLeast(0)
         val top = ((bitmap.height - cropHeight) / 2).coerceAtLeast(0)
-        val right = (left + cropWidth).coerceAtMost(bitmap.width)
-        val bottom = (top + cropHeight).coerceAtMost(bitmap.height)
-
-        return Rect(left, top, right, bottom)
+        return Rect(left, top, left + cropWidth, top + cropHeight)
     }
 
-    fun cropAndScaleToFit(bitmap: Bitmap, displayWidth: Int, displayHeight: Int): Bitmap {
-        if (bitmap.width < displayWidth || bitmap.height < displayHeight) {
-            // If the bitmap is smaller than the target, scale directly
-            return bitmap.scale(displayWidth, displayHeight)
-        }
-
-        val cropRect = calculateVisibleCropHint(bitmap, displayWidth, displayHeight)
-
-        // Ensure cropRect is within bitmap bounds
-        val left = cropRect.left.coerceAtLeast(0)
-        val top = cropRect.top.coerceAtLeast(0)
-        val width = cropRect.width().coerceAtMost(bitmap.width - left)
-        val height = cropRect.height().coerceAtMost(bitmap.height - top)
-
-        val croppedBitmap = Bitmap.createBitmap(bitmap, left, top, width, height)
-        val scaledBitmap = croppedBitmap.scale(displayWidth, displayHeight)
-        if (croppedBitmap != bitmap) {
-            croppedBitmap.recycle()
-        }
-        return scaledBitmap
+    fun cropAndScaleToFit(bitmap: Bitmap, targetWidth: Int, targetHeight: Int): Bitmap {
+        // Always crop to aspect ratio before scaling to avoid distortion
+        val cropRect = calculateVisibleCropHint(bitmap, targetWidth, targetHeight)
+        val cropped = Bitmap.createBitmap(
+                bitmap,
+                cropRect.left,
+                cropRect.top,
+                cropRect.width(),
+                cropRect.height()
+        )
+        val scaled = cropped.scale(targetWidth, targetHeight)
+        if (cropped != bitmap) cropped.recycle()
+        return scaled
     }
 
-    fun decodeBitmap(byteArray: ByteArray, displayWidth: Int, displayHeight: Int): Bitmap {
-        val bitmapOptions = BitmapFactory.Options().apply {
-            inJustDecodeBounds = true
-        }
+    fun decodeBitmap(byteArray: ByteArray, targetWidth: Int, targetHeight: Int): Bitmap {
+        val options = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+        BitmapFactory.decodeStream(ByteArrayInputStream(byteArray), null, options)
 
-        BitmapFactory.decodeStream(ByteArrayInputStream(byteArray), null, bitmapOptions)
-
-        return BitmapFactory.decodeStream(
-                ByteArrayInputStream(byteArray), null, BitmapFactory.Options().apply {
+        val decodeOptions = BitmapFactory.Options().apply {
             inPreferredConfig = MainComposePreferences.getWallpaperColorSpace()
             inMutable = true
-
-            Log.d(TAG, "Expected bitmap size: $displayWidth x $displayHeight")
-            inSampleSize =
-                BitmapUtils.calculateInSampleSize(bitmapOptions, displayWidth, displayHeight)
+            inSampleSize = BitmapUtils.calculateInSampleSize(options, targetWidth, targetHeight)
             inJustDecodeBounds = false
-            Log.d(TAG, "Bitmap decoded with sample size: ${this.inSampleSize}")
-        })!!
+        }
+
+        Log.d(TAG, "Expected bitmap size: $targetWidth x $targetHeight")
+        Log.d(TAG, "Bitmap decoded with sample size: ${decodeOptions.inSampleSize}")
+
+        return BitmapFactory.decodeStream(ByteArrayInputStream(byteArray), null, decodeOptions)!!
     }
 
     fun bitmapToInputStream(bitmap: Bitmap, format: Bitmap.CompressFormat = Bitmap.CompressFormat.JPEG, quality: Int = 50): InputStream {
