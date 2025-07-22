@@ -1,11 +1,11 @@
-name: Build Pre-Release APK
+name: Build APK (Test)
 
 on:
     workflow_dispatch:  # Allow manual triggering
 
 jobs:
     build:
-        name: Build Pre-Release APK
+        name: Build APK
         runs-on: ubuntu-latest
 
         steps:
