@@ -26,6 +26,7 @@ import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.io.IOException
 
 class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -94,19 +95,23 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
 
                                     try {
                                         if (alreadyLoaded?.containsKey(file.absolutePath.toString()) == false) {
-                                            val wallpaper = Wallpaper.createFromFile(file)
-                                            wallpaper.folderID = folderPath.hashCode()
-                                            // Make sure legacy interface stays compatible
-                                            wallpaper.uri = file.toFileUri(getApplication()).toString()
-                                            ensureActive()
-                                            WallpaperDatabase.getInstance(getApplication())
-                                                ?.wallpaperDao()?.insert(wallpaper)
-                                            refreshFolders(shouldPurge = false)
+                                            if (file.exists()) {
+                                                val wallpaper = Wallpaper.createFromFile(file)
+                                                wallpaper.folderID = folderPath.hashCode()
+                                                // Make sure legacy interface stays compatible
+                                                wallpaper.uri = file.toFileUri(getApplication()).toString()
+                                                ensureActive()
+                                                WallpaperDatabase.getInstance(getApplication())
+                                                    ?.wallpaperDao()?.insert(wallpaper)
+                                                refreshFolders(shouldPurge = false)
+                                            }
                                         } else {
                                             Log.i(TAG, "loadWallpaperImages: already loaded ${file.absolutePath}")
                                         }
                                     } catch (e: IllegalStateException) {
                                         Log.e(TAG, "Error loading wallpaper from file: ${file.absolutePath}", e)
+                                    } catch (e: IOException) {
+                                        Log.e(TAG, e.message ?: "IOException occurred", e)
                                     }
                                 }
                             }
