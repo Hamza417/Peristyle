@@ -3,9 +3,9 @@ package app.simple.peri.abstraction
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Rect
-import android.os.Build
 import android.util.Log
 import androidx.core.graphics.scale
+import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.utils.BitmapUtils
 import app.simple.peri.utils.FileUtils.toFile
 import java.io.ByteArrayInputStream
@@ -34,12 +34,6 @@ object AutoWallpaperUtils {
                 bitmap.recycle()
             }
         }
-    }
-
-    fun bitmapToInputStream(bitmap: Bitmap, format: Bitmap.CompressFormat = Bitmap.CompressFormat.JPEG, quality: Int = 50): InputStream {
-        val outputStream = ByteArrayOutputStream()
-        bitmap.compress(format, quality, outputStream)
-        return ByteArrayInputStream(outputStream.toByteArray())
     }
 
     fun calculateVisibleCropHint(bitmap: Bitmap, displayWidth: Int, displayHeight: Int): Rect {
@@ -96,12 +90,7 @@ object AutoWallpaperUtils {
 
         return BitmapFactory.decodeStream(
                 ByteArrayInputStream(byteArray), null, BitmapFactory.Options().apply {
-            inPreferredConfig = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                Bitmap.Config.RGBA_1010102
-            } else {
-                Bitmap.Config.ARGB_8888
-            }
-
+            inPreferredConfig = MainComposePreferences.getWallpaperColorSpace()
             inMutable = true
 
             Log.d(TAG, "Expected bitmap size: $displayWidth x $displayHeight")
@@ -110,5 +99,11 @@ object AutoWallpaperUtils {
             inJustDecodeBounds = false
             Log.d(TAG, "Bitmap decoded with sample size: ${this.inSampleSize}")
         })!!
+    }
+
+    fun bitmapToInputStream(bitmap: Bitmap, format: Bitmap.CompressFormat = Bitmap.CompressFormat.JPEG, quality: Int = 50): InputStream {
+        val outputStream = ByteArrayOutputStream()
+        bitmap.compress(format, quality, outputStream)
+        return ByteArrayInputStream(outputStream.toByteArray())
     }
 }

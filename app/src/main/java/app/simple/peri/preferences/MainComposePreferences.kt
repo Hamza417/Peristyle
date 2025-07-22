@@ -1,6 +1,8 @@
 package app.simple.peri.preferences
 
 import android.annotation.SuppressLint
+import android.graphics.Bitmap
+import android.os.Build
 import android.util.Log
 import app.simple.peri.models.Effect
 import app.simple.peri.preferences.MainPreferences.MARGIN_BETWEEN
@@ -71,6 +73,7 @@ object MainComposePreferences {
     private const val DOUBLE_TAP_TO_CHANGE = "double_tap_to_change"
     private const val MAX_SET_COUNT = "max_set_count"
     private const val WALLPAPER_SET_METHOD = "wallpaper_set_method"
+    private const val WALLPAPER_COLOR_SPACE = "wallpaper_color_space"
 
     const val DISABLE_ANIMATIONS = "disable_animations"
     const val PREDICTIVE_BACK = "predictive_back"
@@ -839,5 +842,41 @@ object MainComposePreferences {
 
     fun setWallpaperSetMethod(value: Int) {
         getSharedPreferences().edit().putInt(WALLPAPER_SET_METHOD, value).apply()
+    }
+
+    // ----------------------------------------------------------------------------------------------------- //
+
+    fun getWallpaperColorSpace(): Bitmap.Config {
+        return when (getSharedPreferences().getInt(WALLPAPER_COLOR_SPACE, 5)) {
+            3 -> Bitmap.Config.RGB_565
+            4 -> Bitmap.Config.ARGB_4444
+            8 -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    Bitmap.Config.RGBA_1010102
+                } else {
+                    Bitmap.Config.ARGB_8888
+                }
+            }
+            else -> Bitmap.Config.ARGB_8888
+        }
+    }
+
+    fun setWallpaperColorSpace(value: Bitmap.Config) {
+        val intValue = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            when (value) {
+                Bitmap.Config.RGB_565 -> 3
+                Bitmap.Config.ARGB_8888 -> 5
+                Bitmap.Config.RGBA_1010102 -> 8
+                else -> 5 // Default to ARGB_8888
+            }
+        } else {
+            when (value) {
+                Bitmap.Config.RGB_565 -> 3
+                Bitmap.Config.ARGB_8888 -> 5
+                else -> 5 // Default to ARGB_8888
+            }
+        }
+
+        getSharedPreferences().edit().putInt(WALLPAPER_COLOR_SPACE, intValue).apply()
     }
 }

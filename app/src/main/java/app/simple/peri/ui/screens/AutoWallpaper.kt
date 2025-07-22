@@ -46,6 +46,7 @@ import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.services.AutoWallpaperService
 import app.simple.peri.ui.commons.COMMON_PADDING
 import app.simple.peri.ui.commons.TopHeader
+import app.simple.peri.ui.dialogs.autowallpaper.ColorSpaceSelectionDialog
 import app.simple.peri.ui.dialogs.autowallpaper.FoldersDialog
 import app.simple.peri.ui.dialogs.autowallpaper.ScreenSelectionDialog
 import app.simple.peri.ui.dialogs.autowallpaper.TagsDialog
@@ -509,6 +510,7 @@ fun AutoWallpaper(navController: NavController? = null) {
             val showEffectsDialog = remember { mutableStateOf(false) }
             val showDeleteDialog = remember { mutableStateOf(false) }
             val showMethodDialog = remember { mutableStateOf(false) }
+            val showColorSpaceDialog = remember { mutableStateOf(false) }
 
             SecondaryHeader(title = context.getString(R.string.settings))
 
@@ -525,6 +527,14 @@ fun AutoWallpaper(navController: NavController? = null) {
                     description = context.getString(R.string.wallpaper_set_method_summary),
                     onClick = {
                         showMethodDialog.value = true
+                    }
+            )
+
+            ClickablePreference(
+                    title = context.getString(R.string.color_space),
+                    description = context.getString(R.string.color_space_summary),
+                    onClick = {
+                        showColorSpaceDialog.value = true
                     }
             )
 
@@ -570,6 +580,12 @@ fun AutoWallpaper(navController: NavController? = null) {
             if (showMethodDialog.value) {
                 WallpaperMethodDialog {
                     showMethodDialog.value = false
+                }
+            }
+
+            if (showColorSpaceDialog.value) {
+                ColorSpaceSelectionDialog {
+                    showColorSpaceDialog.value = false
                 }
             }
 

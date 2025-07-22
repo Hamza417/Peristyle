@@ -257,4 +257,6 @@
     <string name="skipping_wallpaper_change">Wallpaper change event skipped to next cycle!</string>
     <string name="method">Method</string>
     <string name="wallpaper_set_method_summary">Method used while setting wallpapers in the device.</string>
+    <string name="color_space">Color Space</string>
+    <string name="color_space_summary">Set color space used for the decoded wallpaper bitmaps.</string>
 </resources>
