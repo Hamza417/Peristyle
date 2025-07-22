@@ -19,3 +19,4 @@ Prosta architektura do przeglądania oraz używania systemowego menadżera tapet
 - Materiał w kolorze motywu.
 - Budowa w pełni odtwarzalna.
 - Zero ładowania architektury oprogramowania.
+Wbudowana obsługa WallHaven z możliwością pobierania oraz przeglądania tapet.
