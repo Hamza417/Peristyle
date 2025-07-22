@@ -1,10 +1,10 @@
 package app.simple.peri.ui.dialogs.wallhaven
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.PhoneAndroid
@@ -91,175 +91,177 @@ fun WallhavenSearchDialog(
                 }
             },
             text = {
-                Column(modifier = Modifier.fillMaxWidth()) {
-                    OutlinedTextField(
-                            value = query,
-                            onValueChange = {
-                                query = it
-                                WallHavenPreferences.setQuery(it)
-                            },
-                            label = { Text(stringResource(R.string.query)) },
-                            modifier = Modifier.fillMaxWidth()
-                    )
-                    Spacer(Modifier.height(8.dp))
-                    Text(stringResource(R.string.category))
-                    SingleChoiceSegmentedButtonRow {
-                        catLabels.forEachIndexed { i, label ->
-                            SegmentedButton(
-                                    selected = categories[i] == '1',
-                                    onClick = {
-                                        categories = categories.toCharArray().also {
-                                            it[i] = if (categories[i] == '1') '0' else '1'
-                                        }.concatToString()
-
-                                        WallHavenPreferences.setCategory(categories)
-                                    },
-                                    label = { Text(label) },
-                                    shape = SegmentedButtonDefaults.itemShape(
-                                            index = i,
-                                            count = catLabels.size)
-                            )
-                        }
-                    }
-                    Spacer(Modifier.height(8.dp))
-                    Text(text = stringResource(R.string.order))
-                    SingleChoiceSegmentedButtonRow {
-                        orderLabels.forEachIndexed { i, label ->
-                            SegmentedButton(
-                                    selected = order == if (i == 0) "desc" else "asc",
-                                    onClick = {
-                                        order = if (i == 0) "desc" else "asc"
-                                        WallHavenPreferences.setOrder(order)
-                                    },
-                                    label = { Text(label) },
-                                    shape = SegmentedButtonDefaults.itemShape(
-                                            index = i,
-                                            count = orderLabels.size)
-                            )
-                        }
-                    }
-                    Spacer(Modifier.height(8.dp))
-                    ExposedDropdownMenuBox(
-                            expanded = sortingExpanded,
-                            onExpandedChange = { sortingExpanded = !sortingExpanded }
-                    ) {
+                LazyColumn(modifier = Modifier.fillMaxWidth()) {
+                    item {
                         OutlinedTextField(
-                                value = sorting,
-                                onValueChange = {},
-                                readOnly = true,
-                                label = { Text(stringResource(R.string.sort)) },
-                                trailingIcon = {
-                                    Icon(
-                                            imageVector = Icons.Filled.ArrowDropDown,
-                                            contentDescription = null
-                                    )
-                                },
-                                modifier = Modifier
-                                    .menuAnchor(
-                                            type = MenuAnchorType.PrimaryNotEditable,
-                                            enabled = true)
-                                    .fillMaxWidth()
-                        )
-                        ExposedDropdownMenu(
-                                expanded = sortingExpanded,
-                                onDismissRequest = { sortingExpanded = false }
-                        ) {
-                            sortingOptions.forEach { option ->
-                                DropdownMenuItem(
-                                        text = { Text(option) },
-                                        onClick = {
-                                            sorting = option
-                                            WallHavenPreferences.setSort(option)
-                                            sortingExpanded = false
-                                        }
-                                )
-                            }
-                        }
-                    }
-                    Spacer(Modifier.height(8.dp))
-                    OutlinedTextField(
-                            value = resolution,
-                            onValueChange = {
-                                resolution = it
-                                WallHavenPreferences.setResolution(it)
-                            },
-                            label = { Text(stringResource(R.string.resolution)) },
-                            modifier = Modifier.fillMaxWidth(),
-                            trailingIcon = {
-                                IconButton(
-                                        onClick = {
-                                            resolution = "${resolutionWidth}x${resolutionHeight}"
-                                            WallHavenPreferences.setResolution(resolution)
-                                        }) {
-                                    Icon(
-                                            imageVector = Icons.Default.PhoneAndroid,
-                                            contentDescription = stringResource(R.string.set_phone_resolution)
-                                    )
-                                }
-                            }
-                    )
-                    Spacer(Modifier.height(8.dp))
-                    OutlinedTextField(
-                            value = atleast,
-                            onValueChange = {
-                                atleast = it
-                                WallHavenPreferences.setAtleast(atleast)
-                            },
-                            label = { Text(stringResource(R.string.at_least)) },
-                            modifier = Modifier.fillMaxWidth(),
-                            trailingIcon = {
-                                IconButton(onClick = {
-                                    atleast = "${resolutionWidth}x${resolutionHeight}"
-                                    WallHavenPreferences.setAtleast(atleast)
-                                }) {
-                                    Icon(
-                                            imageVector = Icons.Default.PhoneAndroid,
-                                            contentDescription = stringResource(R.string.set_phone_resolution)
-                                    )
-                                }
-                            }
-                    )
-
-                    Spacer(Modifier.height(8.dp))
-
-                    ExposedDropdownMenuBox(
-                            expanded = ratioExpanded,
-                            onExpandedChange = { ratioExpanded = !ratioExpanded }
-                    ) {
-                        OutlinedTextField(
-                                value = ratios,
+                                value = query,
                                 onValueChange = {
-                                    ratios = it
-                                    WallHavenPreferences.setRatio(it)
+                                    query = it
+                                    WallHavenPreferences.setQuery(it)
                                 },
-                                readOnly = false,
-                                label = { Text(stringResource(R.string.ratios)) },
-                                trailingIcon = {
-                                    Icon(
-                                            imageVector = Icons.Filled.ArrowDropDown,
-                                            contentDescription = null
-                                    )
-                                },
-                                modifier = Modifier
-                                    .menuAnchor(
-                                            type = MenuAnchorType.PrimaryEditable,
-                                            enabled = true
-                                    )
-                                    .fillMaxWidth()
+                                label = { Text(stringResource(R.string.query)) },
+                                modifier = Modifier.fillMaxWidth()
                         )
-                        ExposedDropdownMenu(
-                                expanded = ratioExpanded,
-                                onDismissRequest = { ratioExpanded = false }
-                        ) {
-                            ratioOptions.forEach { option ->
-                                DropdownMenuItem(
-                                        text = { Text(option.replaceFirstChar { it.uppercase() }) },
+                        Spacer(Modifier.height(8.dp))
+                        Text(stringResource(R.string.category))
+                        SingleChoiceSegmentedButtonRow {
+                            catLabels.forEachIndexed { i, label ->
+                                SegmentedButton(
+                                        selected = categories[i] == '1',
                                         onClick = {
-                                            ratios = option
-                                            WallHavenPreferences.setRatio(option)
-                                            ratioExpanded = false
-                                        }
+                                            categories = categories.toCharArray().also {
+                                                it[i] = if (categories[i] == '1') '0' else '1'
+                                            }.concatToString()
+
+                                            WallHavenPreferences.setCategory(categories)
+                                        },
+                                        label = { Text(label) },
+                                        shape = SegmentedButtonDefaults.itemShape(
+                                                index = i,
+                                                count = catLabels.size)
                                 )
+                            }
+                        }
+                        Spacer(Modifier.height(8.dp))
+                        Text(text = stringResource(R.string.order))
+                        SingleChoiceSegmentedButtonRow {
+                            orderLabels.forEachIndexed { i, label ->
+                                SegmentedButton(
+                                        selected = order == if (i == 0) "desc" else "asc",
+                                        onClick = {
+                                            order = if (i == 0) "desc" else "asc"
+                                            WallHavenPreferences.setOrder(order)
+                                        },
+                                        label = { Text(label) },
+                                        shape = SegmentedButtonDefaults.itemShape(
+                                                index = i,
+                                                count = orderLabels.size)
+                                )
+                            }
+                        }
+                        Spacer(Modifier.height(8.dp))
+                        ExposedDropdownMenuBox(
+                                expanded = sortingExpanded,
+                                onExpandedChange = { sortingExpanded = !sortingExpanded }
+                        ) {
+                            OutlinedTextField(
+                                    value = sorting,
+                                    onValueChange = {},
+                                    readOnly = true,
+                                    label = { Text(stringResource(R.string.sort)) },
+                                    trailingIcon = {
+                                        Icon(
+                                                imageVector = Icons.Filled.ArrowDropDown,
+                                                contentDescription = null
+                                        )
+                                    },
+                                    modifier = Modifier
+                                        .menuAnchor(
+                                                type = MenuAnchorType.PrimaryNotEditable,
+                                                enabled = true)
+                                        .fillMaxWidth()
+                            )
+                            ExposedDropdownMenu(
+                                    expanded = sortingExpanded,
+                                    onDismissRequest = { sortingExpanded = false }
+                            ) {
+                                sortingOptions.forEach { option ->
+                                    DropdownMenuItem(
+                                            text = { Text(option) },
+                                            onClick = {
+                                                sorting = option
+                                                WallHavenPreferences.setSort(option)
+                                                sortingExpanded = false
+                                            }
+                                    )
+                                }
+                            }
+                        }
+                        Spacer(Modifier.height(8.dp))
+                        OutlinedTextField(
+                                value = resolution,
+                                onValueChange = {
+                                    resolution = it
+                                    WallHavenPreferences.setResolution(it)
+                                },
+                                label = { Text(stringResource(R.string.resolution)) },
+                                modifier = Modifier.fillMaxWidth(),
+                                trailingIcon = {
+                                    IconButton(
+                                            onClick = {
+                                                resolution = "${resolutionWidth}x${resolutionHeight}"
+                                                WallHavenPreferences.setResolution(resolution)
+                                            }) {
+                                        Icon(
+                                                imageVector = Icons.Default.PhoneAndroid,
+                                                contentDescription = stringResource(R.string.set_phone_resolution)
+                                        )
+                                    }
+                                }
+                        )
+                        Spacer(Modifier.height(8.dp))
+                        OutlinedTextField(
+                                value = atleast,
+                                onValueChange = {
+                                    atleast = it
+                                    WallHavenPreferences.setAtleast(atleast)
+                                },
+                                label = { Text(stringResource(R.string.at_least)) },
+                                modifier = Modifier.fillMaxWidth(),
+                                trailingIcon = {
+                                    IconButton(onClick = {
+                                        atleast = "${resolutionWidth}x${resolutionHeight}"
+                                        WallHavenPreferences.setAtleast(atleast)
+                                    }) {
+                                        Icon(
+                                                imageVector = Icons.Default.PhoneAndroid,
+                                                contentDescription = stringResource(R.string.set_phone_resolution)
+                                        )
+                                    }
+                                }
+                        )
+
+                        Spacer(Modifier.height(8.dp))
+
+                        ExposedDropdownMenuBox(
+                                expanded = ratioExpanded,
+                                onExpandedChange = { ratioExpanded = !ratioExpanded }
+                        ) {
+                            OutlinedTextField(
+                                    value = ratios,
+                                    onValueChange = {
+                                        ratios = it
+                                        WallHavenPreferences.setRatio(it)
+                                    },
+                                    readOnly = false,
+                                    label = { Text(stringResource(R.string.ratios)) },
+                                    trailingIcon = {
+                                        Icon(
+                                                imageVector = Icons.Filled.ArrowDropDown,
+                                                contentDescription = null
+                                        )
+                                    },
+                                    modifier = Modifier
+                                        .menuAnchor(
+                                                type = MenuAnchorType.PrimaryEditable,
+                                                enabled = true
+                                        )
+                                        .fillMaxWidth()
+                            )
+                            ExposedDropdownMenu(
+                                    expanded = ratioExpanded,
+                                    onDismissRequest = { ratioExpanded = false }
+                            ) {
+                                ratioOptions.forEach { option ->
+                                    DropdownMenuItem(
+                                            text = { Text(option.replaceFirstChar { it.uppercase() }) },
+                                            onClick = {
+                                                ratios = option
+                                                WallHavenPreferences.setRatio(option)
+                                                ratioExpanded = false
+                                            }
+                                    )
+                                }
                             }
                         }
                     }
