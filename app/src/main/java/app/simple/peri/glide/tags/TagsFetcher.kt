@@ -3,12 +3,14 @@ package app.simple.peri.glide.tags
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
+import androidx.core.graphics.createBitmap
 import app.simple.peri.database.instances.WallpaperDatabase
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.ui.screens.displayDimension
 import com.bumptech.glide.Glide
 import com.bumptech.glide.Priority
 import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.DecodeFormat
 import com.bumptech.glide.load.data.DataFetcher
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.FutureTarget
@@ -35,6 +37,7 @@ class TagsFetcher(private val contextTag: ContextTag) : DataFetcher<Bitmap> {
                 .asBitmap()
                 .load(wallpaper.filePath)
                 .centerCrop()
+                .format(DecodeFormat.PREFER_RGB_565)
                 .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                 .signature(ObjectKey(
                         (wallpaper.filePath + displayDimension.getReducedWidth() + displayDimension.getReducedHeight())
@@ -52,9 +55,7 @@ class TagsFetcher(private val contextTag: ContextTag) : DataFetcher<Bitmap> {
                 })
         val bitmapWidth = displayDimension.getReducedWidth()
         val bitmapHeight = displayDimension.getReducedHeight()
-        val gridBitmap = Bitmap
-            .createBitmap(GRID_WIDTH * bitmapWidth,
-                          gridHeight * bitmapHeight, Bitmap.Config.ARGB_8888)
+        val gridBitmap = createBitmap(GRID_WIDTH * bitmapWidth, gridHeight * bitmapHeight)
         val canvas = Canvas(gridBitmap)
         canvas.drawColor(Color.TRANSPARENT)
 

@@ -10,6 +10,7 @@ import app.simple.peri.ui.screens.displayDimension
 import com.bumptech.glide.Glide
 import com.bumptech.glide.Priority
 import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.DecodeFormat
 import com.bumptech.glide.load.data.DataFetcher
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.FutureTarget
@@ -34,6 +35,7 @@ class FolderFetcher(private val contextFolder: ContextFolder) : DataFetcher<Bitm
                 .asBitmap()
                 .load(wallpaper.filePath)
                 .centerCrop()
+                .format(DecodeFormat.PREFER_RGB_565)
                 .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                 .signature(ObjectKey(
                         (wallpaper.filePath + displayDimension.getReducedWidth() + displayDimension.getReducedHeight())
