@@ -2,7 +2,6 @@ package app.simple.peri.ui.screens
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.drawable.Drawable
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -60,7 +59,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.graphics.drawable.toDrawable
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -71,6 +69,7 @@ import app.simple.peri.models.Effect
 import app.simple.peri.models.WallhavenFilter
 import app.simple.peri.models.WallhavenWallpaper
 import app.simple.peri.models.Wallpaper
+import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.services.LiveAutoWallpaperService
 import app.simple.peri.ui.commons.FolderBrowser
 import app.simple.peri.ui.commons.LaunchEffectActivity
@@ -130,7 +129,7 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
     var showDownloadFolderScreen by remember { mutableStateOf(false) }
     var launchedEffectDownloader by remember { mutableStateOf(false) }
     var path by remember { mutableStateOf("") }
-    var drawable by remember { mutableStateOf<Drawable?>(null) }
+    var bitmap by remember { mutableStateOf<Bitmap?>(null) }
     var blurValue by remember { stateViewModel::blurValue } // 0F..25F
     var brightnessValue by remember { stateViewModel::brightnessValue } // -255F..255F
     var contrastValue by remember { stateViewModel::contrastValue } // 0F..10F
@@ -577,19 +576,19 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
                     if (showWallpaperLaunchedEffect.value) {
                         LaunchedEffect(showWallpaperLaunchedEffect) {
                             coroutineScope.launch {
-                                val bitmap = graphicsLayer.toImageBitmap().asAndroidBitmap()
-                                    .copy(Bitmap.Config.ARGB_8888, true)
-                                bitmap.applyEffects(
-                                        blur = blurValue.times(Misc.BLUR_TIMES),
-                                        colorMatrix = colorMatrix
-                                )
-                                drawable = bitmap.toDrawable(context.resources)
+                                bitmap = graphicsLayer.toImageBitmap().asAndroidBitmap()
+                                    .copy(MainComposePreferences.getWallpaperColorSpace(), true)
+                                    .applyEffects(
+                                            blur = blurValue.times(Misc.BLUR_TIMES),
+                                            colorMatrix = colorMatrix
+                                    )
+
                                 showScreenSelectionDialog = true
                                 showWallpaperLaunchedEffect.value = false
 
                                 try {
                                     context.stopService(LiveAutoWallpaperService.getIntent(context))
-                                } catch (e: IllegalStateException) {
+                                } catch (_: IllegalStateException) {
                                     Log.e("Wallpaper", "Service not running")
                                 }
                             }
@@ -714,7 +713,7 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
                     ScreenSelectionDialog(
                             setShowDialog = { showScreenSelectionDialog = it },
                             context = context,
-                            drawable = drawable,
+                            bitmap = bitmap!!,
                             wallpaper = wallpaper as Wallpaper
                     )
                 }
@@ -731,6 +730,14 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
                         if (file != null) {
                             downloadedWallpaper = Wallpaper.createFromFile(file)
                         }
+
+                        bitmap = graphicsLayer.toImageBitmap().asAndroidBitmap()
+                            .copy(MainComposePreferences.getWallpaperColorSpace(), true)
+                            .applyEffects(
+                                    blur = blurValue.times(Misc.BLUR_TIMES),
+                                    colorMatrix = colorMatrix
+                            )
+
                         showPleaseWaitDialog = false
                     }
 
@@ -742,7 +749,7 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
                         ScreenSelectionDialog(
                                 setShowDialog = { showScreenSelectionDialog = it },
                                 context = context,
-                                drawable = null,
+                                bitmap = bitmap!!,
                                 wallpaper = downloadedWallpaper!!
                         )
                     }
