@@ -130,6 +130,6 @@ fun wallhavenDocsAnnotated(): AnnotatedString = buildAnnotatedString {
     pushStyle(SpanStyle(fontWeight = FontWeight.Bold))
     append("Tips\n")
     pop()
-    append("• To view the default Wallhaven list like toplist, latest etc, leave the query field empty and set the other parameters as required..\n")
+    append("• To view the default Wallhaven list like toplist, latest etc, leave the query field empty and set the other parameters as required.\n")
     append("• All fields can be left empty during the search.\n")
 }

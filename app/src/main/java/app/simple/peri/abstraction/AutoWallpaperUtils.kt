@@ -9,6 +9,8 @@ import androidx.core.graphics.scale
 import app.simple.peri.utils.BitmapUtils
 import app.simple.peri.utils.FileUtils.toFile
 import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
+import java.io.InputStream
 
 object AutoWallpaperUtils {
 
@@ -32,6 +34,12 @@ object AutoWallpaperUtils {
                 bitmap.recycle()
             }
         }
+    }
+
+    fun bitmapToInputStream(bitmap: Bitmap, format: Bitmap.CompressFormat = Bitmap.CompressFormat.JPEG, quality: Int = 50): InputStream {
+        val outputStream = ByteArrayOutputStream()
+        bitmap.compress(format, quality, outputStream)
+        return ByteArrayInputStream(outputStream.toByteArray())
     }
 
     fun calculateVisibleCropHint(bitmap: Bitmap, displayWidth: Int, displayHeight: Int): Rect {

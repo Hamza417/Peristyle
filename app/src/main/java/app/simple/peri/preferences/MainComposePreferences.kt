@@ -70,6 +70,7 @@ object MainComposePreferences {
     private const val DONT_CHANGE_WHEN_LOW_BATTERY = "dont_change_when_low_battery"
     private const val DOUBLE_TAP_TO_CHANGE = "double_tap_to_change"
     private const val MAX_SET_COUNT = "max_set_count"
+    private const val WALLPAPER_SET_METHOD = "wallpaper_set_method"
 
     const val DISABLE_ANIMATIONS = "disable_animations"
     const val PREDICTIVE_BACK = "predictive_back"
@@ -825,5 +826,18 @@ object MainComposePreferences {
 
     fun setMaxSetCount(value: Int) {
         getSharedPreferences().edit().putInt(MAX_SET_COUNT, value).apply()
+    }
+
+    // ----------------------------------------------------------------------------------------------------- //
+
+    const val BITMAP = 0
+    const val STREAM = 1
+
+    fun getWallpaperSetMethod(): Int {
+        return getSharedPreferences().getInt(WALLPAPER_SET_METHOD, BITMAP)
+    }
+
+    fun setWallpaperSetMethod(value: Int) {
+        getSharedPreferences().edit().putInt(WALLPAPER_SET_METHOD, value).apply()
     }
 }

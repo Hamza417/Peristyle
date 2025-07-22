@@ -51,6 +51,7 @@ import app.simple.peri.ui.dialogs.autowallpaper.ScreenSelectionDialog
 import app.simple.peri.ui.dialogs.autowallpaper.TagsDialog
 import app.simple.peri.ui.dialogs.autowallpaper.TimeSelectionDialog
 import app.simple.peri.ui.dialogs.autowallpaper.UsageTimesDeleteDialog
+import app.simple.peri.ui.dialogs.autowallpaper.WallpaperMethodDialog
 import app.simple.peri.ui.dialogs.wallpaper.AutoWallpaperEffectsDialog
 import app.simple.peri.ui.settings.SkipColumn
 
@@ -504,9 +505,10 @@ fun AutoWallpaper(navController: NavController? = null) {
                 )
             }
         }
-        item {
+        item { // Settings
             val showEffectsDialog = remember { mutableStateOf(false) }
             val showDeleteDialog = remember { mutableStateOf(false) }
+            val showMethodDialog = remember { mutableStateOf(false) }
 
             SecondaryHeader(title = context.getString(R.string.settings))
 
@@ -515,6 +517,14 @@ fun AutoWallpaper(navController: NavController? = null) {
                     description = context.getString(R.string.default_effects_summary),
                     onClick = {
                         showEffectsDialog.value = true
+                    }
+            )
+
+            ClickablePreference(
+                    title = context.getString(R.string.method),
+                    description = context.getString(R.string.wallpaper_set_method_summary),
+                    onClick = {
+                        showMethodDialog.value = true
                     }
             )
 
@@ -554,6 +564,12 @@ fun AutoWallpaper(navController: NavController? = null) {
             if (showDeleteDialog.value) {
                 UsageTimesDeleteDialog {
                     showDeleteDialog.value = false
+                }
+            }
+
+            if (showMethodDialog.value) {
+                WallpaperMethodDialog {
+                    showMethodDialog.value = false
                 }
             }
 
