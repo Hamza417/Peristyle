@@ -256,4 +256,8 @@
     <string name="purity">Saflık</string>
     <string name="views">%1$d Görüntülenme</string>
     <string name="skipping_wallpaper_change">Duvar kağıdı değiştirme etkinliği bir sonraki döngüye atlandı!</string>
+    <string name="method">Yöntem</string>
+    <string name="wallpaper_set_method_summary">Cihazda duvar kağıdı ayarlanırken kullanılan yöntem.</string>
+    <string name="color_space">Renk Alanı</string>
+    <string name="color_space_summary">Çözümlenen duvar kağıdı bitmapleri için kullanılan renk alanını ayarlayın.</string>
 </resources>
