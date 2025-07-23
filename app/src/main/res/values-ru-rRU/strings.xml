@@ -256,4 +256,8 @@
     <string name="purity">Чистота</string>
     <string name="views">%1$d Просмотров</string>
     <string name="skipping_wallpaper_change">Событие смены обоев пропущено и перенесено на следующий цикл!</string>
+    <string name="method">Метод</string>
+    <string name="wallpaper_set_method_summary">Метод используется при установке обоев на устройство.</string>
+    <string name="color_space">Цветовое пространство</string>
+    <string name="color_space_summary">Установка цветового пространства, используемое для декодированных растровых изображений обоев.</string>
 </resources>
