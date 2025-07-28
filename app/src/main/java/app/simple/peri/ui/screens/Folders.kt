@@ -295,8 +295,8 @@ fun FolderItem(folder: Folder, navController: NavController? = null, composeWall
                                 GlassStyle(
                                         shape = RoundedCornerShape(0.dp),
                                         innerRefraction = InnerRefraction(
-                                                height = RefractionHeight(16.dp),
-                                                amount = RefractionAmount((-100).dp)
+                                                height = RefractionHeight(8.dp),
+                                                amount = RefractionAmount((-50).dp)
                                         ),
                                         material = GlassMaterial(
                                                 blurRadius = 8.dp,
