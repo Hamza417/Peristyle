@@ -287,15 +287,19 @@ abstract class AbstractComposeAutoWallpaperService : AbstractAutoWallpaperServic
                 wallpapers?.get(position).also {
                     MainComposePreferences.setLastWallpaperPosition(isHomeScreen, position)
                 }
-            } catch (e: IndexOutOfBoundsException) {
+            } catch (_: IndexOutOfBoundsException) {
                 MainComposePreferences.resetLastWallpaperPosition(isHomeScreen)
                 wallpapers?.get(0)
             }
         } else {
             val wallpaper = try {
-                wallpapers?.filterNot { it in (getLastUsedWallpapers(isHomeScreen, wallpapers) ?: emptyList()) }
+                wallpapers
+                    ?.filterNot { wallpaper ->
+                        val usedIds = getLastUsedWallpapers(isHomeScreen, wallpapers)?.map { it.id }?.toSet() ?: emptySet()
+                        wallpaper.id in usedIds
+                    }
                     ?.random()
-            } catch (e: NoSuchElementException) {
+            } catch (_: NoSuchElementException) {
                 wallpapers?.random()
             }
 
