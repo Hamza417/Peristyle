@@ -259,4 +259,5 @@
     <string name="wallpaper_set_method_summary">Method used while setting wallpapers in the device.</string>
     <string name="color_space">Color Space</string>
     <string name="color_space_summary">Set color space used for the decoded wallpaper bitmaps.</string>
+    <string name="sdcard_issue">SDCards are extremely slow for random I/O. Please use it at your own discretion.</string>
 </resources>

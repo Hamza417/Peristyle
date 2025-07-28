@@ -183,6 +183,18 @@ class PathChooserActivity : BaseComponentActivity() {
                             }
                         }
 
+                        if (sdcardMode) {
+                            Text(
+                                    text = stringResource(id = R.string.sdcard_issue),
+                                    modifier = Modifier
+                                        .wrapContentHeight()
+                                        .padding(start = 8.dp, end = 8.dp),
+                                    fontWeight = FontWeight.Normal,
+                                    fontSize = 12.sp,
+                                    color = MaterialTheme.colorScheme.error
+                            )
+                        }
+
                         DirectoryList(
                                 directories = (selectedPath.takeIf { it.isNotEmpty() }
                                     ?.let { File(it).listFiles()?.toList() } ?: emptyList())
