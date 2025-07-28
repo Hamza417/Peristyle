@@ -8,10 +8,11 @@ import android.graphics.ColorMatrixColorFilter
 import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.Rect
-import android.media.ExifInterface
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.graphics.createBitmap
+import androidx.exifinterface.media.ExifInterface
 import androidx.palette.graphics.Palette
 import app.simple.peri.constants.Misc
 import app.simple.peri.models.Effect
@@ -48,7 +49,7 @@ object BitmapUtils {
             setSaturation(saturation)
         })
 
-        val ret = Bitmap.createBitmap(width, height, config ?: Bitmap.Config.ARGB_8888)
+        val ret = createBitmap(width, height, config ?: Bitmap.Config.ARGB_8888)
         val canvas = Canvas(ret)
         val paint = Paint()
         paint.colorFilter = ColorMatrixColorFilter(colorMatrix)
@@ -146,7 +147,7 @@ object BitmapUtils {
         // Apply the combined color matrix to the bitmap
         val paint = Paint()
         paint.colorFilter = ColorMatrixColorFilter(colorMatrix.toAndroidXColorMatrix())
-        val bitmap = Bitmap.createBitmap(width, height, config ?: Bitmap.Config.ARGB_8888)
+        val bitmap = createBitmap(width, height, config ?: Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
         canvas.drawBitmap(this, 0f, 0f, paint)
 
@@ -165,7 +166,7 @@ object BitmapUtils {
         // Apply the combined color matrix to the bitmap
         val paint = Paint()
         paint.colorFilter = ColorMatrixColorFilter(colorMatrix.toAndroidXColorMatrix())
-        val bitmap = Bitmap.createBitmap(width, height, config ?: Bitmap.Config.ARGB_8888)
+        val bitmap = createBitmap(width, height, config ?: Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
         canvas.drawBitmap(this, 0f, 0f, paint)
 
@@ -193,7 +194,7 @@ object BitmapUtils {
          */
         layout(scrollX, scrollY, measuredWidth, measuredHeight)
 
-        val bitmap = Bitmap.createBitmap(measuredWidth, measuredHeight, Bitmap.Config.ARGB_8888)
+        val bitmap = createBitmap(measuredWidth, measuredHeight)
         val canvas = Canvas(bitmap)
         canvas.translate((-scrollX).toFloat(), (-scrollY).toFloat())
         draw(canvas)
@@ -205,7 +206,7 @@ object BitmapUtils {
         cm.setSaturation(saturation)
         val paint = Paint()
         paint.colorFilter = ColorMatrixColorFilter(cm)
-        val ret = Bitmap.createBitmap(width, height, config ?: Bitmap.Config.ARGB_8888)
+        val ret = createBitmap(width, height, config ?: Bitmap.Config.ARGB_8888)
         val canvas = Canvas(ret)
         canvas.drawBitmap(this, 0f, 0f, paint)
         return ret
@@ -223,7 +224,7 @@ object BitmapUtils {
         )
         val paint = Paint()
         paint.colorFilter = ColorMatrixColorFilter(cm)
-        val ret = Bitmap.createBitmap(width, height, config ?: Bitmap.Config.ARGB_8888)
+        val ret = createBitmap(width, height, config ?: Bitmap.Config.ARGB_8888)
         val canvas = Canvas(ret)
         canvas.drawBitmap(this, 0f, 0f, paint)
         return ret
@@ -241,7 +242,7 @@ object BitmapUtils {
         )
         val paint = Paint()
         paint.colorFilter = ColorMatrixColorFilter(cm)
-        val ret = Bitmap.createBitmap(width, height, config ?: Bitmap.Config.ARGB_8888)
+        val ret = createBitmap(width, height, config ?: Bitmap.Config.ARGB_8888)
         val canvas = Canvas(ret)
         canvas.drawBitmap(this, 0f, 0f, paint)
         return ret
@@ -273,7 +274,7 @@ object BitmapUtils {
 
     fun Bitmap.cropBitmap(rect: Rect): Bitmap {
         val ret =
-            Bitmap.createBitmap(rect.width(), rect.height(), config ?: Bitmap.Config.ARGB_8888)
+            createBitmap(rect.width(), rect.height(), config ?: Bitmap.Config.ARGB_8888)
         val canvas = Canvas(ret)
         canvas.drawBitmap(this, rect, Rect(0, 0, rect.width(), rect.height()), null)
         return ret
