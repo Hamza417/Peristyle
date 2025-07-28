@@ -50,6 +50,7 @@ import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.graphics.ColorMatrixColorFilter
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
@@ -89,10 +90,14 @@ import app.simple.peri.viewmodels.WallpaperUsageViewModel
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
 import com.bumptech.glide.request.target.Target
-import dev.chrisbanes.haze.HazeDefaults
+import com.kyant.liquidglass.GlassStyle
+import com.kyant.liquidglass.liquidGlass
+import com.kyant.liquidglass.liquidGlassProvider
+import com.kyant.liquidglass.refraction.InnerRefraction
+import com.kyant.liquidglass.refraction.RefractionAmount
+import com.kyant.liquidglass.refraction.RefractionHeight
+import com.kyant.liquidglass.rememberLiquidGlassProviderState
 import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.hazeEffect
-import dev.chrisbanes.haze.hazeSource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -161,6 +166,9 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
     val showEditDialog = remember { mutableStateOf(false) }
     val showDetailsCard = remember { mutableStateOf(true) }
     val launchEffectActivity = remember { mutableStateOf(false) }
+    val providerState = rememberLiquidGlassProviderState(
+            backgroundColor = Color.White
+    )
 
     if (wallpaper is WallhavenWallpaper && (wallpaper as WallhavenWallpaper).id.isNotEmpty()) {
         LaunchedEffect((wallpaper as WallhavenWallpaper).id) {
@@ -357,7 +365,7 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
         Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .hazeSource(state = hazeState)
+                    .liquidGlassProvider(providerState)
                     .drawWithContent {
                         // call record to capture the content in the graphics layer
                         graphicsLayer.record {
@@ -433,8 +441,20 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
                         .wrapContentHeight()
                         .windowInsetsPadding(WindowInsets.safeDrawing)
                         .clip(RoundedCornerShape(32.dp))
-                        .hazeEffect(state = hazeState,
-                                    style = HazeDefaults.style(backgroundColor = Color(0x50000000), blurRadius = 15.dp)
+                        .liquidGlass(
+                                providerState,
+                                GlassStyle(
+                                        shape = RoundedCornerShape(32.dp),
+                                        innerRefraction = InnerRefraction(
+                                                height = RefractionHeight(16.dp),
+                                                amount = RefractionAmount((-100).dp)
+                                        ),
+                                        material = com.kyant.liquidglass.material.GlassMaterial(
+                                                blurRadius = 8.dp,
+                                                brush = SolidColor(Color.Transparent),
+                                                alpha = 0.3f
+                                        )
+                                )
                         ),
                     shape = RoundedCornerShape(32.dp),
                     colors = CardDefaults.cardColors(
