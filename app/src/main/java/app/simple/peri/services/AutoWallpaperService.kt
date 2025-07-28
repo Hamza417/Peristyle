@@ -90,14 +90,14 @@ class AutoWallpaperService : AbstractAutoLiveWallpaperService() {
         }
 
         if (isWallpaperServiceRunning()) {
-            Log.i(TAG, "Wallpaper service is running, setting next wallpaper through live wallpaper service")
+            Log.i(TAG, "Live wallpaper service is running, setting next wallpaper through live wallpaper service")
             postLiveWallpaper {
                 isNextWallpaperActionRunning = false
                 WallpaperServiceNotification.cancelNotification(
                         applicationContext, WallpaperServiceNotification.NORMAL_NOTIFICATION_ID)
             }
         } else {
-            Log.d(TAG, "Wallpaper service is not running, setting next wallpaper through compose service")
+            Log.d(TAG, "Setting next wallpaper through compose service")
             setComposeWallpaper {
                 isNextWallpaperActionRunning = false
                 WallpaperServiceNotification.cancelNotification(

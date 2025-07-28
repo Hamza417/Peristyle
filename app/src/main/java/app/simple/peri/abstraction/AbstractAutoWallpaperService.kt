@@ -5,7 +5,6 @@ import android.app.WallpaperManager
 import android.content.res.Resources
 import android.util.Log
 import android.util.Size
-import app.simple.peri.database.instances.LastWallpapersDatabase
 import app.simple.peri.database.instances.WallpaperDatabase
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.preferences.MainComposePreferences
@@ -34,36 +33,12 @@ abstract class AbstractAutoWallpaperService : Service() {
     }
 
     @Throws(NoSuchElementException::class)
-    protected suspend fun getRandomWallpaperFromDatabase(): Wallpaper? {
+    protected suspend fun getRandomPreviewWallpaper(): Wallpaper? {
         return withContext(Dispatchers.IO) {
             try {
+                Log.i(TAG, "Fetching random wallpaper from database")
                 val dao = WallpaperDatabase.getInstance(applicationContext)?.wallpaperDao()!!
-                val dupDao = LastWallpapersDatabase.getInstance(applicationContext)?.wallpaperDao()!!
-                val areIdsEqual = dao.getWallpapers().map { it.id }.toSet() == dupDao.getWallpapers().map { it.id }.toSet()
-
-                if (areIdsEqual) {
-                    Log.i(TAG, "WallpaperDatabase and LastWallpapersDatabase have the same IDs, clearing LastWallpapersDatabase")
-                    LastWallpapersDatabase.getInstance(applicationContext)?.clearAllTables()
-                }
-
-                val wallpaper = try {
-                    val allWallpapers = dao.getWallpapers()
-                    val usedIds = dupDao.getWallpapers().map { it.id }.toSet()
-                    val unusedWallpapers = allWallpapers.filterNot { it.id in usedIds }
-
-                    if (unusedWallpapers.isNotEmpty()) {
-                        unusedWallpapers.random()
-                    } else {
-                        allWallpapers.random()
-                    }
-                } catch (_: NoSuchElementException) {
-                    dao.getWallpapers().random()
-                }
-
-                wallpaper.let { dupDao.insert(it) }
-                LastWallpapersDatabase.destroyInstance()
-
-                wallpaper
+                dao.getRandomWallpaper()
             } catch (_: NoSuchElementException) {
                 Log.e(TAG, "No wallpapers found in database")
                 null

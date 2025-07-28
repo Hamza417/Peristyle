@@ -16,7 +16,6 @@ import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.utils.BitmapUtils.applyEffects
 import app.simple.peri.utils.ConditionUtils.isNotNull
 import app.simple.peri.utils.FileUtils.toFile
-import app.simple.peri.utils.ListUtils.deepEquals
 import app.simple.peri.utils.WallpaperServiceNotification.showErrorNotification
 import app.simple.peri.utils.WallpaperServiceNotification.showWallpaperChangedNotification
 import kotlinx.coroutines.CoroutineScope
@@ -41,6 +40,7 @@ abstract class AbstractComposeAutoWallpaperService : AbstractAutoWallpaperServic
                             getHomeScreenWallpaper()?.let {
                                 setHomeScreenWallpaper(it)
                             }
+
                             getLockScreenWallpaper()?.let {
                                 setLockScreenWallpaper(it)
                             }
@@ -222,7 +222,7 @@ abstract class AbstractComposeAutoWallpaperService : AbstractAutoWallpaperServic
             }
 
             else -> {
-                wallpaper = getRandomWallpaperFromDatabase()
+                wallpaper = getWallpaperFromList(wallpaperDao?.getWallpapers(), position, isHomeScreen = true)
             }
         }
 
@@ -270,7 +270,7 @@ abstract class AbstractComposeAutoWallpaperService : AbstractAutoWallpaperServic
             }
 
             else -> {
-                wallpaper = getRandomWallpaperFromDatabase()
+                wallpaper = getWallpaperFromList(wallpaperDao?.getWallpapers(), position, false)
             }
         }
 
@@ -282,7 +282,14 @@ abstract class AbstractComposeAutoWallpaperService : AbstractAutoWallpaperServic
     }
 
     private suspend fun getWallpaperFromList(wallpapers: List<Wallpaper>?, position: Int, isHomeScreen: Boolean): Wallpaper? {
+        if (isHomeScreen) {
+            Log.i(TAG, "Getting home screen wallpaper at position: $position")
+        } else {
+            Log.i(TAG, "Getting lock screen wallpaper at position: $position")
+        }
+
         return if (MainPreferences.isLinearAutoWallpaper()) {
+            Log.i(TAG, "Linear auto wallpaper mode enabled, skipping non-repeating wallpapers")
             try {
                 wallpapers?.get(position).also {
                     MainComposePreferences.setLastWallpaperPosition(isHomeScreen, position)
@@ -292,44 +299,65 @@ abstract class AbstractComposeAutoWallpaperService : AbstractAutoWallpaperServic
                 wallpapers?.get(0)
             }
         } else {
+            Log.i(TAG, "Random auto wallpaper mode enabled, selecting a non-repeating random wallpaper")
             val wallpaper = try {
+                Log.i(TAG, "Selecting a random wallpaper from the list")
+                val usedIds = getLastUsedWallpapers(isHomeScreen, wallpapers)?.map { it.id }?.toSet() ?: emptySet()
                 wallpapers
-                    ?.filterNot { wallpaper ->
-                        val usedIds = getLastUsedWallpapers(isHomeScreen, wallpapers)?.map { it.id }?.toSet() ?: emptySet()
-                        wallpaper.id in usedIds
-                    }
+                    ?.filterNot { wallpaper -> wallpaper.id in usedIds }
                     ?.random()
             } catch (_: NoSuchElementException) {
+                Log.i(TAG, "No non-repeating wallpapers found, selecting a random wallpaper from the entire list")
                 wallpapers?.random()
             }
 
+            Log.i(TAG, "Selected wallpaper: ${wallpaper?.id}")
+
             wallpaper?.let {
-                insertWallpaperToLastUsedDatabase(it, isHomeScreen)
+                insertWallpaperToLastUsedDatabase(it, isHomeScreen) // mark this wallpaper as used
+            }
+
+            if (isHomeScreen) {
+                Log.i(TAG, "Home screen wallpaper processed")
+            } else {
+                Log.i(TAG, "Lock screen wallpaper processed")
             }
 
             wallpaper
         }
     }
 
-    private fun getLastUsedWallpapers(homeScreen: Boolean = true, wallpapers: List<Wallpaper>): List<Wallpaper>? {
+    private fun getLastUsedWallpapers(homeScreen: Boolean = true, wallpapers: List<Wallpaper>?): List<Wallpaper>? {
         if (homeScreen) {
             val usedWallpapers = LastHomeWallpapersDatabase.getInstance(applicationContext)
                 ?.wallpaperDao()?.getWallpapers()
 
-            if (wallpapers.deepEquals(usedWallpapers ?: emptyList())) {
+            val usedIds: List<String> = usedWallpapers?.map { it.id } ?: emptyList()
+            val wallpaperIds: List<String> = wallpapers?.map { it.id } ?: emptyList()
+
+            if (wallpaperIds.size - usedIds.size == 0) {
                 LastHomeWallpapersDatabase.getInstance(applicationContext)?.wallpaperDao()?.nukeTable()
+                Log.i(TAG, "All home screen wallpapers have been used, clearing the last used database")
                 return emptyList()
             }
+
+            Log.i(TAG, "Number of unused home wallpapers left: ${wallpaperIds.size - usedIds.size}")
 
             return usedWallpapers
         } else {
             val usedWallpapers = LastLockWallpapersDatabase.getInstance(applicationContext)
                 ?.wallpaperDao()?.getWallpapers()
 
-            if (wallpapers.deepEquals(usedWallpapers ?: emptyList())) {
+            val usedIds: List<String> = usedWallpapers?.map { it.id } ?: emptyList()
+            val wallpaperIds: List<String> = wallpapers?.map { it.id } ?: emptyList()
+
+            if (wallpaperIds.size - usedIds.size == 0) {
                 LastLockWallpapersDatabase.getInstance(applicationContext)?.wallpaperDao()?.nukeTable()
+                Log.i(TAG, "All lock screen wallpapers have been used, clearing the last used database")
                 return emptyList()
             }
+
+            Log.i(TAG, "Number of unused lock wallpapers left: ${wallpaperIds.size - usedIds.size}")
 
             return usedWallpapers
         }

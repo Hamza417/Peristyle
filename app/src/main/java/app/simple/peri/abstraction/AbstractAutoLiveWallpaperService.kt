@@ -5,7 +5,6 @@ import android.content.Context
 import android.os.Parcelable
 import android.util.Log
 import app.simple.peri.models.Wallpaper
-import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.services.LiveAutoWallpaperService
 import app.simple.peri.utils.WallpaperServiceNotification.showErrorNotification
 import kotlinx.coroutines.CoroutineScope
@@ -20,17 +19,9 @@ abstract class AbstractAutoLiveWallpaperService : AbstractComposeAutoWallpaperSe
             validateCollection()
 
             runCatching {
-                when {
-                    MainPreferences.isSettingForHomeScreen() -> {
-                        Log.d(TAG, "Setting wallpaper for home screen")
-                        getHomeScreenWallpaper()?.let { wallpaper ->
-                            setHomeScreenWallpaper(wallpaper)
-                        }
-                    }
-                    else -> {
-                        Log.d(TAG, "Setting wallpaper for both home and lock screen")
-                        setSameWallpaper(getRandomWallpaperFromDatabase()!!)
-                    }
+                Log.d(TAG, "Setting wallpaper for home screen")
+                getHomeScreenWallpaper()?.let { wallpaper ->
+                    setHomeScreenWallpaper(wallpaper)
                 }
 
                 withContext(Dispatchers.Main) {
@@ -90,7 +81,7 @@ abstract class AbstractAutoLiveWallpaperService : AbstractComposeAutoWallpaperSe
     protected fun setPreviewWallpaper() {
         CoroutineScope(Dispatchers.Default).launch {
             try {
-                val wallpaper = getRandomWallpaperFromDatabase() ?: throw NoSuchElementException("No wallpapers found in database")
+                val wallpaper = getRandomPreviewWallpaper() ?: throw NoSuchElementException("No wallpapers found in database")
                 val intent = LiveAutoWallpaperService.getIntent(applicationContext, LiveAutoWallpaperService.PREVIEW_WALLPAPER)
                 intent.putExtra(LiveAutoWallpaperService.EXTRA_WALLPAPER, wallpaper as Parcelable)
                 applicationContext.startService(intent)
