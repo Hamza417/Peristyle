@@ -32,6 +32,9 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
 
     private var loadWallpaperImagesJobs: MutableSet<Job> = mutableSetOf()
     private var alreadyLoaded: Map<String, Wallpaper>? = null
+    private val wallpaperDatabase: WallpaperDatabase by lazy {
+        WallpaperDatabase.getInstance(getApplication())!!
+    }
 
     private val foldersData: MutableLiveData<ArrayList<Folder>> by lazy {
         MutableLiveData<ArrayList<Folder>>().also {
@@ -46,28 +49,24 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
     private fun refreshFolders(shouldPurge: Boolean = true) {
         viewModelScope.launch(Dispatchers.IO) {
             val folders = ArrayList<Folder>()
-            WallpaperDatabase.getInstance(getApplication())?.let { database ->
-                MainComposePreferences.getAllowedPaths().forEach { path ->
-                    val pickedDirectory = File(path)
-                    if (pickedDirectory.exists()) {
-                        val folder = Folder().apply {
-                            name = pickedDirectory.name
-                            this.path = path
-                            count = database.wallpaperDao().getWallpapersCountByPathHashcode(path.hashCode()) // TODO - This leaks
-                            hashcode = path.hashCode()
-                            isNomedia = pickedDirectory.listFiles()?.any { it.name == ".nomedia" } == true
-                        }
-
-                        if (folder.count > 0) {
-                            folders.add(folder)
-                        }
+            MainComposePreferences.getAllowedPaths().forEach { path ->
+                val pickedDirectory = File(path)
+                if (pickedDirectory.exists()) {
+                    val folder = Folder().apply {
+                        name = pickedDirectory.name
+                        this.path = path
+                        count = wallpaperDatabase.wallpaperDao().getWallpapersCountByPathHashcode(path.hashCode())
+                        hashcode = path.hashCode()
+                        isNomedia = pickedDirectory.listFiles()?.any { it.name == ".nomedia" } == true
+                    }
+                    if (folder.count > 0) {
+                        folders.add(folder)
                     }
                 }
-
-                foldersData.postValue(folders)
-                if (shouldPurge) {
-                    database.wallpaperDao().purgeNonExistingWallpapers(database)
-                }
+            }
+            foldersData.postValue(folders)
+            if (shouldPurge) {
+                wallpaperDatabase.wallpaperDao().purgeNonExistingWallpapers(wallpaperDatabase)
             }
         }
     }
@@ -77,8 +76,7 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
         val semaphore = Semaphore(MainComposePreferences.getSemaphoreCount()) // Limit the number of concurrent jobs
         val wallpaperImageJob = viewModelScope.launch(Dispatchers.IO) {
             runCatching {
-                alreadyLoaded = WallpaperDatabase.getInstance(getApplication())
-                    ?.wallpaperDao()?.getWallpapers()?.associateBy { it.filePath }
+                alreadyLoaded = wallpaperDatabase?.wallpaperDao()?.getWallpapers()?.associateBy { it.filePath }
 
                 MainComposePreferences.getAllowedPaths().forEach { folderPath ->
                     val pickedDirectory = File(folderPath)
@@ -116,6 +114,8 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
                                 }
                             }
                         }.awaitAll()
+
+                        Log.i(TAG, "loadWallpaperImages: finished loading wallpapers from $folderPath")
                     } else {
                         Log.e(TAG, "loadWallpaperImages: directory does not exist: $folderPath")
                     }
