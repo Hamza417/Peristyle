@@ -22,6 +22,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.random.Random
 
 abstract class AbstractComposeAutoWallpaperService : AbstractAutoWallpaperService() {
 
@@ -305,10 +306,10 @@ abstract class AbstractComposeAutoWallpaperService : AbstractAutoWallpaperServic
                 val usedIds = getLastUsedWallpapers(isHomeScreen, wallpapers)?.map { it.id }?.toSet() ?: emptySet()
                 wallpapers
                     ?.filterNot { wallpaper -> wallpaper.id in usedIds }
-                    ?.random()
+                    ?.random(Random(System.currentTimeMillis()))
             } catch (_: NoSuchElementException) {
                 Log.i(TAG, "No non-repeating wallpapers found, selecting a random wallpaper from the entire list")
-                wallpapers?.random()
+                wallpapers?.random(Random(System.currentTimeMillis()))
             }
 
             Log.i(TAG, "Selected wallpaper: ${wallpaper?.id}")
