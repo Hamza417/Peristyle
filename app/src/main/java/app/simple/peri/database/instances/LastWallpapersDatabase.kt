@@ -50,6 +50,12 @@ abstract class LastWallpapersDatabase : RoomDatabase() {
 
         @Synchronized
         fun destroyInstance() {
+            kotlin.runCatching {
+                instance?.close()
+            }.getOrElse {
+                // Ignore any exceptions during close
+            }
+
             instance = null
         }
     }
