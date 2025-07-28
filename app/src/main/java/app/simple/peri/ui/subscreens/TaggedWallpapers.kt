@@ -48,7 +48,6 @@ import app.simple.peri.viewmodels.TagsViewModel
 import app.simple.peri.viewmodels.WallpaperListViewModel
 import com.kyant.liquidglass.liquidGlassProvider
 import com.kyant.liquidglass.rememberLiquidGlassProviderState
-import dev.chrisbanes.haze.HazeState
 
 @Composable
 fun TaggedWallpapers(navController: NavController? = null) {
@@ -71,7 +70,6 @@ fun TaggedWallpapers(navController: NavController? = null) {
 
     var statusBarHeight by remember { mutableIntStateOf(0) }
     var navigationBarHeight by remember { mutableIntStateOf(0) }
-    val hazeState = remember { HazeState() }
     val wallpaperListViewModel: WallpaperListViewModel =
         viewModel() // We should use a dedicated ViewModel for this
     val isSelectionMode by wallpaperListViewModel.isSelectionMode.collectAsState()
@@ -222,7 +220,7 @@ fun TaggedWallpapers(navController: NavController? = null) {
                         .padding(bottom = navigationBarHeightDp),
                     selectedWallpapers = wallpapers.filter { it.isSelected },
                     count = selectionCount,
-                    hazeState = hazeState,
+                    providerState = providerState,
                     wallpaperListViewModel = wallpaperListViewModel,
                     navigationBarHeight = bottomPadding
             )

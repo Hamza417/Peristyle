@@ -88,6 +88,7 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withC
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.kyant.liquidglass.GlassStyle
+import com.kyant.liquidglass.LiquidGlassProviderState
 import com.kyant.liquidglass.liquidGlass
 import com.kyant.liquidglass.liquidGlassProvider
 import com.kyant.liquidglass.material.GlassMaterial
@@ -95,10 +96,7 @@ import com.kyant.liquidglass.refraction.InnerRefraction
 import com.kyant.liquidglass.refraction.RefractionAmount
 import com.kyant.liquidglass.refraction.RefractionHeight
 import com.kyant.liquidglass.rememberLiquidGlassProviderState
-import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.hazeEffect
 import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
-import dev.chrisbanes.haze.materials.HazeMaterials
 
 @OptIn(ExperimentalGlideComposeApi::class, ExperimentalFoundationApi::class)
 @Composable
@@ -421,7 +419,7 @@ fun SelectionMenu(
         modifier: Modifier = Modifier,
         selectedWallpapers: List<Wallpaper>,
         count: Int = selectedWallpapers.count { it.isSelected },
-        hazeState: HazeState,
+        providerState: LiquidGlassProviderState,
         wallpaperListViewModel: WallpaperListViewModel,
         navigationBarHeight: Dp
 ) {
@@ -486,8 +484,20 @@ fun SelectionMenu(
                 .padding(16.dp)
                 .padding(bottom = navigationBarHeight)
                 .clip(RoundedCornerShape(16.dp))
-                .hazeEffect(state = hazeState,
-                            style = HazeMaterials.thin()
+                .liquidGlass(
+                        providerState,
+                        GlassStyle(
+                                shape = RoundedCornerShape(16.dp),
+                                innerRefraction = InnerRefraction(
+                                        height = RefractionHeight(8.dp),
+                                        amount = RefractionAmount((-50).dp)
+                                ),
+                                material = GlassMaterial(
+                                        blurRadius = 8.dp,
+                                        brush = SolidColor(Color.Transparent),
+                                        alpha = 0.3f
+                                )
+                        )
                 ),
             colors = CardDefaults.cardColors(
                     containerColor = Color.Transparent,

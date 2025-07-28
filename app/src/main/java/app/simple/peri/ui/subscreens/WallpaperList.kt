@@ -54,7 +54,6 @@ import app.simple.peri.viewmodels.StateViewModel
 import app.simple.peri.viewmodels.WallpaperListViewModel
 import com.kyant.liquidglass.liquidGlassProvider
 import com.kyant.liquidglass.rememberLiquidGlassProviderState
-import dev.chrisbanes.haze.HazeState
 
 @Composable
 fun WallpaperList(navController: NavController? = null) {
@@ -99,7 +98,6 @@ fun WallpaperList(navController: NavController? = null) {
     var statusBarHeight by remember { mutableIntStateOf(0) }
     var navigationBarHeight by remember { mutableIntStateOf(0) }
     var showPleaseWaitDialog by remember { mutableStateOf(false) }
-    val hazeState = remember { HazeState() }
     val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
 
     statusBarHeight = WindowInsetsCompat.toWindowInsetsCompat(LocalView.current.rootWindowInsets)
@@ -255,7 +253,7 @@ fun WallpaperList(navController: NavController? = null) {
                     count = selectionCount,
                     modifier = Modifier
                         .align(Alignment.BottomCenter),
-                    hazeState = hazeState,
+                    providerState = providerState,
                     wallpaperListViewModel = wallpaperListViewModel,
                     navigationBarHeight = bottomPadding
             )
