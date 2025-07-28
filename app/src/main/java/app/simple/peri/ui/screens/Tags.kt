@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Text
@@ -25,6 +26,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -49,12 +51,14 @@ import app.simple.peri.viewmodels.TagsViewModel
 import com.bumptech.glide.integration.compose.CrossFade
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import com.kyant.liquidglass.GlassStyle
+import com.kyant.liquidglass.liquidGlass
 import com.kyant.liquidglass.liquidGlassProvider
+import com.kyant.liquidglass.material.GlassMaterial
+import com.kyant.liquidglass.refraction.InnerRefraction
+import com.kyant.liquidglass.refraction.RefractionAmount
+import com.kyant.liquidglass.refraction.RefractionHeight
 import com.kyant.liquidglass.rememberLiquidGlassProviderState
-import dev.chrisbanes.haze.HazeDefaults
-import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.hazeEffect
-import dev.chrisbanes.haze.hazeSource
 
 @Composable
 fun Tags(navController: NavController? = null) {
@@ -156,7 +160,9 @@ fun Tags(navController: NavController? = null) {
 @Composable
 fun TagItem(tag: Tag, navController: NavController? = null) {
     var showDialog by remember { mutableStateOf(false) }
-    val hazeState = remember { HazeState() }
+    val providerState = rememberLiquidGlassProviderState(
+            backgroundColor = Color.Transparent
+    )
 
     if (showDialog) {
         TagsMenu(
@@ -186,15 +192,27 @@ fun TagItem(tag: Tag, navController: NavController? = null) {
                     model = app.simple.peri.glide.tags.ContextTag(tag, LocalContext.current),
                     contentDescription = null,
                     transition = CrossFade,
-                    modifier = Modifier.hazeSource(hazeState),
+                    modifier = Modifier.liquidGlassProvider(providerState)
             )
 
             Column(
                     modifier = Modifier
                         .wrapContentHeight()
                         .fillMaxWidth()
-                        .hazeEffect(state = hazeState,
-                                    style = HazeDefaults.style(backgroundColor = Color(0x50000000), blurRadius = 5.dp)
+                        .liquidGlass(
+                                providerState,
+                                GlassStyle(
+                                        shape = RoundedCornerShape(0.dp),
+                                        innerRefraction = InnerRefraction(
+                                                height = RefractionHeight(16.dp),
+                                                amount = RefractionAmount((-100).dp)
+                                        ),
+                                        material = GlassMaterial(
+                                                blurRadius = 8.dp,
+                                                brush = SolidColor(Color.Transparent),
+                                                alpha = 0.3f
+                                        )
+                                )
                         )
                         .align(Alignment.BottomCenter)
             ) {

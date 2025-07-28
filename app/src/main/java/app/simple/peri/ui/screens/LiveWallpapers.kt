@@ -39,6 +39,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
@@ -62,11 +63,14 @@ import app.simple.peri.ui.commons.TopHeader
 import app.simple.peri.ui.dialogs.livewallpapers.LiveWallpapersMenu
 import app.simple.peri.viewmodels.LiveWallpapersViewModel
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
+import com.kyant.liquidglass.GlassStyle
+import com.kyant.liquidglass.liquidGlass
+import com.kyant.liquidglass.liquidGlassProvider
+import com.kyant.liquidglass.material.GlassMaterial
+import com.kyant.liquidglass.refraction.InnerRefraction
+import com.kyant.liquidglass.refraction.RefractionAmount
+import com.kyant.liquidglass.refraction.RefractionHeight
 import com.kyant.liquidglass.rememberLiquidGlassProviderState
-import dev.chrisbanes.haze.HazeDefaults
-import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.hazeEffect
-import dev.chrisbanes.haze.hazeSource
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -76,8 +80,10 @@ fun LiveWallpapers(navController: NavHostController) {
     val liveWallpapersViewModel: LiveWallpapersViewModel = viewModel()
     val liveWallpapers = remember { mutableStateListOf<LiveWallpaperInfo>() }
     var packageNameToUninstall by remember { mutableStateOf<String?>(null) }
-    val hazeState = remember { HazeState() }
     val listState = rememberLazyGridState()
+    val providerState = rememberLiquidGlassProviderState(
+            backgroundColor = Color.Transparent
+    )
 
     statusBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
             LocalView.current.rootWindowInsets).getInsets(WindowInsetsCompat.Type.statusBars()).top
@@ -102,10 +108,6 @@ fun LiveWallpapers(navController: NavHostController) {
         liveWallpapers.clear()
         liveWallpapers.addAll(it)
     }
-
-    val providerState = rememberLiquidGlassProviderState(
-            backgroundColor = Color.Transparent
-    )
 
     val uninstallLauncher = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.StartActivityForResult()
@@ -132,7 +134,7 @@ fun LiveWallpapers(navController: NavHostController) {
                 columns = GridCells.Fixed(MainComposePreferences.getGridSpanCount(isLandscape)),
                 modifier = Modifier
                     .fillMaxSize()
-                    .hazeSource(state = hazeState),
+                    .liquidGlassProvider(providerState),
                 contentPadding = PaddingValues(
                         top = topPadding,
                         start = 8.dp,
@@ -214,7 +216,9 @@ fun LiveWallpapers(navController: NavHostController) {
                         ),
                         shape = RoundedCornerShape(16.dp)
                 ) {
-                    val localHazeState = remember { HazeState() }
+                    val providerState = rememberLiquidGlassProviderState(
+                            backgroundColor = Color.Transparent
+                    )
 
                     Box(modifier = Modifier.padding(0.dp)) {
                         Image(
@@ -222,15 +226,27 @@ fun LiveWallpapers(navController: NavHostController) {
                                 contentDescription = liveWallpaperInfo.name,
                                 modifier = Modifier
                                     .fillMaxSize()
-                                    .hazeSource(localHazeState),
+                                    .liquidGlassProvider(providerState),
                                 contentScale = ContentScale.Crop
                         )
                         Column(
                                 modifier = Modifier
                                     .wrapContentHeight()
                                     .fillMaxWidth()
-                                    .hazeEffect(state = localHazeState,
-                                                style = HazeDefaults.style(backgroundColor = Color(0x50000000), blurRadius = 25.dp)
+                                    .liquidGlass(
+                                            providerState,
+                                            GlassStyle(
+                                                    shape = RoundedCornerShape(0.dp),
+                                                    innerRefraction = InnerRefraction(
+                                                            height = RefractionHeight(16.dp),
+                                                            amount = RefractionAmount((-100).dp)
+                                                    ),
+                                                    material = GlassMaterial(
+                                                            blurRadius = 8.dp,
+                                                            brush = SolidColor(Color.Transparent),
+                                                            alpha = 0.3f
+                                                    )
+                                            )
                                     )
                                     .align(Alignment.BottomCenter)
                         ) {

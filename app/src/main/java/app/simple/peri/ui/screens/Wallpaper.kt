@@ -97,7 +97,6 @@ import com.kyant.liquidglass.refraction.InnerRefraction
 import com.kyant.liquidglass.refraction.RefractionAmount
 import com.kyant.liquidglass.refraction.RefractionHeight
 import com.kyant.liquidglass.rememberLiquidGlassProviderState
-import dev.chrisbanes.haze.HazeState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -318,8 +317,6 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
         val currentScale = remember {
             mutableStateOf(ContentScale.Crop)
         }
-
-        val hazeState = remember { HazeState() }
 
         // Initialize the main color matrix
         val colorMatrix = ColorMatrix()

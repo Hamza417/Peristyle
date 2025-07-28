@@ -35,6 +35,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -76,12 +77,14 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
+import com.kyant.liquidglass.GlassStyle
+import com.kyant.liquidglass.liquidGlass
 import com.kyant.liquidglass.liquidGlassProvider
+import com.kyant.liquidglass.material.GlassMaterial
+import com.kyant.liquidglass.refraction.InnerRefraction
+import com.kyant.liquidglass.refraction.RefractionAmount
+import com.kyant.liquidglass.refraction.RefractionHeight
 import com.kyant.liquidglass.rememberLiquidGlassProviderState
-import dev.chrisbanes.haze.HazeDefaults
-import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.hazeEffect
-import dev.chrisbanes.haze.hazeSource
 
 @Composable
 fun WallhavenScreen(navController: NavController? = null) {
@@ -273,7 +276,9 @@ fun WallhavenScreen(navController: NavController? = null) {
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun ImageCard(wallpaper: WallhavenWallpaper, navController: NavController? = null, presetFilter: WallhavenFilter? = null) {
-    val hazeState = remember { HazeState() }
+    val providerState = rememberLiquidGlassProviderState(
+            backgroundColor = Color.Transparent
+    )
 
     Box {
         val imageShadow = remember {
@@ -357,7 +362,7 @@ fun ImageCard(wallpaper: WallhavenWallpaper, navController: NavController? = nul
                         contentDescription = null,
                         transition = CrossFade,
                         modifier = Modifier
-                            .hazeSource(hazeState)
+                            .liquidGlassProvider(providerState)
                             .fillMaxSize(),
                         contentScale = ContentScale.Crop
                 ) {
@@ -390,11 +395,19 @@ fun ImageCard(wallpaper: WallhavenWallpaper, navController: NavController? = nul
                             modifier = Modifier
                                 .wrapContentHeight()
                                 .fillMaxWidth()
-                                .hazeEffect(
-                                        state = hazeState,
-                                        style = HazeDefaults.style(
-                                                backgroundColor = Color(0x50000000),
-                                                blurRadius = 5.dp
+                                .liquidGlass(
+                                        providerState,
+                                        GlassStyle(
+                                                shape = RoundedCornerShape(0.dp),
+                                                innerRefraction = InnerRefraction(
+                                                        height = RefractionHeight(16.dp),
+                                                        amount = RefractionAmount((-60).dp)
+                                                ),
+                                                material = GlassMaterial(
+                                                        blurRadius = 8.dp,
+                                                        brush = SolidColor(Color.Transparent),
+                                                        alpha = 0.3f
+                                                )
                                         )
                                 )
                                 .align(Alignment.BottomCenter)

@@ -51,6 +51,7 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -86,10 +87,16 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
-import dev.chrisbanes.haze.HazeDefaults
+import com.kyant.liquidglass.GlassStyle
+import com.kyant.liquidglass.liquidGlass
+import com.kyant.liquidglass.liquidGlassProvider
+import com.kyant.liquidglass.material.GlassMaterial
+import com.kyant.liquidglass.refraction.InnerRefraction
+import com.kyant.liquidglass.refraction.RefractionAmount
+import com.kyant.liquidglass.refraction.RefractionHeight
+import com.kyant.liquidglass.rememberLiquidGlassProviderState
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeEffect
-import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
 import dev.chrisbanes.haze.materials.HazeMaterials
 
@@ -105,7 +112,9 @@ fun WallpaperItem(
         wallpaperListViewModel: WallpaperListViewModel,
         list: List<Wallpaper>
 ) {
-    val hazeState = remember { HazeState() }
+    val providerState = rememberLiquidGlassProviderState(
+            backgroundColor = Color.Transparent
+    )
     var showDialog by remember { mutableStateOf(false) }
     var isSelected by remember { mutableStateOf(wallpaper.isSelected) }
     val showTagDialog = remember { mutableStateOf(false) }
@@ -246,7 +255,7 @@ fun WallpaperItem(
                         contentDescription = null,
                         transition = CrossFade,
                         modifier = Modifier
-                            .hazeSource(hazeState)
+                            .liquidGlassProvider(providerState)
                             .fillMaxSize(),
                         contentScale = ContentScale.Crop
                 ) {
@@ -279,11 +288,19 @@ fun WallpaperItem(
                             modifier = Modifier
                                 .wrapContentHeight()
                                 .fillMaxWidth()
-                                .hazeEffect(
-                                        state = hazeState,
-                                        style = HazeDefaults.style(
-                                                backgroundColor = Color(0x50000000),
-                                                blurRadius = 5.dp
+                                .liquidGlass(
+                                        providerState,
+                                        GlassStyle(
+                                                shape = RoundedCornerShape(0.dp),
+                                                innerRefraction = InnerRefraction(
+                                                        height = RefractionHeight(16.dp),
+                                                        amount = RefractionAmount((-100).dp)
+                                                ),
+                                                material = GlassMaterial(
+                                                        blurRadius = 8.dp,
+                                                        brush = SolidColor(Color.Black),
+                                                        alpha = 0.3f
+                                                )
                                         )
                                 )
                                 .align(Alignment.BottomCenter)
