@@ -62,6 +62,7 @@ import app.simple.peri.ui.commons.TopHeader
 import app.simple.peri.ui.dialogs.livewallpapers.LiveWallpapersMenu
 import app.simple.peri.viewmodels.LiveWallpapersViewModel
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
+import com.kyant.liquidglass.rememberLiquidGlassProviderState
 import dev.chrisbanes.haze.HazeDefaults
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeEffect
@@ -101,6 +102,10 @@ fun LiveWallpapers(navController: NavHostController) {
         liveWallpapers.clear()
         liveWallpapers.addAll(it)
     }
+
+    val providerState = rememberLiquidGlassProviderState(
+            backgroundColor = Color.Transparent
+    )
 
     val uninstallLauncher = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.StartActivityForResult()
@@ -247,15 +252,15 @@ fun LiveWallpapers(navController: NavHostController) {
 
             BottomHeader(
                     title = stringResource(R.string.live_wallpapers),
-                    count = liveWallpapers.size,
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
                         .onGloballyPositioned {
                             bottomHeaderHeight = with(density) { it.size.height.toDp() }
                         },
+                    count = liveWallpapers.size,
                     navController = navController,
-                    hazeState = hazeState,
-                    navigationBarHeight = navigationBarHeightDp
+                    navigationBarHeight = navigationBarHeightDp,
+                    providerState = providerState
             )
         }
     }

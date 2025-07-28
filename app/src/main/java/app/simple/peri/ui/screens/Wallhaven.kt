@@ -76,6 +76,8 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
+import com.kyant.liquidglass.liquidGlassProvider
+import com.kyant.liquidglass.rememberLiquidGlassProviderState
 import dev.chrisbanes.haze.HazeDefaults
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeEffect
@@ -105,7 +107,6 @@ fun WallhavenScreen(navController: NavController? = null) {
         }
     }
 
-    val hazeState = remember { HazeState() }
     var statusBarHeight by remember { mutableIntStateOf(0) }
     var navigationBarHeight by remember { mutableIntStateOf(0) }
     var searchDialog by remember { mutableStateOf(false) }
@@ -128,6 +129,10 @@ fun WallhavenScreen(navController: NavController? = null) {
     } else {
         navigationBarHeightDp
     }
+
+    val providerState = rememberLiquidGlassProviderState(
+            backgroundColor = Color.Transparent
+    )
 
     if (searchDialog) {
         WallhavenSearchDialog(
@@ -163,7 +168,7 @@ fun WallhavenScreen(navController: NavController? = null) {
                 state = viewModel.lazyGridState,
                 modifier = Modifier
                     .fillMaxSize()
-                    .hazeSource(state = hazeState),
+                    .liquidGlassProvider(providerState),
                 contentPadding = PaddingValues(
                         top = if (MainComposePreferences.getBottomHeader()) {
                             if (MainComposePreferences.getMarginBetween()) {
@@ -252,14 +257,14 @@ fun WallhavenScreen(navController: NavController? = null) {
                                 it.size.height.toDp()
                             }
                         },
+                    count = meta?.total ?: 0,
                     navController = navController,
-                    hazeState = hazeState,
-                    navigationBarHeight = navigationBarHeightDp,
                     isSearch = true,
                     onSearch = {
                         searchDialog = true
                     },
-                    count = meta?.total ?: 0,
+                    navigationBarHeight = navigationBarHeightDp,
+                    providerState = providerState
             )
         }
     }

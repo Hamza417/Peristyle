@@ -52,8 +52,9 @@ import app.simple.peri.utils.ConditionUtils.invert
 import app.simple.peri.viewmodels.FolderDataViewModel
 import app.simple.peri.viewmodels.StateViewModel
 import app.simple.peri.viewmodels.WallpaperListViewModel
+import com.kyant.liquidglass.liquidGlassProvider
+import com.kyant.liquidglass.rememberLiquidGlassProviderState
 import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.hazeSource
 
 @Composable
 fun WallpaperList(navController: NavController? = null) {
@@ -119,6 +120,10 @@ fun WallpaperList(navController: NavController? = null) {
         navigationBarHeightDp
     }
 
+    val providerState = rememberLiquidGlassProviderState(
+            backgroundColor = Color.Transparent
+    )
+
     if (showPleaseWaitDialog) {
         PleaseWaitDialog {
             Log.i("WallpaperList", "Please wait dialog dismissed")
@@ -135,7 +140,7 @@ fun WallpaperList(navController: NavController? = null) {
                 state = wallpaperListViewModel.lazyGridState,
                 modifier = Modifier
                     .fillMaxSize()
-                    .hazeSource(state = hazeState),
+                    .liquidGlassProvider(providerState),
                 contentPadding = PaddingValues(
                         top = if (MainComposePreferences.getBottomHeader()) {
                             if (MainComposePreferences.getMarginBetween()) {
@@ -261,15 +266,15 @@ fun WallpaperList(navController: NavController? = null) {
 
             BottomHeader(
                     title = folder.name ?: stringResource(R.string.unknown),
-                    count = wallpapers.size,
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
                         .onGloballyPositioned {
                             bottomHeaderHeight = with(density) { it.size.height.toDp() }
                         },
+                    count = wallpapers.size,
                     navController = navController,
-                    hazeState = hazeState,
-                    navigationBarHeight = navigationBarHeightDp
+                    navigationBarHeight = navigationBarHeightDp,
+                    providerState = providerState
             )
         }
     }

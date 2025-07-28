@@ -69,6 +69,8 @@ import app.simple.peri.viewmodels.ComposeWallpaperViewModel
 import com.bumptech.glide.integration.compose.CrossFade
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import com.kyant.liquidglass.liquidGlassProvider
+import com.kyant.liquidglass.rememberLiquidGlassProviderState
 import dev.chrisbanes.haze.HazeDefaults
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeEffect
@@ -81,7 +83,6 @@ fun Folders(navController: NavController? = null) {
     var requestPermission by remember { mutableStateOf(false) }
     var statusBarHeight by remember { mutableIntStateOf(0) }
     var navigationBarHeight by remember { mutableIntStateOf(0) }
-    val hazeState = remember { HazeState() }
 
     statusBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
             LocalView.current.rootWindowInsets
@@ -103,6 +104,10 @@ fun Folders(navController: NavController? = null) {
         navigationBarHeightDp
     }
 
+    val providerState = rememberLiquidGlassProviderState(
+            backgroundColor = Color.Transparent
+    )
+
     if (requestPermission) {
         FolderBrowser(
                 onCancel = { requestPermission = false },
@@ -119,7 +124,7 @@ fun Folders(navController: NavController? = null) {
                 columns = StaggeredGridCells.Fixed(2),
                 modifier = Modifier
                     .fillMaxSize()
-                    .hazeSource(state = hazeState),
+                    .liquidGlassProvider(providerState),
                 contentPadding = PaddingValues(
                         top = topPadding,
                         start = 8.dp,
@@ -181,8 +186,8 @@ fun Folders(navController: NavController? = null) {
                             bottomHeaderHeight = with(density) { it.size.height.toDp() }
                         },
                     navController = navController,
-                    hazeState = hazeState,
                     navigationBarHeight = navigationBarHeightDp,
+                    providerState = providerState
             )
         }
     }

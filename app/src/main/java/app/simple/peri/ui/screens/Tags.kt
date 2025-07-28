@@ -49,6 +49,8 @@ import app.simple.peri.viewmodels.TagsViewModel
 import com.bumptech.glide.integration.compose.CrossFade
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import com.kyant.liquidglass.liquidGlassProvider
+import com.kyant.liquidglass.rememberLiquidGlassProviderState
 import dev.chrisbanes.haze.HazeDefaults
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeEffect
@@ -62,7 +64,6 @@ fun Tags(navController: NavController? = null) {
     val tags = remember { mutableListOf<Tag>() }
     var statusBarHeight by remember { mutableIntStateOf(0) }
     var navigationBarHeight by remember { mutableIntStateOf(0) }
-    val hazeState = remember { HazeState() }
 
     statusBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
             LocalView.current.rootWindowInsets
@@ -89,12 +90,16 @@ fun Tags(navController: NavController? = null) {
         tags.addAll(it)
     }
 
+    val providerState = rememberLiquidGlassProviderState(
+            backgroundColor = Color.Transparent
+    )
+
     Box {
         LazyVerticalStaggeredGrid(
                 columns = StaggeredGridCells.Fixed(2),
                 modifier = Modifier
                     .fillMaxSize()
-                    .hazeSource(state = hazeState),
+                    .liquidGlassProvider(providerState),
                 contentPadding = PaddingValues(
                         top = topPadding,
                         start = 8.dp,
@@ -133,15 +138,15 @@ fun Tags(navController: NavController? = null) {
 
             BottomHeader(
                     title = stringResource(R.string.tags),
-                    count = tags.size,
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
                         .onGloballyPositioned {
                             bottomHeaderHeight = with(density) { it.size.height.toDp() }
                         },
+                    count = tags.size,
                     navController = navController,
-                    hazeState = hazeState,
-                    navigationBarHeight = navigationBarHeightDp
+                    navigationBarHeight = navigationBarHeightDp,
+                    providerState = providerState
             )
         }
     }
