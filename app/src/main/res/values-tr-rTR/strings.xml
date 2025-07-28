@@ -260,4 +260,5 @@
     <string name="wallpaper_set_method_summary">Cihazda duvar kağıdı ayarlanırken kullanılan yöntem.</string>
     <string name="color_space">Renk Alanı</string>
     <string name="color_space_summary">Çözümlenen duvar kağıdı bitmapleri için kullanılan renk alanını ayarlayın.</string>
+    <string name="sdcard_issue">SD kartlar rastgele G/Ç işlemlerinde oldukça yavaştır. Lütfen kendi takdirinize göre kullanın.</string>
 </resources>
