@@ -11,8 +11,8 @@ object MainPreferences {
 
     const val SORT = "sort"
     const val ORDER = "order"
-    const val MARGIN_BETWEEN = "margin_between_wallpapers"
     const val AUTO_WALLPAPER_INTERVAL = "auto_wallpaper_interval_1"
+    const val USE_SAME_WALLPAPER_FOR_BOTH = "use_same_wallpaper_for_both"
     private const val TWEAKS = "tweaks"
 
     const val BOTH = "3"
@@ -116,5 +116,13 @@ object MainPreferences {
             tweaks.remove(option)
         }
         SharedPreferences.getSharedPreferences().edit().putStringSet(TWEAKS, tweaks).apply()
+    }
+
+    fun isSettingSameWallpaperToBoth(): Boolean {
+        return SharedPreferences.getSharedPreferences().getBoolean(USE_SAME_WALLPAPER_FOR_BOTH, false)
+    }
+
+    fun setUseSameWallpaperForBoth(useSame: Boolean) {
+        SharedPreferences.getSharedPreferences().edit().putBoolean(USE_SAME_WALLPAPER_FOR_BOTH, useSame).apply()
     }
 }

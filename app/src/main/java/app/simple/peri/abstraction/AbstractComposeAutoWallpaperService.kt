@@ -164,6 +164,10 @@ abstract class AbstractComposeAutoWallpaperService : AbstractAutoWallpaperServic
     }
 
     private fun shouldSetSameWallpaper(): Boolean {
+        if (MainPreferences.isSettingSameWallpaperToBoth()) {
+            return true
+        }
+
         if (!MainPreferences.isSettingForHomeScreen() || !MainPreferences.isSettingForLockScreen()) {
             return false
         }
@@ -289,42 +293,45 @@ abstract class AbstractComposeAutoWallpaperService : AbstractAutoWallpaperServic
             Log.i(TAG, "Getting lock screen wallpaper at position: $position")
         }
 
-        return if (MainPreferences.isLinearAutoWallpaper()) {
-            Log.i(TAG, "Linear auto wallpaper mode enabled, skipping non-repeating wallpapers")
-            try {
-                wallpapers?.get(position).also {
-                    MainComposePreferences.setLastWallpaperPosition(isHomeScreen, position)
+        when {
+            MainPreferences.isLinearAutoWallpaper() -> {
+                Log.i(TAG, "Linear auto wallpaper mode enabled, skipping non-repeating wallpapers")
+                try {
+                    return wallpapers?.get(position).also {
+                        MainComposePreferences.setLastWallpaperPosition(isHomeScreen, position)
+                    }
+                } catch (_: IndexOutOfBoundsException) {
+                    MainComposePreferences.resetLastWallpaperPosition(isHomeScreen)
+                    return wallpapers?.get(0)
                 }
-            } catch (_: IndexOutOfBoundsException) {
-                MainComposePreferences.resetLastWallpaperPosition(isHomeScreen)
-                wallpapers?.get(0)
             }
-        } else {
-            Log.i(TAG, "Random auto wallpaper mode enabled, selecting a non-repeating random wallpaper")
-            val wallpaper = try {
-                Log.i(TAG, "Selecting a random wallpaper from the list")
-                val usedIds = getLastUsedWallpapers(isHomeScreen, wallpapers)?.map { it.id }?.toSet() ?: emptySet()
-                wallpapers
-                    ?.filterNot { wallpaper -> wallpaper.id in usedIds }
-                    ?.random(Random(System.currentTimeMillis()))
-            } catch (_: NoSuchElementException) {
-                Log.i(TAG, "No non-repeating wallpapers found, selecting a random wallpaper from the entire list")
-                wallpapers?.random(Random(System.currentTimeMillis()))
+            else -> {
+                Log.i(TAG, "Random auto wallpaper mode enabled, selecting a non-repeating random wallpaper")
+                val wallpaper = try {
+                    Log.i(TAG, "Selecting a random wallpaper from the list")
+                    val usedIds = getLastUsedWallpapers(isHomeScreen, wallpapers)?.map { it.id }?.toSet() ?: emptySet()
+                    wallpapers
+                        ?.filterNot { wallpaper -> wallpaper.id in usedIds }
+                        ?.random(Random(System.currentTimeMillis()))
+                } catch (_: NoSuchElementException) {
+                    Log.i(TAG, "No non-repeating wallpapers found, selecting a random wallpaper from the entire list")
+                    wallpapers?.random(Random(System.currentTimeMillis()))
+                }
+
+                Log.i(TAG, "Selected wallpaper: ${wallpaper?.id}")
+
+                wallpaper?.let {
+                    insertWallpaperToLastUsedDatabase(it, isHomeScreen) // mark this wallpaper as used
+                }
+
+                if (isHomeScreen) {
+                    Log.i(TAG, "Home screen wallpaper processed")
+                } else {
+                    Log.i(TAG, "Lock screen wallpaper processed")
+                }
+
+                return wallpaper
             }
-
-            Log.i(TAG, "Selected wallpaper: ${wallpaper?.id}")
-
-            wallpaper?.let {
-                insertWallpaperToLastUsedDatabase(it, isHomeScreen) // mark this wallpaper as used
-            }
-
-            if (isHomeScreen) {
-                Log.i(TAG, "Home screen wallpaper processed")
-            } else {
-                Log.i(TAG, "Lock screen wallpaper processed")
-            }
-
-            wallpaper
         }
     }
 
