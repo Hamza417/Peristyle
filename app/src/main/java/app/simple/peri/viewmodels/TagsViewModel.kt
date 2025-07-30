@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 
-class TagsViewModel(application: Application, private val id: String? = null, private val tag: String? = null) :
+class TagsViewModel(application: Application, private val id: Int = 0, private val tag: String? = null) :
     CompressorViewModel(application) {
 
     private val tags: MutableLiveData<List<Tag>> by lazy {
@@ -27,9 +27,7 @@ class TagsViewModel(application: Application, private val id: String? = null, pr
 
     private val wallpaperTags: MutableLiveData<List<String>> by lazy {
         MutableLiveData<List<String>>().also {
-            if (id != null) {
-                loadWallpaperTags(id)
-            }
+            loadWallpaperTags(id)
         }
     }
 
@@ -64,7 +62,7 @@ class TagsViewModel(application: Application, private val id: String? = null, pr
         }
     }
 
-    private fun loadWallpaperTags(md5: String) {
+    private fun loadWallpaperTags(md5: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             val database = TagsDatabase.getInstance(getApplication())
             val tagsDao = database?.tagsDao()

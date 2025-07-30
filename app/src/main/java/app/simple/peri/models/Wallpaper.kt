@@ -11,6 +11,7 @@ import androidx.annotation.NonNull
 import androidx.documentfile.provider.DocumentFile
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.utils.BitmapUtils.generatePalette
@@ -20,7 +21,14 @@ import app.simple.peri.utils.WallpaperSort
 import java.io.File
 import java.io.Serializable
 
-@Entity(tableName = "wallpapers")
+@Entity(
+        tableName = "wallpapers",
+        indices = [
+            Index(value = ["dateModified"]),
+            Index(value = ["id"], unique = true),
+            Index(value = ["folder_id"])
+        ]
+)
 class Wallpaper() : Comparable<Wallpaper>, Serializable, Parcelable {
 
     @ColumnInfo(name = "name")
@@ -36,7 +44,7 @@ class Wallpaper() : Comparable<Wallpaper>, Serializable, Parcelable {
 
     @PrimaryKey
     @ColumnInfo(name = "id")
-    var id: String = ""
+    var id: Int = 0
 
     @ColumnInfo(name = "prominentColor")
     var prominentColor: Int = Color.TRANSPARENT
@@ -63,7 +71,7 @@ class Wallpaper() : Comparable<Wallpaper>, Serializable, Parcelable {
         name = parcel.readString()
         uri = parcel.readString() ?: ""
         filePath = parcel.readString() ?: ""
-        id = parcel.readString() ?: ""
+        id = parcel.readInt()
         prominentColor = parcel.readInt()
         width = parcel.readValue(Int::class.java.classLoader) as? Int
         height = parcel.readValue(Int::class.java.classLoader) as? Int
@@ -128,7 +136,7 @@ class Wallpaper() : Comparable<Wallpaper>, Serializable, Parcelable {
         parcel.writeString(name)
         parcel.writeString(uri)
         parcel.writeString(filePath)
-        parcel.writeString(id)
+        parcel.writeInt(id)
         parcel.writeInt(prominentColor)
         parcel.writeValue(width)
         parcel.writeValue(height)
@@ -177,7 +185,7 @@ class Wallpaper() : Comparable<Wallpaper>, Serializable, Parcelable {
                 wallpaper.width = options.outWidth
                 wallpaper.height = options.outHeight
                 wallpaper.prominentColor = bitmap?.generatePalette()?.vibrantSwatch?.rgb ?: 0
-                wallpaper.id = uri.hashCode().toString()
+                wallpaper.id = uri.hashCode()
             }
 
             return wallpaper
@@ -206,7 +214,7 @@ class Wallpaper() : Comparable<Wallpaper>, Serializable, Parcelable {
                 wallpaper.width = options.outWidth
                 wallpaper.height = options.outHeight
                 wallpaper.prominentColor = bitmap?.generatePalette()?.vibrantSwatch?.rgb ?: 0
-                wallpaper.id = file.hashCode().toString()
+                wallpaper.id = file.hashCode()
             }
 
             return wallpaper

@@ -155,7 +155,7 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
             factory = TagsViewModelFactory(if (wallpaper is Wallpaper) {
                 (wallpaper as Wallpaper).id
             } else {
-                (wallpaper as WallhavenWallpaper).id
+                0
             }, "")
     )
     val showEditDialog = remember { mutableStateOf(false) }

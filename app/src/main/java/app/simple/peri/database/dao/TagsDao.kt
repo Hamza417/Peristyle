@@ -21,7 +21,7 @@ interface TagsDao {
      * @param id The md5 to search for
      */
     @Query("SELECT name FROM tags WHERE ids LIKE '%' || :id || '%'")
-    fun getTagNamesByID(id: String): List<String>
+    fun getTagNamesByID(id: Int): List<String>
 
     @Query("SELECT EXISTS(SELECT 1 FROM tags WHERE name = :id)")
     fun isTagExists(id: String): Boolean

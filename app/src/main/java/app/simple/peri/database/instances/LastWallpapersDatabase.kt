@@ -10,7 +10,7 @@ import app.simple.peri.models.Wallpaper
 import app.simple.peri.models.WallpaperUsage
 import app.simple.peri.utils.ConditionUtils.invert
 
-@Database(entities = [Wallpaper::class, WallpaperUsage::class], version = 10)
+@Database(entities = [Wallpaper::class, WallpaperUsage::class], version = 11)
 abstract class LastWallpapersDatabase : RoomDatabase() {
 
     abstract fun wallpaperDao(): WallpaperDao
