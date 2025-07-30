@@ -1,6 +1,7 @@
 package app.simple.peri.viewmodels
 
 import android.app.Application
+import android.util.Log
 import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -17,7 +18,7 @@ import kotlinx.coroutines.withContext
 import java.io.File
 
 class TagsViewModel(application: Application, private val id: Int = 0, private val tag: String? = null) :
-    CompressorViewModel(application) {
+        CompressorViewModel(application) {
 
     private val tags: MutableLiveData<List<Tag>> by lazy {
         MutableLiveData<List<Tag>>().also {
@@ -56,6 +57,7 @@ class TagsViewModel(application: Application, private val id: Int = 0, private v
             val database = TagsDatabase.getInstance(getApplication())
             val tagsDao = database?.tagsDao()
             val tags = tagsDao?.getAllTags()
+            Log.d("TagsViewModel", "Loaded ${tags?.size ?: 0} tags from database")
             this@TagsViewModel.tags.postValue(tags?.sortedBy {
                 it.name
             })
@@ -117,6 +119,7 @@ class TagsViewModel(application: Application, private val id: Int = 0, private v
 
     private fun createRandomTagsForTesting() {
         viewModelScope.launch(Dispatchers.IO) {
+            Log.d("TagsViewModel", "Creating random tags for testing...")
             val database = TagsDatabase.getInstance(getApplication())
             val tagsDao = database?.tagsDao()
             val wallpapers = WallpaperDatabase.getInstance(getApplication())?.wallpaperDao()?.getWallpapers()
@@ -125,7 +128,9 @@ class TagsViewModel(application: Application, private val id: Int = 0, private v
             val random = java.util.Random()
 
             randomTags.forEach { tagName ->
+                Log.d("TagsViewModel", "Creating tag: $tagName")
                 val randomWallpapers = wallpapers?.shuffled()?.take(random.nextInt(10) + 6) ?: emptyList()
+                Log.d("TagsViewModel", "Random wallpapers for tag $tagName: ${randomWallpapers.size}")
                 val tag = Tag(tagName, randomWallpapers.map { it.id }.toHashSet())
                 tagsDao?.insertTag(tag)
             }
