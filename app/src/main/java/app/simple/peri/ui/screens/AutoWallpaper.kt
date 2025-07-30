@@ -146,6 +146,7 @@ fun AutoWallpaper(navController: NavController? = null) {
             val homeFolderID = remember { mutableIntStateOf(MainComposePreferences.getHomeFolderId()) }
             val lockFolderName = remember { mutableStateOf(MainComposePreferences.getLockFolderName()) }
             val homeFolderName = remember { mutableStateOf(MainComposePreferences.getHomeFolderName()) }
+            val isSameWallpaperForBoth = remember { mutableStateOf(MainPreferences.isSettingSameWallpaperToBoth()) }
             val showLockTagDialog = remember { mutableStateOf(false) }
             val showHomeTagDialog = remember { mutableStateOf(false) }
             val showLockFolderDialog = remember { mutableStateOf(false) }
@@ -382,6 +383,31 @@ fun AutoWallpaper(navController: NavController? = null) {
                 }
             }
 
+            SwitchPreference(
+                    title = context.getString(R.string.same_wallpaper_for_both),
+                    description = context.getString(R.string.same_wallpaper_for_both_summary),
+                    checked = isSameWallpaperForBoth.value,
+            ) {
+                MainPreferences.setUseSameWallpaperForBoth(it)
+                isSameWallpaperForBoth.value = true
+
+                if (it) {
+                    MainComposePreferences.setLockTagId(null)
+                    MainComposePreferences.setHomeTagId(null)
+                    MainComposePreferences.setLockFolderId(-1)
+                    MainComposePreferences.setHomeFolderId(-1)
+                    MainComposePreferences.setLockFolderName(null)
+                    MainComposePreferences.setHomeFolderName(null)
+
+                    lockTagID.value = null
+                    homeTagID.value = null
+                    lockFolderID.intValue = 0
+                    homeFolderID.intValue = 0
+                    lockFolderName.value = null
+                    homeFolderName.value = null
+                }
+            }
+
             if (showLockTagDialog.value) {
                 TagsDialog(
                         selected = lockTagID.value ?: "",
@@ -396,6 +422,8 @@ fun AutoWallpaper(navController: NavController? = null) {
                             MainComposePreferences.setLockFolderId(0)
                             MainComposePreferences.setLockFolderName(null)
                             MainComposePreferences.setLastLockWallpaperPosition(0)
+                            MainPreferences.setUseSameWallpaperForBoth(false)
+                            isSameWallpaperForBoth.value = false
                         })
             }
 
@@ -413,6 +441,8 @@ fun AutoWallpaper(navController: NavController? = null) {
                             MainComposePreferences.setHomeFolderId(0)
                             MainComposePreferences.setHomeFolderName(null)
                             MainComposePreferences.setLastHomeWallpaperPosition(0)
+                            MainPreferences.setUseSameWallpaperForBoth(false)
+                            isSameWallpaperForBoth.value = false
                         })
             }
 
@@ -430,6 +460,8 @@ fun AutoWallpaper(navController: NavController? = null) {
                             lockTagID.value = null
                             MainComposePreferences.setLockTagId(null)
                             MainComposePreferences.resetLastWallpaperPositions()
+                            MainPreferences.setUseSameWallpaperForBoth(false)
+                            isSameWallpaperForBoth.value = false
                         })
             }
 
@@ -447,6 +479,8 @@ fun AutoWallpaper(navController: NavController? = null) {
                             homeTagID.value = null
                             MainComposePreferences.setHomeTagId(null)
                             MainComposePreferences.resetLastWallpaperPositions()
+                            MainPreferences.setUseSameWallpaperForBoth(false)
+                            isSameWallpaperForBoth.value = false
                         })
             }
 

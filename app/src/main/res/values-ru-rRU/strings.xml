@@ -260,4 +260,7 @@
     <string name="wallpaper_set_method_summary">Метод используется при установке обоев на устройство.</string>
     <string name="color_space">Цветовое пространство</string>
     <string name="color_space_summary">Установка цветового пространства, используемое для декодированных растровых изображений обоев.</string>
+    <string name="sdcard_issue">SD-карты медленные для случайного ввода-вывода. Используйте их по своему усмотрению.</string>
+    <string name="same_wallpaper_for_both">Те же обои</string>
+    <string name="same_wallpaper_for_both_summary">Использовать одни и те же случайные обои для обоих экранов. Работает только если для одного из экранов не задана папка или тег.</string>
 </resources>

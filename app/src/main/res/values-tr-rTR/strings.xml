@@ -260,4 +260,7 @@
     <string name="wallpaper_set_method_summary">Cihazda duvar kağıdı ayarlanırken kullanılan yöntem.</string>
     <string name="color_space">Renk Alanı</string>
     <string name="color_space_summary">Çözümlenen duvar kağıdı bitmapleri için kullanılan renk alanını ayarlayın.</string>
+    <string name="sdcard_issue">SD kartlar rastgele G/Ç işlemlerinde oldukça yavaştır. Lütfen kendi takdirinize göre kullanın.</string>
+    <string name="same_wallpaper_for_both">Aynı Duvar Kağıdı</string>
+    <string name="same_wallpaper_for_both_summary">Her iki ekran için de aynı rastgele duvar kağıdını kullan. Yalnızca her iki ekranda da klasör veya etiket ayarlı değilse çalışır.</string>
 </resources>

@@ -5,7 +5,6 @@ import android.graphics.Bitmap
 import android.os.Build
 import android.util.Log
 import app.simple.peri.models.Effect
-import app.simple.peri.preferences.MainPreferences.MARGIN_BETWEEN
 import app.simple.peri.preferences.SharedPreferences.getSharedPreferences
 
 @SuppressLint("UseKtx")
@@ -74,6 +73,7 @@ object MainComposePreferences {
     private const val MAX_SET_COUNT = "max_set_count"
     private const val WALLPAPER_SET_METHOD = "wallpaper_set_method"
     private const val WALLPAPER_COLOR_SPACE = "wallpaper_color_space"
+    private const val MARGIN_BETWEEN = "margin_between_wallpapers"
 
     const val DISABLE_ANIMATIONS = "disable_animations"
     const val PREDICTIVE_BACK = "predictive_back"
