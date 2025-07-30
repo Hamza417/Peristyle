@@ -9,10 +9,6 @@ public class WallpaperMigration_10_11 extends Migration {
         super(10, 11);
     }
     
-    public WallpaperMigration_10_11(int startVersion, int endVersion) {
-        super(startVersion, endVersion);
-    }
-    
     @Override
     public void migrate(SupportSQLiteDatabase database) {
         // Create the new table with correct schema

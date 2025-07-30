@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import androidx.room.MapColumn
 import app.simple.peri.database.instances.WallpaperDatabase
 import app.simple.peri.models.Folder
 import app.simple.peri.models.Wallpaper
@@ -20,6 +21,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Semaphore
@@ -46,25 +48,57 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
         return foldersData
     }
 
+    private var refreshFoldersJob: Job? = null
+    private var lastRefreshTime = 0L
+    private var pendingRefresh = false
+
+    fun refreshFoldersThrottled(shouldPurge: Boolean = true, intervalMillis: Long = 3000) {
+        val now = System.currentTimeMillis()
+        val timeSinceLast = now - lastRefreshTime
+
+        if (timeSinceLast >= intervalMillis) {
+            lastRefreshTime = now
+            refreshFolders(shouldPurge)
+        } else if (!pendingRefresh) {
+            pendingRefresh = true
+            val delayMillis = intervalMillis - timeSinceLast
+            refreshFoldersJob?.cancel()
+            refreshFoldersJob = viewModelScope.launch {
+                delay(delayMillis)
+                lastRefreshTime = System.currentTimeMillis()
+                pendingRefresh = false
+                refreshFolders(shouldPurge)
+            }
+        }
+    }
+
     private fun refreshFolders(shouldPurge: Boolean = true) {
         viewModelScope.launch(Dispatchers.IO) {
-            val folders = ArrayList<Folder>()
-            MainComposePreferences.getAllowedPaths().forEach { path ->
+            val allowedPaths = MainComposePreferences.getAllowedPaths()
+            val pathHashcodes = allowedPaths.map { it.hashCode() }
+            val countsMap: Map<@MapColumn(columnName = "folder_id") Int, @MapColumn(columnName = "count") Int> =
+                wallpaperDatabase.wallpaperDao().getWallpapersCountsByPathHashcodes(pathHashcodes.toSet())
+
+            val folders = allowedPaths.mapNotNull { path ->
                 val pickedDirectory = File(path)
                 if (pickedDirectory.exists()) {
-                    val folder = Folder().apply {
-                        name = pickedDirectory.name
-                        this.path = path
-                        count = wallpaperDatabase.wallpaperDao().getWallpapersCountByPathHashcode(path.hashCode())
-                        hashcode = path.hashCode()
-                        isNomedia = pickedDirectory.listFiles()?.any { it.name == ".nomedia" } == true
-                    }
-                    if (folder.count > 0) {
-                        folders.add(folder)
-                    }
-                }
+                    val count = countsMap[path.hashCode()] ?: 0
+                    if (count > 0) {
+                        Folder().apply {
+                            name = pickedDirectory.name
+                            this.path = path
+                            this.count = count
+                            hashcode = path.hashCode()
+                            isNomedia = File(pickedDirectory, ".nomedia").exists()
+                        }
+                    } else null
+                } else null
+            }.let {
+                ArrayList(it)
             }
+
             foldersData.postValue(folders)
+
             if (shouldPurge) {
                 wallpaperDatabase.wallpaperDao().purgeNonExistingWallpapers(wallpaperDatabase)
             }
@@ -76,7 +110,7 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
         val semaphore = Semaphore(MainComposePreferences.getSemaphoreCount()) // Limit the number of concurrent jobs
         val wallpaperImageJob = viewModelScope.launch(Dispatchers.IO) {
             runCatching {
-                alreadyLoaded = wallpaperDatabase?.wallpaperDao()?.getWallpapers()?.associateBy { it.filePath }
+                alreadyLoaded = wallpaperDatabase.wallpaperDao().getWallpapers().associateBy { it.filePath }
 
                 MainComposePreferences.getAllowedPaths().forEach { folderPath ->
                     val pickedDirectory = File(folderPath)
@@ -101,7 +135,7 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
                                                 ensureActive()
                                                 WallpaperDatabase.getInstance(getApplication())
                                                     ?.wallpaperDao()?.insert(wallpaper)
-                                                refreshFolders(shouldPurge = false)
+                                                refreshFoldersThrottled(false)
                                             }
                                         } else {
                                             Log.i(TAG, "loadWallpaperImages: already loaded ${file.absolutePath}")

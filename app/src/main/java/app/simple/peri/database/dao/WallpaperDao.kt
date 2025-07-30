@@ -3,6 +3,7 @@ package app.simple.peri.database.dao
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
+import androidx.room.MapColumn
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
@@ -67,6 +68,10 @@ interface WallpaperDao {
      */
     @Query("SELECT COUNT(*) FROM wallpapers WHERE folder_id = :hashcode")
     fun getWallpapersCountByPathHashcode(hashcode: Int): Int
+
+    @Query("SELECT folder_id, COUNT(*) as count FROM wallpapers WHERE folder_id IN (:hashcodes) GROUP BY folder_id")
+    fun getWallpapersCountsByPathHashcodes(hashcodes: Set<Int>):
+            Map<@MapColumn(columnName = "folder_id") Int, @MapColumn(columnName = "count") Int>
 
     /**
      * Clean any entry that doesn't have any of the
