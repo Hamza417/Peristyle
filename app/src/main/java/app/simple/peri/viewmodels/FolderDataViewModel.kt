@@ -48,7 +48,7 @@ class FolderDataViewModel(application: Application, private val folder: Folder) 
     }
 
     private suspend fun postNewWallpaper(file: File, previousWallpaper: Wallpaper): Wallpaper {
-        val wallpaper = Wallpaper.createFromFile(file)
+        val wallpaper = Wallpaper.createFromFile(file, getApplication())
         wallpaper.id = previousWallpaper.id
         wallpaper.folderID = previousWallpaper.folderID
         val wallpaperDatabase = WallpaperDatabase.getInstance(getApplication())

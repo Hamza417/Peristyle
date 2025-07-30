@@ -29,6 +29,7 @@ import kotlinx.coroutines.sync.withPermit
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.IOException
+import kotlin.system.measureTimeMillis
 
 class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -128,14 +129,19 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
                                     try {
                                         if (alreadyLoaded?.containsKey(file.absolutePath.toString()) == false) {
                                             if (file.exists()) {
-                                                val wallpaper = Wallpaper.createFromFile(file)
-                                                wallpaper.folderID = folderPath.hashCode()
-                                                // Make sure legacy interface stays compatible
-                                                wallpaper.uri = file.toFileUri(getApplication()).toString()
-                                                ensureActive()
-                                                WallpaperDatabase.getInstance(getApplication())
-                                                    ?.wallpaperDao()?.insert(wallpaper)
-                                                refreshFoldersThrottled(false)
+                                                println(
+                                                        measureTimeMillis {
+                                                            Log.i(TAG, "loadWallpaperImages: loading wallpaper from file: ${file.absolutePath}")
+                                                            val wallpaper = Wallpaper.createFromFile(file, getApplication())
+                                                            wallpaper.folderID = folderPath.hashCode()
+                                                            // Make sure legacy interface stays compatible
+                                                            wallpaper.uri = file.toFileUri(getApplication()).toString()
+                                                            ensureActive()
+                                                            WallpaperDatabase.getInstance(getApplication())
+                                                                ?.wallpaperDao()?.insert(wallpaper)
+                                                            refreshFoldersThrottled(false)
+                                                        }
+                                                )
                                             }
                                         } else {
                                             Log.i(TAG, "loadWallpaperImages: already loaded ${file.absolutePath}")
@@ -193,7 +199,7 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
     fun reloadMetadata(wallpaper: Wallpaper, func: (Wallpaper) -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             val wallpaperDatabase = WallpaperDatabase.getInstance(getApplication())
-            val updatedWallpaper = Wallpaper.createFromFile(wallpaper.filePath.toFile())
+            val updatedWallpaper = Wallpaper.createFromFile(wallpaper.filePath.toFile(), getApplication())
             updatedWallpaper.folderID = wallpaper.folderID
             wallpaperDatabase?.wallpaperDao()?.update(updatedWallpaper)
 

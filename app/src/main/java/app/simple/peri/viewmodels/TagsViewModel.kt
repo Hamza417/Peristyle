@@ -166,7 +166,7 @@ class TagsViewModel(application: Application, private val id: Int = 0, private v
     }
 
     private suspend fun postNewWallpaper(file: File, previousWallpaper: Wallpaper): Wallpaper {
-        val wallpaper = Wallpaper.createFromFile(file)
+        val wallpaper = Wallpaper.createFromFile(file, getApplication())
         wallpaper.id = previousWallpaper.id
         wallpaper.folderID = previousWallpaper.folderID
         val wallpaperDatabase = WallpaperDatabase.getInstance(getApplication())

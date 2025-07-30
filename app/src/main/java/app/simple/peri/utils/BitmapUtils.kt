@@ -3,6 +3,7 @@ package app.simple.peri.utils
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.ColorMatrix
 import android.graphics.ColorMatrixColorFilter
 import android.graphics.Matrix
@@ -12,11 +13,13 @@ import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.graphics.createBitmap
+import androidx.core.graphics.get
 import androidx.exifinterface.media.ExifInterface
 import androidx.palette.graphics.Palette
 import app.simple.peri.constants.Misc
 import app.simple.peri.models.Effect
 import app.simple.peri.tools.StackBlur
+import java.io.File
 import java.io.InputStream
 import androidx.compose.ui.graphics.ColorMatrix as ComposeUiGraphicsColorMatrix
 
@@ -336,5 +339,23 @@ object BitmapUtils {
                     m1[row * 5 + 3] * m2[col + 15] +
                     m1[row * 5 + 4] * m2[col + 4]
         }
+    }
+
+    fun getApproximateProminentColor(file: File): Int {
+        val options = BitmapFactory.Options().apply {
+            inJustDecodeBounds = false
+            inSampleSize = 64 // decode a tiny version for speed
+        }
+        file.inputStream().use { inputStream ->
+            val bitmap = BitmapFactory.decodeStream(inputStream, null, options)
+            if (bitmap != null) {
+                val x = bitmap.width / 2
+                val y = bitmap.height / 2
+                val color = bitmap[x, y]
+                bitmap.recycle()
+                return color
+            }
+        }
+        return Color.DKGRAY
     }
 }
