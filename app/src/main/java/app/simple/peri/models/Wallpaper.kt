@@ -13,6 +13,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.utils.BitmapUtils.generatePalette
 import app.simple.peri.utils.ConditionUtils.isNotNull
@@ -214,17 +215,21 @@ class Wallpaper() : Comparable<Wallpaper>, Serializable, Parcelable {
             wallpaper.width = options.outWidth
             wallpaper.height = options.outHeight
 
-            if (context.isNotNull()) {
-                val bitmap = Glide.with(context)
-                    .asBitmap()
-                    .load(file)
-                    .override(32, 32) // specify width and height for thumbnail
-                    .apply(RequestOptions().format(DecodeFormat.PREFER_RGB_565)) // <— use RGB_565
-                    .submit()
-                    .get()
+            if (MainComposePreferences.skipPalette()) {
+                wallpaper.prominentColor = Color.DKGRAY // set a default color
+            } else {
+                if (context.isNotNull()) {
+                    val bitmap = Glide.with(context)
+                        .asBitmap()
+                        .load(file)
+                        .override(32, 32) // specify width and height for thumbnail
+                        .apply(RequestOptions().format(DecodeFormat.PREFER_RGB_565)) // <— use RGB_565
+                        .submit()
+                        .get()
 
-                wallpaper.prominentColor = bitmap?.generatePalette()?.vibrantSwatch?.rgb ?: 0
-                bitmap?.recycle()
+                    wallpaper.prominentColor = bitmap?.generatePalette()?.vibrantSwatch?.rgb ?: 0
+                    bitmap?.recycle()
+                }
             }
 
             wallpaper.id = file.hashCode()

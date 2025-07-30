@@ -74,6 +74,7 @@ object MainComposePreferences {
     private const val WALLPAPER_SET_METHOD = "wallpaper_set_method"
     private const val WALLPAPER_COLOR_SPACE = "wallpaper_color_space"
     private const val MARGIN_BETWEEN = "margin_between_wallpapers"
+    private const val SKIP_PALETTE = "skip_palette"
 
     const val DISABLE_ANIMATIONS = "disable_animations"
     const val PREDICTIVE_BACK = "predictive_back"
@@ -878,5 +879,13 @@ object MainComposePreferences {
         }
 
         getSharedPreferences().edit().putInt(WALLPAPER_COLOR_SPACE, intValue).apply()
+    }
+
+    fun skipPalette(): Boolean {
+        return getSharedPreferences().getBoolean(SKIP_PALETTE, true)
+    }
+
+    fun setSkipPalette(value: Boolean) {
+        getSharedPreferences().edit().putBoolean(SKIP_PALETTE, value).apply()
     }
 }
