@@ -5,6 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import app.simple.peri.database.dao.WallpaperDao
+import app.simple.peri.database.migrations.WallpaperMigration_10_11
 import app.simple.peri.database.migrations.WallpaperMigration_9_10
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.models.WallpaperUsage
@@ -26,11 +27,13 @@ abstract class LastWallpapersDatabase : RoomDatabase() {
                 if (instance!!.isOpen.invert()) {
                     instance = Room.databaseBuilder(context, LastWallpapersDatabase::class.java, DB_NAME)
                         .addMigrations(WallpaperMigration_9_10())
+                        .addMigrations(WallpaperMigration_10_11())
                         .build()
                 }
             }.getOrElse {
                 instance = Room.databaseBuilder(context, LastWallpapersDatabase::class.java, DB_NAME)
                     .addMigrations(WallpaperMigration_9_10())
+                    .addMigrations(WallpaperMigration_10_11())
                     .build()
             }
 
