@@ -48,8 +48,8 @@ android {
         applicationId "app.simple.peri"
         minSdk 24
         targetSdk 35
-        versionCode 910
-        versionName "v9.1.0"
+        versionCode 920
+        versionName "v9.2.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
