@@ -23,9 +23,9 @@ public class Tag implements Parcelable {
     @ColumnInfo (name = "ids")
     @TypeConverters (IDListConverter.class)
     @NonNull
-    private HashSet <String> sum = new HashSet <>();
+    private HashSet <Integer> sum = new HashSet <>();
     
-    public Tag(@NonNull String name, @NonNull HashSet <String> sum) {
+    public Tag(@NonNull String name, @NonNull HashSet <Integer> sum) {
         this.name = name;
         this.sum = new HashSet <>(sum);
     }
@@ -65,15 +65,16 @@ public class Tag implements Parcelable {
         this.name = name;
     }
     
-    public HashSet <String> getSum() {
+    @NonNull
+    public HashSet <Integer> getSum() {
         return sum;
     }
     
-    public void setSum(HashSet <String> sum) {
+    public void setSum(@NonNull HashSet <Integer> sum) {
         this.sum = sum;
     }
     
-    public void addSum(String sum) {
+    public void addSum(int sum) {
         this.sum.add(sum);
     }
     
@@ -106,7 +107,7 @@ public class Tag implements Parcelable {
     @Override
     public int hashCode() {
         int result = name.hashCode();
-        result = 31 * result + (sum != null ? sum.hashCode() : 0);
+        result = 31 * result + sum.hashCode();
         return result;
     }
 }

@@ -121,6 +121,14 @@ fun Settings(navController: NavController? = null) {
             }
 
             SwitchPreference(
+                    title = context.getString(R.string.skip_palettes),
+                    description = context.getString(R.string.skip_palettes_summary),
+                    checked = MainComposePreferences.skipPalette()
+            ) {
+                MainComposePreferences.setSkipPalette(it)
+            }
+
+            SwitchPreference(
                     title = context.getString(R.string.original_aspect_ratio),
                     description = context.getString(R.string.original_aspect_ratio_summary),
                     checked = MainComposePreferences.isOriginalAspectRatio(),

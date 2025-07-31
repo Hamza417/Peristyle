@@ -11,16 +11,29 @@ import androidx.annotation.NonNull
 import androidx.documentfile.provider.DocumentFile
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
+import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.utils.BitmapUtils.generatePalette
+import app.simple.peri.utils.ConditionUtils.isNotNull
 import app.simple.peri.utils.FileUtils.toFile
 import app.simple.peri.utils.FileUtils.toUri
 import app.simple.peri.utils.WallpaperSort
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DecodeFormat
+import com.bumptech.glide.request.RequestOptions
 import java.io.File
 import java.io.Serializable
 
-@Entity(tableName = "wallpapers")
+@Entity(
+        tableName = "wallpapers",
+        indices = [
+            Index(value = ["dateModified"]),
+            Index(value = ["id"], unique = true),
+            Index(value = ["folder_id"])
+        ]
+)
 class Wallpaper() : Comparable<Wallpaper>, Serializable, Parcelable {
 
     @ColumnInfo(name = "name")
@@ -36,7 +49,7 @@ class Wallpaper() : Comparable<Wallpaper>, Serializable, Parcelable {
 
     @PrimaryKey
     @ColumnInfo(name = "id")
-    var id: String = ""
+    var id: Int = 0
 
     @ColumnInfo(name = "prominentColor")
     var prominentColor: Int = Color.TRANSPARENT
@@ -63,7 +76,7 @@ class Wallpaper() : Comparable<Wallpaper>, Serializable, Parcelable {
         name = parcel.readString()
         uri = parcel.readString() ?: ""
         filePath = parcel.readString() ?: ""
-        id = parcel.readString() ?: ""
+        id = parcel.readInt()
         prominentColor = parcel.readInt()
         width = parcel.readValue(Int::class.java.classLoader) as? Int
         height = parcel.readValue(Int::class.java.classLoader) as? Int
@@ -128,7 +141,7 @@ class Wallpaper() : Comparable<Wallpaper>, Serializable, Parcelable {
         parcel.writeString(name)
         parcel.writeString(uri)
         parcel.writeString(filePath)
-        parcel.writeString(id)
+        parcel.writeInt(id)
         parcel.writeInt(prominentColor)
         parcel.writeValue(width)
         parcel.writeValue(height)
@@ -177,7 +190,7 @@ class Wallpaper() : Comparable<Wallpaper>, Serializable, Parcelable {
                 wallpaper.width = options.outWidth
                 wallpaper.height = options.outHeight
                 wallpaper.prominentColor = bitmap?.generatePalette()?.vibrantSwatch?.rgb ?: 0
-                wallpaper.id = uri.hashCode().toString()
+                wallpaper.id = uri.hashCode()
             }
 
             return wallpaper
@@ -187,28 +200,39 @@ class Wallpaper() : Comparable<Wallpaper>, Serializable, Parcelable {
             return createFromUri(file.uri.toString(), context)
         }
 
-        /**
-         * Use this method to create a Wallpaper object from a File.
-         *
-         * @param file The File object
-         */
-        fun createFromFile(file: File): Wallpaper {
+        fun createFromFile(file: File, context: Context): Wallpaper {
             val wallpaper = Wallpaper()
             wallpaper.filePath = file.absolutePath
             wallpaper.name = file.name
             wallpaper.size = file.length()
             wallpaper.dateModified = file.lastModified()
 
+            // First, decode only bounds for width/height
+            val options = BitmapFactory.Options().apply { inJustDecodeBounds = true }
             file.inputStream().use { inputStream ->
-                val options = BitmapFactory.Options()
-                options.inJustDecodeBounds = false
-                val bitmap = BitmapFactory.decodeStream(inputStream, null, options)
-                wallpaper.width = options.outWidth
-                wallpaper.height = options.outHeight
-                wallpaper.prominentColor = bitmap?.generatePalette()?.vibrantSwatch?.rgb ?: 0
-                wallpaper.id = file.hashCode().toString()
+                BitmapFactory.decodeStream(inputStream, null, options)
+            }
+            wallpaper.width = options.outWidth
+            wallpaper.height = options.outHeight
+
+            if (MainComposePreferences.skipPalette()) {
+                wallpaper.prominentColor = Color.DKGRAY // set a default color
+            } else {
+                if (context.isNotNull()) {
+                    val bitmap = Glide.with(context)
+                        .asBitmap()
+                        .load(file)
+                        .override(32, 32) // specify width and height for thumbnail
+                        .apply(RequestOptions().format(DecodeFormat.PREFER_RGB_565)) // <— use RGB_565
+                        .submit()
+                        .get()
+
+                    wallpaper.prominentColor = bitmap?.generatePalette()?.vibrantSwatch?.rgb ?: 0
+                    bitmap?.recycle()
+                }
             }
 
+            wallpaper.id = file.hashCode()
             return wallpaper
         }
     }

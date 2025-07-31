@@ -148,7 +148,7 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
             systemFile.outputStream().use { systemBitmap?.compress(Bitmap.CompressFormat.PNG, 100, it) }
 
             if (PermissionUtils.checkStoragePermission(getApplication())) {
-                systemWallpaperData.postValue(Wallpaper.createFromFile(systemFile))
+                systemWallpaperData.postValue(Wallpaper.createFromFile(systemFile, getApplication()))
             }
         }
     }
@@ -168,7 +168,7 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
             lockFile.outputStream().use { lockBitmap?.compress(Bitmap.CompressFormat.PNG, 100, it) }
 
             if (PermissionUtils.checkStoragePermission(getApplication())) {
-                lockWallpaperData.postValue(Wallpaper.createFromFile(lockFile))
+                lockWallpaperData.postValue(Wallpaper.createFromFile(lockFile, getApplication()))
             }
         }
     }
@@ -189,7 +189,7 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
         viewModelScope.launch(Dispatchers.Default) {
             try {
                 MainComposePreferences.getLastLiveWallpaperPath()?.toFile()?.let {
-                    Wallpaper.createFromFile(it).let {
+                    Wallpaper.createFromFile(it, getApplication()).let {
                         lastLiveWallpaper.postValue(it)
                     }
                 }

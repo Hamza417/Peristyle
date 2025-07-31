@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 11,
-    "identityHash": "83d5cb55a0307106636923e133326eac",
+    "identityHash": "9ca91765a15f66efab00a8fdc70988a0",
     "entities": [
       {
         "tableName": "wallpapers",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT, `uri` TEXT NOT NULL, `file_path` TEXT NOT NULL, `id` TEXT NOT NULL, `prominentColor` INTEGER NOT NULL, `width` INTEGER, `height` INTEGER, `dateModified` INTEGER NOT NULL, `size` INTEGER NOT NULL, `folder_id` INTEGER NOT NULL, `isSelected` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT, `uri` TEXT NOT NULL, `file_path` TEXT NOT NULL, `id` INTEGER NOT NULL, `prominentColor` INTEGER NOT NULL, `width` INTEGER, `height` INTEGER, `dateModified` INTEGER NOT NULL, `size` INTEGER NOT NULL, `folder_id` INTEGER NOT NULL, `isSelected` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "name",
@@ -28,7 +28,7 @@
           {
             "fieldPath": "id",
             "columnName": "id",
-            "affinity": "TEXT",
+            "affinity": "INTEGER",
             "notNull": true
           },
           {
@@ -77,16 +77,45 @@
           "columnNames": [
             "id"
           ]
-        }
+        },
+        "indices": [
+          {
+            "name": "index_wallpapers_dateModified",
+            "unique": false,
+            "columnNames": [
+              "dateModified"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_wallpapers_dateModified` ON `${TABLE_NAME}` (`dateModified`)"
+          },
+          {
+            "name": "index_wallpapers_id",
+            "unique": true,
+            "columnNames": [
+              "id"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_wallpapers_id` ON `${TABLE_NAME}` (`id`)"
+          },
+          {
+            "name": "index_wallpapers_folder_id",
+            "unique": false,
+            "columnNames": [
+              "folder_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_wallpapers_folder_id` ON `${TABLE_NAME}` (`folder_id`)"
+          }
+        ]
       },
       {
         "tableName": "wallpaper_usage",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`wallpaper_id` TEXT NOT NULL, `usage_count` INTEGER NOT NULL, PRIMARY KEY(`wallpaper_id`), FOREIGN KEY(`wallpaper_id`) REFERENCES `wallpapers`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`wallpaper_id` INTEGER NOT NULL, `usage_count` INTEGER NOT NULL, PRIMARY KEY(`wallpaper_id`), FOREIGN KEY(`wallpaper_id`) REFERENCES `wallpapers`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "wallpaperId",
             "columnName": "wallpaper_id",
-            "affinity": "TEXT",
+            "affinity": "INTEGER",
             "notNull": true
           },
           {
@@ -119,7 +148,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '83d5cb55a0307106636923e133326eac')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9ca91765a15f66efab00a8fdc70988a0')"
     ]
   }
 }

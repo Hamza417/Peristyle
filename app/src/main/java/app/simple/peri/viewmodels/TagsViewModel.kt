@@ -1,6 +1,7 @@
 package app.simple.peri.viewmodels
 
 import android.app.Application
+import android.util.Log
 import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -16,8 +17,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 
-class TagsViewModel(application: Application, private val id: String? = null, private val tag: String? = null) :
-    CompressorViewModel(application) {
+class TagsViewModel(application: Application, private val id: Int = 0, private val tag: String? = null) :
+        CompressorViewModel(application) {
 
     private val tags: MutableLiveData<List<Tag>> by lazy {
         MutableLiveData<List<Tag>>().also {
@@ -27,9 +28,7 @@ class TagsViewModel(application: Application, private val id: String? = null, pr
 
     private val wallpaperTags: MutableLiveData<List<String>> by lazy {
         MutableLiveData<List<String>>().also {
-            if (id != null) {
-                loadWallpaperTags(id)
-            }
+            loadWallpaperTags(id)
         }
     }
 
@@ -58,13 +57,14 @@ class TagsViewModel(application: Application, private val id: String? = null, pr
             val database = TagsDatabase.getInstance(getApplication())
             val tagsDao = database?.tagsDao()
             val tags = tagsDao?.getAllTags()
+            Log.d("TagsViewModel", "Loaded ${tags?.size ?: 0} tags from database")
             this@TagsViewModel.tags.postValue(tags?.sortedBy {
                 it.name
             })
         }
     }
 
-    private fun loadWallpaperTags(md5: String) {
+    private fun loadWallpaperTags(md5: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             val database = TagsDatabase.getInstance(getApplication())
             val tagsDao = database?.tagsDao()
@@ -119,6 +119,7 @@ class TagsViewModel(application: Application, private val id: String? = null, pr
 
     private fun createRandomTagsForTesting() {
         viewModelScope.launch(Dispatchers.IO) {
+            Log.d("TagsViewModel", "Creating random tags for testing...")
             val database = TagsDatabase.getInstance(getApplication())
             val tagsDao = database?.tagsDao()
             val wallpapers = WallpaperDatabase.getInstance(getApplication())?.wallpaperDao()?.getWallpapers()
@@ -127,7 +128,9 @@ class TagsViewModel(application: Application, private val id: String? = null, pr
             val random = java.util.Random()
 
             randomTags.forEach { tagName ->
+                Log.d("TagsViewModel", "Creating tag: $tagName")
                 val randomWallpapers = wallpapers?.shuffled()?.take(random.nextInt(10) + 6) ?: emptyList()
+                Log.d("TagsViewModel", "Random wallpapers for tag $tagName: ${randomWallpapers.size}")
                 val tag = Tag(tagName, randomWallpapers.map { it.id }.toHashSet())
                 tagsDao?.insertTag(tag)
             }
@@ -163,7 +166,7 @@ class TagsViewModel(application: Application, private val id: String? = null, pr
     }
 
     private suspend fun postNewWallpaper(file: File, previousWallpaper: Wallpaper): Wallpaper {
-        val wallpaper = Wallpaper.createFromFile(file)
+        val wallpaper = Wallpaper.createFromFile(file, getApplication())
         wallpaper.id = previousWallpaper.id
         wallpaper.folderID = previousWallpaper.folderID
         val wallpaperDatabase = WallpaperDatabase.getInstance(getApplication())

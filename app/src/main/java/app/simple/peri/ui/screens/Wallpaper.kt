@@ -155,7 +155,7 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
             factory = TagsViewModelFactory(if (wallpaper is Wallpaper) {
                 (wallpaper as Wallpaper).id
             } else {
-                (wallpaper as WallhavenWallpaper).id
+                0
             }, "")
     )
     val showEditDialog = remember { mutableStateOf(false) }
@@ -264,7 +264,7 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
                 LaunchedEffect(url) {
                     val file = getCachedOrDownloadWallpaper(context, url, context.cacheDir.absolutePath + fileName)
                     if (file != null) {
-                        loadedWallpaper = Wallpaper.createFromFile(file)
+                        loadedWallpaper = Wallpaper.createFromFile(file, context)
                     }
                 }
 
@@ -728,7 +728,7 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
                         showPleaseWaitDialog = true
                         val file = getCachedOrDownloadWallpaper(context, url, context.cacheDir.absolutePath + fileName)
                         if (file != null) {
-                            downloadedWallpaper = Wallpaper.createFromFile(file)
+                            downloadedWallpaper = Wallpaper.createFromFile(file, context)
                         }
 
                         bitmap = graphicsLayer.toImageBitmap().asAndroidBitmap()

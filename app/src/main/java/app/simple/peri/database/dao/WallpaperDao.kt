@@ -1,12 +1,11 @@
 package app.simple.peri.database.dao
 
-import android.util.Log
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
+import androidx.room.MapColumn
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.Transaction
 import androidx.room.Update
 import app.simple.peri.database.instances.WallpaperDatabase
 import app.simple.peri.models.Wallpaper
@@ -27,7 +26,7 @@ interface WallpaperDao {
     fun getAllWallpaperUsage(): List<WallpaperUsage>
 
     @Query("SELECT * FROM wallpaper_usage WHERE wallpaper_id = :id")
-    fun getWallpaperUsageById(id: String): WallpaperUsage? {
+    fun getWallpaperUsageById(id: Int): WallpaperUsage? {
         return getAllWallpaperUsage().find {
             it.wallpaperId == id
         } ?: WallpaperUsage(id, 0)
@@ -49,13 +48,13 @@ interface WallpaperDao {
      * Get wallpaper by MD5
      */
     @Query("SELECT * FROM wallpapers WHERE id = :id")
-    fun getWallpaperByID(id: String): Wallpaper?
+    fun getWallpaperByID(id: Int): Wallpaper?
 
     /**
      * Get wallpapers by the matching all the MD% in the HashSet
      */
     @Query("SELECT * FROM wallpapers WHERE id IN (:ids)")
-    fun getWallpapersByMD5s(ids: Set<String>): List<Wallpaper>
+    fun getWallpapersByMD5s(ids: Set<Int>): List<Wallpaper>
 
     /**
      * Get wallpapers by the matching the [Wallpaper.folderID]
@@ -69,6 +68,10 @@ interface WallpaperDao {
      */
     @Query("SELECT COUNT(*) FROM wallpapers WHERE folder_id = :hashcode")
     fun getWallpapersCountByPathHashcode(hashcode: Int): Int
+
+    @Query("SELECT folder_id, COUNT(*) as count FROM wallpapers WHERE folder_id IN (:hashcodes) GROUP BY folder_id")
+    fun getWallpapersCountsByPathHashcodes(hashcodes: Set<Int>):
+            Map<@MapColumn(columnName = "folder_id") Int, @MapColumn(columnName = "count") Int>
 
     /**
      * Clean any entry that doesn't have any of the
@@ -122,17 +125,6 @@ interface WallpaperDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(wallpaperUsage: WallpaperUsage)
-
-    @Transaction
-    suspend fun insertWithConflictHandling(wallpaper: Wallpaper) {
-        val existingWallpaper = getWallpaperByID(wallpaper.id)
-        if (existingWallpaper != null) {
-            wallpaper.id += "duplicate"
-            Log.i("WallpaperDao", "Duplicate wallpaper found: ${wallpaper.id}")
-        }
-
-        insert(wallpaper)
-    }
 
     /**
      * Delete the entire table

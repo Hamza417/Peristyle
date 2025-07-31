@@ -29,12 +29,14 @@ abstract class AbstractComposeAutoWallpaperService : AbstractAutoWallpaperServic
     protected fun setComposeWallpaper(onComplete: () -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
             validateCollection()
+            val startTime = System.currentTimeMillis() % 1000
 
             runCatching {
                 when {
                     MainPreferences.isSettingForBoth() -> {
                         if (shouldSetSameWallpaper()) {
                             getHomeScreenWallpaper()?.let {
+                                Log.i(TAG, "Time taken to get home wallpaper: ${System.currentTimeMillis() % 1000 - startTime} ms")
                                 setSameWallpaper(it)
                             }
                         } else {
@@ -340,8 +342,8 @@ abstract class AbstractComposeAutoWallpaperService : AbstractAutoWallpaperServic
             val usedWallpapers = LastHomeWallpapersDatabase.getInstance(applicationContext)
                 ?.wallpaperDao()?.getWallpapers()
 
-            val usedIds: List<String> = usedWallpapers?.map { it.id } ?: emptyList()
-            val wallpaperIds: List<String> = wallpapers?.map { it.id } ?: emptyList()
+            val usedIds: List<Int> = usedWallpapers?.map { it.id } ?: emptyList()
+            val wallpaperIds: List<Int> = wallpapers?.map { it.id } ?: emptyList()
 
             if (wallpaperIds.size - usedIds.size == 0) {
                 LastHomeWallpapersDatabase.getInstance(applicationContext)?.wallpaperDao()?.nukeTable()
@@ -356,8 +358,8 @@ abstract class AbstractComposeAutoWallpaperService : AbstractAutoWallpaperServic
             val usedWallpapers = LastLockWallpapersDatabase.getInstance(applicationContext)
                 ?.wallpaperDao()?.getWallpapers()
 
-            val usedIds: List<String> = usedWallpapers?.map { it.id } ?: emptyList()
-            val wallpaperIds: List<String> = wallpapers?.map { it.id } ?: emptyList()
+            val usedIds: List<Int> = usedWallpapers?.map { it.id } ?: emptyList()
+            val wallpaperIds: List<Int> = wallpapers?.map { it.id } ?: emptyList()
 
             if (wallpaperIds.size - usedIds.size == 0) {
                 LastLockWallpapersDatabase.getInstance(applicationContext)?.wallpaperDao()?.nukeTable()

@@ -1,5 +1,6 @@
 package app.simple.peri.ui.screens
 
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
@@ -19,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -59,7 +61,7 @@ fun Tags(navController: NavController? = null) {
     val tagsViewModel: TagsViewModel = viewModel(
             factory = TagsViewModelFactory()
     )
-    val tags = remember { mutableListOf<Tag>() }
+    val tags = remember { mutableStateListOf<Tag>() }
     var statusBarHeight by remember { mutableIntStateOf(0) }
     var navigationBarHeight by remember { mutableIntStateOf(0) }
     val hazeState = remember { HazeState() }
@@ -85,6 +87,7 @@ fun Tags(navController: NavController? = null) {
     }
 
     tagsViewModel.getTags().observeAsState().value?.let {
+        Log.d("Tags", "Received tags: ${it.size}")
         tags.clear()
         tags.addAll(it)
     }

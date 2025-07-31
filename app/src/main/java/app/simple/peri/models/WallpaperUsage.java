@@ -17,20 +17,18 @@ import androidx.room.PrimaryKey;
 public class WallpaperUsage implements Serializable {
     
     @PrimaryKey
-    @NonNull
     @ColumnInfo (name = "wallpaper_id")
-    private String wallpaperId;
+    private int wallpaperId;
     
     @ColumnInfo (name = "usage_count")
     private int usageCount;
     
-    public WallpaperUsage(@NonNull String wallpaperId, int usageCount) {
+    public WallpaperUsage(int wallpaperId, int usageCount) {
         this.wallpaperId = wallpaperId;
         this.usageCount = usageCount;
     }
     
-    @NonNull
-    public String getWallpaperId() {
+    public int getWallpaperId() {
         return wallpaperId;
     }
     
@@ -38,7 +36,7 @@ public class WallpaperUsage implements Serializable {
         return usageCount;
     }
     
-    public void setWallpaperId(@NonNull String wallpaperId) {
+    public void setWallpaperId(int wallpaperId) {
         this.wallpaperId = wallpaperId;
     }
     
@@ -63,6 +61,6 @@ public class WallpaperUsage implements Serializable {
         if (!(o instanceof WallpaperUsage that)) {
             return false;
         }
-        return usageCount == that.usageCount && wallpaperId.equals(that.wallpaperId);
+        return usageCount == that.usageCount && wallpaperId == that.wallpaperId;
     }
 }

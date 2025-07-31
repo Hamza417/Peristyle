@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.CreationExtras
 import app.simple.peri.viewmodels.TagsViewModel
 
-class TagsViewModelFactory(private val md5: String? = null,
+class TagsViewModelFactory(private val md5: Int = 0,
                            private val tag: String? = null) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
