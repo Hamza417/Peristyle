@@ -263,4 +263,6 @@
     <string name="sdcard_issue">SD-карты медленные для случайного ввода-вывода. Используйте их по своему усмотрению.</string>
     <string name="same_wallpaper_for_both">Те же обои</string>
     <string name="same_wallpaper_for_both_summary">Использовать одни и те же случайные обои для обоих экранов. Работает только если для одного из экранов не задана папка или тег.</string>
+    <string name="skip_palettes">Пропустить палитры</string>
+    <string name="skip_palettes_summary">Пропускает генерацию палитр, чтобы ускорить загрузку за счет тонированных теней на изображениях.</string>
 </resources>
