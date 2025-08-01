@@ -57,6 +57,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -99,10 +100,14 @@ import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
-import dev.chrisbanes.haze.HazeDefaults
-import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.hazeEffect
-import dev.chrisbanes.haze.hazeSource
+import com.kyant.liquidglass.GlassStyle
+import com.kyant.liquidglass.liquidGlass
+import com.kyant.liquidglass.liquidGlassProvider
+import com.kyant.liquidglass.material.GlassMaterial
+import com.kyant.liquidglass.refraction.InnerRefraction
+import com.kyant.liquidglass.refraction.RefractionAmount
+import com.kyant.liquidglass.refraction.RefractionHeight
+import com.kyant.liquidglass.rememberLiquidGlassProviderState
 import kotlin.math.absoluteValue
 
 val displayDimension = DisplayDimension(1080, 1920)
@@ -276,8 +281,11 @@ fun WallpaperItem(title: String, position: Int, onClick: () -> Unit, onNextWallp
         mutableStateOf(ContentScale.Crop)
     }
 
-    val hazeState = remember { HazeState() }
     val showDeleteDialog = remember { mutableStateOf(false) }
+
+    val providerState = rememberLiquidGlassProviderState(
+            backgroundColor = Color.Transparent
+    )
 
     if (showDeleteDialog.value) {
         SureDialog(
@@ -317,7 +325,7 @@ fun WallpaperItem(title: String, position: Int, onClick: () -> Unit, onNextWallp
                     transition = CrossFade,
                     modifier = Modifier
                         .fillMaxSize()
-                        .hazeSource(state = hazeState),
+                        .liquidGlassProvider(providerState),
                     alignment = Alignment.Center,
                     contentScale = currentScale.value,
             ) {
@@ -372,8 +380,20 @@ fun WallpaperItem(title: String, position: Int, onClick: () -> Unit, onNextWallp
                     modifier = Modifier
                         .wrapContentHeight()
                         .fillMaxWidth()
-                        .hazeEffect(state = hazeState,
-                                    style = HazeDefaults.style(backgroundColor = Color(0x50000000), blurRadius = 15.dp)
+                        .liquidGlass(
+                                providerState,
+                                GlassStyle(
+                                        shape = RoundedCornerShape(0.dp),
+                                        innerRefraction = InnerRefraction(
+                                                height = RefractionHeight(8.dp),
+                                                amount = RefractionAmount((-50).dp)
+                                        ),
+                                        material = GlassMaterial(
+                                                blurRadius = 8.dp,
+                                                brush = SolidColor(Color.Transparent),
+                                                alpha = 0.3f
+                                        )
+                                )
                         )
                         .align(Alignment.BottomCenter)
             ) {
