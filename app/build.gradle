@@ -126,6 +126,7 @@ android {
 
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_17
+        freeCompilerArgs += ["-Xskip-prerelease-check"]
     }
 
     flavorDimensions.add("default")
@@ -199,6 +200,7 @@ dependencies {
     implementation 'dev.chrisbanes.haze:haze-materials:1.6.9'
     implementation 'com.squareup.retrofit2:retrofit:3.0.0'
     implementation "com.squareup.retrofit2:converter-gson:2.9.0"
+    implementation 'com.github.Kyant0:AndroidLiquidGlass:530bed05f8'
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.2.1'

@@ -20,6 +20,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
@@ -45,8 +46,8 @@ import app.simple.peri.ui.nav.Routes
 import app.simple.peri.viewmodels.StateViewModel
 import app.simple.peri.viewmodels.TagsViewModel
 import app.simple.peri.viewmodels.WallpaperListViewModel
-import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.hazeSource
+import com.kyant.liquidglass.liquidGlassProvider
+import com.kyant.liquidglass.rememberLiquidGlassProviderState
 
 @Composable
 fun TaggedWallpapers(navController: NavController? = null) {
@@ -69,7 +70,6 @@ fun TaggedWallpapers(navController: NavController? = null) {
 
     var statusBarHeight by remember { mutableIntStateOf(0) }
     var navigationBarHeight by remember { mutableIntStateOf(0) }
-    val hazeState = remember { HazeState() }
     val wallpaperListViewModel: WallpaperListViewModel =
         viewModel() // We should use a dedicated ViewModel for this
     val isSelectionMode by wallpaperListViewModel.isSelectionMode.collectAsState()
@@ -105,6 +105,10 @@ fun TaggedWallpapers(navController: NavController? = null) {
         }
     }
 
+    val providerState = rememberLiquidGlassProviderState(
+            backgroundColor = Color.Transparent
+    )
+
     if (showWallpaperComparisonDialog) {
         PostScalingChangeDialog(
                 onDismiss = {
@@ -122,7 +126,7 @@ fun TaggedWallpapers(navController: NavController? = null) {
                 state = wallpaperListViewModel.lazyGridState,
                 modifier = Modifier
                     .fillMaxSize()
-                    .hazeSource(state = hazeState),
+                    .liquidGlassProvider(providerState),
                 contentPadding = PaddingValues(
                         top = if (MainComposePreferences.getBottomHeader()) {
                             if (MainComposePreferences.getMarginBetween()) {
@@ -216,7 +220,7 @@ fun TaggedWallpapers(navController: NavController? = null) {
                         .padding(bottom = navigationBarHeightDp),
                     selectedWallpapers = wallpapers.filter { it.isSelected },
                     count = selectionCount,
-                    hazeState = hazeState,
+                    providerState = providerState,
                     wallpaperListViewModel = wallpaperListViewModel,
                     navigationBarHeight = bottomPadding
             )
@@ -227,15 +231,15 @@ fun TaggedWallpapers(navController: NavController? = null) {
 
             BottomHeader(
                     title = tag.name,
-                    count = wallpapers.size,
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
                         .onGloballyPositioned {
                             bottomHeaderHeight = with(density) { it.size.height.toDp() }
                         },
+                    count = wallpapers.size,
                     navController = navController,
-                    hazeState = hazeState,
-                    navigationBarHeight = navigationBarHeightDp
+                    navigationBarHeight = navigationBarHeightDp,
+                    providerState = providerState
             )
         }
     }
