@@ -104,7 +104,7 @@ fun LiveAutoWallpaper(navController: NavController? = null) {
                     })
 
             ButtonPreference(
-                    title = stringResource(R.string.live_auto_wallpaper),
+                    title = stringResource(R.string.set_as_wallpaper),
                     onClick = {
                         runCatching {
                             val componentName = ComponentName(
