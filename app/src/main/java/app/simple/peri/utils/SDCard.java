@@ -19,6 +19,7 @@ import java.util.regex.Pattern;
 
 import androidx.core.content.ContextCompat;
 
+@SuppressWarnings ("Deprecation")
 public class SDCard {
     private static final String TAG = "SDCard";
     
