@@ -204,43 +204,45 @@ class LiveAutoWallpaperService : WallpaperService() {
             holder?.let {
                 val canvas: Canvas? = it.lockCanvas()
                 canvas?.let { canvas1 ->
-                    if (isFading && oldBitmap != null && bitmap != null) {
-                        // Calculate the fade progress
-                        val elapsedTime = System.currentTimeMillis() - fadeStartTime
-                        transitionProgress = elapsedTime.toFloat() / CROSSFADE_DURATION
-
-                        if (transitionProgress >= 1.0f) {
-                            // End the fade and draw the new bitmap at full opacity
-                            isFading = false
-                            transitionProgress = 1.0f
+                    when {
+                        MainComposePreferences.getDisableAnimations() -> {
+                            bitmap?.let { bmp ->
+                                canvas1.drawBitmap(bmp, 0f, 0f, null)
+                            }
                         }
+                        isFading && oldBitmap != null && bitmap != null -> {
+                            // Fade animation logic (unchanged)
+                            val elapsedTime = System.currentTimeMillis() - fadeStartTime
+                            transitionProgress = elapsedTime.toFloat() / CROSSFADE_DURATION
 
-                        // Draw the old bitmap
-                        oldBitmap?.let { bmp ->
-                            canvas1.drawBitmap(bmp, 0f, 0f, null)
-                        }
+                            if (transitionProgress >= 1.0f) {
+                                isFading = false
+                                transitionProgress = 1.0f
+                            }
 
-                        // Overlay the new bitmap with alpha
-                        bitmap?.let { bmp ->
-                            val paint = Paint()
-                            paint.alpha = (transitionProgress * 255).toInt()
-                            canvas1.drawBitmap(bmp, 0f, 0f, paint)
-                        }
+                            oldBitmap?.let { bmp ->
+                                canvas1.drawBitmap(bmp, 0f, 0f, null)
+                            }
 
-                        // Trigger another redraw until the fade is complete
-                        if (isFading) {
-                            it.unlockCanvasAndPost(canvas1)
-                            onSurfaceRedrawNeeded(holder)
-                            return
-                        } else {
-                            // End the fade and recycle the old bitmap
-                            oldBitmap?.recycle()
-                            oldBitmap = null
+                            bitmap?.let { bmp ->
+                                val paint = Paint()
+                                paint.alpha = (transitionProgress * 255).toInt()
+                                canvas1.drawBitmap(bmp, 0f, 0f, paint)
+                            }
+
+                            if (isFading) {
+                                it.unlockCanvasAndPost(canvas1)
+                                onSurfaceRedrawNeeded(holder)
+                                return
+                            } else {
+                                oldBitmap?.recycle()
+                                oldBitmap = null
+                            }
                         }
-                    } else {
-                        // Draw the current bitmap normally if no fade is active
-                        bitmap?.let { bmp ->
-                            canvas1.drawBitmap(bmp, 0f, 0f, null)
+                        else -> {
+                            bitmap?.let { bmp ->
+                                canvas1.drawBitmap(bmp, 0f, 0f, null)
+                            }
                         }
                     }
                 }
