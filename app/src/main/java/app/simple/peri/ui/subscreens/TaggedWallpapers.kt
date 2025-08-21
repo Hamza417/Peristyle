@@ -12,7 +12,6 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -23,9 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
-import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -42,6 +39,7 @@ import app.simple.peri.ui.commons.WallpaperItem
 import app.simple.peri.ui.dialogs.common.PleaseWaitDialog
 import app.simple.peri.ui.dialogs.common.PostScalingChangeDialog
 import app.simple.peri.ui.nav.Routes
+import app.simple.peri.ui.theme.LocalBarsSize
 import app.simple.peri.viewmodels.StateViewModel
 import app.simple.peri.viewmodels.TagsViewModel
 import app.simple.peri.viewmodels.WallpaperListViewModel
@@ -67,8 +65,6 @@ fun TaggedWallpapers(navController: NavController? = null) {
         wallpapers = updatedWallpapers.toMutableStateList()
     }
 
-    var statusBarHeight by remember { mutableIntStateOf(0) }
-    var navigationBarHeight by remember { mutableIntStateOf(0) }
     val hazeState = remember { HazeState() }
     val wallpaperListViewModel: WallpaperListViewModel =
         viewModel() // We should use a dedicated ViewModel for this
@@ -78,25 +74,13 @@ fun TaggedWallpapers(navController: NavController? = null) {
     val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
     val wallpaperData = remember { mutableStateOf<PostWallpaperData?>(null) }
     var showWallpaperComparisonDialog by remember { mutableStateOf(false) }
-
-    statusBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
-            LocalView.current.rootWindowInsets
-    ).getInsets(WindowInsetsCompat.Type.statusBars()).top
-    navigationBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
-            LocalView.current.rootWindowInsets
-    ).getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
-
-    val statusBarHeightPx = statusBarHeight
-    val statusBarHeightDp = with(LocalDensity.current) { statusBarHeightPx.toDp() }
-    val navigationBarHeightPx = navigationBarHeight
-    val navigationBarHeightDp = with(LocalDensity.current) { navigationBarHeightPx.toDp() }
     var bottomHeaderHeight by remember { mutableStateOf(0.dp) }
 
-    val topPadding = 8.dp + statusBarHeightDp
+    val topPadding = 8.dp + LocalBarsSize.current.statusBarHeight
     val bottomPadding = 8.dp + if (MainComposePreferences.getBottomHeader()) {
         bottomHeaderHeight
     } else {
-        navigationBarHeightDp
+        LocalBarsSize.current.navigationBarHeight
     }
 
     if (showPleaseWaitDialog) {
@@ -213,7 +197,7 @@ fun TaggedWallpapers(navController: NavController? = null) {
             SelectionMenu(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
-                        .padding(bottom = navigationBarHeightDp),
+                        .padding(bottom = LocalBarsSize.current.navigationBarHeight),
                     selectedWallpapers = wallpapers.filter { it.isSelected },
                     count = selectionCount,
                     hazeState = hazeState,
@@ -235,7 +219,7 @@ fun TaggedWallpapers(navController: NavController? = null) {
                         },
                     navController = navController,
                     hazeState = hazeState,
-                    navigationBarHeight = navigationBarHeightDp
+                    navigationBarHeight = LocalBarsSize.current.navigationBarHeight
             )
         }
     }

@@ -47,12 +47,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -62,8 +59,6 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -71,7 +66,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.lerp
-import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
@@ -89,6 +83,7 @@ import app.simple.peri.ui.dialogs.autowallpaper.AutoWallpaperPageSelectionDialog
 import app.simple.peri.ui.dialogs.common.SureDialog
 import app.simple.peri.ui.dialogs.wallhaven.WallhavenSearchDialog
 import app.simple.peri.ui.nav.Routes
+import app.simple.peri.ui.theme.LocalBarsSize
 import app.simple.peri.utils.FileUtils.toFile
 import app.simple.peri.utils.ServiceUtils
 import app.simple.peri.viewmodels.HomeScreenViewModel
@@ -119,19 +114,6 @@ fun Home(navController: NavController? = null) {
     val isLiveWallpaperRunning = remember {
         mutableStateOf(ServiceUtils.isWallpaperServiceRunning(applicationContext))
     }
-
-    var statusBarHeight by remember { mutableIntStateOf(0) }
-    var navigationBarHeight by remember { mutableIntStateOf(0) }
-
-    statusBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
-            LocalView.current.rootWindowInsets).getInsets(WindowInsetsCompat.Type.statusBars()).top
-    navigationBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
-            LocalView.current.rootWindowInsets).getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
-
-    val statusBarHeightPx = statusBarHeight
-    val statusBarHeightDp = with(LocalDensity.current) { statusBarHeightPx.toDp() }
-    val navigationBarHeightPx = navigationBarHeight
-    val navigationBarHeightDp = with(LocalDensity.current) { navigationBarHeightPx.toDp() }
 
     val pages = listOf(
             Page(RANDOM_WALLPAPER_POSITION, true),
@@ -187,8 +169,8 @@ fun Home(navController: NavController? = null) {
             Modifier
                 .fillMaxSize()
                 .padding(
-                        top = statusBarHeightDp,
-                        bottom = navigationBarHeightDp,
+                        top = LocalBarsSize.current.statusBarHeight,
+                        bottom = LocalBarsSize.current.navigationBarHeight,
                 )
     ) {
         Header(

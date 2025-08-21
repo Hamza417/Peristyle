@@ -15,7 +15,6 @@ import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,10 +26,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import app.simple.peri.R
@@ -48,6 +45,7 @@ import app.simple.peri.ui.commons.WallpaperItem
 import app.simple.peri.ui.dialogs.common.PleaseWaitDialog
 import app.simple.peri.ui.dialogs.common.PostScalingChangeDialog
 import app.simple.peri.ui.nav.Routes
+import app.simple.peri.ui.theme.LocalBarsSize
 import app.simple.peri.utils.ConditionUtils.invert
 import app.simple.peri.viewmodels.FolderDataViewModel
 import app.simple.peri.viewmodels.StateViewModel
@@ -95,28 +93,16 @@ fun WallpaperList(navController: NavController? = null) {
     val wallpaperListViewModel: WallpaperListViewModel = viewModel() // We should use a dedicated ViewModel for this
     val isSelectionMode by wallpaperListViewModel.isSelectionMode.collectAsState()
     val selectionCount by wallpaperListViewModel.selectedWallpapers.collectAsState()
-    var statusBarHeight by remember { mutableIntStateOf(0) }
-    var navigationBarHeight by remember { mutableIntStateOf(0) }
     var showPleaseWaitDialog by remember { mutableStateOf(false) }
     val hazeState = remember { HazeState() }
     val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
-
-    statusBarHeight = WindowInsetsCompat.toWindowInsetsCompat(LocalView.current.rootWindowInsets)
-        .getInsets(WindowInsetsCompat.Type.statusBars()).top
-    navigationBarHeight = WindowInsetsCompat.toWindowInsetsCompat(LocalView.current.rootWindowInsets)
-        .getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
-
-    val statusBarHeightPx = statusBarHeight
-    val statusBarHeightDp = with(LocalDensity.current) { statusBarHeightPx.toDp() }
-    val navigationBarHeightPx = navigationBarHeight
-    val navigationBarHeightDp = with(LocalDensity.current) { navigationBarHeightPx.toDp() }
     var bottomHeaderHeight by remember { mutableStateOf(0.dp) }
 
-    val topPadding = 8.dp + statusBarHeightDp
+    val topPadding = 8.dp + LocalBarsSize.current.statusBarHeight
     val bottomPadding = 8.dp + if (MainComposePreferences.getBottomHeader()) {
         bottomHeaderHeight
     } else {
-        navigationBarHeightDp
+        LocalBarsSize.current.navigationBarHeight
     }
 
     if (showPleaseWaitDialog) {
@@ -269,7 +255,7 @@ fun WallpaperList(navController: NavController? = null) {
                         },
                     navController = navController,
                     hazeState = hazeState,
-                    navigationBarHeight = navigationBarHeightDp
+                    navigationBarHeight = LocalBarsSize.current.navigationBarHeight
             )
         }
     }

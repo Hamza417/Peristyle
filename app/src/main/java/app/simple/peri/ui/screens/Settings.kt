@@ -13,20 +13,14 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
-import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import app.simple.peri.BuildConfig
@@ -44,6 +38,7 @@ import app.simple.peri.ui.dialogs.settings.OrderDialog
 import app.simple.peri.ui.dialogs.settings.ShowInureAppManagerDialog
 import app.simple.peri.ui.dialogs.settings.ShowPositionalDialog
 import app.simple.peri.ui.dialogs.settings.SortDialog
+import app.simple.peri.ui.theme.LocalBarsSize
 import app.simple.peri.utils.ConditionUtils.invert
 import app.simple.peri.utils.FileUtils.toSize
 import app.simple.peri.viewmodels.ComposeWallpaperViewModel
@@ -56,23 +51,8 @@ import kotlinx.coroutines.withContext
 @Composable
 fun Settings(navController: NavController? = null) {
     val context = LocalContext.current
-    var statusBarHeight by remember { mutableIntStateOf(0) }
-    var navigationBarHeight by remember { mutableIntStateOf(0) }
     val composeWallpaperViewModel: ComposeWallpaperViewModel = viewModel(LocalActivity.current as ComponentActivity)
     val homeViewModel: HomeScreenViewModel = viewModel(LocalActivity.current as ComponentActivity)
-
-    statusBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
-            LocalView.current.rootWindowInsets).getInsets(WindowInsetsCompat.Type.statusBars()).top
-    navigationBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
-            LocalView.current.rootWindowInsets).getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
-
-    val statusBarHeightPx = statusBarHeight
-    val statusBarHeightDp = with(LocalDensity.current) { statusBarHeightPx.toDp() }
-    val navigationBarHeightPx = navigationBarHeight
-    val navigationBarHeightDp = with(LocalDensity.current) { navigationBarHeightPx.toDp() }
-
-    val topPadding = COMMON_PADDING + statusBarHeightDp
-    val bottomPadding = 8.dp + navigationBarHeightDp
 
     val isWallpaperDetails = remember { mutableStateOf(MainComposePreferences.getWallpaperDetails()) }
 
@@ -80,8 +60,8 @@ fun Settings(navController: NavController? = null) {
             contentPadding = PaddingValues(
                     start = 8.dp,
                     end = 8.dp,
-                    top = topPadding,
-                    bottom = bottomPadding)
+                    top = COMMON_PADDING + LocalBarsSize.current.statusBarHeight,
+                    bottom = 8.dp + LocalBarsSize.current.navigationBarHeight)
     ) {
         item { // Header
             TopHeader(

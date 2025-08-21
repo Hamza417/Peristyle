@@ -24,7 +24,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -40,7 +39,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -48,7 +46,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.toColorInt
-import androidx.core.view.WindowInsetsCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -65,6 +62,7 @@ import app.simple.peri.ui.commons.TopHeader
 import app.simple.peri.ui.commons.WallpaperDimensionsText
 import app.simple.peri.ui.dialogs.wallhaven.WallhavenSearchDialog
 import app.simple.peri.ui.nav.Routes
+import app.simple.peri.ui.theme.LocalBarsSize
 import app.simple.peri.utils.ConditionUtils.invert
 import app.simple.peri.viewmodels.WallhavenViewModel
 import com.bumptech.glide.integration.compose.CrossFade
@@ -106,27 +104,15 @@ fun WallhavenScreen(navController: NavController? = null) {
     }
 
     val hazeState = remember { HazeState() }
-    var statusBarHeight by remember { mutableIntStateOf(0) }
-    var navigationBarHeight by remember { mutableIntStateOf(0) }
     var searchDialog by remember { mutableStateOf(false) }
     val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
-
-    statusBarHeight = WindowInsetsCompat.toWindowInsetsCompat(LocalView.current.rootWindowInsets)
-        .getInsets(WindowInsetsCompat.Type.statusBars()).top
-    navigationBarHeight = WindowInsetsCompat.toWindowInsetsCompat(LocalView.current.rootWindowInsets)
-        .getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
-
-    val statusBarHeightPx = statusBarHeight
-    val statusBarHeightDp = with(LocalDensity.current) { statusBarHeightPx.toDp() }
-    val navigationBarHeightPx = navigationBarHeight
-    val navigationBarHeightDp = with(LocalDensity.current) { navigationBarHeightPx.toDp() }
     var bottomHeaderHeight by remember { mutableStateOf(0.dp) }
 
-    val topPadding = 8.dp + statusBarHeightDp
+    val topPadding = 8.dp + LocalBarsSize.current.statusBarHeight
     val bottomPadding = 8.dp + if (MainComposePreferences.getBottomHeader()) {
         bottomHeaderHeight
     } else {
-        navigationBarHeightDp
+        LocalBarsSize.current.navigationBarHeight
     }
 
     if (searchDialog) {
@@ -254,7 +240,7 @@ fun WallhavenScreen(navController: NavController? = null) {
                         },
                     navController = navController,
                     hazeState = hazeState,
-                    navigationBarHeight = navigationBarHeightDp,
+                    navigationBarHeight = LocalBarsSize.current.navigationBarHeight,
                     isSearch = true,
                     onSearch = {
                         searchDialog = true
@@ -318,12 +304,12 @@ fun ImageCard(wallpaper: WallhavenWallpaper, navController: NavController? = nul
                             clip = false,
                             spotColor = try {
                                 Color(wallpaper.colors[0].toColorInt())
-                            } catch (e: IndexOutOfBoundsException) {
+                            } catch (_: IndexOutOfBoundsException) {
                                 Color(0xFF444444)
                             },
                             ambientColor = try {
                                 Color(wallpaper.colors[1].toColorInt())
-                            } catch (e: IndexOutOfBoundsException) {
+                            } catch (_: IndexOutOfBoundsException) {
                                 Color(0xFF444444)
                             }
                     )

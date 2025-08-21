@@ -39,21 +39,17 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import app.simple.peri.BuildConfig
@@ -65,6 +61,7 @@ import app.simple.peri.ui.commons.InitDisplayDimension
 import app.simple.peri.ui.commons.TopHeader
 import app.simple.peri.ui.dialogs.common.ShowWarningDialog
 import app.simple.peri.ui.nav.Routes
+import app.simple.peri.ui.theme.LocalBarsSize
 import app.simple.peri.utils.PermissionUtils
 import app.simple.peri.utils.PermissionUtils.isBatteryOptimizationDisabled
 import app.simple.peri.utils.PermissionUtils.requestIgnoreBatteryOptimizations
@@ -75,20 +72,6 @@ fun Setup(context: Context, navController: NavController? = null) {
     InitDisplayDimension()
 
     var showSetupIncompleteDialog by remember { mutableStateOf(false) }
-    var statusBarHeight by remember { mutableIntStateOf(0) }
-    var navigationBarHeight by remember { mutableIntStateOf(0) }
-
-    statusBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
-            LocalView.current.rootWindowInsets).getInsets(WindowInsetsCompat.Type.statusBars()).top
-    navigationBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
-            LocalView.current.rootWindowInsets).getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
-
-    val statusBarHeightPx = statusBarHeight
-    val statusBarHeightDp = with(LocalDensity.current) { statusBarHeightPx.toDp() }
-    val navigationBarHeightPx = navigationBarHeight
-    val navigationBarHeightDp = with(LocalDensity.current) { navigationBarHeightPx.toDp() }
-    val topPadding = COMMON_PADDING + statusBarHeightDp
-    val bottomPadding = 8.dp + navigationBarHeightDp
 
     if (showSetupIncompleteDialog) {
         ShowWarningDialog(
@@ -110,10 +93,10 @@ fun Setup(context: Context, navController: NavController? = null) {
                     .fillMaxSize()
                     .weight(1F),
                 contentPadding = PaddingValues(
-                        top = topPadding,
+                        top = COMMON_PADDING + LocalBarsSize.current.statusBarHeight,
                         start = COMMON_PADDING,
                         end = COMMON_PADDING,
-                        bottom = bottomPadding),
+                        bottom = 8.dp + LocalBarsSize.current.navigationBarHeight),
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -150,7 +133,7 @@ fun Setup(context: Context, navController: NavController? = null) {
                             top = COMMON_PADDING,
                             start = COMMON_PADDING,
                             end = COMMON_PADDING,
-                            bottom = COMMON_PADDING + navigationBarHeightDp
+                            bottom = COMMON_PADDING + LocalBarsSize.current.navigationBarHeight
                     )
                     .fillMaxWidth(),
         ) {

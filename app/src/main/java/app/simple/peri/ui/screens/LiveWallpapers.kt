@@ -31,7 +31,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,13 +43,11 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
-import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import app.simple.peri.R
@@ -60,6 +57,7 @@ import app.simple.peri.ui.commons.BottomHeader
 import app.simple.peri.ui.commons.COMMON_PADDING
 import app.simple.peri.ui.commons.TopHeader
 import app.simple.peri.ui.dialogs.livewallpapers.LiveWallpapersMenu
+import app.simple.peri.ui.theme.LocalBarsSize
 import app.simple.peri.viewmodels.LiveWallpapersViewModel
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import dev.chrisbanes.haze.HazeDefaults
@@ -70,31 +68,20 @@ import dev.chrisbanes.haze.hazeSource
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun LiveWallpapers(navController: NavHostController) {
-    var statusBarHeight by remember { mutableIntStateOf(0) }
-    var navigationBarHeight by remember { mutableIntStateOf(0) }
     val liveWallpapersViewModel: LiveWallpapersViewModel = viewModel()
     val liveWallpapers = remember { mutableStateListOf<LiveWallpaperInfo>() }
     var packageNameToUninstall by remember { mutableStateOf<String?>(null) }
     val hazeState = remember { HazeState() }
     val listState = rememberLazyGridState()
 
-    statusBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
-            LocalView.current.rootWindowInsets).getInsets(WindowInsetsCompat.Type.statusBars()).top
-    navigationBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
-            LocalView.current.rootWindowInsets).getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
-
-    val statusBarHeightPx = statusBarHeight
-    val statusBarHeightDp = with(LocalDensity.current) { statusBarHeightPx.toDp() }
-    val navigationBarHeightPx = navigationBarHeight
-    val navigationBarHeightDp = with(LocalDensity.current) { navigationBarHeightPx.toDp() }
     var bottomHeaderHeight by remember { mutableStateOf(0.dp) }
     val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
 
-    val topPadding = 8.dp + statusBarHeightDp
+    val topPadding = 8.dp + LocalBarsSize.current.statusBarHeight
     val bottomPadding = 8.dp + if (MainComposePreferences.getBottomHeader()) {
         bottomHeaderHeight
     } else {
-        navigationBarHeightDp
+        LocalBarsSize.current.navigationBarHeight
     }
 
     liveWallpapersViewModel.getLiveWallpapersLiveData().observeAsState().value?.let {
@@ -255,7 +242,7 @@ fun LiveWallpapers(navController: NavHostController) {
                         },
                     navController = navController,
                     hazeState = hazeState,
-                    navigationBarHeight = navigationBarHeightDp
+                    navigationBarHeight = LocalBarsSize.current.navigationBarHeight
             )
         }
     }

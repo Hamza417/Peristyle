@@ -33,7 +33,6 @@ import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -43,14 +42,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import app.simple.peri.R
@@ -64,6 +61,7 @@ import app.simple.peri.ui.commons.TopHeader
 import app.simple.peri.ui.dialogs.common.ShowWarningDialog
 import app.simple.peri.ui.dialogs.folders.FolderMenu
 import app.simple.peri.ui.nav.Routes
+import app.simple.peri.ui.theme.LocalBarsSize
 import app.simple.peri.utils.ConditionUtils.invert
 import app.simple.peri.viewmodels.ComposeWallpaperViewModel
 import com.bumptech.glide.integration.compose.CrossFade
@@ -79,28 +77,15 @@ fun Folders(navController: NavController? = null) {
     val composeWallpaperViewModel: ComposeWallpaperViewModel = viewModel(LocalActivity.current as ComponentActivity)
     val folders by composeWallpaperViewModel.getFoldersLiveData().observeAsState(emptyList())
     var requestPermission by remember { mutableStateOf(false) }
-    var statusBarHeight by remember { mutableIntStateOf(0) }
-    var navigationBarHeight by remember { mutableIntStateOf(0) }
     val hazeState = remember { HazeState() }
 
-    statusBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
-            LocalView.current.rootWindowInsets
-    ).getInsets(WindowInsetsCompat.Type.statusBars()).top
-    navigationBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
-            LocalView.current.rootWindowInsets
-    ).getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
-
-    val statusBarHeightPx = statusBarHeight
-    val statusBarHeightDp = with(LocalDensity.current) { statusBarHeightPx.toDp() }
-    val navigationBarHeightPx = navigationBarHeight
-    val navigationBarHeightDp = with(LocalDensity.current) { navigationBarHeightPx.toDp() }
     var bottomHeaderHeight by remember { mutableStateOf(0.dp) }
 
-    val topPadding = 8.dp + statusBarHeightDp
+    val topPadding = 8.dp + LocalBarsSize.current.statusBarHeight
     val bottomPadding = 8.dp + if (MainComposePreferences.getBottomHeader()) {
         bottomHeaderHeight
     } else {
-        navigationBarHeightDp
+        LocalBarsSize.current.navigationBarHeight
     }
 
     if (requestPermission) {
@@ -182,7 +167,7 @@ fun Folders(navController: NavController? = null) {
                         },
                     navController = navController,
                     hazeState = hazeState,
-                    navigationBarHeight = navigationBarHeightDp,
+                    navigationBarHeight = LocalBarsSize.current.navigationBarHeight,
             )
         }
     }

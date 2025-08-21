@@ -25,22 +25,17 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.NavController
 import app.simple.peri.R
 import app.simple.peri.preferences.MainComposePreferences
@@ -56,32 +51,18 @@ import app.simple.peri.ui.dialogs.autowallpaper.TimeSelectionDialog
 import app.simple.peri.ui.dialogs.autowallpaper.UsageTimesDeleteDialog
 import app.simple.peri.ui.dialogs.wallpaper.AutoWallpaperEffectsDialog
 import app.simple.peri.ui.settings.SkipColumn
+import app.simple.peri.ui.theme.LocalBarsSize
 
 @Composable
 fun LiveAutoWallpaper(navController: NavController? = null) {
     val context = LocalContext.current
-    var statusBarHeight by remember { mutableIntStateOf(0) }
-    var navigationBarHeight by remember { mutableIntStateOf(0) }
-
-    statusBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
-            LocalView.current.rootWindowInsets).getInsets(WindowInsetsCompat.Type.statusBars()).top
-    navigationBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
-            LocalView.current.rootWindowInsets).getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
-
-    val statusBarHeightPx = statusBarHeight
-    val statusBarHeightDp = with(LocalDensity.current) { statusBarHeightPx.toDp() }
-    val navigationBarHeightPx = navigationBarHeight
-    val navigationBarHeightDp = with(LocalDensity.current) { navigationBarHeightPx.toDp() }
-
-    val topPadding = 8.dp + statusBarHeightDp
-    val bottomPadding = 8.dp + navigationBarHeightDp
 
     LazyColumn(
             contentPadding = PaddingValues(
                     start = 8.dp,
                     end = 8.dp,
-                    top = topPadding,
-                    bottom = bottomPadding)
+                    top = 8.dp + LocalBarsSize.current.statusBarHeight,
+                    bottom = 8.dp + LocalBarsSize.current.navigationBarHeight)
     ) {
         item { // Header
             TopHeader(title = stringResource(R.string.auto_wallpaper),
