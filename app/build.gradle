@@ -154,7 +154,7 @@ android {
 
 dependencies {
 
-    def composeBom = platform('androidx.compose:compose-bom:2025.07.00')
+    def composeBom = platform('androidx.compose:compose-bom:2025.08.00')
     implementation composeBom
     androidTestImplementation composeBom
 
@@ -163,16 +163,16 @@ dependencies {
     implementation 'androidx.activity:activity-compose:1.10.1'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.9.2'
     implementation 'androidx.compose.runtime:runtime-livedata'
-    implementation 'androidx.compose.foundation:foundation:1.8.3'
-    implementation 'androidx.compose.ui:ui-tooling-preview-android:1.8.3'
+    implementation 'androidx.compose.foundation:foundation:1.9.0'
+    implementation 'androidx.compose.ui:ui-tooling-preview-android:1.9.0'
     implementation 'androidx.navigation:navigation-compose:2.9.3'
     implementation "androidx.compose.material:material-icons-extended:1.7.8"
     implementation "androidx.hilt:hilt-navigation-compose:1.2.0"
     implementation "androidx.paging:paging-compose:3.3.6"
-    debugImplementation 'androidx.compose.ui:ui-tooling:1.8.3'
+    debugImplementation 'androidx.compose.ui:ui-tooling:1.9.0'
 
     implementation 'androidx.window:window:1.4.0'
-    implementation 'androidx.core:core-ktx:1.16.0'
+    implementation 'androidx.core:core-ktx:1.17.0'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-savedstate:2.9.2'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.9.2'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.9.2'
@@ -183,8 +183,8 @@ dependencies {
     implementation 'com.google.android.material:material:1.12.0'
     implementation 'com.google.accompanist:accompanist-drawablepainter:0.37.3'
     implementation 'com.google.code.gson:gson:2.13.1'
-    implementation "com.google.dagger:hilt-android:2.57"
-    ksp "com.google.dagger:hilt-compiler:2.57"
+    implementation "com.google.dagger:hilt-android:2.57.1"
+    ksp "com.google.dagger:hilt-compiler:2.57.1"
 
     // Glide
     implementation 'com.github.bumptech.glide:glide:4.16.0'
@@ -199,8 +199,8 @@ dependencies {
 
     implementation 'me.saket.telephoto:zoomable-image-glide:0.16.0'
     implementation 'id.zelory:compressor:3.0.1'
-    implementation 'dev.chrisbanes.haze:haze:1.6.9'
-    implementation 'dev.chrisbanes.haze:haze-materials:1.6.9'
+    implementation 'dev.chrisbanes.haze:haze:1.6.10'
+    implementation 'dev.chrisbanes.haze:haze-materials:1.6.10'
     implementation 'com.squareup.retrofit2:retrofit:3.0.0'
     implementation "com.squareup.retrofit2:converter-gson:3.0.0"
 
