@@ -365,6 +365,16 @@ fun Settings(navController: NavController? = null) {
             ) {
                 positionalDialog.value = true
             }
+
+            OtherApps(
+                    title = context.getString(R.string.felicity_music_player),
+                    description = context.getString(R.string.felicity_music_player_summary),
+                    iconResId = R.drawable.felicity,
+            ) {
+                val intent = Intent(Intent.ACTION_VIEW)
+                intent.data = "https://github.com/Hamza417/Felicity".toUri()
+                context.startActivity(intent)
+            }
         }
     }
 }
