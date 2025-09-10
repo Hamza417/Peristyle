@@ -64,6 +64,7 @@ import app.simple.peri.ui.dialogs.wallhaven.WallhavenSearchDialog
 import app.simple.peri.ui.nav.Routes
 import app.simple.peri.ui.theme.LocalBarsSize
 import app.simple.peri.utils.ConditionUtils.invert
+import app.simple.peri.utils.ConditionUtils.isNotNull
 import app.simple.peri.viewmodels.WallhavenViewModel
 import com.bumptech.glide.integration.compose.CrossFade
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
@@ -88,18 +89,20 @@ fun WallhavenScreen(navController: NavController? = null) {
     val meta: WallhavenResponse.Meta? by viewModel.meta.collectAsStateWithLifecycle()
     var presetFilter by remember { mutableStateOf(savedStateHandle?.get<WallhavenFilter>(Routes.WALLHAVEN_ARG)) }
 
-    LaunchedEffect(presetFilter) {
-        viewModel.updateFilter {
-            copy(
-                    atleast = presetFilter!!.atleast,
-                    ratios = presetFilter!!.ratios,
-                    resolution = presetFilter!!.resolution,
-                    purity = presetFilter!!.purity,
-                    categories = presetFilter!!.categories,
-                    query = presetFilter!!.query,
-                    sorting = presetFilter!!.sorting,
-                    order = presetFilter!!.order
-            )
+    if (presetFilter.isNotNull()) {
+        LaunchedEffect(presetFilter) {
+            viewModel.updateFilter {
+                copy(
+                        atleast = presetFilter!!.atleast,
+                        ratios = presetFilter!!.ratios,
+                        resolution = presetFilter!!.resolution,
+                        purity = presetFilter!!.purity,
+                        categories = presetFilter!!.categories,
+                        query = presetFilter!!.query,
+                        sorting = presetFilter!!.sorting,
+                        order = presetFilter!!.order
+                )
+            }
         }
     }
 
