@@ -8,14 +8,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyRow
@@ -77,6 +74,7 @@ import app.simple.peri.ui.dialogs.common.PleaseWaitDialog
 import app.simple.peri.ui.dialogs.wallpaper.EffectsDialog
 import app.simple.peri.ui.dialogs.wallpaper.ScreenSelectionDialog
 import app.simple.peri.ui.nav.Routes
+import app.simple.peri.ui.theme.LocalBarsSize
 import app.simple.peri.utils.BitmapUtils.applyEffects
 import app.simple.peri.utils.BitmapUtils.multiplyMatrices
 import app.simple.peri.utils.ConditionUtils.isNotNull
@@ -428,10 +426,11 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
             Card(
                     modifier = Modifier
                         .align(Alignment.BottomStart)
-                        .padding(16.dp)
+                        .padding(start = 16.dp,
+                                 end = 16.dp,
+                                 bottom = LocalBarsSize.current.navigationBarHeight + 16.dp)
                         .fillMaxWidth()
                         .wrapContentHeight()
-                        .windowInsetsPadding(WindowInsets.safeDrawing)
                         .clip(RoundedCornerShape(32.dp))
                         .hazeEffect(state = hazeState,
                                     style = HazeDefaults.style(backgroundColor = Color(0x50000000), blurRadius = 15.dp)
