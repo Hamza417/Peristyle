@@ -154,22 +154,22 @@ android {
 
 dependencies {
 
-    def composeBom = platform('androidx.compose:compose-bom:2025.08.01')
+    def composeBom = platform('androidx.compose:compose-bom:2025.09.00')
     implementation composeBom
     androidTestImplementation composeBom
 
     // Compose
     implementation 'androidx.compose.material3:material3:1.3.2'
-    implementation 'androidx.activity:activity-compose:1.10.1'
+    implementation 'androidx.activity:activity-compose:1.11.0'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.9.3'
     implementation 'androidx.compose.runtime:runtime-livedata'
-    implementation 'androidx.compose.foundation:foundation:1.9.0'
-    implementation 'androidx.compose.ui:ui-tooling-preview-android:1.9.0'
-    implementation 'androidx.navigation:navigation-compose:2.9.3'
+    implementation 'androidx.compose.foundation:foundation:1.9.1'
+    implementation 'androidx.compose.ui:ui-tooling-preview-android:1.9.1'
+    implementation 'androidx.navigation:navigation-compose:2.9.4'
     implementation "androidx.compose.material:material-icons-extended:1.7.8"
-    implementation "androidx.hilt:hilt-navigation-compose:1.2.0"
+    implementation "androidx.hilt:hilt-navigation-compose:1.3.0"
     implementation "androidx.paging:paging-compose:3.3.6"
-    debugImplementation 'androidx.compose.ui:ui-tooling:1.9.0'
+    debugImplementation 'androidx.compose.ui:ui-tooling:1.9.1'
 
     implementation 'androidx.window:window:1.4.0'
     implementation 'androidx.core:core-ktx:1.17.0'
@@ -182,7 +182,7 @@ dependencies {
 
     implementation 'com.google.android.material:material:1.13.0'
     implementation 'com.google.accompanist:accompanist-drawablepainter:0.37.3'
-    implementation 'com.google.code.gson:gson:2.13.1'
+    implementation 'com.google.code.gson:gson:2.13.2'
     implementation "com.google.dagger:hilt-android:2.57.1"
     ksp "com.google.dagger:hilt-compiler:2.57.1"
 
@@ -194,8 +194,11 @@ dependencies {
     ksp 'com.github.bumptech.glide:ksp:5.0.4'
 
     // Room
+    //noinspection GradleDependency
     implementation "androidx.room:room-ktx:2.7.2"
+    //noinspection GradleDependency
     ksp "androidx.room:room-compiler:2.7.2"
+    //noinspection GradleDependency
     androidTestImplementation "androidx.room:room-testing:2.7.2"
 
     implementation 'me.saket.telephoto:zoomable-image-glide:0.16.0'
