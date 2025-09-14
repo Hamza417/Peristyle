@@ -91,6 +91,7 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
                             this.count = count
                             hashcode = path.hashCode()
                             isNomedia = File(pickedDirectory, ".nomedia").exists()
+                            totalSize = path.toFile().getFiles().dotFilter().sumOf { it.length() }
                         }
                     } else null
                 } else null

@@ -63,6 +63,7 @@ import app.simple.peri.ui.dialogs.folders.FolderMenu
 import app.simple.peri.ui.nav.Routes
 import app.simple.peri.ui.theme.LocalBarsSize
 import app.simple.peri.utils.ConditionUtils.invert
+import app.simple.peri.utils.FileUtils.toSize
 import app.simple.peri.viewmodels.ComposeWallpaperViewModel
 import com.bumptech.glide.integration.compose.CrossFade
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
@@ -297,7 +298,7 @@ fun FolderItem(folder: Folder, navController: NavController? = null, composeWall
                 }
 
                 Text(
-                        text = stringResource(id = R.string.tag_count, folder.count),
+                        text = stringResource(id = R.string.tag_count, folder.count) + ", " + folder.totalSize.toSize(),
                         textAlign = TextAlign.Start,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Light,

@@ -10,6 +10,7 @@ public class Folder implements Parcelable {
     private String name;
     private String path;
     private int count;
+    private long totalSize = 0;
     private boolean isNomedia;
     
     public Folder(int hashcode, String name, String path, int count, boolean isNomedia) {
@@ -29,6 +30,7 @@ public class Folder implements Parcelable {
         path = in.readString();
         count = in.readInt();
         isNomedia = in.readByte() != 0;
+        totalSize = in.readLong();
     }
     
     @Override
@@ -38,6 +40,7 @@ public class Folder implements Parcelable {
         dest.writeString(path);
         dest.writeInt(count);
         dest.writeByte((byte) (isNomedia ? 1 : 0));
+        dest.writeLong(totalSize);
     }
     
     @Override
@@ -97,6 +100,14 @@ public class Folder implements Parcelable {
         isNomedia = nomedia;
     }
     
+    public long getTotalSize() {
+        return totalSize;
+    }
+    
+    public void setTotalSize(long totalSize) {
+        this.totalSize = totalSize;
+    }
+    
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -111,7 +122,8 @@ public class Folder implements Parcelable {
                 getCount() == folder.getCount() &&
                 isNomedia() == folder.isNomedia() &&
                 Objects.equals(getName(), folder.getName()) &&
-                Objects.equals(getPath(), folder.getPath());
+                Objects.equals(getPath(), folder.getPath()) &&
+                getTotalSize() == folder.getTotalSize();
     }
     
     @Override
@@ -121,6 +133,7 @@ public class Folder implements Parcelable {
         result = 31 * result + Objects.hashCode(getPath());
         result = 31 * result + getCount();
         result = 31 * result + Boolean.hashCode(isNomedia());
+        result = 31 * result + Long.hashCode(getTotalSize());
         return result;
     }
 }
