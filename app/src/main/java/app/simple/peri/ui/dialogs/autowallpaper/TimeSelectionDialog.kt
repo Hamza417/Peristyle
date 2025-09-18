@@ -1,7 +1,7 @@
 package app.simple.peri.ui.dialogs.autowallpaper
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -41,8 +41,9 @@ fun TimeSelectionDialog(onDismiss: () -> Unit, onOptionSelected: (Pair<String, L
             onDismissRequest = { onDismiss() },
             title = { Text(text = stringResource(R.string.auto_wallpaper)) },
             text = {
-                Column {
-                    options.forEach { option ->
+                LazyColumn {
+                    items(options.size) { index ->
+                        val option = options[index]
                         Button(
                                 onClick = {
                                     selectedOption.value = option
@@ -53,7 +54,6 @@ fun TimeSelectionDialog(onDismiss: () -> Unit, onOptionSelected: (Pair<String, L
                                     option -> {
                                         ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                                     }
-
                                     else -> {
                                         ButtonDefaults.buttonColors(
                                                 containerColor = Color.Transparent,

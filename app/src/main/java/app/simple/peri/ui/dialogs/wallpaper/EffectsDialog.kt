@@ -1,10 +1,10 @@
 package app.simple.peri.ui.dialogs.wallpaper
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.LockOpen
@@ -103,230 +103,232 @@ fun EffectsDialog(
                 )
             },
             text = {
-                Column {
-                    Text(
-                            text = stringResource(id = R.string.blur),
-                            color = Color.White
-                    )
-                    Slider(
-                            value = blurValue.floatValue,
-                            onValueChange = { blurValue.floatValue = it },
-                            valueRange = 0f..25f,
-                            colors = SliderDefaults.colors(
-                                    thumbColor = Color.White,
-                                    activeTrackColor = Color.White,
-                                    inactiveTrackColor = Color.White.copy(alpha = 0.1F),
-                            )
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(
-                            text = stringResource(id = R.string.brightness),
-                            color = Color.White
-                    )
-                    Slider(
-                            value = brightnessValue.floatValue,
-                            onValueChange = { brightnessValue.floatValue = it },
-                            valueRange = -255F..255F,
-                            colors = SliderDefaults.colors(
-                                    thumbColor = Color.White,
-                                    activeTrackColor = Color.White,
-                                    inactiveTrackColor = Color.White.copy(alpha = 0.1F),
-                            )
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(
-                            text = stringResource(id = R.string.contrast),
-                            color = Color.White
-                    )
-                    Slider(
-                            value = contrastValue.floatValue,
-                            onValueChange = { contrastValue.floatValue = it },
-                            valueRange = 0F..10F,
-                            colors = SliderDefaults.colors(
-                                    thumbColor = Color.White,
-                                    activeTrackColor = Color.White,
-                                    inactiveTrackColor = Color.White.copy(alpha = 0.1F),
-                            )
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(
-                            text = stringResource(id = R.string.saturation),
-                            color = Color.White
-                    )
-                    Slider(
-                            value = saturationValue.floatValue,
-                            onValueChange = { saturationValue.floatValue = it },
-                            valueRange = 0F..2F,
-                            colors = SliderDefaults.colors(
-                                    thumbColor = Color.White,
-                                    activeTrackColor = Color.White,
-                                    inactiveTrackColor = Color.White.copy(alpha = 0.1F),
-                            )
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
+                LazyColumn {
+                    item {
+                        Text(
+                                text = stringResource(id = R.string.blur),
+                                color = Color.White
+                        )
+                        Slider(
+                                value = blurValue.floatValue,
+                                onValueChange = { blurValue.floatValue = it },
+                                valueRange = 0f..25f,
+                                colors = SliderDefaults.colors(
+                                        thumbColor = Color.White,
+                                        activeTrackColor = Color.White,
+                                        inactiveTrackColor = Color.White.copy(alpha = 0.1F),
+                                )
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                                text = stringResource(id = R.string.brightness),
+                                color = Color.White
+                        )
+                        Slider(
+                                value = brightnessValue.floatValue,
+                                onValueChange = { brightnessValue.floatValue = it },
+                                valueRange = -255F..255F,
+                                colors = SliderDefaults.colors(
+                                        thumbColor = Color.White,
+                                        activeTrackColor = Color.White,
+                                        inactiveTrackColor = Color.White.copy(alpha = 0.1F),
+                                )
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                                text = stringResource(id = R.string.contrast),
+                                color = Color.White
+                        )
+                        Slider(
+                                value = contrastValue.floatValue,
+                                onValueChange = { contrastValue.floatValue = it },
+                                valueRange = 0F..10F,
+                                colors = SliderDefaults.colors(
+                                        thumbColor = Color.White,
+                                        activeTrackColor = Color.White,
+                                        inactiveTrackColor = Color.White.copy(alpha = 0.1F),
+                                )
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                                text = stringResource(id = R.string.saturation),
+                                color = Color.White
+                        )
+                        Slider(
+                                value = saturationValue.floatValue,
+                                onValueChange = { saturationValue.floatValue = it },
+                                valueRange = 0F..2F,
+                                colors = SliderDefaults.colors(
+                                        thumbColor = Color.White,
+                                        activeTrackColor = Color.White,
+                                        inactiveTrackColor = Color.White.copy(alpha = 0.1F),
+                                )
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
 
-                    Text(
-                            text = stringResource(id = R.string.hue),
-                            color = Color.White
-                    )
+                        Text(
+                                text = stringResource(id = R.string.hue),
+                                color = Color.White
+                        )
 
-                    Row {
-                        Slider(
-                                value = hueRedValue.floatValue,
-                                onValueChange = {
-                                    if (isHueLocked.value) {
-                                        hueRedValue.floatValue = it
-                                        hueGreenValue.floatValue = it
-                                        hueBlueValue.floatValue = it
-                                    } else {
-                                        hueRedValue.floatValue = it
-                                    }
-                                },
-                                valueRange = 0F..360F,
-                                colors = SliderDefaults.colors(
-                                        thumbColor = RED,
-                                        activeTrackColor = Color.White,
-                                        inactiveTrackColor = Color.White.copy(alpha = 0.1F),
-                                ),
-                                modifier = Modifier.weight(1F)
-                        )
-                        Spacer(modifier = Modifier.width(16.dp))
-                        Slider(
-                                value = hueGreenValue.floatValue,
-                                onValueChange = {
-                                    if (isHueLocked.value) {
-                                        hueRedValue.floatValue = it
-                                        hueGreenValue.floatValue = it
-                                        hueBlueValue.floatValue = it
-                                    } else {
-                                        hueGreenValue.floatValue = it
-                                    }
-                                },
-                                valueRange = 0F..360F,
-                                colors = SliderDefaults.colors(
-                                        thumbColor = GREEN,
-                                        activeTrackColor = Color.White,
-                                        inactiveTrackColor = Color.White.copy(alpha = 0.1F),
-                                ),
-                                modifier = Modifier.weight(1F)
-                        )
-                        Spacer(modifier = Modifier.width(16.dp))
-                        Slider(
-                                value = hueBlueValue.floatValue,
-                                onValueChange = {
-                                    if (isHueLocked.value) {
-                                        hueRedValue.floatValue = it
-                                        hueGreenValue.floatValue = it
-                                        hueBlueValue.floatValue = it
-                                    } else {
-                                        hueBlueValue.floatValue = it
-                                    }
-                                },
-                                valueRange = 0F..360F,
-                                colors = SliderDefaults.colors(
-                                        thumbColor = BLUE,
-                                        activeTrackColor = Color.White,
-                                        inactiveTrackColor = Color.White.copy(alpha = 0.1F),
-                                ),
-                                modifier = Modifier.weight(1F)
-                        )
-                        IconButton(
-                                onClick = {
-                                    isHueLocked.value = !isHueLocked.value
-                                },
-                        ) {
-                            Icon(
-                                    imageVector = if (isHueLocked.value) {
-                                        Icons.Rounded.Lock
-                                    } else {
-                                        Icons.Rounded.LockOpen
+                        Row {
+                            Slider(
+                                    value = hueRedValue.floatValue,
+                                    onValueChange = {
+                                        if (isHueLocked.value) {
+                                            hueRedValue.floatValue = it
+                                            hueGreenValue.floatValue = it
+                                            hueBlueValue.floatValue = it
+                                        } else {
+                                            hueRedValue.floatValue = it
+                                        }
                                     },
-                                    contentDescription = stringResource(id = R.string.lock),
-                                    tint = Color.White
+                                    valueRange = 0F..360F,
+                                    colors = SliderDefaults.colors(
+                                            thumbColor = RED,
+                                            activeTrackColor = Color.White,
+                                            inactiveTrackColor = Color.White.copy(alpha = 0.1F),
+                                    ),
+                                    modifier = Modifier.weight(1F)
                             )
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Slider(
+                                    value = hueGreenValue.floatValue,
+                                    onValueChange = {
+                                        if (isHueLocked.value) {
+                                            hueRedValue.floatValue = it
+                                            hueGreenValue.floatValue = it
+                                            hueBlueValue.floatValue = it
+                                        } else {
+                                            hueGreenValue.floatValue = it
+                                        }
+                                    },
+                                    valueRange = 0F..360F,
+                                    colors = SliderDefaults.colors(
+                                            thumbColor = GREEN,
+                                            activeTrackColor = Color.White,
+                                            inactiveTrackColor = Color.White.copy(alpha = 0.1F),
+                                    ),
+                                    modifier = Modifier.weight(1F)
+                            )
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Slider(
+                                    value = hueBlueValue.floatValue,
+                                    onValueChange = {
+                                        if (isHueLocked.value) {
+                                            hueRedValue.floatValue = it
+                                            hueGreenValue.floatValue = it
+                                            hueBlueValue.floatValue = it
+                                        } else {
+                                            hueBlueValue.floatValue = it
+                                        }
+                                    },
+                                    valueRange = 0F..360F,
+                                    colors = SliderDefaults.colors(
+                                            thumbColor = BLUE,
+                                            activeTrackColor = Color.White,
+                                            inactiveTrackColor = Color.White.copy(alpha = 0.1F),
+                                    ),
+                                    modifier = Modifier.weight(1F)
+                            )
+                            IconButton(
+                                    onClick = {
+                                        isHueLocked.value = !isHueLocked.value
+                                    },
+                            ) {
+                                Icon(
+                                        imageVector = if (isHueLocked.value) {
+                                            Icons.Rounded.Lock
+                                        } else {
+                                            Icons.Rounded.LockOpen
+                                        },
+                                        contentDescription = stringResource(id = R.string.lock),
+                                        tint = Color.White
+                                )
+                            }
                         }
-                    }
-                    Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(16.dp))
 
-                    Text(
-                            text = stringResource(id = R.string.scale),
-                            color = Color.White
-                    )
+                        Text(
+                                text = stringResource(id = R.string.scale),
+                                color = Color.White
+                        )
 
-                    Row {
-                        Slider(
-                                value = scaleRedValue.floatValue,
-                                onValueChange = {
-                                    if (isScaleLocked.value) {
-                                        scaleRedValue.floatValue = it
-                                        scaleGreenValue.floatValue = it
-                                        scaleBlueValue.floatValue = it
-                                    } else {
-                                        scaleRedValue.floatValue = it
-                                    }
-                                },
-                                valueRange = 0F..1F,
-                                colors = SliderDefaults.colors(
-                                        thumbColor = RED,
-                                        activeTrackColor = Color.White,
-                                        inactiveTrackColor = Color.White.copy(alpha = 0.1F),
-                                ),
-                                modifier = Modifier.weight(1F)
-                        )
-                        Spacer(modifier = Modifier.width(16.dp))
-                        Slider(
-                                value = scaleGreenValue.floatValue,
-                                onValueChange = {
-                                    if (isScaleLocked.value) {
-                                        scaleRedValue.floatValue = it
-                                        scaleGreenValue.floatValue = it
-                                        scaleBlueValue.floatValue = it
-                                    } else {
-                                        scaleGreenValue.floatValue = it
-                                    }
-                                },
-                                valueRange = 0F..1F,
-                                colors = SliderDefaults.colors(
-                                        thumbColor = GREEN,
-                                        activeTrackColor = Color.White,
-                                        inactiveTrackColor = Color.White.copy(alpha = 0.1F),
-                                ),
-                                modifier = Modifier.weight(1F)
-                        )
-                        Spacer(modifier = Modifier.width(16.dp))
-                        Slider(
-                                value = scaleBlueValue.floatValue,
-                                onValueChange = {
-                                    if (isScaleLocked.value) {
-                                        scaleRedValue.floatValue = it
-                                        scaleGreenValue.floatValue = it
-                                        scaleBlueValue.floatValue = it
-                                    } else {
-                                        scaleBlueValue.floatValue = it
-                                    }
-                                },
-                                valueRange = 0F..1F,
-                                colors = SliderDefaults.colors(
-                                        thumbColor = BLUE,
-                                        activeTrackColor = Color.White,
-                                        inactiveTrackColor = Color.White.copy(alpha = 0.1F),
-                                ),
-                                modifier = Modifier.weight(1F)
-                        )
-                        IconButton(
-                                onClick = {
-                                    isScaleLocked.value = !isScaleLocked.value
-                                },
-                        ) {
-                            Icon(
-                                    imageVector = if (isScaleLocked.value) {
-                                        Icons.Rounded.Lock
-                                    } else {
-                                        Icons.Rounded.LockOpen
+                        Row {
+                            Slider(
+                                    value = scaleRedValue.floatValue,
+                                    onValueChange = {
+                                        if (isScaleLocked.value) {
+                                            scaleRedValue.floatValue = it
+                                            scaleGreenValue.floatValue = it
+                                            scaleBlueValue.floatValue = it
+                                        } else {
+                                            scaleRedValue.floatValue = it
+                                        }
                                     },
-                                    contentDescription = stringResource(id = R.string.lock),
-                                    tint = Color.White
+                                    valueRange = 0F..1F,
+                                    colors = SliderDefaults.colors(
+                                            thumbColor = RED,
+                                            activeTrackColor = Color.White,
+                                            inactiveTrackColor = Color.White.copy(alpha = 0.1F),
+                                    ),
+                                    modifier = Modifier.weight(1F)
                             )
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Slider(
+                                    value = scaleGreenValue.floatValue,
+                                    onValueChange = {
+                                        if (isScaleLocked.value) {
+                                            scaleRedValue.floatValue = it
+                                            scaleGreenValue.floatValue = it
+                                            scaleBlueValue.floatValue = it
+                                        } else {
+                                            scaleGreenValue.floatValue = it
+                                        }
+                                    },
+                                    valueRange = 0F..1F,
+                                    colors = SliderDefaults.colors(
+                                            thumbColor = GREEN,
+                                            activeTrackColor = Color.White,
+                                            inactiveTrackColor = Color.White.copy(alpha = 0.1F),
+                                    ),
+                                    modifier = Modifier.weight(1F)
+                            )
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Slider(
+                                    value = scaleBlueValue.floatValue,
+                                    onValueChange = {
+                                        if (isScaleLocked.value) {
+                                            scaleRedValue.floatValue = it
+                                            scaleGreenValue.floatValue = it
+                                            scaleBlueValue.floatValue = it
+                                        } else {
+                                            scaleBlueValue.floatValue = it
+                                        }
+                                    },
+                                    valueRange = 0F..1F,
+                                    colors = SliderDefaults.colors(
+                                            thumbColor = BLUE,
+                                            activeTrackColor = Color.White,
+                                            inactiveTrackColor = Color.White.copy(alpha = 0.1F),
+                                    ),
+                                    modifier = Modifier.weight(1F)
+                            )
+                            IconButton(
+                                    onClick = {
+                                        isScaleLocked.value = !isScaleLocked.value
+                                    },
+                            ) {
+                                Icon(
+                                        imageVector = if (isScaleLocked.value) {
+                                            Icons.Rounded.Lock
+                                        } else {
+                                            Icons.Rounded.LockOpen
+                                        },
+                                        contentDescription = stringResource(id = R.string.lock),
+                                        tint = Color.White
+                                )
+                            }
                         }
                     }
                 }
@@ -426,176 +428,178 @@ fun AutoWallpaperEffectsDialog(
             onDismissRequest = { setShowDialog(false) },
             title = { Text(text = stringResource(id = R.string.apply_effects_summary)) },
             text = {
-                Column {
-                    Text(text = stringResource(id = R.string.blur))
-                    Slider(
-                            value = blurValue.floatValue,
-                            onValueChange = { blurValue.floatValue = it },
-                            valueRange = 0f..25f
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(text = stringResource(id = R.string.brightness))
-                    Slider(
-                            value = brightnessValue.floatValue,
-                            onValueChange = { brightnessValue.floatValue = it },
-                            valueRange = -255F..255F
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(text = stringResource(id = R.string.contrast))
-                    Slider(
-                            value = contrastValue.floatValue,
-                            onValueChange = { contrastValue.floatValue = it },
-                            valueRange = 0F..10F
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(text = stringResource(id = R.string.saturation))
-                    Slider(
-                            value = saturationValue.floatValue,
-                            onValueChange = { saturationValue.floatValue = it },
-                            valueRange = 0F..2F
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(text = stringResource(id = R.string.hue))
-                    Row {
+                LazyColumn {
+                    item {
+                        Text(text = stringResource(id = R.string.blur))
                         Slider(
-                                value = hueRedValue.floatValue,
-                                onValueChange = {
-                                    if (isHueLocked.value) {
-                                        hueRedValue.floatValue = it
-                                        hueGreenValue.floatValue = it
-                                        hueBlueValue.floatValue = it
-                                    } else {
-                                        hueRedValue.floatValue = it
-                                    }
-                                },
-                                valueRange = 0F..360F,
-                                colors = SliderDefaults.colors(
-                                        thumbColor = RED,
-                                ),
-                                modifier = Modifier.weight(1F)
+                                value = blurValue.floatValue,
+                                onValueChange = { blurValue.floatValue = it },
+                                valueRange = 0f..25f
                         )
-                        Spacer(modifier = Modifier.width(16.dp))
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(text = stringResource(id = R.string.brightness))
                         Slider(
-                                value = hueGreenValue.floatValue,
-                                onValueChange = {
-                                    if (isHueLocked.value) {
-                                        hueRedValue.floatValue = it
-                                        hueGreenValue.floatValue = it
-                                        hueBlueValue.floatValue = it
-                                    } else {
-                                        hueGreenValue.floatValue = it
-                                    }
-                                },
-                                valueRange = 0F..360F,
-                                colors = SliderDefaults.colors(
-                                        thumbColor = GREEN,
-                                ),
-                                modifier = Modifier.weight(1F)
+                                value = brightnessValue.floatValue,
+                                onValueChange = { brightnessValue.floatValue = it },
+                                valueRange = -255F..255F
                         )
-                        Spacer(modifier = Modifier.width(16.dp))
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(text = stringResource(id = R.string.contrast))
                         Slider(
-                                value = hueBlueValue.floatValue,
-                                onValueChange = {
-                                    if (isHueLocked.value) {
-                                        hueRedValue.floatValue = it
-                                        hueGreenValue.floatValue = it
-                                        hueBlueValue.floatValue = it
-                                    } else {
-                                        hueBlueValue.floatValue = it
-                                    }
-                                },
-                                valueRange = 0F..360F,
-                                colors = SliderDefaults.colors(
-                                        thumbColor = BLUE,
-                                ),
-                                modifier = Modifier.weight(1F)
+                                value = contrastValue.floatValue,
+                                onValueChange = { contrastValue.floatValue = it },
+                                valueRange = 0F..10F
                         )
-                        IconButton(
-                                onClick = {
-                                    isHueLocked.value = !isHueLocked.value
-                                },
-                        ) {
-                            Icon(
-                                    imageVector = if (isHueLocked.value) {
-                                        Icons.Rounded.Lock
-                                    } else {
-                                        Icons.Rounded.LockOpen
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(text = stringResource(id = R.string.saturation))
+                        Slider(
+                                value = saturationValue.floatValue,
+                                onValueChange = { saturationValue.floatValue = it },
+                                valueRange = 0F..2F
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(text = stringResource(id = R.string.hue))
+                        Row {
+                            Slider(
+                                    value = hueRedValue.floatValue,
+                                    onValueChange = {
+                                        if (isHueLocked.value) {
+                                            hueRedValue.floatValue = it
+                                            hueGreenValue.floatValue = it
+                                            hueBlueValue.floatValue = it
+                                        } else {
+                                            hueRedValue.floatValue = it
+                                        }
                                     },
-                                    contentDescription = stringResource(id = R.string.lock),
-                                    tint = Color.White
+                                    valueRange = 0F..360F,
+                                    colors = SliderDefaults.colors(
+                                            thumbColor = RED,
+                                    ),
+                                    modifier = Modifier.weight(1F)
                             )
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Slider(
+                                    value = hueGreenValue.floatValue,
+                                    onValueChange = {
+                                        if (isHueLocked.value) {
+                                            hueRedValue.floatValue = it
+                                            hueGreenValue.floatValue = it
+                                            hueBlueValue.floatValue = it
+                                        } else {
+                                            hueGreenValue.floatValue = it
+                                        }
+                                    },
+                                    valueRange = 0F..360F,
+                                    colors = SliderDefaults.colors(
+                                            thumbColor = GREEN,
+                                    ),
+                                    modifier = Modifier.weight(1F)
+                            )
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Slider(
+                                    value = hueBlueValue.floatValue,
+                                    onValueChange = {
+                                        if (isHueLocked.value) {
+                                            hueRedValue.floatValue = it
+                                            hueGreenValue.floatValue = it
+                                            hueBlueValue.floatValue = it
+                                        } else {
+                                            hueBlueValue.floatValue = it
+                                        }
+                                    },
+                                    valueRange = 0F..360F,
+                                    colors = SliderDefaults.colors(
+                                            thumbColor = BLUE,
+                                    ),
+                                    modifier = Modifier.weight(1F)
+                            )
+                            IconButton(
+                                    onClick = {
+                                        isHueLocked.value = !isHueLocked.value
+                                    },
+                            ) {
+                                Icon(
+                                        imageVector = if (isHueLocked.value) {
+                                            Icons.Rounded.Lock
+                                        } else {
+                                            Icons.Rounded.LockOpen
+                                        },
+                                        contentDescription = stringResource(id = R.string.lock),
+                                        tint = Color.White
+                                )
+                            }
                         }
-                    }
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(text = stringResource(id = R.string.scale))
-                    Row {
-                        Slider(
-                                value = scaleRedValue.floatValue,
-                                onValueChange = {
-                                    if (isScaleLocked.value) {
-                                        scaleRedValue.floatValue = it
-                                        scaleGreenValue.floatValue = it
-                                        scaleBlueValue.floatValue = it
-                                    } else {
-                                        scaleRedValue.floatValue = it
-                                    }
-                                },
-                                valueRange = 0F..1F,
-                                colors = SliderDefaults.colors(
-                                        thumbColor = RED,
-                                ),
-                                modifier = Modifier.weight(1F)
-                        )
-                        Spacer(modifier = Modifier.width(16.dp))
-                        Slider(
-                                value = scaleGreenValue.floatValue,
-                                onValueChange = {
-                                    if (isScaleLocked.value) {
-                                        scaleRedValue.floatValue = it
-                                        scaleGreenValue.floatValue = it
-                                        scaleBlueValue.floatValue = it
-                                    } else {
-                                        scaleGreenValue.floatValue = it
-                                    }
-                                },
-                                valueRange = 0F..1F,
-                                colors = SliderDefaults.colors(
-                                        thumbColor = GREEN,
-                                ),
-                                modifier = Modifier.weight(1F)
-                        )
-                        Spacer(modifier = Modifier.width(16.dp))
-                        Slider(
-                                value = scaleBlueValue.floatValue,
-                                onValueChange = {
-                                    if (isScaleLocked.value) {
-                                        scaleRedValue.floatValue = it
-                                        scaleGreenValue.floatValue = it
-                                        scaleBlueValue.floatValue = it
-                                    } else {
-                                        scaleBlueValue.floatValue = it
-                                    }
-                                },
-                                valueRange = 0F..1F,
-                                colors = SliderDefaults.colors(
-                                        thumbColor = BLUE,
-                                ),
-                                modifier = Modifier.weight(1F)
-                        )
-                        IconButton(
-                                onClick = {
-                                    isScaleLocked.value = !isScaleLocked.value
-                                },
-                        ) {
-                            Icon(
-                                    imageVector = if (isScaleLocked.value) {
-                                        Icons.Rounded.Lock
-                                    } else {
-                                        Icons.Rounded.LockOpen
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(text = stringResource(id = R.string.scale))
+                        Row {
+                            Slider(
+                                    value = scaleRedValue.floatValue,
+                                    onValueChange = {
+                                        if (isScaleLocked.value) {
+                                            scaleRedValue.floatValue = it
+                                            scaleGreenValue.floatValue = it
+                                            scaleBlueValue.floatValue = it
+                                        } else {
+                                            scaleRedValue.floatValue = it
+                                        }
                                     },
-                                    contentDescription = stringResource(id = R.string.lock),
-                                    tint = Color.White
+                                    valueRange = 0F..1F,
+                                    colors = SliderDefaults.colors(
+                                            thumbColor = RED,
+                                    ),
+                                    modifier = Modifier.weight(1F)
                             )
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Slider(
+                                    value = scaleGreenValue.floatValue,
+                                    onValueChange = {
+                                        if (isScaleLocked.value) {
+                                            scaleRedValue.floatValue = it
+                                            scaleGreenValue.floatValue = it
+                                            scaleBlueValue.floatValue = it
+                                        } else {
+                                            scaleGreenValue.floatValue = it
+                                        }
+                                    },
+                                    valueRange = 0F..1F,
+                                    colors = SliderDefaults.colors(
+                                            thumbColor = GREEN,
+                                    ),
+                                    modifier = Modifier.weight(1F)
+                            )
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Slider(
+                                    value = scaleBlueValue.floatValue,
+                                    onValueChange = {
+                                        if (isScaleLocked.value) {
+                                            scaleRedValue.floatValue = it
+                                            scaleGreenValue.floatValue = it
+                                            scaleBlueValue.floatValue = it
+                                        } else {
+                                            scaleBlueValue.floatValue = it
+                                        }
+                                    },
+                                    valueRange = 0F..1F,
+                                    colors = SliderDefaults.colors(
+                                            thumbColor = BLUE,
+                                    ),
+                                    modifier = Modifier.weight(1F)
+                            )
+                            IconButton(
+                                    onClick = {
+                                        isScaleLocked.value = !isScaleLocked.value
+                                    },
+                            ) {
+                                Icon(
+                                        imageVector = if (isScaleLocked.value) {
+                                            Icons.Rounded.Lock
+                                        } else {
+                                            Icons.Rounded.LockOpen
+                                        },
+                                        contentDescription = stringResource(id = R.string.lock),
+                                        tint = Color.White
+                                )
+                            }
                         }
                     }
                 }
