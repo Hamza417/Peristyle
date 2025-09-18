@@ -73,7 +73,7 @@ fun AutoWallpaper(navController: NavController? = null) {
         }
         item {
             val screenSelectionDialog = remember { mutableStateOf(false) }
-            val autoWallpaperDialog = remember { mutableStateOf(false) }
+            val timeSelectionDialog = remember { mutableStateOf(false) }
 
             ButtonPreference(
                     title = stringResource(R.string.next_wallpaper),
@@ -88,7 +88,7 @@ fun AutoWallpaper(navController: NavController? = null) {
                     title = context.getString(R.string.interval),
                     description = context.getString(R.string.duration_summary),
                     onClick = {
-                        autoWallpaperDialog.value = true
+                        timeSelectionDialog.value = true
                     }
             )
 
@@ -109,9 +109,9 @@ fun AutoWallpaper(navController: NavController? = null) {
                 )
             }
 
-            if (autoWallpaperDialog.value) {
+            if (timeSelectionDialog.value) {
                 TimeSelectionDialog(
-                        onDismiss = { autoWallpaperDialog.value = false },
+                        onDismiss = { timeSelectionDialog.value = false },
                         onOptionSelected = {
                             MainPreferences.setAutoWallpaperInterval(it.second.toString())
                         }
