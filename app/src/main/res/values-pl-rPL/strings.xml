@@ -262,7 +262,7 @@
     <string name="color_space_summary">Ustaw przestrzeń kolorów dla dekodowanych bitmap tapety.</string>
     <string name="sdcard_issue">Karty SD są bardzo wolne dla losowego I/O. Użyj jej według własnego uznania.</string>
     <string name="same_wallpaper_for_both">Ta sama tapeta</string>
-    <string name="same_wallpaper_for_both_summary">Użyj tej samej losowej tapety dla obu ekranów. Działa tylko, jeśli nie jest ustawiony folder lub tag dla jednego z ekranów.</string>
+    <string name="same_wallpaper_for_both_summary">Użyj tej samej losowej tapety dla obu ekranów. Działa tylko, jeśli nie został ustawiony folder lub tag dla jednego z ekranów.</string>
     <string name="skip_palettes">Pomiń palety</string>
     <string name="skip_palettes_summary">Pomiń generowanie palet, aby umożliwić szybsze ładowanie w zamian za podświetlone cienie.</string>
 </resources>
