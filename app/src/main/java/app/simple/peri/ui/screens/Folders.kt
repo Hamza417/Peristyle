@@ -303,7 +303,7 @@ fun FolderItem(folder: Folder, navController: NavController? = null, composeWall
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Light,
                         color = Color.White,
-                        modifier = Modifier.padding(start = 16.dp, bottom = 16.dp),
+                        modifier = Modifier.padding(start = 16.dp, bottom = 16.dp, end = 16.dp),
                 )
             }
         }
