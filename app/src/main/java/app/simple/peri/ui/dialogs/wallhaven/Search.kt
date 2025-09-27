@@ -13,10 +13,10 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
@@ -157,7 +157,7 @@ fun WallhavenSearchDialog(
                                     },
                                     modifier = Modifier
                                         .menuAnchor(
-                                                type = MenuAnchorType.PrimaryNotEditable,
+                                                type = ExposedDropdownMenuAnchorType.PrimaryNotEditable,
                                                 enabled = true)
                                         .fillMaxWidth()
                             )
@@ -243,7 +243,7 @@ fun WallhavenSearchDialog(
                                     },
                                     modifier = Modifier
                                         .menuAnchor(
-                                                type = MenuAnchorType.PrimaryEditable,
+                                                type = ExposedDropdownMenuAnchorType.PrimaryEditable,
                                                 enabled = true
                                         )
                                         .fillMaxWidth()
