@@ -81,7 +81,7 @@ abstract class AbstractComposeAutoWallpaperService : AbstractAutoWallpaperServic
 
     private fun setWallpaper(wallpaper: Wallpaper, effects: Effect, flag: Int, isHomeScreen: Boolean) {
         Log.d(TAG, "${if (isHomeScreen) "Home" else "Lock"} wallpaper found: ${wallpaper.filePath}")
-        getBitmapFromFile(wallpaper.filePath, displayWidth, displayHeight, MainPreferences.getCropWallpaper()) { bitmap ->
+        getBitmapFromFile(applicationContext, wallpaper.filePath, displayWidth, displayHeight, MainPreferences.getCropWallpaper()) { bitmap ->
             val modifiedBitmap = bitmap.copy(bitmap.config ?: Bitmap.Config.ARGB_8888, true)
                 .applyEffects(effects)
 
@@ -124,7 +124,7 @@ abstract class AbstractComposeAutoWallpaperService : AbstractAutoWallpaperServic
     open fun setSameWallpaper(wallpaper: Wallpaper) {
         MainComposePreferences.setLastLockWallpaperPosition(MainComposePreferences.getLastHomeWallpaperPosition())
         Log.d(TAG, "Wallpaper found: ${wallpaper.filePath}")
-        getBitmapFromFile(wallpaper.filePath, displayWidth, displayHeight, MainPreferences.getCropWallpaper()) { bitmap ->
+        getBitmapFromFile(applicationContext, wallpaper.filePath, displayWidth, displayHeight, MainPreferences.getCropWallpaper()) { bitmap ->
             val homeBitmap = bitmap.copy(MainComposePreferences.getWallpaperColorSpace(), true)
                 .applyEffects(MainComposePreferences.getHomeScreenEffects())
             val lockBitmap = bitmap.copy(MainComposePreferences.getWallpaperColorSpace(), true)

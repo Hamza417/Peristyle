@@ -1,9 +1,13 @@
 package app.simple.peri.abstraction
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Rect
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
+import android.widget.Toast
 import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.utils.BitmapUtils
 import app.simple.peri.utils.FileUtils.toFile
@@ -15,16 +19,20 @@ object AutoWallpaperUtils {
 
     private const val TAG = "AutoWallpaperUtils"
 
-    fun getBitmapFromFile(path: String, expectedWidth: Int, expectedHeight: Int, crop: Boolean = true, recycle: Boolean = true, onBitmap: (Bitmap) -> Unit) {
+    fun getBitmapFromFile(context: Context, path: String, expectedWidth: Int, expectedHeight: Int, crop: Boolean = true, recycle: Boolean = true, onBitmap: (Bitmap) -> Unit) {
+        Handler(Looper.getMainLooper()).post {
+            Toast.makeText(context, expectedWidth.toString() + "x" + expectedHeight, Toast.LENGTH_SHORT).show()
+        }
+
         path.toFile().inputStream().use { stream ->
             val byteArray = stream.readBytes()
-            var bitmap = decodeBitmap(byteArray, expectedWidth, expectedHeight)
+            var bitmap = decodeBitmap(byteArray, 1080, 1920)
 
             // Correct orientation of the bitmap if faulty due to EXIF data
             bitmap = BitmapUtils.correctOrientation(bitmap, ByteArrayInputStream(byteArray))
 
-            if (crop) {
-                bitmap = cropAndScaleToFit(bitmap, expectedWidth, expectedHeight)
+            if (true) {
+                bitmap = cropAndScaleToFit(bitmap, 1080, 1920)
             }
 
             onBitmap(bitmap)
