@@ -75,6 +75,7 @@ object MainComposePreferences {
     private const val WALLPAPER_COLOR_SPACE = "wallpaper_color_space"
     private const val MARGIN_BETWEEN = "margin_between_wallpapers"
     private const val SKIP_PALETTE = "skip_palette"
+    private const val SAVED_DEVICE_RESOLUTION = "device_resolution"
 
     const val DISABLE_ANIMATIONS = "disable_animations"
     const val PREDICTIVE_BACK = "predictive_back"
@@ -887,5 +888,39 @@ object MainComposePreferences {
 
     fun setSkipPalette(value: Boolean) {
         getSharedPreferences().edit().putBoolean(SKIP_PALETTE, value).apply()
+    }
+
+    // ----------------------------------------------------------------------------------------------------- //
+
+    /**
+     * Saved device resolution in format width,height
+     */
+    fun getSavedDeviceResolution(): Pair<Int, Int>? {
+        val res = getSharedPreferences().getString(SAVED_DEVICE_RESOLUTION, null)
+        return if (res != null) {
+            val parts = res.split(",")
+            if (parts.size == 2) {
+                val width = parts[0].toIntOrNull() ?: 1080
+                val height = parts[1].toIntOrNull() ?: 1920
+                Pair(width, height)
+            } else {
+                null
+            }
+        } else {
+            null
+        }
+    }
+
+    fun setSavedDeviceResolution(width: Int, height: Int) {
+        val res = "$width,$height"
+        getSharedPreferences().edit().putString(SAVED_DEVICE_RESOLUTION, res).apply()
+    }
+
+    fun getSavedWidth(): Int? {
+        return getSavedDeviceResolution()?.first
+    }
+
+    fun getSavedHeight(): Int? {
+        return getSavedDeviceResolution()?.second
     }
 }
