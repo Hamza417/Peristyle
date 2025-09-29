@@ -2,9 +2,11 @@ package app.simple.peri.abstraction
 
 import android.app.Service
 import android.app.WallpaperManager
-import android.content.res.Resources
+import android.os.Build
+import android.util.DisplayMetrics
 import android.util.Log
 import android.util.Size
+import android.view.WindowManager
 import app.simple.peri.database.instances.WallpaperDatabase
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.preferences.MainComposePreferences
@@ -87,8 +89,20 @@ abstract class AbstractAutoWallpaperService : Service() {
     }
 
     fun getScreenSizeFromService(): Size {
-        val metrics = Resources.getSystem().displayMetrics
-        return Size(metrics.widthPixels, metrics.heightPixels)
+        val windowManager = applicationContext.getSystemService(WINDOW_SERVICE) as WindowManager
+
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            val metrics = windowManager.currentWindowMetrics
+            val bounds = metrics.bounds
+            Size(bounds.width(), bounds.height())
+        } else {
+            @Suppress("DEPRECATION")
+            val display = windowManager.defaultDisplay
+            val metrics = DisplayMetrics()
+            @Suppress("DEPRECATION")
+            display.getMetrics(metrics)
+            Size(metrics.widthPixels, metrics.heightPixels)
+        }
     }
 
     companion object {
