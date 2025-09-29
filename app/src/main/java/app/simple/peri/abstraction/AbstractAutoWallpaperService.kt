@@ -2,7 +2,11 @@ package app.simple.peri.abstraction
 
 import android.app.Service
 import android.app.WallpaperManager
+import android.os.Build
+import android.util.DisplayMetrics
 import android.util.Log
+import android.util.Size
+import android.view.WindowManager
 import app.simple.peri.database.instances.WallpaperDatabase
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.preferences.MainComposePreferences
@@ -23,11 +27,11 @@ abstract class AbstractAutoWallpaperService : Service() {
     }
 
     protected val displayWidth: Int by lazy {
-        MainComposePreferences.getSavedWidth()
+        MainComposePreferences.getSavedWidth() ?: getScreenSizeFromService().width
     }
 
     protected val displayHeight: Int by lazy {
-        MainComposePreferences.getSavedHeight()
+        MainComposePreferences.getSavedHeight() ?: getScreenSizeFromService().height
     }
 
     @Throws(NoSuchElementException::class)
@@ -81,6 +85,22 @@ abstract class AbstractAutoWallpaperService : Service() {
             }.onFailure {
                 Log.e(TAG, "Error validating wallpaper usage: ${it.message}", it)
             }
+        }
+    }
+
+    fun getScreenSizeFromService(): Size {
+        val windowManager = applicationContext.getSystemService(WINDOW_SERVICE) as WindowManager
+
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            val metrics = windowManager.currentWindowMetrics
+            val bounds = metrics.bounds
+
+            Size(bounds.width(), bounds.height())
+        } else {
+            val metrics = DisplayMetrics()
+            @Suppress("DEPRECATION")
+            windowManager.defaultDisplay.getMetrics(metrics)
+            Size(metrics.widthPixels, metrics.heightPixels)
         }
     }
 

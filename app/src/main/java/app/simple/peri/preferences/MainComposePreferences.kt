@@ -895,7 +895,7 @@ object MainComposePreferences {
     /**
      * Saved device resolution in format width,height
      */
-    fun getSavedDeviceResolution(): Pair<Int, Int> {
+    fun getSavedDeviceResolution(): Pair<Int, Int>? {
         val res = getSharedPreferences().getString(SAVED_DEVICE_RESOLUTION, null)
         return if (res != null) {
             val parts = res.split(",")
@@ -904,10 +904,10 @@ object MainComposePreferences {
                 val height = parts[1].toIntOrNull() ?: 1920
                 Pair(width, height)
             } else {
-                Pair(1080, 1920)
+                null
             }
         } else {
-            Pair(1080, 1920)
+            null
         }
     }
 
@@ -916,11 +916,11 @@ object MainComposePreferences {
         getSharedPreferences().edit().putString(SAVED_DEVICE_RESOLUTION, res).apply()
     }
 
-    fun getSavedWidth(): Int {
-        return getSavedDeviceResolution().first
+    fun getSavedWidth(): Int? {
+        return getSavedDeviceResolution()?.first
     }
 
-    fun getSavedHeight(): Int {
-        return getSavedDeviceResolution().second
+    fun getSavedHeight(): Int? {
+        return getSavedDeviceResolution()?.second
     }
 }
