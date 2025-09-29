@@ -1,11 +1,11 @@
 package app.simple.peri.ui.screens
 
-import ClickablePreference
-import DescriptionPreference
-import NumberSelectionDialog
-import OtherApps
-import SecondaryHeader
-import SwitchPreference
+import app.simple.peri.ui.commons.ClickablePreference
+import app.simple.peri.ui.commons.DescriptionPreference
+import app.simple.peri.ui.dialogs.settings.GridSpanDialog.NumberSelectionDialog
+import app.simple.peri.ui.commons.OtherApps
+import app.simple.peri.ui.commons.SecondaryHeader
+import app.simple.peri.ui.commons.SwitchPreference
 import android.content.Intent
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
@@ -38,6 +38,7 @@ import app.simple.peri.ui.dialogs.settings.OrderDialog
 import app.simple.peri.ui.dialogs.settings.ShowInureAppManagerDialog
 import app.simple.peri.ui.dialogs.settings.ShowPositionalDialog
 import app.simple.peri.ui.dialogs.settings.SortDialog
+import app.simple.peri.ui.dialogs.settings.ThemeDialog
 import app.simple.peri.ui.theme.LocalBarsSize
 import app.simple.peri.utils.ConditionUtils.invert
 import app.simple.peri.utils.FileUtils.toSize
@@ -72,6 +73,7 @@ fun Settings(navController: NavController? = null) {
         }
         item { // Interface
             val numberSelectionDialog = remember { mutableStateOf(false) }
+            val showThemeDialog = remember { mutableStateOf(false) }
 
             if (numberSelectionDialog.value) {
                 NumberSelectionDialog(
@@ -82,7 +84,21 @@ fun Settings(navController: NavController? = null) {
                 )
             }
 
+            if (showThemeDialog.value) {
+                ThemeDialog {
+                    showThemeDialog.value = false
+                }
+            }
+
             SecondaryHeader(title = context.getString(R.string.interface_settings))
+
+            ClickablePreference(
+                    title = context.getString(R.string.theme),
+                    description = context.getString(R.string.theme_summary),
+                    onClick = {
+                        showThemeDialog.value = true
+                    }
+            )
 
             ClickablePreference(
                     title = context.getString(R.string.grid_span),

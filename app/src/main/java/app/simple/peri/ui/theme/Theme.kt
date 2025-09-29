@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
+import app.simple.peri.preferences.MainComposePreferences
 
 private val DarkColorScheme = darkColorScheme(
         primary = Purple80,
@@ -47,11 +48,15 @@ val LocalBarsSize = staticCompositionLocalOf<BarSize> {
 
 @Composable
 fun PeristyleTheme(
-        darkTheme: Boolean = isSystemInDarkTheme(),
         // Dynamic color is available on Android 12+
         dynamicColor: Boolean = true,
         content: @Composable () -> Unit
 ) {
+    val darkTheme = when (MainComposePreferences.getThemeMode()) {
+        MainComposePreferences.THEME_MODE_DARK -> true
+        MainComposePreferences.THEME_MODE_LIGHT -> false
+        else -> isSystemInDarkTheme()
+    }
     var statusBarHeight by remember { mutableIntStateOf(0) }
     var navigationBarHeight by remember { mutableIntStateOf(0) }
 

@@ -264,4 +264,9 @@
     <string name="same_wallpaper_for_both_summary">Use same random wallpaper for both screen. Only works if no folder or tag is set for either of the screen.</string>
     <string name="skip_palettes">Skip Palettes</string>
     <string name="skip_palettes_summary">Skip generating palettes to enable faster loading times at the cost of tinted image shadows.</string>
+    <string name="theme">Theme</string>
+    <string name="theme_summary">Choose between light, dark, or automatic theme</string>
+    <string name="theme_mode_auto">Auto</string>
+    <string name="theme_mode_light">Light</string>
+    <string name="theme_mode_dark">Dark</string>
 </resources>

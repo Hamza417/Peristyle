@@ -79,6 +79,12 @@ object MainComposePreferences {
 
     const val DISABLE_ANIMATIONS = "disable_animations"
     const val PREDICTIVE_BACK = "predictive_back"
+    private const val THEME_MODE = "theme_mode"
+
+    // Theme mode constants
+    const val THEME_MODE_AUTO = 0
+    const val THEME_MODE_LIGHT = 1
+    const val THEME_MODE_DARK = 2
 
     // ----------------------------------------------------------------------------------------------------- //
 
@@ -821,6 +827,16 @@ object MainComposePreferences {
 
     fun setPredictiveBack(value: Boolean) {
         getSharedPreferences().edit().putBoolean(PREDICTIVE_BACK, value).apply()
+    }
+
+    // ----------------------------------------------------------------------------------------------------- //
+
+    fun getThemeMode(): Int {
+        return getSharedPreferences().getInt(THEME_MODE, THEME_MODE_AUTO)
+    }
+
+    fun setThemeMode(value: Int) {
+        getSharedPreferences().edit().putInt(THEME_MODE, value).apply()
     }
 
     // ----------------------------------------------------------------------------------------------------- //
