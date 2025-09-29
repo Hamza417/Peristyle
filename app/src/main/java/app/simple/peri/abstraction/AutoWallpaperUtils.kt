@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Rect
 import android.util.Log
+import androidx.core.graphics.scale
 import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.utils.BitmapUtils
 import app.simple.peri.utils.FileUtils.toFile
@@ -64,9 +65,9 @@ object AutoWallpaperUtils {
                 cropRect.width(),
                 cropRect.height()
         )
-        // val scaled = cropped.scale(targetWidth, targetHeight)
-        // if (cropped != bitmap) cropped.recycle()
-        return cropped
+        val scaled = cropped.scale(targetWidth, targetHeight)
+        if (cropped != bitmap) cropped.recycle()
+        return scaled
     }
 
     fun decodeBitmap(byteArray: ByteArray, targetWidth: Int, targetHeight: Int): Bitmap {
