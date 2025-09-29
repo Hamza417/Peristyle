@@ -16,7 +16,7 @@ import app.simple.peri.R
 import app.simple.peri.preferences.MainComposePreferences
 
 @Composable
-fun ThemeDialog(onDismiss: () -> Unit) {
+fun Theme(onDismiss: () -> Unit) {
     val context = LocalContext.current
     
     val currentThemeMode = MainComposePreferences.getThemeMode()
