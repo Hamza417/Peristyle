@@ -1,11 +1,11 @@
 package app.simple.peri.ui.screens
 
-import app.simple.peri.ui.commons.ClickablePreference
-import app.simple.peri.ui.commons.DescriptionPreference
-import app.simple.peri.ui.dialogs.settings.GridSpanDialog.NumberSelectionDialog
-import app.simple.peri.ui.commons.OtherApps
-import app.simple.peri.ui.commons.SecondaryHeader
-import app.simple.peri.ui.commons.SwitchPreference
+import ClickablePreference
+import DescriptionPreference
+import NumberSelectionDialog
+import OtherApps
+import SecondaryHeader
+import SwitchPreference
 import android.content.Intent
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
@@ -38,7 +38,7 @@ import app.simple.peri.ui.dialogs.settings.OrderDialog
 import app.simple.peri.ui.dialogs.settings.ShowInureAppManagerDialog
 import app.simple.peri.ui.dialogs.settings.ShowPositionalDialog
 import app.simple.peri.ui.dialogs.settings.SortDialog
-import app.simple.peri.ui.dialogs.settings.ThemeDialog.Theme
+import app.simple.peri.ui.dialogs.settings.ThemeDialog
 import app.simple.peri.ui.theme.LocalBarsSize
 import app.simple.peri.utils.ConditionUtils.invert
 import app.simple.peri.utils.FileUtils.toSize
@@ -85,7 +85,7 @@ fun Settings(navController: NavController? = null) {
             }
 
             if (showThemeDialog.value) {
-                Theme {
+                ThemeDialog.Theme {
                     showThemeDialog.value = false
                 }
             }
@@ -94,11 +94,7 @@ fun Settings(navController: NavController? = null) {
 
             ClickablePreference(
                     title = context.getString(R.string.theme),
-                    description = when (MainComposePreferences.getThemeMode()) {
-                        MainComposePreferences.THEME_MODE_LIGHT -> context.getString(R.string.theme_mode_light)
-                        MainComposePreferences.THEME_MODE_DARK -> context.getString(R.string.theme_mode_dark)
-                        else -> context.getString(R.string.theme_mode_auto)
-                    },
+                    description = context.getString(R.string.theme_summary),
                     onClick = {
                         showThemeDialog.value = true
                     }
