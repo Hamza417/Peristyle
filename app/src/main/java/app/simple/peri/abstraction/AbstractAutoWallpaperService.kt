@@ -10,6 +10,7 @@ import android.view.WindowManager
 import app.simple.peri.database.instances.WallpaperDatabase
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.preferences.MainComposePreferences
+import app.simple.peri.utils.StatusBarHeight
 import app.simple.peri.utils.WallpaperServiceNotification.createNotificationChannels
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -101,7 +102,12 @@ abstract class AbstractAutoWallpaperService : Service() {
             val metrics = DisplayMetrics()
             @Suppress("DEPRECATION")
             display.getMetrics(metrics)
-            Size(metrics.widthPixels, metrics.heightPixels)
+
+            // legacy method to get bar values, it is still unreliable on many devices
+            val statusBarHeight = StatusBarHeight.getStatusBarHeight(applicationContext.resources)
+            val navigationBarHeight = StatusBarHeight.getNavigationBarHeight(applicationContext.resources)
+
+            Size(metrics.widthPixels, metrics.heightPixels + statusBarHeight + navigationBarHeight)
         }
     }
 
