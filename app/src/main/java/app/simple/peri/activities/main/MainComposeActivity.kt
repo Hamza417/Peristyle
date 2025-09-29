@@ -47,6 +47,9 @@ class MainComposeActivity : BaseComponentActivity(), OnSharedPreferenceChangeLis
 
         setContent {
             CompositionLocalProvider(LocalDisplaySize provides LocalWindowInfo.current.containerSize) {
+
+                MainComposePreferences.setSavedDeviceResolution(LocalDisplaySize.current.width, LocalDisplaySize.current.height)
+
                 PeristyleTheme {
                     Surface(
                             modifier = Modifier.fillMaxSize()
