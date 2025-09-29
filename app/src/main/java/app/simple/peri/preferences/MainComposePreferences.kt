@@ -3,6 +3,7 @@ package app.simple.peri.preferences
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.os.Build
+import android.util.Log
 import app.simple.peri.models.Effect
 import app.simple.peri.preferences.SharedPreferences.getSharedPreferences
 
@@ -53,6 +54,8 @@ object MainComposePreferences {
     private const val AUTO_WALLPAPER_LOCK_SCALE_RED = "auto_wallpaper_lock_scale_red"
     private const val AUTO_WALLPAPER_LOCK_SCALE_GREEN = "auto_wallpaper_lock_scale_green"
     private const val AUTO_WALLPAPER_LOCK_SCALE_BLUE = "auto_wallpaper_lock_scale_blue"
+    private const val DEVICE_WIDTH = "device_width"
+    private const val DEVICE_HEIGHT = "device_height"
     private const val BOTTOM_HEADER = "bottom_header"
     private const val ORIGINAL_ASPECT_RATIO = "original_aspect_ratio"
     private const val AUTO_WALLPAPER_NOTIFICATION = "auto_wallpaper_notification"
@@ -597,6 +600,38 @@ object MainComposePreferences {
         getSharedPreferences().edit().remove(AUTO_WALLPAPER_LOCK_SCALE_RED).apply()
         getSharedPreferences().edit().remove(AUTO_WALLPAPER_LOCK_SCALE_GREEN).apply()
         getSharedPreferences().edit().remove(AUTO_WALLPAPER_LOCK_SCALE_BLUE).apply()
+    }
+
+    // ----------------------------------------------------------------------------------------------------- //
+
+    private fun getDeviceWidth(): Int {
+        return getSharedPreferences().getInt(DEVICE_WIDTH, 1080)
+    }
+
+    private fun setDeviceWidth(value: Int) {
+        getSharedPreferences().edit().putInt(DEVICE_WIDTH, value).apply()
+    }
+
+    private fun getDeviceHeight(): Int {
+        return getSharedPreferences().getInt(DEVICE_HEIGHT, 1920)
+    }
+
+    private fun setDeviceHeight(value: Int) {
+        getSharedPreferences().edit().putInt(DEVICE_HEIGHT, value).apply()
+    }
+
+    fun setDeviceDimensions(width: Int, height: Int) {
+        Log.i("MainComposePreferences", "Device dimensions: $width x $height")
+        if (width > 0 && height > 0) {
+            setDeviceWidth(width)
+            setDeviceHeight(height)
+        } else {
+            Log.e("MainComposePreferences", "Invalid device dimensions: $width x $height")
+        }
+    }
+
+    fun getAspectRatio(): Float {
+        return getDeviceWidth().toFloat() / getDeviceHeight().toFloat()
     }
 
     // ----------------------------------------------------------------------------------------------------- //
