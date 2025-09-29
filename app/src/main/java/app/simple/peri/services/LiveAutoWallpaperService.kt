@@ -145,7 +145,7 @@ class LiveAutoWallpaperService : WallpaperService() {
 
                     withContext(Dispatchers.Default) {
                         try {
-                            getBitmapFromFile(applicationContext, filePath, canvas.width, canvas.height, recycle = false) { bmp ->
+                            getBitmapFromFile(filePath, canvas.width, canvas.height, recycle = false) { bmp ->
                                 localBitmap = bmp
                             }
                         } catch (e: NullPointerException) {
