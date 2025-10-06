@@ -4,15 +4,22 @@ import android.content.Intent
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.CheckBox
+import androidx.compose.material.icons.outlined.Compress
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.FolderOpen
+import androidx.compose.material.icons.outlined.PhotoSizeSelectLarge
+import androidx.compose.material.icons.outlined.Refresh
+import androidx.compose.material.icons.outlined.SelectAll
+import androidx.compose.material.icons.outlined.Share
+import androidx.compose.material.icons.outlined.Tag
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -22,12 +29,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ShareCompat
 import androidx.core.content.FileProvider
@@ -35,7 +41,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import app.simple.peri.R
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.ui.commons.FolderBrowser
-import app.simple.peri.ui.constants.DIALOG_OPTION_FONT_SIZE
+import app.simple.peri.ui.dialogs.common.MenuItemWithIcon
 import app.simple.peri.ui.dialogs.common.SureDialog
 import app.simple.peri.utils.ConditionUtils.invert
 import app.simple.peri.utils.FileUtils.toFile
@@ -56,7 +62,6 @@ fun WallpaperMenu(
         onReduceResolution: () -> Unit = {},
         onSelectToHere: () -> Unit = {},
 ) {
-    val space = 2.dp
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     var launchDirectoryPicker by remember { mutableStateOf(false) }
@@ -106,14 +111,21 @@ fun WallpaperMenu(
             title = {
                 Text(
                         text = wallpaper.name ?: "",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                 )
             },
             text = {
-                Box(
-                        contentAlignment = Alignment.Center
+                LazyColumn(
+                        modifier = Modifier.fillMaxWidth()
                 ) {
-                    Column {
-                        Button(
+                    item {
+                        // Common Actions Section
+                        MenuItemWithIcon(
+                                icon = Icons.Outlined.Share,
+                                text = context.getString(R.string.send),
                                 onClick = {
                                     val uri = FileProvider.getUriForFile(
                                             context,
@@ -126,69 +138,13 @@ fun WallpaperMenu(
                                         .setChooserTitle("Share Wallpaper")
                                         .setStream(uri)
                                         .startChooser()
-                                },
-                                colors = ButtonDefaults.buttonColors(
-                                        containerColor = Color.Transparent,
-                                        contentColor = MaterialTheme.colorScheme.onSurface
-                                ),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                        ) {
-                            Text(
-                                    text = context.getString(R.string.send),
-                                    color = MaterialTheme.colorScheme.onSurface,
-                                    fontSize = DIALOG_OPTION_FONT_SIZE,
-                                    fontWeight = FontWeight.SemiBold
-                            )
-                        }
+                                    setShowDialog(false)
+                                }
+                        )
 
-                        Spacer(modifier = Modifier.height(space))
-
-                        Button(
-                                onClick = {
-                                    deleteSure = true
-                                },
-                                colors = ButtonDefaults.buttonColors(
-                                        containerColor = Color.Transparent,
-                                        contentColor = MaterialTheme.colorScheme.onSurface
-                                ),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                        ) {
-                            Text(
-                                    text = context.getString(R.string.delete),
-                                    color = Color.Red,
-                                    fontSize = DIALOG_OPTION_FONT_SIZE,
-                                    fontWeight = FontWeight.SemiBold
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.height(space))
-
-                        Button(
-                                onClick = {
-                                    onAddTag().also {
-                                        setShowDialog(false)
-                                    }
-                                },
-                                colors = ButtonDefaults.buttonColors(
-                                        containerColor = Color.Transparent,
-                                        contentColor = MaterialTheme.colorScheme.onSurface
-                                ),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                        ) {
-                            Text(
-                                    text = context.getString(R.string.add_tag),
-                                    color = MaterialTheme.colorScheme.onSurface,
-                                    fontSize = DIALOG_OPTION_FONT_SIZE,
-                                    fontWeight = FontWeight.SemiBold
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.height(space))
-
-                        Button(
+                        MenuItemWithIcon(
+                                icon = Icons.Outlined.Edit,
+                                text = context.getString(R.string.edit),
                                 onClick = {
                                     val uri = FileProvider.getUriForFile(
                                             context,
@@ -206,165 +162,104 @@ fun WallpaperMenu(
                                             )
                                     )
                                     setShowDialog(false)
-                                },
-                                colors = ButtonDefaults.buttonColors(
-                                        containerColor = Color.Transparent,
-                                        contentColor = MaterialTheme.colorScheme.onSurface
-                                ),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                        ) {
-                            Text(
-                                    text = context.getString(R.string.edit),
-                                    color = MaterialTheme.colorScheme.onSurface,
-                                    fontSize = DIALOG_OPTION_FONT_SIZE,
-                                    fontWeight = FontWeight.SemiBold
-                            )
-                        }
+                                }
+                        )
 
-                        Spacer(modifier = Modifier.height(space))
+                        MenuItemWithIcon(
+                                icon = Icons.Outlined.Tag,
+                                text = context.getString(R.string.add_tag),
+                                onClick = {
+                                    onAddTag()
+                                    setShowDialog(false)
+                                }
+                        )
 
-                        Button(
+                        MenuItemWithIcon(
+                                icon = Icons.Outlined.FolderOpen,
+                                text = context.getString(R.string.move),
+                                onClick = {
+                                    launchDirectoryPicker = true
+                                }
+                        )
+
+                        HorizontalDivider(
+                                modifier = Modifier.padding(vertical = 8.dp),
+                                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+                        )
+
+                        // Selection Actions Section
+                        MenuItemWithIcon(
+                                icon = Icons.Outlined.CheckBox,
+                                text = context.getString(R.string.select),
                                 onClick = {
                                     onSelect()
                                     setShowDialog(false)
-                                },
-                                colors = ButtonDefaults.buttonColors(
-                                        containerColor = Color.Transparent,
-                                        contentColor = MaterialTheme.colorScheme.onSurface
-                                ),
-                                modifier = Modifier
-                                    .fillMaxWidth(),
-                        ) {
-                            Text(
-                                    text = context.getString(R.string.select),
-                                    fontSize = DIALOG_OPTION_FONT_SIZE,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = MaterialTheme.colorScheme.onSurface
-                            )
-                        }
+                                }
+                        )
 
                         if (isAnySelected) {
-                            Spacer(modifier = Modifier.height(space))
-
-                            Button(
+                            MenuItemWithIcon(
+                                    icon = Icons.Outlined.SelectAll,
+                                    text = context.getString(R.string.select_all_from_last),
                                     onClick = {
                                         onSelectToHere()
                                         setShowDialog(false)
-                                    },
-                                    colors = ButtonDefaults.buttonColors(
-                                            containerColor = Color.Transparent,
-                                            contentColor = MaterialTheme.colorScheme.onSurface
-                                    ),
-                                    modifier = Modifier
-                                        .fillMaxWidth(),
-                            ) {
-                                Text(
-                                        text = context.getString(R.string.select_all_from_last),
-                                        fontSize = DIALOG_OPTION_FONT_SIZE,
-                                        fontWeight = FontWeight.SemiBold,
-                                        color = MaterialTheme.colorScheme.onSurface
-                                )
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(space))
-
-                        Button(
-                                onClick = {
-                                    launchDirectoryPicker = true
-                                },
-                                colors = ButtonDefaults.buttonColors(
-                                        containerColor = Color.Transparent,
-                                        contentColor = MaterialTheme.colorScheme.onSurface
-                                ),
-                                modifier = Modifier
-                                    .fillMaxWidth(),
-                        ) {
-                            Text(
-                                    text = context.getString(R.string.move),
-                                    fontSize = DIALOG_OPTION_FONT_SIZE,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = MaterialTheme.colorScheme.onSurface
+                                    }
                             )
                         }
 
                         HorizontalDivider(
-                                modifier = Modifier
-                                    .padding(top = 5.dp, bottom = 5.dp)
-                                    .fillMaxWidth()
+                                modifier = Modifier.padding(vertical = 8.dp),
+                                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
                         )
 
+                        // Image Optimization Section
                         if (wallpaper.isNotCompressible().invert()) {
-                            Button(
+                            MenuItemWithIcon(
+                                    icon = Icons.Outlined.Compress,
+                                    text = context.getString(R.string.compress),
                                     onClick = {
-                                        onCompress().also {
-                                            setShowDialog(false)
-                                        }
-                                    },
-                                    colors = ButtonDefaults.buttonColors(
-                                            containerColor = Color.Transparent,
-                                            contentColor = MaterialTheme.colorScheme.onSurface
-                                    ),
-                                    modifier = Modifier
-                                        .fillMaxWidth(),
-                            ) {
-                                Text(
-                                        text = context.getString(R.string.compress),
-                                        fontSize = DIALOG_OPTION_FONT_SIZE,
-                                        fontWeight = FontWeight.SemiBold,
-                                        color = MaterialTheme.colorScheme.onSurface
-                                )
-                            }
-
-                            Spacer(modifier = Modifier.height(space))
-                        }
-
-                        Button(
-                                onClick = {
-                                    onReduceResolution().also {
+                                        onCompress()
                                         setShowDialog(false)
                                     }
-                                },
-                                colors = ButtonDefaults.buttonColors(
-                                        containerColor = Color.Transparent,
-                                        contentColor = MaterialTheme.colorScheme.onSurface
-                                ),
-                                modifier = Modifier
-                                    .fillMaxWidth(),
-                        ) {
-                            Text(
-                                    text = context.getString(R.string.reduce_resolution),
-                                    fontSize = DIALOG_OPTION_FONT_SIZE,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = MaterialTheme.colorScheme.onSurface
                             )
                         }
 
-                        Spacer(modifier = Modifier.height(space))
+                        MenuItemWithIcon(
+                                icon = Icons.Outlined.PhotoSizeSelectLarge,
+                                text = context.getString(R.string.reduce_resolution),
+                                onClick = {
+                                    onReduceResolution()
+                                    setShowDialog(false)
+                                }
+                        )
 
-                        Button(
+                        MenuItemWithIcon(
+                                icon = Icons.Outlined.Refresh,
+                                text = context.getString(R.string.reload_metadata),
                                 onClick = {
                                     composeWallpaperViewModel.reloadMetadata(wallpaper) {
                                         Log.i("WallpaperMenu", "Metadata reloaded: $it")
                                         Log.i("WallpaperMenu", "for wallpaper: $wallpaper")
                                         setShowDialog(false)
                                     }
+                                }
+                        )
+
+                        HorizontalDivider(
+                                modifier = Modifier.padding(vertical = 8.dp),
+                                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+                        )
+
+                        // Destructive Action Section
+                        MenuItemWithIcon(
+                                icon = Icons.Outlined.Delete,
+                                text = context.getString(R.string.delete),
+                                onClick = {
+                                    deleteSure = true
                                 },
-                                colors = ButtonDefaults.buttonColors(
-                                        containerColor = Color.Transparent,
-                                        contentColor = MaterialTheme.colorScheme.onSurface
-                                ),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                        ) {
-                            Text(
-                                    text = context.getString(R.string.reload_metadata),
-                                    color = MaterialTheme.colorScheme.onSurface,
-                                    fontSize = DIALOG_OPTION_FONT_SIZE,
-                                    fontWeight = FontWeight.SemiBold
-                            )
-                        }
+                                isDestructive = true
+                        )
                     }
                 }
             },

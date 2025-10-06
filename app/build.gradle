@@ -201,7 +201,7 @@ dependencies {
     //noinspection GradleDependency
     androidTestImplementation "androidx.room:room-testing:2.7.2"
 
-    implementation 'me.saket.telephoto:zoomable-image-glide:0.17.0'
+    implementation 'me.saket.telephoto:zoomable-image-glide:0.18.0'
     implementation 'id.zelory:compressor:3.0.1'
     implementation 'dev.chrisbanes.haze:haze:1.6.10'
     implementation 'dev.chrisbanes.haze:haze-materials:1.6.10'
