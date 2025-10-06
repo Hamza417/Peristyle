@@ -41,7 +41,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import app.simple.peri.R
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.ui.commons.FolderBrowser
-import app.simple.peri.ui.dialogs.common.MenuItemWithIcon
+import app.simple.peri.ui.commons.MenuItemWithIcon
 import app.simple.peri.ui.dialogs.common.SureDialog
 import app.simple.peri.utils.ConditionUtils.invert
 import app.simple.peri.utils.FileUtils.toFile

@@ -1,4 +1,4 @@
-package app.simple.peri.ui.dialogs.common
+package app.simple.peri.ui.commons
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
