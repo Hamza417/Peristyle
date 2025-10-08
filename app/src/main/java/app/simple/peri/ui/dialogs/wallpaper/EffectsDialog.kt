@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.LockOpen
+import androidx.compose.material.icons.rounded.Shuffle
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
@@ -25,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import app.simple.peri.R
+import app.simple.peri.utils.EffectGenerator
 
 val RED = Color(0xFFCB4335.toInt())
 val GREEN = Color(0xFF17A589.toInt())
@@ -97,10 +99,34 @@ fun EffectsDialog(
     AlertDialog(
             onDismissRequest = { setShowDialog(false) },
             title = {
-                Text(
-                        text = stringResource(id = R.string.edit),
-                        color = Color.White
-                )
+                Row {
+                    Text(
+                            text = stringResource(id = R.string.edit),
+                            color = Color.White
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                    IconButton(
+                            onClick = {
+                                val randomEffect = EffectGenerator.generateRandomEffect()
+                                // blurValue.floatValue = randomEffect.blurValue
+                                brightnessValue.floatValue = randomEffect.brightnessValue
+                                contrastValue.floatValue = randomEffect.contrastValue
+                                saturationValue.floatValue = randomEffect.saturationValue
+                                hueRedValue.floatValue = randomEffect.hueRedValue
+                                hueGreenValue.floatValue = randomEffect.hueGreenValue
+                                hueBlueValue.floatValue = randomEffect.hueBlueValue
+                                scaleRedValue.floatValue = randomEffect.scaleRedValue
+                                scaleGreenValue.floatValue = randomEffect.scaleGreenValue
+                                scaleBlueValue.floatValue = randomEffect.scaleBlueValue
+                            },
+                    ) {
+                        Icon(
+                                imageVector = Icons.Rounded.Shuffle,
+                                contentDescription = stringResource(id = R.string.random),
+                                tint = Color.White
+                        )
+                    }
+                }
             },
             text = {
                 LazyColumn {
@@ -426,7 +452,33 @@ fun AutoWallpaperEffectsDialog(
 
     AlertDialog(
             onDismissRequest = { setShowDialog(false) },
-            title = { Text(text = stringResource(id = R.string.apply_effects_summary)) },
+            title = {
+                Row {
+                    Text(text = stringResource(id = R.string.apply_effects_summary))
+                    Spacer(modifier = Modifier.weight(1f))
+                    IconButton(
+                            onClick = {
+                                val randomEffect = EffectGenerator.generateRandomEffect()
+                                blurValue.floatValue = randomEffect.blurValue
+                                brightnessValue.floatValue = randomEffect.brightnessValue
+                                contrastValue.floatValue = randomEffect.contrastValue
+                                saturationValue.floatValue = randomEffect.saturationValue
+                                hueRedValue.floatValue = randomEffect.hueRedValue
+                                hueGreenValue.floatValue = randomEffect.hueGreenValue
+                                hueBlueValue.floatValue = randomEffect.hueBlueValue
+                                scaleRedValue.floatValue = randomEffect.scaleRedValue
+                                scaleGreenValue.floatValue = randomEffect.scaleGreenValue
+                                scaleBlueValue.floatValue = randomEffect.scaleBlueValue
+                            },
+                    ) {
+                        Icon(
+                                imageVector = Icons.Rounded.Shuffle,
+                                contentDescription = stringResource(id = R.string.random),
+                                tint = Color.White
+                        )
+                    }
+                }
+            },
             text = {
                 LazyColumn {
                     item {
