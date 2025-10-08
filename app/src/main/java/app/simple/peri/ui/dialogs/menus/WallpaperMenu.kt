@@ -8,16 +8,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.CheckBox
-import androidx.compose.material.icons.outlined.Compress
-import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.outlined.Edit
-import androidx.compose.material.icons.outlined.FolderOpen
-import androidx.compose.material.icons.outlined.PhotoSizeSelectLarge
-import androidx.compose.material.icons.outlined.Refresh
-import androidx.compose.material.icons.outlined.SelectAll
-import androidx.compose.material.icons.outlined.Share
-import androidx.compose.material.icons.outlined.Tag
+import androidx.compose.material.icons.automirrored.rounded.Label
+import androidx.compose.material.icons.rounded.CheckBox
+import androidx.compose.material.icons.rounded.Compress
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material.icons.rounded.MoveDown
+import androidx.compose.material.icons.rounded.PhotoSizeSelectLarge
+import androidx.compose.material.icons.rounded.Refresh
+import androidx.compose.material.icons.rounded.SelectAll
+import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
@@ -124,7 +124,7 @@ fun WallpaperMenu(
                     item {
                         // Common Actions Section
                         MenuItemWithIcon(
-                                icon = Icons.Outlined.Share,
+                                icon = Icons.Rounded.Share,
                                 text = context.getString(R.string.send),
                                 onClick = {
                                     val uri = FileProvider.getUriForFile(
@@ -143,7 +143,7 @@ fun WallpaperMenu(
                         )
 
                         MenuItemWithIcon(
-                                icon = Icons.Outlined.Edit,
+                                icon = Icons.Rounded.Edit,
                                 text = context.getString(R.string.edit),
                                 onClick = {
                                     val uri = FileProvider.getUriForFile(
@@ -166,7 +166,7 @@ fun WallpaperMenu(
                         )
 
                         MenuItemWithIcon(
-                                icon = Icons.Outlined.Tag,
+                                icon = Icons.AutoMirrored.Rounded.Label,
                                 text = context.getString(R.string.add_tag),
                                 onClick = {
                                     onAddTag()
@@ -175,7 +175,7 @@ fun WallpaperMenu(
                         )
 
                         MenuItemWithIcon(
-                                icon = Icons.Outlined.FolderOpen,
+                                icon = Icons.Rounded.MoveDown,
                                 text = context.getString(R.string.move),
                                 onClick = {
                                     launchDirectoryPicker = true
@@ -189,7 +189,7 @@ fun WallpaperMenu(
 
                         // Selection Actions Section
                         MenuItemWithIcon(
-                                icon = Icons.Outlined.CheckBox,
+                                icon = Icons.Rounded.CheckBox,
                                 text = context.getString(R.string.select),
                                 onClick = {
                                     onSelect()
@@ -199,7 +199,7 @@ fun WallpaperMenu(
 
                         if (isAnySelected) {
                             MenuItemWithIcon(
-                                    icon = Icons.Outlined.SelectAll,
+                                    icon = Icons.Rounded.SelectAll,
                                     text = context.getString(R.string.select_all_from_last),
                                     onClick = {
                                         onSelectToHere()
@@ -216,7 +216,7 @@ fun WallpaperMenu(
                         // Image Optimization Section
                         if (wallpaper.isNotCompressible().invert()) {
                             MenuItemWithIcon(
-                                    icon = Icons.Outlined.Compress,
+                                    icon = Icons.Rounded.Compress,
                                     text = context.getString(R.string.compress),
                                     onClick = {
                                         onCompress()
@@ -226,7 +226,7 @@ fun WallpaperMenu(
                         }
 
                         MenuItemWithIcon(
-                                icon = Icons.Outlined.PhotoSizeSelectLarge,
+                                icon = Icons.Rounded.PhotoSizeSelectLarge,
                                 text = context.getString(R.string.reduce_resolution),
                                 onClick = {
                                     onReduceResolution()
@@ -235,7 +235,7 @@ fun WallpaperMenu(
                         )
 
                         MenuItemWithIcon(
-                                icon = Icons.Outlined.Refresh,
+                                icon = Icons.Rounded.Refresh,
                                 text = context.getString(R.string.reload_metadata),
                                 onClick = {
                                     composeWallpaperViewModel.reloadMetadata(wallpaper) {
@@ -253,7 +253,7 @@ fun WallpaperMenu(
 
                         // Destructive Action Section
                         MenuItemWithIcon(
-                                icon = Icons.Outlined.Delete,
+                                icon = Icons.Rounded.Delete,
                                 text = context.getString(R.string.delete),
                                 onClick = {
                                     deleteSure = true

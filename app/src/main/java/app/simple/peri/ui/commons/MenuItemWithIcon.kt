@@ -22,7 +22,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import app.simple.peri.ui.constants.DIALOG_OPTION_FONT_SIZE
 
 @Composable
 fun MenuItemWithIcon(
@@ -60,9 +60,8 @@ fun MenuItemWithIcon(
 
         Text(
                 text = text,
-                style = MaterialTheme.typography.bodyLarge,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Normal,
+                fontSize = DIALOG_OPTION_FONT_SIZE,
+                fontWeight = FontWeight.Bold,
                 color = if (isDestructive) {
                     MaterialTheme.colorScheme.error
                 } else {
