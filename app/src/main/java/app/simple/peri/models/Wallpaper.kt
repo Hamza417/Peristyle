@@ -13,6 +13,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import app.simple.peri.R
 import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.utils.BitmapUtils.generatePalette
@@ -224,6 +225,7 @@ class Wallpaper() : Comparable<Wallpaper>, Serializable, Parcelable {
                         .load(file)
                         .override(32, 32) // specify width and height for thumbnail
                         .apply(RequestOptions().format(DecodeFormat.PREFER_RGB_565)) // <— use RGB_565
+                        .error(R.drawable.ic_peristyle)
                         .submit()
                         .get()
 

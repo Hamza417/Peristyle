@@ -59,6 +59,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -90,6 +91,7 @@ import app.simple.peri.viewmodels.HomeScreenViewModel
 import com.bumptech.glide.integration.compose.CrossFade
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import com.bumptech.glide.integration.compose.placeholder
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
@@ -301,6 +303,7 @@ fun WallpaperItem(title: String, position: Int, onClick: () -> Unit, onNextWallp
                         .fillMaxSize()
                         .hazeSource(state = hazeState),
                     alignment = Alignment.Center,
+                    failure = placeholder(painter = painterResource(id = R.drawable.ic_peristyle)),
                     contentScale = currentScale.value,
             ) {
                 it.addListener(object : RequestListener<Drawable> {
