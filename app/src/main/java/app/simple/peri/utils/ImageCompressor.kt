@@ -3,10 +3,10 @@ package app.simple.peri.utils
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
-import androidx.core.graphics.scale
 import androidx.exifinterface.media.ExifInterface
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.io.BufferedOutputStream
 import java.io.File
 import java.io.FileOutputStream
 
@@ -24,47 +24,45 @@ object ImageCompressor {
             targetHeight: Int? = null
     ): File = withContext(Dispatchers.IO) {
         // Read original image dimensions without loading full bitmap
-        val options = BitmapFactory.Options().apply {
+        val bounds = BitmapFactory.Options().apply {
             inJustDecodeBounds = true
         }
-        BitmapFactory.decodeFile(sourceFile.absolutePath, options)
+        BitmapFactory.decodeFile(sourceFile.absolutePath, bounds)
 
-        val originalWidth = options.outWidth
-        val originalHeight = options.outHeight
-        val finalWidth = targetWidth ?: originalWidth
-        val finalHeight = targetHeight ?: originalHeight
+        val exifOrientation = getExifOrientation(sourceFile)
 
-        // Calculate optimal inSampleSize for faster decoding
-        options.inSampleSize = calculateInSampleSize(
-                originalWidth, originalHeight,
-                finalWidth, finalHeight
-        )
+        val srcWidth = bounds.outWidth
+        val srcHeight = bounds.outHeight
 
-        // Decode with inSampleSize for faster loading
-        options.inJustDecodeBounds = false
-        options.inPreferredConfig = Bitmap.Config.ARGB_8888
-        options.inMutable = false
+        // Determine desired output dimensions in visual/oriented space
+        val needsSwap = isRotation90or270(exifOrientation)
+        val desiredOutWidth = (targetWidth ?: if (needsSwap) srcHeight else srcWidth).coerceAtLeast(1)
+        val desiredOutHeight = (targetHeight ?: if (needsSwap) srcWidth else srcHeight).coerceAtLeast(1)
+
+        // For decode sampling, compute required dims in source (pre-rotation) space
+        val reqDecodeWidth = if (needsSwap) desiredOutHeight else desiredOutWidth
+        val reqDecodeHeight = if (needsSwap) desiredOutWidth else desiredOutHeight
+
+        // Determine output format (prefer destination extension if provided)
+        val format = getCompressFormat(destinationFile.name, sourceFile.name)
+
+        // Configure decoder for speed
+        val options = BitmapFactory.Options().apply {
+            inJustDecodeBounds = false
+            inPreferredConfig = if (format == Bitmap.CompressFormat.JPEG) Bitmap.Config.RGB_565 else Bitmap.Config.ARGB_8888
+            inMutable = false
+            inTempStorage = ByteArray(64 * 1024)
+            inSampleSize = calculateInSampleSize(srcWidth, srcHeight, reqDecodeWidth, reqDecodeHeight)
+        }
 
         var bitmap = BitmapFactory.decodeFile(sourceFile.absolutePath, options)
             ?: throw IllegalStateException("Failed to decode image")
 
-        // Scale to exact dimensions if needed (only if inSampleSize wasn't exact)
-        if (bitmap.width != finalWidth || bitmap.height != finalHeight) {
-            val scaledBitmap = bitmap.scale(finalWidth, finalHeight)
-            if (scaledBitmap != bitmap) {
-                bitmap.recycle()
-                bitmap = scaledBitmap
-            }
-        }
+        // Single-pass transform: apply orientation (rotate/flip) + scale to desired output size
+        bitmap = transformBitmap(bitmap, exifOrientation, desiredOutWidth, desiredOutHeight)
 
-        // Fix orientation if needed
-        bitmap = fixOrientation(sourceFile, bitmap)
-
-        // Determine output format
-        val format = getCompressFormat(sourceFile.name)
-
-        // Compress and save
-        FileOutputStream(destinationFile).use { out ->
+        // Compress and save (buffered I/O)
+        BufferedOutputStream(FileOutputStream(destinationFile), 16 * 1024).use { out ->
             bitmap.compress(format, quality, out)
             out.flush()
         }
@@ -83,48 +81,51 @@ object ImageCompressor {
             scaleFactor: Float = 0.5f,
             quality: Int = 100
     ): File = withContext(Dispatchers.IO) {
+        val safeScale = if (scaleFactor <= 0f || scaleFactor.isNaN()) 0.5f else scaleFactor
+
         // Read original dimensions
-        val options = BitmapFactory.Options().apply {
+        val bounds = BitmapFactory.Options().apply {
             inJustDecodeBounds = true
         }
-        BitmapFactory.decodeFile(sourceFile.absolutePath, options)
+        BitmapFactory.decodeFile(sourceFile.absolutePath, bounds)
 
-        val originalWidth = options.outWidth
-        val originalHeight = options.outHeight
-        val targetWidth = (originalWidth * scaleFactor).toInt()
-        val targetHeight = (originalHeight * scaleFactor).toInt()
+        val exifOrientation = getExifOrientation(sourceFile)
 
-        // Calculate optimal inSampleSize (power of 2 for best performance)
-        options.inSampleSize = calculateInSampleSize(
-                originalWidth, originalHeight,
-                targetWidth, targetHeight
-        )
+        val srcWidth = bounds.outWidth
+        val srcHeight = bounds.outHeight
+
+        // Compute target dimensions in pre-rotated space then map to visual/oriented space
+        val preTargetWidth = (srcWidth * safeScale).toInt().coerceAtLeast(1)
+        val preTargetHeight = (srcHeight * safeScale).toInt().coerceAtLeast(1)
+
+        val needsSwap = isRotation90or270(exifOrientation)
+        val desiredOutWidth = if (needsSwap) preTargetHeight else preTargetWidth
+        val desiredOutHeight = if (needsSwap) preTargetWidth else preTargetHeight
+
+        // For decode sampling, compute required dims in source (pre-rotation) space
+        val reqDecodeWidth = if (needsSwap) desiredOutHeight else desiredOutWidth
+        val reqDecodeHeight = if (needsSwap) desiredOutWidth else desiredOutHeight
+
+        // Determine format (prefer destination extension if provided)
+        val format = getCompressFormat(destinationFile.name, sourceFile.name)
 
         // Decode with inSampleSize
-        options.inJustDecodeBounds = false
-        options.inPreferredConfig = Bitmap.Config.ARGB_8888
-        options.inMutable = false
+        val options = BitmapFactory.Options().apply {
+            inJustDecodeBounds = false
+            inPreferredConfig = if (format == Bitmap.CompressFormat.JPEG) Bitmap.Config.RGB_565 else Bitmap.Config.ARGB_8888
+            inMutable = false
+            inTempStorage = ByteArray(64 * 1024)
+            inSampleSize = calculateInSampleSize(srcWidth, srcHeight, reqDecodeWidth, reqDecodeHeight)
+        }
 
         var bitmap = BitmapFactory.decodeFile(sourceFile.absolutePath, options)
             ?: throw IllegalStateException("Failed to decode image")
 
-        // Fine-tune scaling if inSampleSize didn't give exact size
-        if (bitmap.width != targetWidth || bitmap.height != targetHeight) {
-            val scaledBitmap = bitmap.scale(targetWidth, targetHeight)
-            if (scaledBitmap != bitmap) {
-                bitmap.recycle()
-                bitmap = scaledBitmap
-            }
-        }
-
-        // Fix orientation
-        bitmap = fixOrientation(sourceFile, bitmap)
-
-        // Determine format
-        val format = getCompressFormat(sourceFile.name)
+        // Single-pass orientation + scale
+        bitmap = transformBitmap(bitmap, exifOrientation, desiredOutWidth, desiredOutHeight)
 
         // Save with high quality
-        FileOutputStream(destinationFile).use { out ->
+        BufferedOutputStream(FileOutputStream(destinationFile), 16 * 1024).use { out ->
             bitmap.compress(format, quality, out)
             out.flush()
         }
@@ -157,55 +158,57 @@ object ImageCompressor {
             }
         }
 
-        return inSampleSize
+        return inSampleSize.coerceAtLeast(1)
     }
 
-    /**
-     * Fix image orientation based on EXIF data
-     */
-    private fun fixOrientation(file: File, bitmap: Bitmap): Bitmap {
-        return try {
-            val exif = ExifInterface(file.absolutePath)
-            val orientation = exif.getAttributeInt(
-                    ExifInterface.TAG_ORIENTATION,
-                    ExifInterface.ORIENTATION_NORMAL
-            )
+    // --- EXIF helpers and single-pass transform ---
 
-            when (orientation) {
-                ExifInterface.ORIENTATION_ROTATE_90 -> rotateBitmap(bitmap, 90f)
-                ExifInterface.ORIENTATION_ROTATE_180 -> rotateBitmap(bitmap, 180f)
-                ExifInterface.ORIENTATION_ROTATE_270 -> rotateBitmap(bitmap, 270f)
-                ExifInterface.ORIENTATION_FLIP_HORIZONTAL -> flipBitmap(bitmap, horizontal = true)
-                ExifInterface.ORIENTATION_FLIP_VERTICAL -> flipBitmap(bitmap, horizontal = false)
-                else -> bitmap
-            }
-        } catch (e: Exception) {
-            bitmap
-        }
+    private fun getExifOrientation(file: File): Int = try {
+        ExifInterface(file.absolutePath).getAttributeInt(
+                ExifInterface.TAG_ORIENTATION,
+                ExifInterface.ORIENTATION_NORMAL
+        )
+    } catch (_: Exception) {
+        ExifInterface.ORIENTATION_NORMAL
     }
 
-    private fun rotateBitmap(bitmap: Bitmap, degrees: Float): Bitmap {
-        val matrix = Matrix().apply { postRotate(degrees) }
-        val rotated = Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
-        if (rotated != bitmap) {
-            bitmap.recycle()
-        }
-        return rotated
+    private fun isRotation90or270(orientation: Int): Boolean {
+        return orientation == ExifInterface.ORIENTATION_ROTATE_90 ||
+                orientation == ExifInterface.ORIENTATION_ROTATE_270
     }
 
-    private fun flipBitmap(bitmap: Bitmap, horizontal: Boolean): Bitmap {
-        val matrix = Matrix().apply {
-            if (horizontal) {
-                postScale(-1f, 1f)
-            } else {
-                postScale(1f, -1f)
-            }
+    private fun transformBitmap(src: Bitmap, exifOrientation: Int, outWidth: Int, outHeight: Int): Bitmap {
+        // Fast path: no transform and size already matches
+        if (exifOrientation == ExifInterface.ORIENTATION_NORMAL &&
+                src.width == outWidth && src.height == outHeight) {
+            return src
         }
-        val flipped = Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
-        if (flipped != bitmap) {
-            bitmap.recycle()
+
+        val rotation = when (exifOrientation) {
+            ExifInterface.ORIENTATION_ROTATE_90 -> 90f
+            ExifInterface.ORIENTATION_ROTATE_180 -> 180f
+            ExifInterface.ORIENTATION_ROTATE_270 -> 270f
+            else -> 0f
         }
-        return flipped
+        val flipH = exifOrientation == ExifInterface.ORIENTATION_FLIP_HORIZONTAL
+        val flipV = exifOrientation == ExifInterface.ORIENTATION_FLIP_VERTICAL
+
+        val needsSwap = rotation == 90f || rotation == 270f
+        val preW = if (needsSwap) src.height else src.width
+        val preH = if (needsSwap) src.width else src.height
+
+        val scaleX = (outWidth.toFloat() / preW.toFloat()).takeIf { it.isFinite() && it > 0f } ?: 1f
+        val scaleY = (outHeight.toFloat() / preH.toFloat()).takeIf { it.isFinite() && it > 0f } ?: 1f
+
+        val m = Matrix()
+        if (flipH) m.postScale(-1f, 1f)
+        if (flipV) m.postScale(1f, -1f)
+        if (rotation != 0f) m.postRotate(rotation)
+        if (scaleX != 1f || scaleY != 1f) m.postScale(scaleX, scaleY)
+
+        val out = Bitmap.createBitmap(src, 0, 0, src.width, src.height, m, true)
+        if (out != src) src.recycle()
+        return out
     }
 
     /**
@@ -226,5 +229,12 @@ object ImageCompressor {
             else -> Bitmap.CompressFormat.JPEG
         }
     }
-}
 
+    // Prefer primary name's extension; fallback if unknown
+    private fun getCompressFormat(primaryName: String, fallbackName: String): Bitmap.CompressFormat {
+        val primary = getCompressFormat(primaryName)
+        // If primary resolved to JPEG only because it was unknown (no dot), try fallback.
+        // Simple heuristic: if primaryName has extension, trust it; else use fallback.
+        return if (primaryName.contains('.')) primary else getCompressFormat(fallbackName)
+    }
+}
