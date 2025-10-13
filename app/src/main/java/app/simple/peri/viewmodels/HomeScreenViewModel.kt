@@ -32,6 +32,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import java.io.File
 import java.io.FileNotFoundException
+import java.io.IOException
 
 class HomeScreenViewModel(application: Application) : AndroidViewModel(application), OnSharedPreferenceChangeListener {
 
@@ -148,7 +149,11 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
             systemFile.outputStream().use { systemBitmap?.compress(Bitmap.CompressFormat.PNG, 100, it) }
 
             if (PermissionUtils.checkStoragePermission(getApplication())) {
-                systemWallpaperData.postValue(Wallpaper.createFromFile(systemFile, getApplication()))
+                try {
+                    systemWallpaperData.postValue(Wallpaper.createFromFile(systemFile, getApplication()))
+                } catch (_: IOException) {
+                    // bad system wallpaper??
+                }
             }
         }
     }
@@ -168,7 +173,11 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
             lockFile.outputStream().use { lockBitmap?.compress(Bitmap.CompressFormat.PNG, 100, it) }
 
             if (PermissionUtils.checkStoragePermission(getApplication())) {
-                lockWallpaperData.postValue(Wallpaper.createFromFile(lockFile, getApplication()))
+                try {
+                    lockWallpaperData.postValue(Wallpaper.createFromFile(lockFile, getApplication()))
+                } catch (_: IOException) {
+                    // bad lock wallpaper??
+                }
             }
         }
     }

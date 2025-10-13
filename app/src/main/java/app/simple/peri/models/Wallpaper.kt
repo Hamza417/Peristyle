@@ -25,6 +25,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DecodeFormat
 import com.bumptech.glide.request.RequestOptions
 import java.io.File
+import java.io.IOException
 import java.io.Serializable
 
 @Entity(
@@ -201,6 +202,7 @@ class Wallpaper() : Comparable<Wallpaper>, Serializable, Parcelable {
             return createFromUri(file.uri.toString(), context)
         }
 
+        @Throws(IOException::class)
         fun createFromFile(file: File, context: Context): Wallpaper {
             val wallpaper = Wallpaper()
             wallpaper.filePath = file.absolutePath
@@ -220,17 +222,23 @@ class Wallpaper() : Comparable<Wallpaper>, Serializable, Parcelable {
                 wallpaper.prominentColor = Color.DKGRAY // set a default color
             } else {
                 if (context.isNotNull()) {
-                    val bitmap = Glide.with(context)
-                        .asBitmap()
-                        .load(file)
-                        .override(32, 32) // specify width and height for thumbnail
-                        .apply(RequestOptions().format(DecodeFormat.PREFER_RGB_565)) // <— use RGB_565
-                        .error(R.drawable.ic_peristyle)
-                        .submit()
-                        .get()
+                    try {
+                        val bitmap = Glide.with(context)
+                            .asBitmap()
+                            .load(file)
+                            .override(32, 32) // specify width and height for thumbnail
+                            .apply(RequestOptions().format(DecodeFormat.PREFER_RGB_565)) // <— use RGB_565
+                            .error(R.drawable.ic_peristyle)
+                            .submit()
+                            .get()
 
-                    wallpaper.prominentColor = bitmap?.generatePalette()?.vibrantSwatch?.rgb ?: 0
-                    bitmap?.recycle()
+                        wallpaper.prominentColor = bitmap?.generatePalette()?.vibrantSwatch?.rgb ?: 0
+                        bitmap?.recycle()
+                    } catch (_: IOException) {
+                        wallpaper.prominentColor = Color.DKGRAY // set a default color as a fallback
+                    } catch (_: RuntimeException) {
+                        wallpaper.prominentColor = Color.DKGRAY // set a default color as a fallback
+                    }
                 }
             }
 
