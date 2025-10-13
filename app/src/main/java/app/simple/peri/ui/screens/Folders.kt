@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -303,7 +304,11 @@ fun FolderItem(folder: Folder, navController: NavController? = null, composeWall
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Light,
                         color = Color.White,
-                        modifier = Modifier.padding(start = 16.dp, bottom = 16.dp, end = 16.dp),
+                        modifier = Modifier
+                            .padding(start = 16.dp, bottom = 16.dp, end = 16.dp)
+                            .basicMarquee(), // Add this for marquee effect
+                        maxLines = 1, // Required for marquee
+                        overflow = TextOverflow.Visible // Required for marquee
                 )
             }
         }

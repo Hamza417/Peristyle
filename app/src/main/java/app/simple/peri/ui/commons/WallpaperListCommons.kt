@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -291,13 +292,14 @@ fun WallpaperItem(
                         Text(
                                 text = wallpaper.name ?: "",
                                 modifier = Modifier
-                                    .padding(start = 16.dp, top = 16.dp, end = 16.dp),
+                                    .padding(start = 16.dp, top = 16.dp, end = 16.dp)
+                                    .basicMarquee(),
                                 textAlign = TextAlign.Start,
-                                fontSize = 18.sp, // Set the font size
-                                fontWeight = FontWeight.Bold, // Make the text bold
-                                color = Color.White, // Set the text color
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White,
                                 maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
+                                overflow = TextOverflow.Visible, // Required for marquee
                                 softWrap = false,
                         )
 
@@ -331,7 +333,11 @@ fun WallpaperDimensionsText(
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Light,
                         color = Color.White,
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier
+                            .weight(1f)
+                            .basicMarquee(),
+                        maxLines = 1,
+                        overflow = TextOverflow.Visible
                 )
             }
             is WallhavenWallpaper -> {
@@ -341,7 +347,11 @@ fun WallpaperDimensionsText(
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Light,
                         color = Color.White,
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier
+                            .weight(1f)
+                            .basicMarquee(),
+                        maxLines = 1,
+                        overflow = TextOverflow.Visible
                 )
             }
         }
