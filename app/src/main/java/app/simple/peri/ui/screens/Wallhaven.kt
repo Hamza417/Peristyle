@@ -46,7 +46,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.toColorInt
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -388,9 +388,9 @@ fun ImageCard(wallpaper: WallhavenWallpaper, navController: NavController? = nul
                                 modifier = Modifier
                                     .padding(start = 16.dp, top = 16.dp, end = 16.dp),
                                 textAlign = TextAlign.Start,
-                                fontSize = 18.sp, // Set the font size
-                                fontWeight = FontWeight.Bold, // Make the text bold
-                                color = Color.White, // Set the text color
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
                                 softWrap = false,
