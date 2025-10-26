@@ -6,6 +6,7 @@ import OtherApps
 import SecondaryHeader
 import SwitchPreference
 import android.content.Intent
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.PaddingValues
@@ -48,6 +49,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+private const val TAG = "Settings"
+
 @Composable
 fun Settings(navController: NavController? = null) {
     val context = LocalContext.current
@@ -77,7 +80,8 @@ fun Settings(navController: NavController? = null) {
                 GridSpanSelectionDialog(
                         onDismiss = { gridSpanSelectionDialog.value = false },
                         onNumberSelected = {
-                            gridSpanSelectionDialog.value = false
+                            // gridSpanSelectionDialog.value = false
+                            Log.i(TAG, "Selected span: $it")
                         }
                 )
             }

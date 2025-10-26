@@ -180,7 +180,7 @@ private fun GridPreviewSkeleton(
                         .background(bg)
                         .padding(8.dp)
             ) {
-                val rows = 8 // indicative number of rows
+                val rows = 16 // indicative number of rows
                 LazyVerticalGrid(
                         columns = GridCells.Fixed(columns.coerceIn(1, 6)),
                         horizontalArrangement = Arrangement.spacedBy(6.dp),
