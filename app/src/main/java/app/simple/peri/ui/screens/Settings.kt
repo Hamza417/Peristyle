@@ -71,13 +71,13 @@ fun Settings(navController: NavController? = null) {
                     isSettings = true)
         }
         item { // Interface
-            val numberSelectionDialog = remember { mutableStateOf(false) }
+            val gridSpanSelectionDialog = remember { mutableStateOf(false) }
 
-            if (numberSelectionDialog.value) {
+            if (gridSpanSelectionDialog.value) {
                 GridSpanSelectionDialog(
-                        onDismiss = { numberSelectionDialog.value = false },
+                        onDismiss = { gridSpanSelectionDialog.value = false },
                         onNumberSelected = {
-                            numberSelectionDialog.value = false
+                            gridSpanSelectionDialog.value = false
                         }
                 )
             }
@@ -88,7 +88,7 @@ fun Settings(navController: NavController? = null) {
                     title = context.getString(R.string.grid_span),
                     description = context.getString(R.string.grid_span_summary),
                     onClick = {
-                        numberSelectionDialog.value = true
+                        gridSpanSelectionDialog.value = true
                     }
             )
 
