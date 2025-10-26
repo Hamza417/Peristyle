@@ -2,7 +2,6 @@ package app.simple.peri.ui.screens
 
 import ClickablePreference
 import DescriptionPreference
-import GridSpanSelectionDialog
 import OtherApps
 import SecondaryHeader
 import SwitchPreference
@@ -34,6 +33,7 @@ import app.simple.peri.ui.dialogs.common.SureDialog
 import app.simple.peri.ui.dialogs.settings.CacheDirectoryDialog
 import app.simple.peri.ui.dialogs.settings.ConcurrencyDialog
 import app.simple.peri.ui.dialogs.settings.DeveloperProfileDialog
+import app.simple.peri.ui.dialogs.settings.GridSpanSelectionDialog
 import app.simple.peri.ui.dialogs.settings.OrderDialog
 import app.simple.peri.ui.dialogs.settings.ShowInureAppManagerDialog
 import app.simple.peri.ui.dialogs.settings.ShowPositionalDialog

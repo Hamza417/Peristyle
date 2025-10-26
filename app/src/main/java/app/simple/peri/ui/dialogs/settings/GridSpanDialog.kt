@@ -1,10 +1,19 @@
+package app.simple.peri.ui.dialogs.settings
+
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material3.AlertDialog
@@ -22,17 +31,25 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import app.simple.peri.R
+import app.simple.peri.activities.main.LocalDisplaySize
 import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.utils.ConditionUtils.invert
+import kotlin.math.max
+import kotlin.math.min
 
 @Composable
 fun GridSpanSelectionDialog(onDismiss: () -> Unit, onNumberSelected: (Int) -> Unit) {
+    val width = LocalDisplaySize.current.width
+    val height = LocalDisplaySize.current.height
+
     AlertDialog(
             onDismissRequest = { onDismiss() },
             title = { Text(text = stringResource(R.string.grid_span)) },
@@ -52,6 +69,7 @@ fun GridSpanSelectionDialog(onDismiss: () -> Unit, onNumberSelected: (Int) -> Un
                             stringResource(R.string.landscape),
                             stringResource(R.string.portrait)
                     )
+
                     SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
                         segments.forEachIndexed { index, label ->
                             val selected = (index == 0 && forLandscape.value) || (index == 1 && forLandscape.value.invert())
@@ -83,6 +101,18 @@ fun GridSpanSelectionDialog(onDismiss: () -> Unit, onNumberSelected: (Int) -> Un
                             modifier = Modifier.padding(top = 12.dp, bottom = 12.dp)
                     )
 
+                    // Preview skeleton showing how the grid span will look
+                    GridPreviewSkeleton(
+                            forLandscape = forLandscape.value,
+                            columns = selectedNumber.intValue,
+                            deviceWidthPx = width,
+                            deviceHeightPx = height
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    HorizontalDivider()
+
                     // Span options as choice chips
                     SpanChoiceChips(
                             current = selectedNumber.intValue,
@@ -93,8 +123,8 @@ fun GridSpanSelectionDialog(onDismiss: () -> Unit, onNumberSelected: (Int) -> Un
                                 } else {
                                     MainComposePreferences.setGridSpanCountPortrait(number)
                                 }
+
                                 onNumberSelected(number)
-                                onDismiss()
                             }
                     )
                 }
@@ -108,6 +138,66 @@ fun GridSpanSelectionDialog(onDismiss: () -> Unit, onNumberSelected: (Int) -> Un
             },
             properties = DialogProperties(dismissOnClickOutside = true)
     )
+}
+
+@Composable
+private fun GridPreviewSkeleton(
+        forLandscape: Boolean,
+        columns: Int,
+        deviceWidthPx: Int,
+        deviceHeightPx: Int,
+) {
+    val short = min(deviceWidthPx, deviceHeightPx).coerceAtLeast(1)
+    val long = max(deviceWidthPx, deviceHeightPx)
+    // Screen aspect ratio (width/height) respecting chosen orientation
+    val screenAspect = if (forLandscape) long.toFloat() / short.toFloat() else short.toFloat() / long.toFloat()
+
+    val containerShape = RoundedCornerShape(12.dp)
+    val tileShape = RoundedCornerShape(6.dp)
+    val bg = MaterialTheme.colorScheme.surfaceVariant
+    val tile = MaterialTheme.colorScheme.surfaceContainerHigh
+
+    Column(modifier = Modifier
+        .fillMaxWidth()
+    ) {
+        Text(
+                text = if (forLandscape) stringResource(R.string.landscape) else stringResource(R.string.portrait),
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(bottom = 8.dp)
+        )
+
+        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+            val longEdge = 220.dp
+            val shortEdge = 120.dp
+            Box(
+                    modifier = Modifier
+                        .size(
+                                width = if (forLandscape) longEdge else shortEdge,
+                                height = if (forLandscape) shortEdge else longEdge
+                        )
+                        .clip(containerShape)
+                        .background(bg)
+                        .padding(8.dp)
+            ) {
+                val rows = 8 // indicative number of rows
+                LazyVerticalGrid(
+                        columns = GridCells.Fixed(columns.coerceIn(1, 6)),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        verticalArrangement = Arrangement.spacedBy(6.dp),
+                ) {
+                    items(columns.coerceIn(1, 6) * rows) {
+                        Box(
+                                modifier = Modifier
+                                    .clip(tileShape)
+                                    .background(tile)
+                                    .aspectRatio(screenAspect)
+                        )
+                    }
+                }
+            }
+        }
+    }
 }
 
 @Composable
