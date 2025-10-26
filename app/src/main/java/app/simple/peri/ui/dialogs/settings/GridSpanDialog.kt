@@ -24,7 +24,7 @@ import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.utils.ConditionUtils.invert
 
 @Composable
-fun NumberSelectionDialog(onDismiss: () -> Unit, onNumberSelected: (Int) -> Unit) {
+fun GridSpanSelectionDialog(onDismiss: () -> Unit, onNumberSelected: (Int) -> Unit) {
     AlertDialog(
             onDismissRequest = { onDismiss() },
             title = { Text(text = stringResource(R.string.grid_span)) },

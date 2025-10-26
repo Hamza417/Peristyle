@@ -2,7 +2,7 @@ package app.simple.peri.ui.screens
 
 import ClickablePreference
 import DescriptionPreference
-import NumberSelectionDialog
+import GridSpanSelectionDialog
 import OtherApps
 import SecondaryHeader
 import SwitchPreference
@@ -74,7 +74,7 @@ fun Settings(navController: NavController? = null) {
             val numberSelectionDialog = remember { mutableStateOf(false) }
 
             if (numberSelectionDialog.value) {
-                NumberSelectionDialog(
+                GridSpanSelectionDialog(
                         onDismiss = { numberSelectionDialog.value = false },
                         onNumberSelected = {
                             numberSelectionDialog.value = false

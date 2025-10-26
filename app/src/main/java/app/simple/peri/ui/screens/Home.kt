@@ -120,6 +120,7 @@ fun Home(navController: NavController? = null) {
     val pages = listOf(
             Page(RANDOM_WALLPAPER_POSITION, true),
             Page(HOME_SCREEN_POSITION, true),
+            // I could hide it as well in unsupported devices but better than explaining why it is not shown
             Page(LOCK_SCREEN_POSITION, MainComposePreferences.getShowLockScreenWallpaper()),
             Page(LIVE_AUTO_WALLPAPER_POSITION, isLiveWallpaperRunning.value)
     )
