@@ -5,8 +5,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -27,6 +29,7 @@ import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -49,12 +52,20 @@ import kotlin.math.min
 fun GridSpanSelectionDialog(onDismiss: () -> Unit, onNumberSelected: (Int) -> Unit) {
     val width = LocalDisplaySize.current.width
     val height = LocalDisplaySize.current.height
+    val isDeviceLandscape = width > height
 
     AlertDialog(
+            modifier = if (isDeviceLandscape) {
+                Modifier
+                    .fillMaxWidth(0.75f)
+                    .fillMaxHeight(0.98F)
+            } else {
+                Modifier
+            },
             onDismissRequest = { onDismiss() },
             title = { Text(text = stringResource(R.string.grid_span)) },
             text = {
-                val forLandscape = remember { mutableStateOf(false) }
+                val forLandscape = remember(isDeviceLandscape) { mutableStateOf(isDeviceLandscape) }
                 val storedNumber = if (forLandscape.value) {
                     MainComposePreferences.getGridSpanCountLandscape()
                 } else {
@@ -63,70 +74,141 @@ fun GridSpanSelectionDialog(onDismiss: () -> Unit, onNumberSelected: (Int) -> Un
 
                 val selectedNumber = remember { mutableIntStateOf(storedNumber) }
 
-                Column(modifier = Modifier.fillMaxWidth()) {
-                    // Orientation toggle as segmented buttons
-                    val segments = listOf(
-                            stringResource(R.string.landscape),
-                            stringResource(R.string.portrait)
-                    )
+                if (isDeviceLandscape) {
+                    // Landscape device layout: preview on the left, controls on the right
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        Column(modifier = Modifier
+                            .weight(1.2f)
+                            .padding(end = 12.dp)) {
+                            GridPreviewSkeleton(
+                                    forLandscape = forLandscape.value,
+                                    columns = selectedNumber.intValue,
+                                    deviceWidthPx = width,
+                                    deviceHeightPx = height
+                            )
+                        }
 
-                    SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
-                        segments.forEachIndexed { index, label ->
-                            val selected = (index == 0 && forLandscape.value) || (index == 1 && forLandscape.value.invert())
-                            SegmentedButton(
-                                    selected = selected,
-                                    onClick = {
-                                        val landscape = index == 0
-                                        forLandscape.value = landscape
-                                        selectedNumber.intValue = if (landscape) {
-                                            MainComposePreferences.getGridSpanCountLandscape()
-                                        } else {
-                                            MainComposePreferences.getGridSpanCountPortrait()
-                                        }
-                                    },
-                                    shape = SegmentedButtonDefaults.itemShape(index = index, count = segments.size),
-                                    colors = SegmentedButtonDefaults.colors(
-                                            activeContainerColor = MaterialTheme.colorScheme.primary,
-                                            activeContentColor = MaterialTheme.colorScheme.onPrimary,
-                                            inactiveContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                                            inactiveContentColor = MaterialTheme.colorScheme.onSurface,
-                                    ),
-                            ) {
-                                Text(text = label)
+                        VerticalDivider()
+
+                        Column(modifier = Modifier
+                            .weight(1f)
+                            .padding(start = 12.dp)) {
+                            val segments = listOf(
+                                    stringResource(R.string.landscape),
+                                    stringResource(R.string.portrait)
+                            )
+
+                            SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+                                segments.forEachIndexed { index, label ->
+                                    val selected = (index == 0 && forLandscape.value) || (index == 1 && forLandscape.value.invert())
+                                    SegmentedButton(
+                                            selected = selected,
+                                            onClick = {
+                                                val landscape = index == 0
+                                                forLandscape.value = landscape
+                                                selectedNumber.intValue = if (landscape) {
+                                                    MainComposePreferences.getGridSpanCountLandscape()
+                                                } else {
+                                                    MainComposePreferences.getGridSpanCountPortrait()
+                                                }
+                                            },
+                                            shape = SegmentedButtonDefaults.itemShape(index = index, count = segments.size),
+                                            colors = SegmentedButtonDefaults.colors(
+                                                    activeContainerColor = MaterialTheme.colorScheme.primary,
+                                                    activeContentColor = MaterialTheme.colorScheme.onPrimary,
+                                                    inactiveContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                                                    inactiveContentColor = MaterialTheme.colorScheme.onSurface,
+                                            ),
+                                    ) {
+                                        Text(text = label)
+                                    }
+                                }
                             }
+
+                            HorizontalDivider(modifier = Modifier.padding(top = 12.dp, bottom = 12.dp))
+
+                            SpanChoiceChips(
+                                    current = selectedNumber.intValue,
+                                    onSelected = { number ->
+                                        selectedNumber.intValue = number
+                                        if (forLandscape.value) {
+                                            MainComposePreferences.setGridSpanCountLandscape(number)
+                                        } else {
+                                            MainComposePreferences.setGridSpanCountPortrait(number)
+                                        }
+
+                                        onNumberSelected(number)
+                                    }
+                            )
                         }
                     }
+                } else {
+                    // Portrait device layout: stacked vertically (existing behavior)
+                    Column(modifier = Modifier.fillMaxWidth()) {
+                        // Orientation toggle as segmented buttons
+                        val segments = listOf(
+                                stringResource(R.string.landscape),
+                                stringResource(R.string.portrait)
+                        )
 
-                    HorizontalDivider(
-                            modifier = Modifier.padding(top = 12.dp, bottom = 12.dp)
-                    )
-
-                    // Preview skeleton showing how the grid span will look
-                    GridPreviewSkeleton(
-                            forLandscape = forLandscape.value,
-                            columns = selectedNumber.intValue,
-                            deviceWidthPx = width,
-                            deviceHeightPx = height
-                    )
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    HorizontalDivider()
-
-                    // Span options as choice chips
-                    SpanChoiceChips(
-                            current = selectedNumber.intValue,
-                            onSelected = { number ->
-                                selectedNumber.intValue = number
-                                if (forLandscape.value) {
-                                    MainComposePreferences.setGridSpanCountLandscape(number)
-                                } else {
-                                    MainComposePreferences.setGridSpanCountPortrait(number)
+                        SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+                            segments.forEachIndexed { index, label ->
+                                val selected = (index == 0 && forLandscape.value) || (index == 1 && forLandscape.value.invert())
+                                SegmentedButton(
+                                        selected = selected,
+                                        onClick = {
+                                            val landscape = index == 0
+                                            forLandscape.value = landscape
+                                            selectedNumber.intValue = if (landscape) {
+                                                MainComposePreferences.getGridSpanCountLandscape()
+                                            } else {
+                                                MainComposePreferences.getGridSpanCountPortrait()
+                                            }
+                                        },
+                                        shape = SegmentedButtonDefaults.itemShape(index = index, count = segments.size),
+                                        colors = SegmentedButtonDefaults.colors(
+                                                activeContainerColor = MaterialTheme.colorScheme.primary,
+                                                activeContentColor = MaterialTheme.colorScheme.onPrimary,
+                                                inactiveContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                                                inactiveContentColor = MaterialTheme.colorScheme.onSurface,
+                                        ),
+                                ) {
+                                    Text(text = label)
                                 }
-
-                                onNumberSelected(number)
                             }
-                    )
+                        }
+
+                        HorizontalDivider(
+                                modifier = Modifier.padding(top = 12.dp, bottom = 12.dp)
+                        )
+
+                        // Preview skeleton showing how the grid span will look
+                        GridPreviewSkeleton(
+                                forLandscape = forLandscape.value,
+                                columns = selectedNumber.intValue,
+                                deviceWidthPx = width,
+                                deviceHeightPx = height
+                        )
+
+                        Spacer(modifier = Modifier.height(12.dp))
+
+                        HorizontalDivider()
+
+                        // Span options as choice chips
+                        SpanChoiceChips(
+                                current = selectedNumber.intValue,
+                                onSelected = { number ->
+                                    selectedNumber.intValue = number
+                                    if (forLandscape.value) {
+                                        MainComposePreferences.setGridSpanCountLandscape(number)
+                                    } else {
+                                        MainComposePreferences.setGridSpanCountPortrait(number)
+                                    }
+
+                                    onNumberSelected(number)
+                                }
+                        )
+                    }
                 }
             },
             confirmButton = {
@@ -136,7 +218,7 @@ fun GridSpanSelectionDialog(onDismiss: () -> Unit, onNumberSelected: (Int) -> Un
                     Text(text = stringResource(R.string.close))
                 }
             },
-            properties = DialogProperties(dismissOnClickOutside = true)
+            properties = DialogProperties(dismissOnClickOutside = true, usePlatformDefaultWidth = !isDeviceLandscape)
     )
 }
 
