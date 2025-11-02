@@ -35,8 +35,8 @@ import app.simple.peri.ui.dialogs.settings.CacheDirectoryDialog
 import app.simple.peri.ui.dialogs.settings.ConcurrencyDialog
 import app.simple.peri.ui.dialogs.settings.DeveloperProfileDialog
 import app.simple.peri.ui.dialogs.settings.GridSpanSelectionDialog
+import app.simple.peri.ui.dialogs.settings.InureAppManagerDialog
 import app.simple.peri.ui.dialogs.settings.OrderDialog
-import app.simple.peri.ui.dialogs.settings.ShowInureAppManagerDialog
 import app.simple.peri.ui.dialogs.settings.ShowPositionalDialog
 import app.simple.peri.ui.dialogs.settings.SortDialog
 import app.simple.peri.ui.theme.LocalBarsSize
@@ -341,7 +341,7 @@ fun Settings(navController: NavController? = null) {
             val positionalDialog = remember { mutableStateOf(false) }
 
             if (inureDialog.value) {
-                ShowInureAppManagerDialog {
+                InureAppManagerDialog {
                     inureDialog.value = false
                 }
             }

@@ -19,7 +19,7 @@ private const val INURE_F_DROID_URL = "https://f-droid.org/packages/app.simple.i
 private const val INURE_IZZY_URL = "https://apt.izzysoft.de/fdroid/index/apk/app.simple.inure/"
 
 @Composable
-fun ShowInureAppManagerDialog(onDismiss: () -> Unit) {
+fun InureAppManagerDialog(onDismiss: () -> Unit) {
     val context = LocalContext.current
     val list = listOf("GitHub", "Play Store", "F-Droid", "IzzyOnDroid")
 

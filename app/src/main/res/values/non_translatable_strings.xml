@@ -5,7 +5,7 @@
     <string name="positional" translatable="false">Positional</string>
     <string name="felicity_music_player" translatable="false">Felicity Music Player</string>
     <string name="felicity_music_player_summary" translatable="false">An upcoming, feature-rich premium Android music player, currently in early development, built on the foundational design principles of Inure App Manager.</string>
-    <string name="inure_app_manager_summary" translatable="false">An elegant and beautiful premium Android app manager for both rooted and non-rooted devices and a built-in terminal, analytics, VirusTotal support and an independent custom theme engine, developed with purely custom APIs created for this app.</string>
+    <string name="inure_app_manager_summary" translatable="false">An elegant and beautiful premium Android app manager with both root and Shizuku support, a built-in terminal, analytics, VirusTotal support and an independent custom theme engine, developed with purely custom APIs created for this app.</string>
     <string name="positional_summary" translatable="false">An elegant and colorful location information app for Android with Compass, Clock, Level, Sun, Moon, Trail Marker and many other features.</string>
     <string name="github" translatable="false">GitHub</string>
     <string name="play_store" translatable="false">Play Store</string>
