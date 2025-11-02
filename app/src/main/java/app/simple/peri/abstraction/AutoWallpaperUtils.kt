@@ -18,21 +18,25 @@ object AutoWallpaperUtils {
 
     fun getBitmapFromFile(path: String, expectedWidth: Int, expectedHeight: Int, crop: Boolean = true, recycle: Boolean = true, onBitmap: (Bitmap) -> Unit) {
         path.toFile().inputStream().use { stream ->
-            val byteArray = stream.readBytes()
-            Log.d(TAG, "Image path : $path}")
-            var bitmap = decodeBitmap(byteArray, expectedWidth, expectedHeight)
+            try {
+                val byteArray = stream.readBytes()
+                Log.d(TAG, "Image path : $path}")
+                var bitmap = decodeBitmap(byteArray, expectedWidth, expectedHeight)
 
-            // Correct orientation of the bitmap if faulty due to EXIF data
-            bitmap = BitmapUtils.correctOrientation(bitmap, ByteArrayInputStream(byteArray))
+                // Correct orientation of the bitmap if faulty due to EXIF data
+                bitmap = BitmapUtils.correctOrientation(bitmap, ByteArrayInputStream(byteArray))
 
-            if (crop) {
-                bitmap = cropAndScaleToFit(bitmap, expectedWidth, expectedHeight)
-            }
+                if (crop) {
+                    bitmap = cropAndScaleToFit(bitmap, expectedWidth, expectedHeight)
+                }
 
-            onBitmap(bitmap)
+                onBitmap(bitmap)
 
-            if (recycle) {
-                bitmap.recycle()
+                if (recycle) {
+                    bitmap.recycle()
+                }
+            } catch (e: NullPointerException) {
+                Log.e(TAG, "Error loading bitmap from file: $path", e)
             }
         }
     }
