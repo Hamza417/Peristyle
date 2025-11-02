@@ -19,6 +19,7 @@ object AutoWallpaperUtils {
     fun getBitmapFromFile(path: String, expectedWidth: Int, expectedHeight: Int, crop: Boolean = true, recycle: Boolean = true, onBitmap: (Bitmap) -> Unit) {
         path.toFile().inputStream().use { stream ->
             val byteArray = stream.readBytes()
+            Log.d(TAG, "Image path : $path}")
             var bitmap = decodeBitmap(byteArray, expectedWidth, expectedHeight)
 
             // Correct orientation of the bitmap if faulty due to EXIF data
