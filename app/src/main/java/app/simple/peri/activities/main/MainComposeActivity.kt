@@ -4,6 +4,7 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Intent
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.WindowManager
@@ -26,6 +27,7 @@ import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.preferences.SharedPreferences
 import app.simple.peri.services.AutoWallpaperService
 import app.simple.peri.ui.nav.PeristyleNavigation
+import app.simple.peri.ui.nav.Routes
 import app.simple.peri.ui.theme.PeristyleTheme
 import app.simple.peri.viewmodels.ComposeWallpaperViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -45,6 +47,8 @@ class MainComposeActivity : BaseComponentActivity(), OnSharedPreferenceChangeLis
         keepScreenOn()
         CrashReport(this).initialize()
 
+        val initialRoute = resolveInitialRouteFromIntent(intent)
+
         setContent {
             CompositionLocalProvider(LocalDisplaySize provides LocalWindowInfo.current.containerSize) {
 
@@ -54,10 +58,21 @@ class MainComposeActivity : BaseComponentActivity(), OnSharedPreferenceChangeLis
                     Surface(
                             modifier = Modifier.fillMaxSize()
                     ) {
-                        PeristyleNavigation(this)
+                        PeristyleNavigation(this, initialRoute)
                     }
                 }
             }
+        }
+    }
+
+    private fun resolveInitialRouteFromIntent(intent: Intent?): String? {
+        if (intent == null) return null
+        val data: Uri? = intent.data
+        val host = data?.host ?: return null
+        return when (host) {
+            "auto_wallpaper" -> Routes.AUTO_WALLPAPER
+            "live_auto_wallpaper" -> Routes.LIVE_AUTO_WALLPAPER
+            else -> null
         }
     }
 

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:enabled="true"
+        android:icon="@mipmap/ic_launcher"
+        android:shortcutId="auto_wallpaper"
+        android:shortcutShortLabel="@string/auto_wallpaper"
+        android:shortcutLongLabel="@string/auto_wallpaper">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="app.simple.peri://auto_wallpaper"
+            android:targetClass="app.simple.peri.activities.main.MainComposeActivity"
+            android:targetPackage="app.simple.peri" />
+    </shortcut>
+
+    <shortcut
+        android:enabled="true"
+        android:icon="@mipmap/ic_launcher"
+        android:shortcutId="live_auto_wallpaper"
+        android:shortcutShortLabel="@string/live_auto_wallpaper"
+        android:shortcutLongLabel="@string/live_auto_wallpaper">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="app.simple.peri://live_auto_wallpaper"
+            android:targetClass="app.simple.peri.activities.main.MainComposeActivity"
+            android:targetPackage="app.simple.peri" />
+    </shortcut>
+</shortcuts>

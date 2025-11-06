@@ -14,6 +14,7 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.navigation.compose.NavHost
@@ -41,7 +42,7 @@ private const val DELAY = 100
 private var predictiveBackCallback: OnBackInvokedCallback? = null
 
 @Composable
-fun PeristyleNavigation(context: Context) {
+fun PeristyleNavigation(context: Context, initialRoute: String? = null) {
 
     val navController = rememberNavController()
     val disableAnimations = remember { mutableStateOf(MainComposePreferences.getDisableAnimations()) }
@@ -86,6 +87,16 @@ fun PeristyleNavigation(context: Context) {
             }
         } else {
             onDispose { }
+        }
+    }
+
+    // If launched via a shortcut, navigate to the requested route after the graph is set up
+    LaunchedEffect(initialRoute, startDestination) {
+        if (!initialRoute.isNullOrBlank() && startDestination != Routes.SETUP) {
+            navController.navigate(initialRoute) {
+                launchSingleTop = true
+                restoreState = true
+            }
         }
     }
 
