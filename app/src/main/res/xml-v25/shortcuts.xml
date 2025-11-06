@@ -25,4 +25,17 @@
             android:targetClass="app.simple.peri.activities.main.MainComposeActivity"
             android:targetPackage="app.simple.peri" />
     </shortcut>
+
+    <shortcut
+        android:enabled="true"
+        android:icon="@mipmap/ic_launcher"
+        android:shortcutId="folders"
+        android:shortcutShortLabel="@string/folder"
+        android:shortcutLongLabel="@string/folder">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="app.simple.peri://folders"
+            android:targetClass="app.simple.peri.activities.main.MainComposeActivity"
+            android:targetPackage="app.simple.peri" />
+    </shortcut>
 </shortcuts>

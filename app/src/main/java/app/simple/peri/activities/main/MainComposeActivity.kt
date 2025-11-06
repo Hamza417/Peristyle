@@ -72,6 +72,7 @@ class MainComposeActivity : BaseComponentActivity(), OnSharedPreferenceChangeLis
         return when (host) {
             "auto_wallpaper" -> Routes.AUTO_WALLPAPER
             "live_auto_wallpaper" -> Routes.LIVE_AUTO_WALLPAPER
+            "folders" -> Routes.FOLDERS
             else -> null
         }
     }
