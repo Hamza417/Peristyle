@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Memory
 import androidx.compose.material.icons.rounded.SdCard
 import androidx.compose.material3.Button
@@ -44,6 +45,7 @@ import app.simple.peri.extensions.BaseComponentActivity
 import app.simple.peri.preferences.SharedPreferences
 import app.simple.peri.ui.commons.COMMON_PADDING
 import app.simple.peri.ui.dialogs.common.ShowWarningDialog
+import app.simple.peri.ui.dialogs.folders.CreateFolderDialog
 import app.simple.peri.ui.theme.PeristyleTheme
 import app.simple.peri.utils.FileUtils.toSize
 import app.simple.peri.utils.SDCard
@@ -63,6 +65,7 @@ class PathChooserActivity : BaseComponentActivity() {
             var statusBarHeight by remember { mutableIntStateOf(0) }
             var navigationBarHeight by remember { mutableIntStateOf(0) }
             var showNoSdCardWarning by remember { mutableStateOf(false) }
+            var showCreateDirDialog by remember { mutableStateOf(false) }
 
             statusBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
                     LocalView.current.rootWindowInsets
@@ -113,6 +116,18 @@ class PathChooserActivity : BaseComponentActivity() {
                         )
                     }
 
+                    if (showCreateDirDialog) {
+                        CreateFolderDialog(
+                                selectedPath = selectedPath,
+                                onDismiss = { showCreateDirDialog = false },
+                                onFolderCreated = { created ->
+                                    showCreateDirDialog = false
+                                    // Optionally jump into the newly created folder
+                                    selectedPath = created
+                                }
+                        )
+                    }
+
                     Column(
                             modifier = Modifier
                                 .fillMaxSize()
@@ -144,6 +159,7 @@ class PathChooserActivity : BaseComponentActivity() {
                                 )
                             }
 
+                            // Existing SD card / internal storage toggle
                             Button(
                                     modifier = Modifier
                                         .padding(COMMON_PADDING)
@@ -180,6 +196,20 @@ class PathChooserActivity : BaseComponentActivity() {
                                             modifier = Modifier.padding(8.dp)
                                     )
                                 }
+                            }
+                            // New folder button
+                            Button(
+                                    modifier = Modifier
+                                        .padding(COMMON_PADDING)
+                                        .wrapContentWidth(),
+                                    onClick = { showCreateDirDialog = true }
+                            ) {
+                                Icon(
+                                        imageVector = Icons.Rounded.Add,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.surface,
+                                        modifier = Modifier.padding(8.dp)
+                                )
                             }
                         }
 
