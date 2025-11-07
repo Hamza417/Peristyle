@@ -16,12 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.Memory
-import androidx.compose.material.icons.rounded.SdCard
 import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -44,6 +39,7 @@ import app.simple.peri.R
 import app.simple.peri.extensions.BaseComponentActivity
 import app.simple.peri.preferences.SharedPreferences
 import app.simple.peri.ui.commons.COMMON_PADDING
+import app.simple.peri.ui.commons.TopHeader
 import app.simple.peri.ui.dialogs.common.ShowWarningDialog
 import app.simple.peri.ui.dialogs.folders.CreateFolderDialog
 import app.simple.peri.ui.theme.PeristyleTheme
@@ -122,7 +118,6 @@ class PathChooserActivity : BaseComponentActivity() {
                                 onDismiss = { showCreateDirDialog = false },
                                 onFolderCreated = { created ->
                                     showCreateDirDialog = false
-                                    // Optionally jump into the newly created folder
                                     selectedPath = created
                                 }
                         )
@@ -131,87 +126,46 @@ class PathChooserActivity : BaseComponentActivity() {
                     Column(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .padding(start = 16.dp, end = 16.dp, top = topPadding)
+                                .padding(start = 8.dp, end = 8.dp, top = topPadding)
                     ) {
-                        Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Column(
-                                    modifier = Modifier
-                                        .weight(1f)
-                            ) {
-                                Text(
-                                        text = stringResource(id = R.string.select_folder),
-                                        modifier = Modifier
-                                            .wrapContentHeight()
-                                            .padding(start = 8.dp, end = 8.dp),
-                                        fontWeight = FontWeight.Bold,
-                                        fontSize = 32.sp
-                                )
-
-                                Text(
-                                        text = selectedPath,
-                                        modifier = Modifier
-                                            .wrapContentHeight()
-                                            .padding(start = 8.dp, end = 8.dp),
-                                        fontWeight = FontWeight.Normal,
-                                        fontSize = 16.sp
-                                )
-                            }
-
-                            // Existing SD card / internal storage toggle
-                            Button(
-                                    modifier = Modifier
-                                        .padding(COMMON_PADDING)
-                                        .wrapContentWidth(),
-                                    onClick = {
-                                        sdcardMode = sdcardMode.not()
-                                        try {
-                                            mainPath = if (sdcardMode) {
-                                                SDCard.findSdCardPath(applicationContext).absolutePath
-                                            } else {
-                                                Environment.getExternalStorageDirectory().absolutePath
-                                            }
-
-                                            selectedPath = mainPath
-                                        } catch (e: NullPointerException) {
-                                            sdcardMode = false
-                                            mainPath = Environment.getExternalStorageDirectory().absolutePath
-                                            selectedPath = mainPath
-                                            showNoSdCardWarning = true
+                        TopHeader(
+                                title = stringResource(id = R.string.select_folder),
+                                isAdd = true,
+                                isSdcard = true,
+                                isSearch = false,
+                                isSettings = true,
+                                isAutoWallpaper = true,
+                                modifier = Modifier.padding(start = COMMON_PADDING, end = COMMON_PADDING, top = COMMON_PADDING, bottom = 0.dp),
+                                onAdd = {
+                                    showCreateDirDialog = true
+                                },
+                                onSdcard = {
+                                    sdcardMode = sdcardMode.not()
+                                    try {
+                                        mainPath = if (sdcardMode) {
+                                            SDCard.findSdCardPath(applicationContext).absolutePath
+                                        } else {
+                                            Environment.getExternalStorageDirectory().absolutePath
                                         }
-                                    }) {
-                                if (sdcardMode) {
-                                    Icon(
-                                            imageVector = Icons.Rounded.SdCard,
-                                            contentDescription = null,
-                                            tint = MaterialTheme.colorScheme.surface,
-                                            modifier = Modifier.padding(8.dp)
-                                    )
-                                } else {
-                                    Icon(
-                                            imageVector = Icons.Rounded.Memory,
-                                            contentDescription = null,
-                                            tint = MaterialTheme.colorScheme.surface,
-                                            modifier = Modifier.padding(8.dp)
-                                    )
+
+                                        selectedPath = mainPath
+                                    } catch (e: NullPointerException) {
+                                        sdcardMode = false
+                                        mainPath = Environment.getExternalStorageDirectory().absolutePath
+                                        selectedPath = mainPath
+                                        showNoSdCardWarning = true
+                                    }
                                 }
-                            }
-                            // New folder button
-                            Button(
-                                    modifier = Modifier
-                                        .padding(COMMON_PADDING)
-                                        .wrapContentWidth(),
-                                    onClick = { showCreateDirDialog = true }
-                            ) {
-                                Icon(
-                                        imageVector = Icons.Rounded.Add,
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.surface,
-                                        modifier = Modifier.padding(8.dp)
-                                )
-                            }
-                        }
+                        )
+
+                        Text(
+                                text = selectedPath,
+                                modifier = Modifier
+                                    .wrapContentHeight()
+                                    .padding(start = COMMON_PADDING, end = COMMON_PADDING),
+                                fontWeight = FontWeight.Normal,
+                                fontSize = 14.sp
+                        )
 
                         if (sdcardMode) {
                             Text(
@@ -234,8 +188,9 @@ class PathChooserActivity : BaseComponentActivity() {
                                 },
                                 modifier = Modifier
                                     .weight(1f)
-                                    .padding(top = COMMON_PADDING, bottom = COMMON_PADDING)
+                                    .padding(top = 8.dp, bottom = 8.dp)
                         )
+
                         Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -251,7 +206,7 @@ class PathChooserActivity : BaseComponentActivity() {
                                         text = stringResource(id = R.string.cancel),
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 18.sp,
-                                        modifier = Modifier.padding(12.dp))
+                                        modifier = Modifier.padding(8.dp))
                             }
                             Button(
                                     modifier = Modifier
@@ -262,7 +217,7 @@ class PathChooserActivity : BaseComponentActivity() {
                                         text = stringResource(id = R.string.select),
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 18.sp,
-                                        modifier = Modifier.padding(12.dp))
+                                        modifier = Modifier.padding(8.dp))
                             }
                         }
                     }
@@ -287,6 +242,7 @@ class PathChooserActivity : BaseComponentActivity() {
                 val directory = directories[index]
                 Row(
                         modifier = Modifier
+                            .padding(start = 8.dp, end = 8.dp)
                             .wrapContentHeight()
                             .then(
                                     if (directory.isDirectory) {
@@ -303,9 +259,9 @@ class PathChooserActivity : BaseComponentActivity() {
                             text = directory.name,
                             modifier = Modifier
                                 .weight(1F)
-                                .padding(16.dp),
+                                .padding(COMMON_PADDING),
                             fontWeight = FontWeight.Medium,
-                            fontSize = 22.sp,
+                            fontSize = 20.sp,
                             color = if (directory.isDirectory) {
                                 MaterialTheme.colorScheme.onSurface
                             } else {

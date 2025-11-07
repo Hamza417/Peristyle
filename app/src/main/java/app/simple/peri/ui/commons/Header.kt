@@ -7,7 +7,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Schedule
+import androidx.compose.material.icons.rounded.SdCard
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.HorizontalDivider
@@ -48,7 +50,11 @@ fun TopHeader(title: String,
               isSettings: Boolean = false,
               isSearch: Boolean = false,
               isAutoWallpaper: Boolean = false,
-              onSearch: (() -> Unit)? = null) {
+              isAdd: Boolean = false,
+              isSdcard: Boolean = false,
+              onSearch: (() -> Unit)? = null,
+              onAdd: (() -> Unit)? = null,
+              onSdcard: (() -> Unit)? = null) {
 
     val context = LocalContext.current
     val autoWallpaperScreenSelection = remember { mutableStateOf(false) }
@@ -138,6 +144,32 @@ fun TopHeader(title: String,
                 Icon(
                         imageVector = Icons.Rounded.Search,
                         contentDescription = stringResource(id = R.string.settings),
+                )
+            }
+        }
+
+        if (isSdcard) {
+            IconButton(
+                    onClick = {
+                        onSdcard?.invoke()
+                    },
+            ) {
+                Icon(
+                        imageVector = Icons.Rounded.SdCard,
+                        contentDescription = "",
+                )
+            }
+        }
+
+        if (isAdd) {
+            IconButton(
+                    onClick = {
+                        onAdd?.invoke()
+                    },
+            ) {
+                Icon(
+                        imageVector = Icons.Rounded.Add,
+                        contentDescription = stringResource(id = R.string.create_new_folder),
                 )
             }
         }
