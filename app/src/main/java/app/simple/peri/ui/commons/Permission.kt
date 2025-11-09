@@ -8,7 +8,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
-import app.simple.peri.activities.main.PathChooserActivity
+import app.simple.peri.activities.main.PathPickerActivity
 
 @Composable
 fun FolderBrowser(onCancel: () -> Unit, onStorageGranted: (String) -> Unit) {
@@ -28,7 +28,7 @@ fun FolderBrowser(onCancel: () -> Unit, onStorageGranted: (String) -> Unit) {
 
     // Launch the directory selection intent
     LaunchedEffect(Unit) {
-        val intent = Intent(context, PathChooserActivity::class.java)
+        val intent = Intent(context, PathPickerActivity::class.java)
         launcher.launch(intent)
     }
 }

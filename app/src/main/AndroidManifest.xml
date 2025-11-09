@@ -84,7 +84,7 @@
         </activity>
 
         <activity
-            android:name=".activities.main.PathChooserActivity"
+            android:name=".activities.main.PathPickerActivity"
             android:exported="false" />
 
         <activity

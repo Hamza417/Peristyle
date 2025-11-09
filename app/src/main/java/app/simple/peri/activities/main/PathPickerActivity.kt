@@ -47,7 +47,7 @@ import app.simple.peri.utils.FileUtils.toSize
 import app.simple.peri.utils.SDCard
 import java.io.File
 
-class PathChooserActivity : BaseComponentActivity() {
+class PathPickerActivity : BaseComponentActivity() {
     private var backPressedCallback: OnBackPressedCallback? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
