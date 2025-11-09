@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -172,12 +173,17 @@ class PathPickerActivity : BaseComponentActivity() {
                                     text = stringResource(id = R.string.sdcard_issue),
                                     modifier = Modifier
                                         .wrapContentHeight()
-                                        .padding(start = 8.dp, end = 8.dp),
+                                        .padding(start = COMMON_PADDING, end = COMMON_PADDING),
                                     fontWeight = FontWeight.Normal,
                                     fontSize = 12.sp,
                                     color = MaterialTheme.colorScheme.error
                             )
                         }
+
+                        HorizontalDivider(
+                                modifier = Modifier
+                                    .padding(top = 8.dp)
+                        )
 
                         DirectoryList(
                                 directories = (selectedPath.takeIf { it.isNotEmpty() }
@@ -188,8 +194,10 @@ class PathPickerActivity : BaseComponentActivity() {
                                 },
                                 modifier = Modifier
                                     .weight(1f)
-                                    .padding(top = 8.dp, bottom = 8.dp)
+                                // .padding(top = 8.dp, bottom = 8.dp)
                         )
+
+                        HorizontalDivider()
 
                         Row(
                                 modifier = Modifier
