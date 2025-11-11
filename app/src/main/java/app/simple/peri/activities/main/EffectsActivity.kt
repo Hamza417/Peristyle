@@ -108,7 +108,7 @@ class EffectsActivity : BaseComponentActivity() {
                         title = stringResource(R.string.saved_effects),
                         count = effects.size,
                         modifier = Modifier.padding(COMMON_PADDING),
-                        isSettings = true
+                        isHideSettings = true
                 )
             }
             if (effects.isEmpty()) {

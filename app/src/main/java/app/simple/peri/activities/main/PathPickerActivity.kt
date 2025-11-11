@@ -131,11 +131,11 @@ class PathPickerActivity : BaseComponentActivity() {
                     ) {
                         TopHeader(
                                 title = stringResource(id = R.string.select_folder),
-                                isAdd = true,
-                                isSdcard = true,
-                                isSearch = false,
-                                isSettings = true,
-                                isAutoWallpaper = true,
+                                isShowAdd = true,
+                                isShowSdcard = true,
+                                isShowSearch = false,
+                                isHideSettings = true,
+                                isHideAutoWallpaper = true,
                                 modifier = Modifier.padding(start = COMMON_PADDING, end = COMMON_PADDING, top = COMMON_PADDING, bottom = 0.dp),
                                 onAdd = {
                                     showCreateDirDialog = true

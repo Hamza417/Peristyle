@@ -67,7 +67,7 @@ fun LiveAutoWallpaper(navController: NavController? = null) {
         item { // Header
             TopHeader(title = stringResource(R.string.auto_wallpaper),
                       modifier = Modifier.padding(COMMON_PADDING),
-                      isAutoWallpaper = true,
+                      isHideAutoWallpaper = true,
                       navController = navController)
 
             DescriptionPreference(stringResource(R.string.auto_wallpaper_summary))

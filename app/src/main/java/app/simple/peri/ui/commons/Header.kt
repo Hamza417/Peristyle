@@ -47,11 +47,11 @@ fun TopHeader(title: String,
               modifier: Modifier = Modifier,
               count: Int = 0,
               navController: NavController? = null,
-              isSettings: Boolean = false,
-              isSearch: Boolean = false,
-              isAutoWallpaper: Boolean = false,
-              isAdd: Boolean = false,
-              isSdcard: Boolean = false,
+              isHideSettings: Boolean = false,
+              isShowSearch: Boolean = false,
+              isHideAutoWallpaper: Boolean = false,
+              isShowAdd: Boolean = false,
+              isShowSdcard: Boolean = false,
               onSearch: (() -> Unit)? = null,
               onAdd: (() -> Unit)? = null,
               onSdcard: (() -> Unit)? = null) {
@@ -109,7 +109,7 @@ fun TopHeader(title: String,
             )
         }
 
-        if (isAutoWallpaper.not()) {
+        if (isHideAutoWallpaper.not()) {
             IconButton(
                     onClick = {
                         autoWallpaperScreenSelection.value = true
@@ -122,7 +122,7 @@ fun TopHeader(title: String,
             }
         }
 
-        if (isSettings.not()) {
+        if (isHideSettings.not()) {
             IconButton(
                     onClick = {
                         navController?.navigate(Routes.SETTINGS)
@@ -135,7 +135,7 @@ fun TopHeader(title: String,
             }
         }
 
-        if (isSearch) {
+        if (isShowSearch) {
             IconButton(
                     onClick = {
                         onSearch?.invoke()
@@ -148,7 +148,7 @@ fun TopHeader(title: String,
             }
         }
 
-        if (isSdcard) {
+        if (isShowSdcard) {
             IconButton(
                     onClick = {
                         onSdcard?.invoke()
@@ -161,7 +161,7 @@ fun TopHeader(title: String,
             }
         }
 
-        if (isAdd) {
+        if (isShowAdd) {
             IconButton(
                     onClick = {
                         onAdd?.invoke()

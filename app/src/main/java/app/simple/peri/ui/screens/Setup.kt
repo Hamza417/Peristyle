@@ -103,8 +103,8 @@ fun Setup(context: Context, navController: NavController? = null) {
             item {
                 TopHeader(title = context.getString(R.string.setup),
                           modifier = Modifier.padding(COMMON_PADDING),
-                          isSettings = true,
-                          isAutoWallpaper = true)
+                          isHideSettings = true,
+                          isHideAutoWallpaper = true)
 
                 Permissions(context = context, navController = navController, modifier = Modifier
                     .wrapContentHeight())

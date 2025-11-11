@@ -71,7 +71,7 @@ fun Settings(navController: NavController? = null) {
                     title = stringResource(R.string.settings),
                     modifier = Modifier.padding(COMMON_PADDING),
                     navController = navController,
-                    isSettings = true)
+                    isHideSettings = true)
         }
         item { // Interface
             val gridSpanSelectionDialog = remember { mutableStateOf(false) }

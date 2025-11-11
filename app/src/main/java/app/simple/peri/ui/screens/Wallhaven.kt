@@ -178,7 +178,7 @@ fun WallhavenScreen(navController: NavController? = null) {
                             title = stringResource(R.string.wallhaven),
                             modifier = Modifier.padding(COMMON_PADDING),
                             navController = navController,
-                            isSearch = true,
+                            isShowSearch = true,
                             onSearch = {
                                 searchDialog = true
                             },
