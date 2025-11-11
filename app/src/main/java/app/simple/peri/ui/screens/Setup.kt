@@ -101,8 +101,10 @@ fun Setup(context: Context, navController: NavController? = null) {
                 horizontalAlignment = Alignment.CenterHorizontally
         ) {
             item {
-                TopHeader(context.getString(R.string.setup),
-                          modifier = Modifier.padding(COMMON_PADDING), isSettings = true)
+                TopHeader(title = context.getString(R.string.setup),
+                          modifier = Modifier.padding(COMMON_PADDING),
+                          isSettings = true,
+                          isAutoWallpaper = true)
 
                 Permissions(context = context, navController = navController, modifier = Modifier
                     .wrapContentHeight())
