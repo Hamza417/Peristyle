@@ -2,6 +2,7 @@ package app.simple.peri.models
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.net.Uri
@@ -13,7 +14,6 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import app.simple.peri.R
 import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.utils.BitmapUtils.generatePalette
@@ -21,10 +21,8 @@ import app.simple.peri.utils.ConditionUtils.isNotNull
 import app.simple.peri.utils.FileUtils.toFile
 import app.simple.peri.utils.FileUtils.toUri
 import app.simple.peri.utils.WallpaperSort
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DecodeFormat
-import com.bumptech.glide.request.RequestOptions
 import java.io.File
+import java.io.FileInputStream
 import java.io.IOException
 import java.io.Serializable
 
@@ -210,35 +208,39 @@ class Wallpaper() : Comparable<Wallpaper>, Serializable, Parcelable {
             wallpaper.size = file.length()
             wallpaper.dateModified = file.lastModified()
 
-            // First, decode only bounds for width/height
-            val options = BitmapFactory.Options().apply { inJustDecodeBounds = true }
-            file.inputStream().use { inputStream ->
-                BitmapFactory.decodeStream(inputStream, null, options)
-            }
-            wallpaper.width = options.outWidth
-            wallpaper.height = options.outHeight
+            // First pass: bounds only
+            val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+            file.inputStream().use { BitmapFactory.decodeStream(it, null, bounds) }
+            wallpaper.width = bounds.outWidth
+            wallpaper.height = bounds.outHeight
 
             if (MainComposePreferences.skipPalette()) {
-                wallpaper.prominentColor = Color.DKGRAY // set a default color
-            } else {
-                if (context.isNotNull()) {
-                    try {
-                        val bitmap = Glide.with(context)
-                            .asBitmap()
-                            .load(file)
-                            .override(32, 32) // specify width and height for thumbnail
-                            .apply(RequestOptions().format(DecodeFormat.PREFER_RGB_565)) // <— use RGB_565
-                            .error(R.drawable.ic_peristyle)
-                            .submit()
-                            .get()
+                wallpaper.prominentColor = Color.DKGRAY
+            } else if (context.isNotNull()) {
+                // Minimal resource palette extraction
+                try {
+                    val targetSize = 32 // small side target
+                    val maxDim = maxOf(bounds.outWidth, bounds.outHeight)
+                    val sampleSize = if (maxDim > targetSize) {
+                        // Highest power of two >= maxDim / targetSize
+                        Integer.highestOneBit((maxDim - 1) / targetSize + 1)
+                    } else 1
 
-                        wallpaper.prominentColor = bitmap?.generatePalette()?.vibrantSwatch?.rgb ?: 0
-                        bitmap?.recycle()
-                    } catch (_: IOException) {
-                        wallpaper.prominentColor = Color.DKGRAY // set a default color as a fallback
-                    } catch (_: RuntimeException) {
-                        wallpaper.prominentColor = Color.DKGRAY // set a default color as a fallback
+                    val decodeOptions = BitmapFactory.Options().apply {
+                        inJustDecodeBounds = false
+                        inSampleSize = sampleSize
+                        inPreferredConfig = Bitmap.Config.RGB_565 // lower memory footprint
                     }
+
+                    FileInputStream(file).use { input ->
+                        val bmp = BitmapFactory.decodeStream(input, null, decodeOptions)
+                        wallpaper.prominentColor = bmp?.generatePalette()?.vibrantSwatch?.rgb ?: Color.DKGRAY
+                        bmp?.recycle()
+                    }
+                } catch (_: OutOfMemoryError) {
+                    wallpaper.prominentColor = Color.DKGRAY
+                } catch (_: Exception) {
+                    wallpaper.prominentColor = Color.DKGRAY
                 }
             }
 

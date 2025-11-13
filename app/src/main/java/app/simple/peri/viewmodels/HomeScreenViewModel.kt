@@ -137,19 +137,19 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
     private fun postCurrentSystemWallpaper() {
         Log.i("HomeScreenViewModel", "Posting current system wallpaper")
         viewModelScope.launch(Dispatchers.IO) {
-            val wallpaperManager = WallpaperManager.getInstance(getApplication())
-            val systemBitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                wallpaperManager.getDrawable(WallpaperManager.FLAG_SYSTEM)?.toBitmap()
-            } else {
-                wallpaperManager.drawable?.toBitmap()
-            }
-
-            val systemFile = createTempFile(SYSTEM_WALLPAPER.replace("$", System.currentTimeMillis().div(1000).toString()))
-
-            systemFile.outputStream().use { systemBitmap?.compress(Bitmap.CompressFormat.PNG, 100, it) }
-
             if (PermissionUtils.checkStoragePermission(getApplication())) {
                 try {
+                    val wallpaperManager = WallpaperManager.getInstance(getApplication())
+                    val systemBitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                        wallpaperManager.getDrawable(WallpaperManager.FLAG_SYSTEM)?.toBitmap()
+                    } else {
+                        wallpaperManager.drawable?.toBitmap()
+                    }
+
+                    val systemFile = createTempFile(SYSTEM_WALLPAPER.replace("$", System.currentTimeMillis().div(1000).toString()))
+
+                    systemFile.outputStream().use { systemBitmap?.compress(Bitmap.CompressFormat.PNG, 100, it) }
+
                     systemWallpaperData.postValue(Wallpaper.createFromFile(systemFile, getApplication()))
                 } catch (_: IOException) {
                     // bad system wallpaper??
@@ -161,19 +161,19 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
     private fun postCurrentLockWallpaper() {
         Log.i("HomeScreenViewModel", "Posting current lock wallpaper")
         viewModelScope.launch(Dispatchers.IO) {
-            val wallpaperManager = WallpaperManager.getInstance(getApplication())
-            val lockBitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                wallpaperManager.getDrawable(WallpaperManager.FLAG_LOCK)?.toBitmap()
-            } else {
-                wallpaperManager.drawable?.toBitmap()
-            }
-
-            val lockFile = createTempFile(LOCK_WALLPAPER.replace("$", System.currentTimeMillis().div(1000).toString()))
-
-            lockFile.outputStream().use { lockBitmap?.compress(Bitmap.CompressFormat.PNG, 100, it) }
-
             if (PermissionUtils.checkStoragePermission(getApplication())) {
                 try {
+                    val wallpaperManager = WallpaperManager.getInstance(getApplication())
+                    val lockBitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                        wallpaperManager.getDrawable(WallpaperManager.FLAG_LOCK)?.toBitmap()
+                    } else {
+                        wallpaperManager.drawable?.toBitmap()
+                    }
+
+                    val lockFile = createTempFile(LOCK_WALLPAPER.replace("$", System.currentTimeMillis().div(1000).toString()))
+
+                    lockFile.outputStream().use { lockBitmap?.compress(Bitmap.CompressFormat.PNG, 100, it) }
+
                     lockWallpaperData.postValue(Wallpaper.createFromFile(lockFile, getApplication()))
                 } catch (_: IOException) {
                     // bad lock wallpaper??
