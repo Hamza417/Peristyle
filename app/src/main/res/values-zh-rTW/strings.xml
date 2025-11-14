@@ -265,4 +265,5 @@
     <string name="same_wallpaper_for_both_summary">為兩個螢幕使用相同的隨機桌布。僅在任一螢幕均未設定資料夾或標籤時有效。</string>
     <string name="skip_palettes">略過調色盤</string>
     <string name="skip_palettes_summary">略過產生調色盤以加快載入速度，但代價是圖片陰影將失去色調。</string>
+    <string name="create_new_folder">新增資料夾</string>
 </resources>
