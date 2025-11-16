@@ -51,7 +51,9 @@ fun WallhavenSearchDialog(
     var query by remember { mutableStateOf(filter?.query ?: WallHavenPreferences.getQuery()) }
     var categories by remember { mutableStateOf(filter?.categories ?: WallHavenPreferences.getCategory()) }
     var purity by remember { mutableStateOf(filter?.purity ?: "100") }
-    var atleast by remember { mutableStateOf(filter?.atleast ?: WallHavenPreferences.getAtleast() ?: "$resolutionWidth x $resolutionHeight") }
+    var atleast by remember {
+        mutableStateOf(filter?.atleast ?: WallHavenPreferences.getAtleast() ?: "$resolutionWidth x $resolutionHeight")
+    }
     var resolution by remember { mutableStateOf(filter?.resolution ?: WallHavenPreferences.getResolution() ?: "") }
     var ratios by remember { mutableStateOf(filter?.ratios ?: WallHavenPreferences.getRatio()) }
     var sorting by remember { mutableStateOf(filter?.sorting ?: WallHavenPreferences.getSort()) }
@@ -188,7 +190,8 @@ fun WallhavenSearchDialog(
                                         resolution = "${resolutionWidth}x${resolutionHeight}"
                                         WallHavenPreferences.setResolution(resolution)
                                     }) {
-                                        Icon(imageVector = Icons.Filled.PhoneAndroid, contentDescription = stringResource(R.string.set_phone_resolution))
+                                        Icon(imageVector = Icons.Filled.PhoneAndroid,
+                                             contentDescription = stringResource(R.string.set_phone_resolution))
                                     }
                                 }
                         )
@@ -206,7 +209,8 @@ fun WallhavenSearchDialog(
                                         atleast = "${resolutionWidth}x${resolutionHeight}"
                                         WallHavenPreferences.setAtleast(atleast)
                                     }) {
-                                        Icon(imageVector = Icons.Filled.PhoneAndroid, contentDescription = stringResource(R.string.set_phone_resolution))
+                                        Icon(imageVector = Icons.Filled.PhoneAndroid,
+                                             contentDescription = stringResource(R.string.set_phone_resolution))
                                     }
                                 }
                         )
@@ -218,7 +222,9 @@ fun WallhavenSearchDialog(
                                 label = { Text(stringResource(R.string.ratios)) },
                                 modifier = Modifier.fillMaxWidth(),
                                 trailingIcon = {
-                                    TextButton(onClick = { showRatioPicker = true }) { Text(stringResource(R.string.edit)) }
+                                    TextButton(onClick = { showRatioPicker = true }) {
+                                        Text(stringResource(R.string.edit))
+                                    }
                                 }
                         )
                     }
