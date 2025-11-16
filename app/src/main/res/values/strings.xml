@@ -265,4 +265,5 @@
     <string name="skip_palettes">Skip Palettes</string>
     <string name="skip_palettes_summary">Skip generating palettes to enable faster loading times at the cost of tinted image shadows.</string>
     <string name="create_new_folder">Create a new folder</string>
+    <string name="custom">Custom</string>
 </resources>

@@ -1,5 +1,6 @@
 package app.simple.peri.ui.dialogs.wallhaven
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,6 +23,7 @@ import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -60,12 +62,25 @@ fun WallhavenSearchDialog(
     val orderLabels = listOf(stringResource(R.string.descending), stringResource(R.string.ascending))
     val ratioOptions = listOf("portrait", "landscape", "any")
 
-    var ratioExpanded by remember { mutableStateOf(false) }
     var sortingExpanded by remember { mutableStateOf(false) }
     var showWallhavenDocs by remember { mutableStateOf(false) }
+    var showRatioPicker by remember { mutableStateOf(false) }
 
     if (showWallhavenDocs) {
         WallhavenDocsDialog(onDismissRequest = { showWallhavenDocs = false })
+    }
+
+    if (showRatioPicker) {
+        RatioPickerDialog(
+                current = ratios,
+                options = ratioOptions,
+                onDismiss = { showRatioPicker = false },
+                onSelect = { selected ->
+                    ratios = selected
+                    WallHavenPreferences.setRatio(selected)
+                    showRatioPicker = false
+                }
+        )
     }
 
     AlertDialog(
@@ -77,16 +92,10 @@ fun WallhavenSearchDialog(
                 ) {
                     Text(
                             text = stringResource(R.string.search),
-                            modifier = Modifier
-                                .weight(1F)
+                            modifier = Modifier.weight(1F)
                     )
-                    IconButton(
-                            onClick = { showWallhavenDocs = true }
-                    ) {
-                        Icon(
-                                imageVector = Icons.Rounded.Info,
-                                contentDescription = ""
-                        )
+                    IconButton(onClick = { showWallhavenDocs = true }) {
+                        Icon(imageVector = Icons.Rounded.Info, contentDescription = "")
                     }
                 }
             },
@@ -112,13 +121,10 @@ fun WallhavenSearchDialog(
                                             categories = categories.toCharArray().also {
                                                 it[i] = if (categories[i] == '1') '0' else '1'
                                             }.concatToString()
-
                                             WallHavenPreferences.setCategory(categories)
                                         },
                                         label = { Text(label) },
-                                        shape = SegmentedButtonDefaults.itemShape(
-                                                index = i,
-                                                count = catLabels.size)
+                                        shape = SegmentedButtonDefaults.itemShape(index = i, count = catLabels.size)
                                 )
                             }
                         }
@@ -133,9 +139,7 @@ fun WallhavenSearchDialog(
                                             WallHavenPreferences.setOrder(order)
                                         },
                                         label = { Text(label) },
-                                        shape = SegmentedButtonDefaults.itemShape(
-                                                index = i,
-                                                count = orderLabels.size)
+                                        shape = SegmentedButtonDefaults.itemShape(index = i, count = orderLabels.size)
                                 )
                             }
                         }
@@ -149,16 +153,9 @@ fun WallhavenSearchDialog(
                                     onValueChange = {},
                                     readOnly = true,
                                     label = { Text(stringResource(R.string.sort)) },
-                                    trailingIcon = {
-                                        Icon(
-                                                imageVector = Icons.Filled.ArrowDropDown,
-                                                contentDescription = null
-                                        )
-                                    },
+                                    trailingIcon = { Icon(imageVector = Icons.Filled.ArrowDropDown, contentDescription = null) },
                                     modifier = Modifier
-                                        .menuAnchor(
-                                                type = ExposedDropdownMenuAnchorType.PrimaryNotEditable,
-                                                enabled = true)
+                                        .menuAnchor(type = ExposedDropdownMenuAnchorType.PrimaryNotEditable, enabled = true)
                                         .fillMaxWidth()
                             )
                             ExposedDropdownMenu(
@@ -187,15 +184,11 @@ fun WallhavenSearchDialog(
                                 label = { Text(stringResource(R.string.resolution)) },
                                 modifier = Modifier.fillMaxWidth(),
                                 trailingIcon = {
-                                    IconButton(
-                                            onClick = {
-                                                resolution = "${resolutionWidth}x${resolutionHeight}"
-                                                WallHavenPreferences.setResolution(resolution)
-                                            }) {
-                                        Icon(
-                                                imageVector = Icons.Default.PhoneAndroid,
-                                                contentDescription = stringResource(R.string.set_phone_resolution)
-                                        )
+                                    IconButton(onClick = {
+                                        resolution = "${resolutionWidth}x${resolutionHeight}"
+                                        WallHavenPreferences.setResolution(resolution)
+                                    }) {
+                                        Icon(imageVector = Icons.Filled.PhoneAndroid, contentDescription = stringResource(R.string.set_phone_resolution))
                                     }
                                 }
                         )
@@ -213,57 +206,21 @@ fun WallhavenSearchDialog(
                                         atleast = "${resolutionWidth}x${resolutionHeight}"
                                         WallHavenPreferences.setAtleast(atleast)
                                     }) {
-                                        Icon(
-                                                imageVector = Icons.Default.PhoneAndroid,
-                                                contentDescription = stringResource(R.string.set_phone_resolution)
-                                        )
+                                        Icon(imageVector = Icons.Filled.PhoneAndroid, contentDescription = stringResource(R.string.set_phone_resolution))
                                     }
                                 }
                         )
-
                         Spacer(Modifier.height(8.dp))
-
-                        ExposedDropdownMenuBox(
-                                expanded = ratioExpanded,
-                                onExpandedChange = { ratioExpanded = !ratioExpanded }
-                        ) {
-                            OutlinedTextField(
-                                    value = ratios,
-                                    onValueChange = {
-                                        ratios = it
-                                        WallHavenPreferences.setRatio(it)
-                                    },
-                                    readOnly = false,
-                                    label = { Text(stringResource(R.string.ratios)) },
-                                    trailingIcon = {
-                                        Icon(
-                                                imageVector = Icons.Filled.ArrowDropDown,
-                                                contentDescription = null
-                                        )
-                                    },
-                                    modifier = Modifier
-                                        .menuAnchor(
-                                                type = ExposedDropdownMenuAnchorType.PrimaryEditable,
-                                                enabled = true
-                                        )
-                                        .fillMaxWidth()
-                            )
-                            ExposedDropdownMenu(
-                                    expanded = ratioExpanded,
-                                    onDismissRequest = { ratioExpanded = false }
-                            ) {
-                                ratioOptions.forEach { option ->
-                                    DropdownMenuItem(
-                                            text = { Text(option.replaceFirstChar { it.uppercase() }) },
-                                            onClick = {
-                                                ratios = option
-                                                WallHavenPreferences.setRatio(option)
-                                                ratioExpanded = false
-                                            }
-                                    )
+                        OutlinedTextField(
+                                value = ratios,
+                                onValueChange = {},
+                                readOnly = true,
+                                label = { Text(stringResource(R.string.ratios)) },
+                                modifier = Modifier.fillMaxWidth(),
+                                trailingIcon = {
+                                    TextButton(onClick = { showRatioPicker = true }) { Text(stringResource(R.string.edit)) }
                                 }
-                            }
-                        }
+                        )
                     }
                 }
             },
@@ -282,14 +239,60 @@ fun WallhavenSearchDialog(
                             )
                     )
                     onDismiss()
-                }) {
-                    Text(stringResource(R.string.search))
+                }) { Text(stringResource(R.string.search)) }
+            },
+            dismissButton = { Button(onClick = onDismiss) { Text(stringResource(R.string.cancel)) } }
+    )
+}
+
+@Composable
+private fun RatioPickerDialog(
+        current: String,
+        options: List<String>,
+        onDismiss: () -> Unit,
+        onSelect: (String) -> Unit
+) {
+    var tempRatio by remember { mutableStateOf(current) }
+    val initialIndex = options.indexOf(current)
+    var selectedIndex by remember { mutableStateOf(if (initialIndex >= 0) initialIndex else -1) }
+
+    AlertDialog(
+            onDismissRequest = onDismiss,
+            title = { Text(text = stringResource(R.string.ratios)) },
+            text = {
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    SingleChoiceSegmentedButtonRow {
+                        options.forEachIndexed { i, option ->
+                            SegmentedButton(
+                                    selected = selectedIndex == i,
+                                    onClick = {
+                                        selectedIndex = i
+                                        tempRatio = option
+                                    },
+                                    label = { Text(option.replaceFirstChar { it.uppercase() }) },
+                                    shape = SegmentedButtonDefaults.itemShape(index = i, count = options.size)
+                            )
+                        }
+                    }
+                    Spacer(Modifier.height(12.dp))
+                    OutlinedTextField(
+                            value = tempRatio,
+                            onValueChange = {
+                                tempRatio = it
+                                selectedIndex = -1
+                            },
+                            label = { Text(stringResource(R.string.custom)) },
+                            modifier = Modifier.fillMaxWidth(),
+                            singleLine = true
+                    )
                 }
             },
-            dismissButton = {
-                Button(onClick = onDismiss) {
-                    Text(stringResource(R.string.cancel))
-                }
-            }
+            confirmButton = {
+                Button(onClick = {
+                    val finalRatio = if (selectedIndex >= 0) options[selectedIndex] else tempRatio
+                    onSelect(finalRatio)
+                }) { Text(stringResource(R.string.save)) }
+            },
+            dismissButton = { Button(onClick = onDismiss) { Text(stringResource(R.string.cancel)) } }
     )
 }
