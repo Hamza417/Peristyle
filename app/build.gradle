@@ -202,8 +202,8 @@ dependencies {
     androidTestImplementation "androidx.room:room-testing:2.7.2"
 
     implementation 'me.saket.telephoto:zoomable-image-glide:0.18.0'
-    implementation 'dev.chrisbanes.haze:haze:1.6.10'
-    implementation 'dev.chrisbanes.haze:haze-materials:1.6.10'
+    implementation 'dev.chrisbanes.haze:haze:1.7.0'
+    implementation 'dev.chrisbanes.haze:haze-materials:1.7.0'
     implementation 'com.squareup.retrofit2:retrofit:3.0.0'
     implementation "com.squareup.retrofit2:converter-gson:3.0.0"
 
