@@ -122,6 +122,25 @@ fun WallhavenScreen(navController: NavController? = null) {
         LocalBarsSize.current.navigationBarHeight
     }
 
+    // Helper flags to prevent early flashing of empty/error UI before initial load completes
+    val isRefreshNotLoading = wallpapers.loadState.refresh is LoadState.NotLoading
+    val isAppendNotLoadingEnd = (wallpapers.loadState.append as? LoadState.NotLoading)?.endOfPaginationReached == true
+
+    // Track a full refresh cycle (Loading -> NotLoading) and reset when filter changes
+    var hasCompletedRefresh by remember(presetFilter) { mutableStateOf(false) }
+    var lastRefreshState by remember(presetFilter) { mutableStateOf<LoadState?>(null) }
+
+    LaunchedEffect(wallpapers.loadState.refresh, presetFilter) {
+        val current = wallpapers.loadState.refresh
+        val previous = lastRefreshState
+        if (previous is LoadState.Loading && current is LoadState.NotLoading) {
+            hasCompletedRefresh = true
+        }
+        lastRefreshState = current
+    }
+
+    val canShowPostLoadPanels = hasCompletedRefresh && isRefreshNotLoading
+
     if (searchDialog) {
         WallhavenSearchDialog(
                 filter = presetFilter,
@@ -232,8 +251,8 @@ fun WallhavenScreen(navController: NavController? = null) {
                 }
             }
 
-            // Append error (footer)
-            if (wallpapers.loadState.append is LoadState.Error) {
+            // Append error (footer) - only after full refresh cycle completed
+            if (wallpapers.loadState.append is LoadState.Error && canShowPostLoadPanels) {
                 item(span = StaggeredGridItemSpan.FullLine) {
                     ErrorMessagePanel(
                             message = HttpErrors.GENERIC,
@@ -259,20 +278,24 @@ fun WallhavenScreen(navController: NavController? = null) {
                     )
                 }
             }
-            is LoadState.NotLoading if wallpapers.itemCount == 0 -> {
-                Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(horizontal = 16.dp),
-                        contentAlignment = Alignment.Center
-                ) {
-                    EmptyStatePanel(onChangeFilters = {
-                        searchDialog = true
-                    })
+            is LoadState.NotLoading -> {
+                // Show empty state only when a full refresh cycle completed, and we've reached the end with no items
+                val shouldShowEmpty = canShowPostLoadPanels && wallpapers.itemCount == 0 && isAppendNotLoadingEnd
+                if (shouldShowEmpty) {
+                    Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(horizontal = 16.dp),
+                            contentAlignment = Alignment.Center
+                    ) {
+                        EmptyStatePanel(onChangeFilters = {
+                            searchDialog = true
+                        })
+                    }
                 }
             }
             else -> {
-                // no-op
+                // no-op during initial/ongoing loading to avoid flashing empty/error UI
             }
         }
 
