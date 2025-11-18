@@ -76,7 +76,7 @@ class PathPickerActivity : BaseComponentActivity() {
                 }
             }
 
-            var sdcardMode by remember { mutableStateOf(sdCardRoot != null && lastPicked.isNotEmpty() && lastPicked.startsWith(sdCardRoot!!)) }
+            var sdcardMode by remember { mutableStateOf(sdCardRoot?.let { lastPicked.isNotEmpty() && lastPicked.startsWith(it) } == true) }
             var mainPath by remember { mutableStateOf(if (sdcardMode) (sdCardRoot ?: defaultMain) else defaultMain) }
             var selectedPath by remember { mutableStateOf(lastPicked.ifEmpty { mainPath }) }
             var statusBarHeight by remember { mutableIntStateOf(0) }
@@ -278,7 +278,12 @@ class PathPickerActivity : BaseComponentActivity() {
                 val directory = directories[index]
                 Row(
                         modifier = Modifier
-                            .padding(start = 8.dp, end = 8.dp)
+                            .padding(
+                                    start = 8.dp,
+                                    end = 8.dp,
+                                    top = if (index == 0) 8.dp else 0.dp,
+                                    bottom = if (index == directories.size - 1) 8.dp else 0.dp
+                            )
                             .wrapContentHeight()
                             .then(
                                     if (directory.isDirectory) {
