@@ -12,9 +12,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -594,111 +594,81 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
                         }
                     }
 
-                    Row {
-                        Button(
-                                onClick = {
-                                    showEditDialog.value = true
-                                    showDetailsCard.value = false
-                                },
-                                shape = RoundedCornerShape(20.dp),
-                                modifier = Modifier
-                                    .wrapContentWidth()
-                                    .padding(start = 16.dp, bottom = 16.dp),
-                                colors = ButtonDefaults.buttonColors(
-                                        containerColor = Color.Unspecified,
-                                )
-                        ) {
-                            Text(
-                                    text = context.getString(R.string.edit),
-                                    fontSize = 18.sp,
-                                    modifier = Modifier.padding(12.dp),
-                                    fontWeight = FontWeight.SemiBold
-                            )
-
-                            Icon(
-                                    imageVector = Icons.Rounded.Edit,
-                                    contentDescription = "",
-                                    modifier = Modifier
-                                        .width(24.dp)
-                                        .height(24.dp)
-                                        .padding(end = 8.dp)
-                            )
-                        }
-
-                        Button(
-                                onClick = {
-                                    launchEffectActivity.value = true
-                                },
-                                shape = RoundedCornerShape(20.dp),
-                                modifier = Modifier
-                                    .weight(1F)
-                                    .padding(start = 16.dp, bottom = 16.dp, end = 16.dp),
-                                colors = ButtonDefaults.buttonColors(
-                                        containerColor = Color.Unspecified,
-                                )
-                        ) {
-                            Text(
-                                    text = context.getString(R.string.saved_effects),
-                                    fontSize = 18.sp,
-                                    modifier = Modifier.padding(12.dp),
-                                    fontWeight = FontWeight.SemiBold
-                            )
-
-                            Icon(
-                                    imageVector = Icons.Rounded.Bookmarks,
-                                    contentDescription = "",
-                                    modifier = Modifier
-                                        .width(24.dp)
-                                        .height(24.dp)
-                                        .padding(end = 8.dp)
-                            )
-                        }
-                    }
-
-                    Row {
-                        Button(
-                                onClick = {
-                                    showWallpaperLaunchedEffect.value = true
-                                },
-                                shape = RoundedCornerShape(20.dp),
-                                modifier = Modifier
-                                    .wrapContentHeight()
-                                    .weight(1F)
-                                    .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
-                                colors = ButtonDefaults.buttonColors(
-                                        containerColor = Color.White,
-                                )
-                        ) {
-                            Text(
-                                    text = context.getString(R.string.set_as_wallpaper),
-                                    color = Color.Black,
-                                    fontSize = 18.sp,
-                                    modifier = Modifier.padding(12.dp),
-                                    fontWeight = FontWeight.SemiBold
-                            )
-                        }
-
-                        if (wallpaper is WallhavenWallpaper) {
+                    // Action buttons (compact) in a horizontally scrollable row
+                    LazyRow(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = 12.dp, end = 12.dp, bottom = 12.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        item {
                             Button(
                                     onClick = {
-                                        showDownloadFolderScreen = true
+                                        showEditDialog.value = true
+                                        showDetailsCard.value = false
                                     },
-                                    shape = RoundedCornerShape(20.dp),
-                                    modifier = Modifier
-                                        .wrapContentHeight()
-                                        .wrapContentWidth()
-                                        .padding(start = 0.dp, end = 16.dp, bottom = 16.dp),
-                                    colors = ButtonDefaults.buttonColors(
-                                            containerColor = Color.White,
-                                    )
+                                    shape = RoundedCornerShape(50),
+                                    contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 12.dp, vertical = 6.dp),
+                                    colors = ButtonDefaults.buttonColors(containerColor = Color.White.copy(alpha = 0.15f), contentColor = Color.White),
+                                    modifier = Modifier.height(34.dp)
                             ) {
-                                Text(
-                                        text = context.getString(R.string.save),
-                                        color = Color.Black,
-                                        fontSize = 18.sp,
-                                        modifier = Modifier.padding(12.dp),
-                                        fontWeight = FontWeight.SemiBold
+                                Icon(
+                                        imageVector = Icons.Rounded.Edit,
+                                        contentDescription = null,
+                                        tint = Color.White,
+                                        modifier = Modifier.size(18.dp)
                                 )
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text(text = context.getString(R.string.edit), fontSize = 14.sp, color = Color.White)
+                            }
+                        }
+                        item {
+                            Button(
+                                    onClick = {
+                                        launchEffectActivity.value = true
+                                    },
+                                    shape = RoundedCornerShape(50),
+                                    contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 12.dp, vertical = 6.dp),
+                                    colors = ButtonDefaults.buttonColors(containerColor = Color.White.copy(alpha = 0.15f), contentColor = Color.White),
+                                    modifier = Modifier.height(34.dp)
+                            ) {
+                                Icon(
+                                        imageVector = Icons.Rounded.Bookmarks,
+                                        contentDescription = null,
+                                        tint = Color.White,
+                                        modifier = Modifier.size(18.dp)
+                                )
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text(text = context.getString(R.string.saved_effects), fontSize = 14.sp, color = Color.White)
+                            }
+                        }
+                        item {
+                            Button(
+                                    onClick = {
+                                        showWallpaperLaunchedEffect.value = true
+                                    },
+                                    shape = RoundedCornerShape(50),
+                                    contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 16.dp, vertical = 6.dp),
+                                    colors = ButtonDefaults.buttonColors(containerColor = Color.White.copy(alpha = 0.25f), contentColor = Color.White),
+                                    modifier = Modifier.height(34.dp)
+                            ) {
+                                Text(text = context.getString(R.string.set_as_wallpaper), fontSize = 14.sp, color = Color.White)
+                            }
+                        }
+                        if (wallpaper is WallhavenWallpaper) {
+                            item {
+                                Button(
+                                        onClick = {
+                                            showDownloadFolderScreen = true
+                                        },
+                                        shape = RoundedCornerShape(50),
+                                        contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 16.dp, vertical = 6.dp),
+                                        colors = ButtonDefaults.buttonColors(containerColor = Color.White.copy(alpha = 0.25f), contentColor = Color.White),
+                                        modifier = Modifier.height(34.dp)
+                                ) {
+                                    Text(text = context.getString(R.string.save), fontSize = 14.sp, color = Color.White)
+                                }
                             }
                         }
                     }
@@ -778,7 +748,8 @@ suspend fun getCachedOrDownloadWallpaper(context: Context, imageUrl: String, abs
     } catch (_: Exception) {
         // Ignore and fallback to download
     }
-    // Fallback to your download logic
+
+    // If not cached, download the wallpaper
     downloadWallpaper(imageUrl, absolutePath)
 }
 
@@ -828,5 +799,3 @@ suspend fun downloadWallpaper(imageUrl: String, absolutePath: String): File? = w
         connection?.disconnect()
     }
 }
-
-
