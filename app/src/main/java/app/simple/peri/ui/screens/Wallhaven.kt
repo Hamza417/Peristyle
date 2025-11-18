@@ -6,6 +6,7 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,6 +19,7 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
+import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Text
@@ -49,6 +51,7 @@ import androidx.core.graphics.toColorInt
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import app.simple.peri.R
 import app.simple.peri.activities.main.LocalDisplaySize
@@ -227,6 +230,51 @@ fun WallhavenScreen(navController: NavController? = null) {
                     ImageCard(wallpaper, navController, presetFilter)
                 }
             }
+
+            // Append error (footer)
+            if (wallpapers.loadState.append is LoadState.Error) {
+                item(span = StaggeredGridItemSpan.FullLine) {
+                    ErrorMessagePanel(
+                            message = "Couldn't load more wallpapers.",
+                            onRetry = { wallpapers.retry() }
+                    )
+                }
+            }
+        }
+
+        when (val refreshState = wallpapers.loadState.refresh) {
+            is LoadState.Error -> {
+                Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 16.dp),
+                        contentAlignment = Alignment.Center
+                ) {
+                    ErrorMessagePanel(
+                            message = refreshState.error.localizedMessage
+                                ?: refreshState.error.message
+                                ?: stringResource(id = R.string.error_generic),
+                            onRetry = {
+                                wallpapers.retry()
+                            }
+                    )
+                }
+            }
+            is LoadState.NotLoading if wallpapers.itemCount == 0 -> {
+                Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 16.dp),
+                        contentAlignment = Alignment.Center
+                ) {
+                    EmptyStatePanel(onChangeFilters = {
+                        searchDialog = true
+                    })
+                }
+            }
+            else -> {
+                // no-op
+            }
         }
 
         if (MainComposePreferences.getBottomHeader()) {
@@ -401,5 +449,52 @@ fun ImageCard(wallpaper: WallhavenWallpaper, navController: NavController? = nul
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun ErrorMessagePanel(message: String, onRetry: () -> Unit) {
+    Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+                text = message,
+                color = Color.LightGray,
+                fontWeight = FontWeight.Medium,
+                textAlign = TextAlign.Center,
+                fontSize = 16.sp
+        )
+        Spacer(modifier = Modifier.padding(6.dp))
+        Button(onClick = onRetry) {
+            Text(text = stringResource(id = R.string.retry))
+        }
+    }
+}
+
+@Composable
+private fun EmptyStatePanel(onChangeFilters: () -> Unit) {
+    Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+                text = stringResource(id = R.string.no_wallpapers_found),
+                color = Color.LightGray,
+                fontWeight = FontWeight.Medium,
+                textAlign = TextAlign.Center,
+                fontSize = 16.sp
+        )
+        Spacer(modifier = Modifier.padding(6.dp))
+        AssistChip(
+                onClick = onChangeFilters,
+                label = {
+                    Text(stringResource(id = R.string.edit_query))
+                }
+        )
     }
 }

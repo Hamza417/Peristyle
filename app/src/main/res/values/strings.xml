@@ -266,4 +266,8 @@
     <string name="skip_palettes_summary">Skip generating palettes to enable faster loading times at the cost of tinted image shadows.</string>
     <string name="create_new_folder">Create a new folder</string>
     <string name="custom">Custom</string>
+    <string name="error_generic">Couldn\'t load wallpapers.</string>
+    <string name="retry">Retry</string>
+    <string name="no_wallpapers_found">No wallpapers found</string>
+    <string name="edit_query">Edit Query</string>
 </resources>
