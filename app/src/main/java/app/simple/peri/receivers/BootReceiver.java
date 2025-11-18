@@ -24,10 +24,6 @@ public class BootReceiver extends android.content.BroadcastReceiver {
                 try {
                     setAutoWallpaperAlarm(context);
                     
-                    if (BuildConfig.DEBUG) {
-                        Toast.makeText(context, "Peristyle: Auto wallpaper enabled", Toast.LENGTH_SHORT).show();
-                    }
-                    
                     Log.d("BootReceiver", "Boot completed action received, auto wallpaper enabled");
                 } catch (Exception e) {
                     if (BuildConfig.DEBUG) {
