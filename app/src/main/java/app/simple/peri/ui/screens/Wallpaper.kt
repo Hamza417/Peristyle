@@ -22,6 +22,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Label
 import androidx.compose.material.icons.rounded.Bookmarks
+import androidx.compose.material.icons.rounded.Download
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
@@ -670,6 +671,31 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
                                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                                 verticalAlignment = Alignment.CenterVertically
                         ) {
+                            // Save first (when available)
+                            if (wallpaper is WallhavenWallpaper) {
+                                item {
+                                    Button(
+                                            onClick = {
+                                                showDownloadFolderScreen = true
+                                            },
+                                            shape = RoundedCornerShape(50),
+                                            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 6.dp),
+                                            colors = ButtonDefaults.buttonColors(containerColor = Color.White.copy(alpha = 0.25f), contentColor = Color.White),
+                                            modifier = Modifier.height(34.dp)
+                                    ) {
+                                        Icon(
+                                                imageVector = Icons.Rounded.Download,
+                                                contentDescription = null,
+                                                tint = Color.White,
+                                                modifier = Modifier.size(18.dp)
+                                        )
+                                        Spacer(modifier = Modifier.width(6.dp))
+                                        Text(text = context.getString(R.string.save), fontSize = 14.sp, color = Color.White)
+                                    }
+                                }
+                            }
+
+                            // Then Edit
                             item {
                                 Button(
                                         onClick = {
@@ -691,6 +717,8 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
                                     Text(text = context.getString(R.string.edit), fontSize = 14.sp, color = Color.White)
                                 }
                             }
+
+                            // Then Saved effects
                             item {
                                 Button(
                                         onClick = {
@@ -709,21 +737,6 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
                                     )
                                     Spacer(modifier = Modifier.width(6.dp))
                                     Text(text = context.getString(R.string.saved_effects), fontSize = 14.sp, color = Color.White)
-                                }
-                            }
-                            if (wallpaper is WallhavenWallpaper) {
-                                item {
-                                    Button(
-                                            onClick = {
-                                                showDownloadFolderScreen = true
-                                            },
-                                            shape = RoundedCornerShape(50),
-                                            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 6.dp),
-                                            colors = ButtonDefaults.buttonColors(containerColor = Color.White.copy(alpha = 0.25f), contentColor = Color.White),
-                                            modifier = Modifier.height(34.dp)
-                                    ) {
-                                        Text(text = context.getString(R.string.save), fontSize = 14.sp, color = Color.White)
-                                    }
                                 }
                             }
                         }
