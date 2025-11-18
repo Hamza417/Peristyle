@@ -55,6 +55,7 @@ import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import app.simple.peri.R
 import app.simple.peri.activities.main.LocalDisplaySize
+import app.simple.peri.constants.HttpErrors
 import app.simple.peri.models.WallhavenFilter
 import app.simple.peri.models.WallhavenResponse
 import app.simple.peri.models.WallhavenWallpaper
@@ -235,7 +236,7 @@ fun WallhavenScreen(navController: NavController? = null) {
             if (wallpapers.loadState.append is LoadState.Error) {
                 item(span = StaggeredGridItemSpan.FullLine) {
                     ErrorMessagePanel(
-                            message = "Couldn't load more wallpapers.",
+                            message = HttpErrors.GENERIC,
                             onRetry = { wallpapers.retry() }
                     )
                 }
@@ -251,9 +252,7 @@ fun WallhavenScreen(navController: NavController? = null) {
                         contentAlignment = Alignment.Center
                 ) {
                     ErrorMessagePanel(
-                            message = refreshState.error.localizedMessage
-                                ?: refreshState.error.message
-                                ?: stringResource(id = R.string.error_generic),
+                            message = HttpErrors.userFriendly(refreshState.error),
                             onRetry = {
                                 wallpapers.retry()
                             }
