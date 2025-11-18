@@ -22,6 +22,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -38,6 +39,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowInsetsCompat
 import app.simple.peri.R
 import app.simple.peri.extensions.BaseComponentActivity
+import app.simple.peri.preferences.PathPickerPreferences
 import app.simple.peri.preferences.SharedPreferences
 import app.simple.peri.ui.commons.COMMON_PADDING
 import app.simple.peri.ui.commons.TopHeader
@@ -56,13 +58,38 @@ class PathPickerActivity : BaseComponentActivity() {
         SharedPreferences.init(applicationContext)
 
         setContent {
-            var sdcardMode by remember { mutableStateOf(false) }
-            var mainPath by remember { mutableStateOf(Environment.getExternalStorageDirectory().absolutePath) }
-            var selectedPath by remember { mutableStateOf(mainPath) }
+            // Resolve sdcard root and last picked path synchronously for initial state
+            val sdCardRoot = remember {
+                try {
+                    SDCard.findSdCardPath(applicationContext).absolutePath
+                } catch (_: NullPointerException) {
+                    null
+                }
+            }
+            val defaultMain = remember { Environment.getExternalStorageDirectory().absolutePath }
+            val lastPicked = remember {
+                PathPickerPreferences.getLastPickedPath().let { path ->
+                    if (path.isNotEmpty()) {
+                        val f = File(path)
+                        if (f.exists() && f.isDirectory) path else ""
+                    } else ""
+                }
+            }
+
+            var sdcardMode by remember { mutableStateOf(sdCardRoot != null && lastPicked.isNotEmpty() && lastPicked.startsWith(sdCardRoot!!)) }
+            var mainPath by remember { mutableStateOf(if (sdcardMode) (sdCardRoot ?: defaultMain) else defaultMain) }
+            var selectedPath by remember { mutableStateOf(lastPicked.ifEmpty { mainPath }) }
             var statusBarHeight by remember { mutableIntStateOf(0) }
             var navigationBarHeight by remember { mutableIntStateOf(0) }
             var showNoSdCardWarning by remember { mutableStateOf(false) }
             var showCreateDirDialog by remember { mutableStateOf(false) }
+
+            // Persist any path change immediately
+            LaunchedEffect(selectedPath) {
+                if (selectedPath.isNotEmpty()) {
+                    PathPickerPreferences.setLastPickedPath(selectedPath)
+                }
+            }
 
             statusBarHeight = WindowInsetsCompat.toWindowInsetsCompat(
                     LocalView.current.rootWindowInsets
@@ -150,7 +177,7 @@ class PathPickerActivity : BaseComponentActivity() {
                                         }
 
                                         selectedPath = mainPath
-                                    } catch (e: NullPointerException) {
+                                    } catch (_: NullPointerException) {
                                         sdcardMode = false
                                         mainPath = Environment.getExternalStorageDirectory().absolutePath
                                         selectedPath = mainPath
@@ -235,6 +262,7 @@ class PathPickerActivity : BaseComponentActivity() {
     }
 
     private fun onPathChosen(path: String) {
+        PathPickerPreferences.setLastPickedPath(path) // ensure persistence on selection
         val resultIntent = Intent()
         resultIntent.putExtra("chosen_path", path)
         setResult(RESULT_OK, resultIntent)
