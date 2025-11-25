@@ -265,4 +265,10 @@
     <string name="same_wallpaper_for_both_summary">为两个屏幕使用相同的随机壁纸。仅在任一屏幕均未设置文件夹或标签时有效。</string>
     <string name="skip_palettes">跳过调色板</string>
     <string name="skip_palettes_summary">跳过生成调色板以加快加载速度，但代价是图片阴影会带有色偏。</string>
+    <string name="create_new_folder">创建新文件夹</string>
+    <string name="custom">自定义</string>
+    <string name="error_generic">无法加载壁纸。</string>
+    <string name="retry">重试</string>
+    <string name="no_wallpapers_found">找不到壁纸</string>
+    <string name="edit_query">编辑查询</string>
 </resources>
