@@ -265,4 +265,10 @@
     <string name="same_wallpaper_for_both_summary">Her iki ekran için de aynı rastgele duvar kağıdını kullan. Yalnızca her iki ekranda da klasör veya etiket ayarlı değilse çalışır.</string>
     <string name="skip_palettes">Paletleri Atla</string>
     <string name="skip_palettes_summary">Palet oluşturmayı atlayarak daha hızlı yükleme süresi elde edilir ancak bunun karşılığında görüntünün gölgelerinde renk sapması (renk tonlu/tintli gölgeler) oluşabilir.</string>
+    <string name="create_new_folder">Yeni klasör oluştur</string>
+    <string name="custom">Özel</string>
+    <string name="error_generic">Duvar kağıtları yüklenemedi.</string>
+    <string name="retry">Yeniden dene</string>
+    <string name="no_wallpapers_found">Duvar kağıdı bulunamadı</string>
+    <string name="edit_query">Sorguyu Düzenle</string>
 </resources>
