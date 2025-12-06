@@ -256,4 +256,19 @@
     <string name="purity">Reinheit</string>
     <string name="views">%1$d Aufrufe</string>
     <string name="skipping_wallpaper_change">Wallpaper Änderung Ereignis übersprungen zum nächsten Zyklus!</string>
+    <string name="method">Methode</string>
+    <string name="wallpaper_set_method_summary">Methode zur Anwendung eines Hintergrundbildes.</string>
+    <string name="color_space">Farbraum</string>
+    <string name="color_space_summary">Lege den Farbraum zur Dekodierung von Hintergrundbild-Bitmaps fest.</string>
+    <string name="sdcard_issue">SD-Karten sind in der zufälligen Ein-/Ausgabe sehr langsam. Verwende sie nach eigenem Ermessen.</string>
+    <string name="same_wallpaper_for_both">Gleiches Hintergrundbild</string>
+    <string name="same_wallpaper_for_both_summary">Benutze dasselbe zufällige Hintergrundbild für beide Bildschirme. Funktioniert nur, wenn kein Ordner oder Tag für einen der beiden Bildschirme gesetzt ist.</string>
+    <string name="skip_palettes">Paletten überspringen</string>
+    <string name="skip_palettes_summary">Generieren von Paletten überspringen, um schnellere Ladezeiten auf Kosten farbiger Bildschatten zu ermöglichen.</string>
+    <string name="create_new_folder">Neuen Ordner erstellen</string>
+    <string name="custom">Benutzerdefiniert</string>
+    <string name="error_generic">Konnte Hintergrundbilder nicht laden.</string>
+    <string name="retry">Erneut versuchen</string>
+    <string name="no_wallpapers_found">Keine Hintergrundbilder gefunden</string>
+    <string name="edit_query">Abfrage bearbeiten</string>
 </resources>
