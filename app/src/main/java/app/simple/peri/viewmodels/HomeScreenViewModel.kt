@@ -40,6 +40,7 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
     private val countDownMutex = Mutex()
 
     val countDownFlow: MutableStateFlow<Long> = MutableStateFlow(RANDOM_WALLPAPER_DELAY)
+    val isCountdownPaused: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
     init {
         registerSharedPreferenceChangeListener()
@@ -132,6 +133,26 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
         stopCountDownFlow()
         startCountDownFlow()
         Log.i("HomeScreenViewModel", "Countdown flow resumed")
+    }
+
+    fun pauseCountdown() {
+        stopCountDownFlow()
+        isCountdownPaused.value = true
+        Log.i("HomeScreenViewModel", "Countdown paused")
+    }
+
+    fun resumeCountdown() {
+        isCountdownPaused.value = false
+        startCountDownFlow()
+        Log.i("HomeScreenViewModel", "Countdown resumed")
+    }
+
+    fun toggleCountdownPause() {
+        if (isCountdownPaused.value) {
+            resumeCountdown()
+        } else {
+            pauseCountdown()
+        }
     }
 
     private fun postCurrentSystemWallpaper() {
@@ -267,6 +288,7 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
 
     fun nextRandomWallpaper() {
         stopCountDownFlow()
+        isCountdownPaused.value = false
         postRandomWallpaper()
     }
 

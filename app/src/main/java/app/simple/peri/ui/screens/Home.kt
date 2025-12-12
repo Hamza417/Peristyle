@@ -34,6 +34,8 @@ import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.FastForward
 import androidx.compose.material.icons.rounded.Folder
 import androidx.compose.material.icons.rounded.MotionPhotosOn
+import androidx.compose.material.icons.rounded.Pause
+import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.Schedule
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Settings
@@ -47,6 +49,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -149,7 +152,10 @@ fun Home(navController: NavController? = null) {
             }
 
             override fun onResume(owner: LifecycleOwner) {
-                homeScreenViewModel.resumeCountDownFlow()
+                // Only resume countdown if it wasn't paused by the user
+                if (!homeScreenViewModel.isCountdownPaused.value) {
+                    homeScreenViewModel.resumeCountDownFlow()
+                }
                 isLiveWallpaperRunning.value = ServiceUtils.isWallpaperServiceRunning(applicationContext)
                 Log.i("HomeScreen", "onResume")
             }
@@ -264,6 +270,9 @@ fun WallpaperItem(title: String, position: Int, onClick: () -> Unit, onNextWallp
     val hazeState = remember { HazeState() }
     val showDeleteDialog = remember { mutableStateOf(false) }
 
+    val homeScreenViewModel: HomeScreenViewModel = viewModel(LocalActivity.current as ComponentActivity)
+    val isCountdownPaused = homeScreenViewModel.isCountdownPaused.collectAsState().value
+
     if (showDeleteDialog.value) {
         SureDialog(
                 message = wallpaper?.name ?: wallpaper?.filePath ?: "",
@@ -330,6 +339,14 @@ fun WallpaperItem(title: String, position: Int, onClick: () -> Unit, onNextWallp
                     CircularCountdownProgress(
                             modifier = Modifier
                                 .padding(16.dp)
+                    )
+
+                    CircularIconButton(
+                            onClick = { homeScreenViewModel.toggleCountdownPause() },
+                            imageVector = if (isCountdownPaused) Icons.Rounded.PlayArrow else Icons.Rounded.Pause,
+                            modifier = Modifier
+                                .align(Alignment.CenterVertically)
+                                .padding(end = 8.dp)
                     )
 
                     CircularIconButton(
