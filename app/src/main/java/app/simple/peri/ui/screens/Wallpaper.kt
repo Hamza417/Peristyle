@@ -5,7 +5,6 @@ import android.graphics.Bitmap
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -577,182 +576,171 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
                     Spacer(modifier = Modifier.height(16.dp))
                 }
 
-                Column {
-                    val showWallpaperLaunchedEffect = remember { mutableStateOf(false) }
+                val showWallpaperLaunchedEffect = remember { mutableStateOf(false) }
 
-                    if (showWallpaperLaunchedEffect.value) {
-                        LaunchedEffect(showWallpaperLaunchedEffect) {
-                            coroutineScope.launch {
-                                bitmap = graphicsLayer.toImageBitmap().asAndroidBitmap()
-                                    .copy(MainComposePreferences.getWallpaperColorSpace(), true)
-                                    .applyEffects(
-                                            blur = blurValue.times(Misc.BLUR_TIMES),
-                                            colorMatrix = colorMatrix
-                                    )
+                if (showWallpaperLaunchedEffect.value) {
+                    LaunchedEffect(showWallpaperLaunchedEffect) {
+                        coroutineScope.launch {
+                            bitmap = graphicsLayer.toImageBitmap().asAndroidBitmap()
+                                .copy(MainComposePreferences.getWallpaperColorSpace(), true)
+                                .applyEffects(
+                                        blur = blurValue.times(Misc.BLUR_TIMES),
+                                        colorMatrix = colorMatrix
+                                )
 
-                                showScreenSelectionDialog = true
-                                showWallpaperLaunchedEffect.value = false
+                            showScreenSelectionDialog = true
+                            showWallpaperLaunchedEffect.value = false
 
-                                try {
-                                    context.stopService(LiveAutoWallpaperService.getIntent(context))
-                                } catch (_: IllegalStateException) {
-                                    Log.e("Wallpaper", "Service not running")
+                            try {
+                                context.stopService(LiveAutoWallpaperService.getIntent(context))
+                            } catch (_: IllegalStateException) {
+                                Log.e("Wallpaper", "Service not running")
+                            }
+                        }
+                    }
+                }
+
+                Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 12.dp, end = 12.dp, bottom = 12.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                ) {
+                    val listState = rememberLazyListState()
+                    val showStartFade by remember {
+                        derivedStateOf {
+                            val info = listState.layoutInfo
+                            val first = info.visibleItemsInfo.firstOrNull()
+                            if (first == null) false else {
+                                first.index > 0 || first.offset < info.viewportStartOffset
+                            }
+                        }
+                    }
+                    val showEndFade by remember {
+                        derivedStateOf {
+                            val info = listState.layoutInfo
+                            val last = info.visibleItemsInfo.lastOrNull()
+                            val total = info.totalItemsCount
+                            if (last == null || total == 0) {
+                                false
+                            } else {
+                                if (last.index < total - 1) {
+                                    true
+                                } else {
+                                    val itemEnd = last.offset + last.size
+                                    itemEnd > info.viewportEndOffset
                                 }
                             }
                         }
                     }
 
-                    // Action area - left scrollable utilities and fixed "Set as wallpaper" button on the right
-                    Row(
+                    val fadingEdgeWidth = 24.dp
+
+                    LazyRow(
+                            state = listState,
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(start = 12.dp, end = 12.dp, bottom = 12.dp),
+                                .weight(1f)
+                                .graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
+                                .drawWithContent {
+                                    drawContent()
+                                    val w = size.width
+                                    if (w > 0f) {
+                                        val startFrac = if (showStartFade) (fadingEdgeWidth.toPx() / w).coerceIn(0f, 0.5f) else 0f
+                                        val endFrac = if (showEndFade) (fadingEdgeWidth.toPx() / w).coerceIn(0f, 0.5f) else 0f
+                                        if (startFrac > 0f || endFrac > 0f) {
+                                            drawRect(
+                                                    brush = Brush.horizontalGradient(
+                                                            0f to Color.Transparent,
+                                                            startFrac to Color.Black,
+                                                            (1f - endFrac) to Color.Black,
+                                                            1f to Color.Transparent
+                                                    ),
+                                                    blendMode = BlendMode.DstIn
+                                            )
+                                        }
+                                    }
+                                },
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
                             verticalAlignment = Alignment.CenterVertically
                     ) {
-                        // Left side - horizontally scrollable actions with fading edges
-                        val listState = rememberLazyListState()
-                        val showStartFade by remember {
-                            derivedStateOf {
-                                val info = listState.layoutInfo
-                                val first = info.visibleItemsInfo.firstOrNull()
-                                if (first == null) false else {
-                                    // Fade start if there are items before the first, or the first is partially clipped
-                                    first.index > 0 || first.offset < info.viewportStartOffset
-                                }
-                            }
-                        }
-                        val showEndFade by remember {
-                            derivedStateOf {
-                                val info = listState.layoutInfo
-                                val last = info.visibleItemsInfo.lastOrNull()
-                                val total = info.totalItemsCount
-                                if (last == null || total == 0) {
-                                    false
-                                } else {
-                                    if (last.index < total - 1) {
-                                        // More items exist after the last visible
-                                        true
-                                    } else {
-                                        // Last visible is the final item; fade if it's partially clipped
-                                        val itemEnd = last.offset + last.size
-                                        itemEnd > info.viewportEndOffset
-                                    }
+                        if (wallpaper is WallhavenWallpaper) {
+                            item {
+                                Button(
+                                        onClick = {
+                                            showDownloadFolderScreen = true
+                                        },
+                                        shape = RoundedCornerShape(50),
+                                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 6.dp),
+                                        colors = ButtonDefaults.buttonColors(containerColor = Color.White.copy(alpha = 0.25f), contentColor = Color.White),
+                                        modifier = Modifier.height(34.dp)
+                                ) {
+                                    Icon(
+                                            imageVector = Icons.Rounded.Download,
+                                            contentDescription = null,
+                                            tint = Color.White,
+                                            modifier = Modifier.size(18.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Text(text = context.getString(R.string.save), fontSize = 14.sp, color = Color.White)
                                 }
                             }
                         }
 
-                        val fadingEdgeWidth = 24.dp
-
-                        LazyRow(
-                                state = listState,
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
-                                    .drawWithContent {
-                                        drawContent()
-                                        val w = size.width
-                                        if (w > 0f) {
-                                            val startFrac = if (showStartFade) (fadingEdgeWidth.toPx() / w).coerceIn(0f, 0.5f) else 0f
-                                            val endFrac = if (showEndFade) (fadingEdgeWidth.toPx() / w).coerceIn(0f, 0.5f) else 0f
-                                            if (startFrac > 0f || endFrac > 0f) {
-                                                drawRect(
-                                                        brush = Brush.horizontalGradient(
-                                                                0f to Color.Transparent,
-                                                                startFrac to Color.Black,
-                                                                (1f - endFrac) to Color.Black,
-                                                                1f to Color.Transparent
-                                                        ),
-                                                        blendMode = BlendMode.DstIn
-                                                )
-                                            }
-                                        }
+                        item {
+                            Button(
+                                    onClick = {
+                                        showEditDialog.value = true
+                                        showDetailsCard.value = false
                                     },
-                                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            // Save first (when available)
-                            if (wallpaper is WallhavenWallpaper) {
-                                item {
-                                    Button(
-                                            onClick = {
-                                                showDownloadFolderScreen = true
-                                            },
-                                            shape = RoundedCornerShape(50),
-                                            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 6.dp),
-                                            colors = ButtonDefaults.buttonColors(containerColor = Color.White.copy(alpha = 0.25f), contentColor = Color.White),
-                                            modifier = Modifier.height(34.dp)
-                                    ) {
-                                        Icon(
-                                                imageVector = Icons.Rounded.Download,
-                                                contentDescription = null,
-                                                tint = Color.White,
-                                                modifier = Modifier.size(18.dp)
-                                        )
-                                        Spacer(modifier = Modifier.width(6.dp))
-                                        Text(text = context.getString(R.string.save), fontSize = 14.sp, color = Color.White)
-                                    }
-                                }
-                            }
-
-                            // Then Edit
-                            item {
-                                Button(
-                                        onClick = {
-                                            showEditDialog.value = true
-                                            showDetailsCard.value = false
-                                        },
-                                        shape = RoundedCornerShape(50),
-                                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
-                                        colors = ButtonDefaults.buttonColors(containerColor = Color.White.copy(alpha = 0.15f), contentColor = Color.White),
-                                        modifier = Modifier.height(34.dp)
-                                ) {
-                                    Icon(
-                                            imageVector = Icons.Rounded.Edit,
-                                            contentDescription = null,
-                                            tint = Color.White,
-                                            modifier = Modifier.size(18.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(6.dp))
-                                    Text(text = context.getString(R.string.edit), fontSize = 14.sp, color = Color.White)
-                                }
-                            }
-
-                            // Then Saved effects
-                            item {
-                                Button(
-                                        onClick = {
-                                            launchEffectActivity.value = true
-                                        },
-                                        shape = RoundedCornerShape(50),
-                                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
-                                        colors = ButtonDefaults.buttonColors(containerColor = Color.White.copy(alpha = 0.15f), contentColor = Color.White),
-                                        modifier = Modifier.height(34.dp)
-                                ) {
-                                    Icon(
-                                            imageVector = Icons.Rounded.Bookmarks,
-                                            contentDescription = null,
-                                            tint = Color.White,
-                                            modifier = Modifier.size(18.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(6.dp))
-                                    Text(text = context.getString(R.string.saved_effects), fontSize = 14.sp, color = Color.White)
-                                }
+                                    shape = RoundedCornerShape(50),
+                                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
+                                    colors = ButtonDefaults.buttonColors(containerColor = Color.White.copy(alpha = 0.15f), contentColor = Color.White),
+                                    modifier = Modifier.height(34.dp)
+                            ) {
+                                Icon(
+                                        imageVector = Icons.Rounded.Edit,
+                                        contentDescription = null,
+                                        tint = Color.White,
+                                        modifier = Modifier.size(18.dp)
+                                )
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text(text = context.getString(R.string.edit), fontSize = 14.sp, color = Color.White)
                             }
                         }
 
-                        // Right side - fixed, always-visible action
-                        Button(
-                                onClick = {
-                                    showWallpaperLaunchedEffect.value = true
-                                },
-                                shape = RoundedCornerShape(50),
-                                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 6.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = Color.White.copy(alpha = 0.25f), contentColor = Color.White),
-                                modifier = Modifier.height(34.dp)
-                        ) {
-                            Text(text = context.getString(R.string.set_as_wallpaper), fontSize = 14.sp, color = Color.White)
+                        item {
+                            Button(
+                                    onClick = {
+                                        launchEffectActivity.value = true
+                                    },
+                                    shape = RoundedCornerShape(50),
+                                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
+                                    colors = ButtonDefaults.buttonColors(containerColor = Color.White.copy(alpha = 0.15f), contentColor = Color.White),
+                                    modifier = Modifier.height(34.dp)
+                            ) {
+                                Icon(
+                                        imageVector = Icons.Rounded.Bookmarks,
+                                        contentDescription = null,
+                                        tint = Color.White,
+                                        modifier = Modifier.size(18.dp)
+                                )
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text(text = context.getString(R.string.saved_effects), fontSize = 14.sp, color = Color.White)
+                            }
                         }
+                    }
+
+                    Button(
+                            onClick = {
+                                showWallpaperLaunchedEffect.value = true
+                            },
+                            shape = RoundedCornerShape(50),
+                            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 6.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.White.copy(alpha = 0.25f), contentColor = Color.White),
+                            modifier = Modifier.height(34.dp)
+                    ) {
+                        Text(text = context.getString(R.string.set_as_wallpaper), fontSize = 14.sp, color = Color.White)
                     }
                 }
             }
