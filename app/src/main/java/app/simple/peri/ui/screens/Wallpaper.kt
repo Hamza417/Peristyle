@@ -477,7 +477,7 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
                         fontWeight = FontWeight.Light,
                         color = Color.White,
                         modifier = Modifier.padding(start = 16.dp, top = 4.dp),
-                        fontSize = 18.sp
+                        fontSize = 16.sp
                 )
 
                 if (tags.isNotEmpty() || wallhavenTags.isNotEmpty()) {
@@ -573,7 +573,7 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
                         }
                     }
                 } else {
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
                 }
 
                 val showWallpaperLaunchedEffect = remember { mutableStateOf(false) }
