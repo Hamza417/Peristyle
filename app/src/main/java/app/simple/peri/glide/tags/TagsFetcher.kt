@@ -45,7 +45,7 @@ class TagsFetcher(private val contextTag: ContextTag) : DataFetcher<Bitmap> {
                     .signature(ObjectKey(
                             (wallpaper.filePath + displayDimension.getReducedWidth() + displayDimension.getReducedHeight())
                                 .hashCode()))
-                    .error(R.drawable.ic_peristyle)
+                    .error(R.drawable.no_image_placeholder)
                     .submit(displayDimension.getReducedWidth(), displayDimension.getReducedHeight())
 
                 bitmapList.add(bitmap)

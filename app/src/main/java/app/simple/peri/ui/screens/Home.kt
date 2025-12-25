@@ -313,7 +313,7 @@ fun WallpaperItem(title: String, position: Int, onClick: () -> Unit, onNextWallp
                         .fillMaxSize()
                         .hazeSource(state = hazeState),
                     alignment = Alignment.Center,
-                    failure = placeholder(painter = painterResource(id = R.drawable.ic_peristyle)),
+                    failure = placeholder(painter = painterResource(id = R.drawable.no_image_placeholder)),
                     contentScale = currentScale.value,
             ) {
                 it.addListener(object : RequestListener<Drawable> {
@@ -385,9 +385,9 @@ fun WallpaperItem(title: String, position: Int, onClick: () -> Unit, onNextWallp
                         modifier = Modifier
                             .padding(start = 16.dp, top = 16.dp, end = 16.dp),
                         textAlign = TextAlign.Start,
-                        fontSize = 24.sp, // Set the font size
-                        fontWeight = FontWeight.Bold, // Make the text bold
-                        color = Color.White, // Set the text color
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                 )
