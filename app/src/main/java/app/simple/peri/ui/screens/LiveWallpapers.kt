@@ -54,6 +54,7 @@ import androidx.core.net.toUri
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import app.simple.peri.R
+import app.simple.peri.activities.main.LocalDisplaySize
 import app.simple.peri.models.LiveWallpaperInfo
 import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.ui.commons.BottomHeader
@@ -139,7 +140,12 @@ fun LiveWallpapers(navController: NavHostController) {
                 val liveWallpaperInfo = liveWallpapers[index]
                 val context = LocalContext.current
                 var showWallpaperMenu by remember { mutableStateOf(false) }
-                val aspectRatio = if (isLandscape()) 16F / 9F else 9F / 16F
+                val displaySize = LocalDisplaySize.current
+                val aspectRatio = if (isLandscape()) {
+                    displaySize.width.toFloat() / (displaySize.height.toFloat())
+                } else {
+                    displaySize.width.toFloat() / (displaySize.height.toFloat())
+                }
 
                 if (showWallpaperMenu) {
                     LiveWallpapersMenu(
