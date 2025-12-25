@@ -72,16 +72,34 @@ class LiveWallpapersViewModel(application: Application) : AndroidViewModel(appli
                 try {
                     val wallpaperInfo = WallpaperInfo(getApplication(), it)
                     LiveWallpaperInfo(
-                            name = wallpaperInfo.loadLabel(packageManager).toString(),
+                            name = getLabelForWallpaper(wallpaperInfo, packageManager),
+                            description = getDescriptionForWallpaper(wallpaperInfo, packageManager),
                             icon = wallpaperInfo.loadThumbnail(packageManager),
                             resolveInfo = it
                     )
                 } catch (e: Exception) {
+                    e.printStackTrace()
                     null
                 }
             }
 
             liveWallpapers.postValue(wallpapers.sortedBy { it.name })
+        }
+    }
+
+    private fun getLabelForWallpaper(wallpaperInfo: WallpaperInfo, packageManager: PackageManager): String {
+        return try {
+            wallpaperInfo.loadLabel(packageManager).toString()
+        } catch (_: Exception) {
+            "Unknown"
+        }
+    }
+
+    private fun getDescriptionForWallpaper(wallpaperInfo: WallpaperInfo, packageManager: PackageManager): String {
+        return try {
+            wallpaperInfo.loadDescription(packageManager)?.toString() ?: ""
+        } catch (_: Exception) {
+            ""
         }
     }
 

@@ -128,6 +128,8 @@
         <service
             android:name=".services.LiveAutoWallpaperService"
             android:exported="true"
+            android:label="@string/auto_wallpaper"
+            android:description="@string/auto_wallpaper_summary"
             android:permission="android.permission.BIND_WALLPAPER">
             <intent-filter>
                 <action android:name="android.service.wallpaper.WallpaperService" />

@@ -11,6 +11,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -45,6 +46,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
@@ -211,18 +214,51 @@ fun LiveWallpapers(navController: NavHostController) {
                                 modifier = Modifier
                                     .wrapContentHeight()
                                     .fillMaxWidth()
-                                    .hazeEffect(state = localHazeState,
-                                                style = HazeDefaults.style(backgroundColor = Color(0x50000000), blurRadius = 25.dp)
+                                    .hazeEffect(
+                                            state = localHazeState,
+                                            style = HazeDefaults.style(
+                                                    backgroundColor = Color(0x50000000),
+                                                    blurRadius = 5.dp
+                                            )
                                     )
                                     .align(Alignment.BottomCenter)
                         ) {
+                            val hasDescription = liveWallpaperInfo.description.isNotBlank()
+
                             Text(
                                     text = liveWallpaperInfo.name,
+                                    modifier = Modifier
+                                        .padding(
+                                                start = 16.dp,
+                                                top = 16.dp,
+                                                end = 16.dp,
+                                                bottom = if (hasDescription) 0.dp else 16.dp
+                                        )
+                                        .basicMarquee(),
+                                    textAlign = TextAlign.Start,
+                                    fontSize = 18.sp,
                                     fontWeight = FontWeight.Bold,
-                                    fontSize = 16.sp,
                                     color = Color.White,
-                                    modifier = Modifier.padding(COMMON_PADDING)
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Visible,
+                                    softWrap = false,
                             )
+
+                            if (hasDescription) {
+                                Text(
+                                        text = liveWallpaperInfo.description,
+                                        textAlign = TextAlign.Start,
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.Light,
+                                        color = Color.White,
+                                        modifier = Modifier
+                                            .padding(start = 16.dp, top = 4.dp, bottom = 16.dp, end = 16.dp)
+                                            .basicMarquee(),
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Visible,
+                                        softWrap = false,
+                                )
+                            }
                         }
                     }
                 }
