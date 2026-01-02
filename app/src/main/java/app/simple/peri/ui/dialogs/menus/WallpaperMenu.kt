@@ -4,6 +4,8 @@ import android.content.Intent
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
+import androidx.compose.foundation.basicMarquee
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -33,8 +35,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.app.ShareCompat
 import androidx.core.content.FileProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -45,6 +49,7 @@ import app.simple.peri.ui.commons.MenuItemWithIcon
 import app.simple.peri.ui.dialogs.common.SureDialog
 import app.simple.peri.utils.ConditionUtils.invert
 import app.simple.peri.utils.FileUtils.toFile
+import app.simple.peri.utils.FileUtils.toSize
 import app.simple.peri.viewmodels.ComposeWallpaperViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -109,13 +114,33 @@ fun WallpaperMenu(
     AlertDialog(
             onDismissRequest = { setShowDialog(false) },
             title = {
-                Text(
-                        text = wallpaper.name ?: "",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                )
+                Column {
+                    Text(
+                            text = wallpaper.name ?: "",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold,
+                            maxLines = 1,
+
+                            overflow = TextOverflow.Visible,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .basicMarquee()
+                    )
+
+                    Text(
+                            text = "${wallpaper.width ?: 0}x${wallpaper.height ?: 0}, ${wallpaper.size.toSize()}",
+                            textAlign = TextAlign.Start,
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Light,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .basicMarquee(),
+                            maxLines = 1,
+                            overflow = TextOverflow.Visible
+                    )
+                }
             },
             text = {
                 LazyColumn(
