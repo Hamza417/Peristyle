@@ -308,7 +308,7 @@ fun WallpaperItem(title: String, position: Int, onClick: () -> Unit, onNextWallp
             GlideImage(
                     model = wallpaper?.filePath?.toFile(),
                     contentDescription = null,
-                    transition = CrossFade,
+                    transition = if (position == RANDOM_WALLPAPER_POSITION) null else CrossFade,
                     modifier = Modifier
                         .fillMaxSize()
                         .hazeSource(state = hazeState),
