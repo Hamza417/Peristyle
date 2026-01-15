@@ -58,12 +58,13 @@ class LiveAutoWallpaperService : WallpaperService() {
         handler = Handler(Looper.getMainLooper()) { msg ->
             when (msg.what) {
                 MSG_SET_WALLPAPER -> {
-                    val filePath = msg.obj as? String
+                    val req = msg.obj as? SetWallpaperRequest
+                    val filePath = req?.filePath
                     if (filePath.isNullOrBlank()) {
                         Log.w(TAG, "MSG_SET_WALLPAPER received with null/blank path")
                         return@Handler true
                     }
-                    engine?.setWallpaper(filePath)
+                    engine?.setWallpaper(filePath, isPreviewRequest = req.isPreviewRequest)
                 }
             }
             true
@@ -107,8 +108,12 @@ class LiveAutoWallpaperService : WallpaperService() {
                 if (wallpaper == null) {
                     Log.w(TAG, "No wallpaper extra found for action=${intent.action}")
                 } else {
-                    Log.i(TAG, "Setting wallpaper: ${wallpaper.filePath}")
-                    val msg = handler?.obtainMessage(MSG_SET_WALLPAPER, wallpaper.filePath)
+                    val isPreviewRequest = intent.action == PREVIEW_WALLPAPER
+                    Log.i(TAG, "Setting wallpaper: ${wallpaper.filePath} (preview=$isPreviewRequest)")
+                    val msg = handler?.obtainMessage(
+                            MSG_SET_WALLPAPER,
+                            SetWallpaperRequest(wallpaper.filePath, isPreviewRequest)
+                    )
                     if (msg != null) {
                         handler?.sendMessage(msg)
                     }
@@ -184,7 +189,7 @@ class LiveAutoWallpaperService : WallpaperService() {
             Choreographer.getInstance().removeFrameCallback(frameCallback)
         }
 
-        fun setWallpaper(filePath: String) {
+        fun setWallpaper(filePath: String, isPreviewRequest: Boolean) {
             // Keep only the latest request, cancel in-flight decode/effects.
             setWallpaperJob?.cancel()
             setWallpaperJob = engineScope.launch {
@@ -207,8 +212,8 @@ class LiveAutoWallpaperService : WallpaperService() {
                         getBitmapFromFile(filePath, targetW, targetH, recycle = false) { bmp ->
                             localBitmap = bmp
                         }
-                    } catch (_: NullPointerException) {
-                        // Keep behavior consistent with previous code.
+                    } catch (e: NullPointerException) {
+                        e.printStackTrace()
                     } catch (e: FileNotFoundException) {
                         Log.e(TAG, "File not found: $filePath", e)
                     }
@@ -223,7 +228,9 @@ class LiveAutoWallpaperService : WallpaperService() {
 
                 setBitmapWithCrossfade(finalBitmap)
                 MainComposePreferences.setLastLiveWallpaperPath(filePath)
-                if (MainComposePreferences.getAutoWallpaperNotification()) {
+
+                // Preview wallpaper updates should never post notifications.
+                if (MainComposePreferences.getAutoWallpaperNotification() && !isPreview && !isPreviewRequest) {
                     showWallpaperChangedNotification(true, filePath.toFile(), finalBitmap)
                 }
             }
@@ -357,7 +364,7 @@ class LiveAutoWallpaperService : WallpaperService() {
     }
 
     private fun requestNextWallpaperDebounced(reason: String) {
-        // Debounce window: coalesce storms of triggers into one request.
+        // Debounce window - coalesce storms of triggers into one request.
         requestNextJob?.cancel()
         requestNextJob = requestScope.launch {
             delay(NEXT_WALLPAPER_DEBOUNCE_MS)
@@ -401,5 +408,10 @@ class LiveAutoWallpaperService : WallpaperService() {
         fun getIntent(context: Context): Intent {
             return Intent(context, LiveAutoWallpaperService::class.java)
         }
+
+        private data class SetWallpaperRequest(
+                val filePath: String,
+                val isPreviewRequest: Boolean,
+        )
     }
 }
