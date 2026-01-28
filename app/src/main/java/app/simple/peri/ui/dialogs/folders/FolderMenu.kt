@@ -27,6 +27,7 @@ fun FolderMenu(folder: Folder? = null, onDismiss: () -> Unit, onOptionSelected: 
                 true -> stringResource(R.string.add_nomedia)
                 else -> stringResource(R.string.remove_nomedia)
             },
+            stringResource(R.string.delete)
     )
 
     AlertDialog(

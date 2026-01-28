@@ -309,6 +309,30 @@ class ComposeWallpaperViewModel(application: Application) : AndroidViewModel(app
         WallpaperDatabase.destroyInstance()
     }
 
+    fun deleteFolderWallpapers(folder: Folder, function: () -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            loadWallpaperImagesJobs.cancelAll("deleting folder wallpapers")
+            val wallpaperDatabase = WallpaperDatabase.getInstance(getApplication())
+            val wallpaperDao = wallpaperDatabase?.wallpaperDao()
+            val wallpapers = wallpaperDao?.getWallpapersByPathHashcode(folder.hashcode) ?: emptyList()
+
+            wallpapers.forEach { wallpaper ->
+                val file = wallpaper.filePath.toFile()
+                if (file.exists()) {
+                    file.delete()
+                }
+
+                wallpaperDao?.delete(wallpaper)
+            }
+
+            refresh()
+
+            withContext(Dispatchers.Main) {
+                function()
+            }
+        }
+    }
+
     companion object {
         private const val TAG = "ComposeWallpaperViewModel"
     }

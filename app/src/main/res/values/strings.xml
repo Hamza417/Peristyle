@@ -270,4 +270,5 @@
     <string name="retry">Retry</string>
     <string name="no_wallpapers_found">No wallpapers found</string>
     <string name="edit_query">Edit Query</string>
+    <string name="delete_folder_warning">Are you sure you want to permanently delete %1$s folder and %2$d wallpapers.</string>
 </resources>

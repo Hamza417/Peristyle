@@ -60,6 +60,7 @@ import app.simple.peri.ui.commons.COMMON_PADDING
 import app.simple.peri.ui.commons.FolderBrowser
 import app.simple.peri.ui.commons.TopHeader
 import app.simple.peri.ui.dialogs.common.ShowWarningDialog
+import app.simple.peri.ui.dialogs.common.SureDialog
 import app.simple.peri.ui.dialogs.folders.FolderMenu
 import app.simple.peri.ui.nav.Routes
 import app.simple.peri.ui.theme.LocalBarsSize
@@ -183,6 +184,7 @@ fun FolderItem(folder: Folder, navController: NavController? = null, composeWall
     var showFolderMenu by remember { mutableStateOf(false) }
     var showNomediaSuccess by remember { mutableStateOf(false) }
     var showNomediaRemoveSuccess by remember { mutableStateOf(false) }
+    var showSureDeleteDialog by remember { mutableStateOf(false) }
 
     if (showFolderMenu) {
         FolderMenu(
@@ -207,6 +209,10 @@ fun FolderItem(folder: Folder, navController: NavController? = null, composeWall
                                 showNomediaRemoveSuccess = true
                             }
                         }
+
+                        context.getString(R.string.delete) -> {
+                            showSureDeleteDialog = true
+                        }
                     }
                 }
         )
@@ -225,6 +231,22 @@ fun FolderItem(folder: Folder, navController: NavController? = null, composeWall
                 title = stringResource(R.string.nomedia),
                 warning = stringResource(R.string.nomedia_remove_success),
                 onDismiss = { showNomediaRemoveSuccess = false }
+        )
+    }
+
+    if (showSureDeleteDialog) {
+        SureDialog(
+                title = stringResource(R.string.delete),
+                message = stringResource(R.string.delete_folder_warning, folder.name ?: "", folder.count),
+                onSure = {
+                    composeWallpaperViewModel.deleteFolderWallpapers(folder) {
+                        showSureDeleteDialog = false
+                        onRevoke(folder)
+                    }
+                },
+                onDismiss = {
+                    showSureDeleteDialog = false
+                },
         )
     }
 
