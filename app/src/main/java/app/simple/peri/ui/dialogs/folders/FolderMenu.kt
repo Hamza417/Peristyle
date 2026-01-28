@@ -1,77 +1,124 @@
 package app.simple.peri.ui.dialogs.folders
 
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Block
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.FolderOff
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.window.DialogProperties
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import app.simple.peri.R
 import app.simple.peri.models.Folder
-import app.simple.peri.ui.constants.DIALOG_OPTION_FONT_SIZE
+import app.simple.peri.ui.commons.MenuItemWithIcon
 import app.simple.peri.utils.ConditionUtils.invert
+import app.simple.peri.utils.FileUtils.toSize
 
 @Composable
 fun FolderMenu(folder: Folder? = null, onDismiss: () -> Unit, onOptionSelected: (String) -> Unit) {
-    val options = listOf(
-            stringResource(R.string.revoke),
-            when (folder?.isNomedia?.invert()) {
-                true -> stringResource(R.string.add_nomedia)
-                else -> stringResource(R.string.remove_nomedia)
-            },
-            stringResource(R.string.delete)
-    )
+
+    val revokeText = stringResource(R.string.revoke)
+    val addNomediaText = stringResource(R.string.add_nomedia)
+    val removeNomediaText = stringResource(R.string.remove_nomedia)
+    val deleteText = stringResource(R.string.delete)
+    val nomediaText = when (folder?.isNomedia?.invert()) {
+        true -> addNomediaText
+        else -> removeNomediaText
+    }
 
     AlertDialog(
-            title = {
-                Text(
-                        text = folder?.name ?: "",
-                )
-            },
             onDismissRequest = { onDismiss() },
-            text = {
+            title = {
                 Column {
-                    options.forEach { option ->
-                        Button(
+                    Text(
+                            text = folder?.name ?: "",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold,
+                            maxLines = 1,
+                            overflow = TextOverflow.Visible,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .basicMarquee()
+                    )
+
+                    Text(
+                            text = "${folder?.count ?: 0} ${stringResource(R.string.wallpapers)}, ${folder?.totalSize?.toSize() ?: "0 B"}",
+                            textAlign = TextAlign.Start,
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Light,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .basicMarquee()
+                                .padding(top = 4.dp),
+                            maxLines = 1,
+                            overflow = TextOverflow.Visible
+                    )
+                }
+            },
+            text = {
+                LazyColumn(
+                        modifier = Modifier.fillMaxWidth()
+                ) {
+                    item {
+                        // Folder Actions Section
+                        MenuItemWithIcon(
+                                icon = Icons.Rounded.Block,
+                                text = revokeText,
                                 onClick = {
-                                    onOptionSelected(option)
+                                    onOptionSelected(revokeText)
+                                    onDismiss()
+                                }
+                        )
+
+                        MenuItemWithIcon(
+                                icon = Icons.Rounded.FolderOff,
+                                text = nomediaText,
+                                onClick = {
+                                    onOptionSelected(nomediaText)
+                                    onDismiss()
+                                }
+                        )
+
+                        HorizontalDivider(
+                                modifier = Modifier.padding(vertical = 8.dp),
+                                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+                        )
+
+                        // Destructive Action Section
+                        MenuItemWithIcon(
+                                icon = Icons.Rounded.Delete,
+                                text = deleteText,
+                                onClick = {
+                                    onOptionSelected(deleteText)
                                     onDismiss()
                                 },
-                                colors = ButtonDefaults.buttonColors(
-                                        containerColor = Color.Transparent,
-                                        contentColor = MaterialTheme.colorScheme.onSurface,
-                                ),
-                                modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Text(
-                                    text = option,
-                                    color = MaterialTheme.colorScheme.onSurface,
-                                    modifier = Modifier.fillMaxWidth(),
-                                    textAlign = TextAlign.Center,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = DIALOG_OPTION_FONT_SIZE,
-                            )
-                        }
+                                isDestructive = true
+                        )
                     }
                 }
             },
             confirmButton = {
                 Button(
-                        onClick = {
-                            onDismiss()
-                        }
+                        onClick = { onDismiss() }
                 ) {
                     Text(text = stringResource(R.string.close))
                 }
-            },
-            properties = DialogProperties(dismissOnClickOutside = true)
+            }
     )
 }
