@@ -85,16 +85,16 @@ fun AutoWallpaper(navController: NavController? = null) {
                     })
 
             ClickablePreference(
-                    title = context.getString(R.string.interval),
-                    description = context.getString(R.string.duration_summary),
+                    title = stringResource(R.string.interval),
+                    description = stringResource(R.string.duration_summary),
                     onClick = {
                         timeSelectionDialog.value = true
                     }
             )
 
             ClickablePreference(
-                    title = context.getString(R.string.auto_wallpaper_set_for),
-                    description = context.getString(R.string.auto_wallpaper_set_for_summary),
+                    title = stringResource(R.string.auto_wallpaper_set_for),
+                    description = stringResource(R.string.auto_wallpaper_set_for_summary),
                     onClick = {
                         screenSelectionDialog.value = true
                     }
@@ -135,7 +135,7 @@ fun AutoWallpaper(navController: NavController? = null) {
             val showLockEffectsDialog = remember { mutableStateOf(false) }
             val showHomeEffectsDialog = remember { mutableStateOf(false) }
 
-            SecondaryHeader(title = context.getString(R.string.source))
+            SecondaryHeader(title = stringResource(R.string.source))
 
             DescriptionPreference(stringResource(R.string.source_summary))
 
@@ -173,7 +173,7 @@ fun AutoWallpaper(navController: NavController? = null) {
                                     .align(Alignment.CenterVertically)
                         )
                         SecondaryClickablePreference(
-                                title = context.getString(R.string.tags),
+                                title = stringResource(R.string.tags),
                                 onClick = {
                                     showLockTagDialog.value = true
                                 },
@@ -211,7 +211,7 @@ fun AutoWallpaper(navController: NavController? = null) {
                                     .align(Alignment.CenterVertically)
                         )
                         SecondaryClickablePreference(
-                                title = context.getString(R.string.folder),
+                                title = stringResource(R.string.folder),
                                 onClick = {
                                     showLockFolderDialog.value = true
                                 },
@@ -242,8 +242,8 @@ fun AutoWallpaper(navController: NavController? = null) {
                         )
 
                         SecondaryClickablePreference(
-                                title = context.getString(R.string.effects),
-                                description = context.getString(R.string.apply_effects_summary),
+                                title = stringResource(R.string.effects),
+                                description = stringResource(R.string.apply_effects_summary),
                                 onClick = {
                                     showLockEffectsDialog.value = true
                                 }
@@ -285,7 +285,7 @@ fun AutoWallpaper(navController: NavController? = null) {
                                     .align(Alignment.CenterVertically)
                         )
                         SecondaryClickablePreference(
-                                title = context.getString(R.string.tags),
+                                title = stringResource(R.string.tags),
                                 onClick = {
                                     showHomeTagDialog.value = true
                                 },
@@ -323,7 +323,7 @@ fun AutoWallpaper(navController: NavController? = null) {
                                     .align(Alignment.CenterVertically)
                         )
                         SecondaryClickablePreference(
-                                title = context.getString(R.string.folder),
+                                title = stringResource(R.string.folder),
                                 onClick = {
                                     showHomeFolderDialog.value = true
                                 },
@@ -354,8 +354,8 @@ fun AutoWallpaper(navController: NavController? = null) {
                         )
 
                         SecondaryClickablePreference(
-                                title = context.getString(R.string.effects),
-                                description = context.getString(R.string.apply_effects_summary),
+                                title = stringResource(R.string.effects),
+                                description = stringResource(R.string.apply_effects_summary),
                                 onClick = {
                                     showHomeEffectsDialog.value = true
                                 }
@@ -365,8 +365,8 @@ fun AutoWallpaper(navController: NavController? = null) {
             }
 
             SwitchPreference(
-                    title = context.getString(R.string.same_wallpaper_for_both),
-                    description = context.getString(R.string.same_wallpaper_for_both_summary),
+                    title = stringResource(R.string.same_wallpaper_for_both),
+                    description = stringResource(R.string.same_wallpaper_for_both_summary),
                     checked = isSameWallpaperForBoth.value,
             ) {
                 MainPreferences.setUseSameWallpaperForBoth(it)
@@ -527,43 +527,43 @@ fun AutoWallpaper(navController: NavController? = null) {
             val showMethodDialog = remember { mutableStateOf(false) }
             val showColorSpaceDialog = remember { mutableStateOf(false) }
 
-            SecondaryHeader(title = context.getString(R.string.settings))
+            SecondaryHeader(title = stringResource(R.string.settings))
 
             ClickablePreference(
-                    title = context.getString(R.string.default_effects),
-                    description = context.getString(R.string.default_effects_summary),
+                    title = stringResource(R.string.default_effects),
+                    description = stringResource(R.string.default_effects_summary),
                     onClick = {
                         showEffectsDialog.value = true
                     }
             )
 
             ClickablePreference(
-                    title = context.getString(R.string.method),
-                    description = context.getString(R.string.wallpaper_set_method_summary),
+                    title = stringResource(R.string.method),
+                    description = stringResource(R.string.wallpaper_set_method_summary),
                     onClick = {
                         showMethodDialog.value = true
                     }
             )
 
             ClickablePreference(
-                    title = context.getString(R.string.color_space),
-                    description = context.getString(R.string.color_space_summary),
+                    title = stringResource(R.string.color_space),
+                    description = stringResource(R.string.color_space_summary),
                     onClick = {
                         showColorSpaceDialog.value = true
                     }
             )
 
             ClickablePreference(
-                    title = context.getString(R.string.delete_after),
-                    description = context.getString(R.string.delete_summary),
+                    title = stringResource(R.string.delete_after),
+                    description = stringResource(R.string.delete_summary),
                     onClick = {
                         showDeleteDialog.value = true
                     }
             )
 
             SwitchPreference(
-                    title = context.getString(R.string.crop_wallpaper),
-                    description = context.getString(R.string.crop_wallpaper_summary),
+                    title = stringResource(R.string.crop_wallpaper),
+                    description = stringResource(R.string.crop_wallpaper_summary),
                     checked = MainPreferences.getCropWallpaper(),
                     onCheckedChange = {
                         MainPreferences.setCropWallpaper(it)
@@ -571,16 +571,16 @@ fun AutoWallpaper(navController: NavController? = null) {
             )
 
             SwitchPreference(
-                    title = context.getString(R.string.linear_auto_wallpaper),
-                    description = context.getString(R.string.linear_auto_wallpaper_summary),
+                    title = stringResource(R.string.linear_auto_wallpaper),
+                    description = stringResource(R.string.linear_auto_wallpaper_summary),
                     checked = MainPreferences.isLinearAutoWallpaper(),
             ) {
                 MainPreferences.setLinearAutoWallpaper(it)
             }
 
             SwitchPreference(
-                    title = context.getString(R.string.notifications),
-                    description = context.getString(R.string.notifications_summary),
+                    title = stringResource(R.string.notifications),
+                    description = stringResource(R.string.notifications_summary),
                     checked = MainComposePreferences.getAutoWallpaperNotification(),
             ) {
                 MainComposePreferences.setAutoWallpaperNotification(it)
