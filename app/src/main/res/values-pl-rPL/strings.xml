@@ -265,4 +265,11 @@
     <string name="same_wallpaper_for_both_summary">Użyj tej samej losowej tapety dla obu ekranów. Działa tylko, jeśli nie został ustawiony folder lub tag dla jednego z ekranów.</string>
     <string name="skip_palettes">Pomiń palety</string>
     <string name="skip_palettes_summary">Pomiń generowanie palet, aby umożliwić szybsze ładowanie w zamian za podświetlone cienie.</string>
+    <string name="create_new_folder">Utwórz nowy folder</string>
+    <string name="custom">Niestandardowe</string>
+    <string name="error_generic">Nie udało się załadować tapet.</string>
+    <string name="retry">Spróbuj ponownie</string>
+    <string name="no_wallpapers_found">Nie znaleziono tapet</string>
+    <string name="edit_query">Edytuj zapytanie</string>
+    <string name="delete_folder_warning">Czy na pewno chcesz trwale usunąć folder %1$s i %2$d tapety.</string>
 </resources>
