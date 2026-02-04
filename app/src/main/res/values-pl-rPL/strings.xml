@@ -271,5 +271,5 @@
     <string name="retry">Spróbuj ponownie</string>
     <string name="no_wallpapers_found">Nie znaleziono tapet</string>
     <string name="edit_query">Edytuj zapytanie</string>
-    <string name="delete_folder_warning">Czy na pewno chcesz trwale usunąć folder %1$s i %2$d tapety.</string>
+    <string name="delete_folder_warning">Czy na pewno chcesz trwale usunąć folder %1$s i %2$d tapety?</string>
 </resources>
