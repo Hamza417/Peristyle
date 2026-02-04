@@ -21,9 +21,6 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
@@ -94,20 +91,6 @@ fun PeristyleTheme(
                 content = content
         )
     }
-}
-
-@Preview
-@Composable
-fun PeristyleThemePreview(
-        @PreviewParameter(BooleanPreviewParameterProvider::class) darkTheme: Boolean
-) {
-    PeristyleTheme(darkTheme = darkTheme) {
-        // Your Composable content here
-    }
-}
-
-class BooleanPreviewParameterProvider : PreviewParameterProvider<Boolean> {
-    override val values: Sequence<Boolean> = sequenceOf(true, false)
 }
 
 @Suppress("DEPRECATION")
