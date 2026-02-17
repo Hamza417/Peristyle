@@ -1,0 +1,1 @@
+Gestion simple de fonds d'écran avec rotation auto et dossiers multiples
