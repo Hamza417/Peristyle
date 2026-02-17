@@ -1,1 +1,1 @@
-Application de gestion de fonds d'écran simple avec prise en charge de fonds d'écran automatique et du multi-dossiers.
+Gestion simple de fonds d'écran avec rotation auto et dossiers multiples
