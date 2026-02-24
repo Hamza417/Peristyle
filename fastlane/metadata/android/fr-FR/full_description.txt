@@ -1,0 +1,22 @@
+Peristyle est créé pour être un gestionnaire et un navigateur de fonds d'écran extrêmement simple et sophistiqué pour Android. Il résout le problème d'avoir des applications trop lourdes et complexes inutilement, ayant un support très minimal pour les fonds d'écran stockés localement. Et si vous vouliez juste une application qui vous permet de naviguer et de sélectionner vos propres fonds d'écran stockés localement et vous permet de gérer et de définir des fonds d'écran à partir de là ? alors Peristyle est pour vous :)
+
+Fonctionnalités :
+
+- Architecture simple, parcourez les fonds d'écran et utilisez le gestionnaire de fonds d'écran du système pour les définir comme fond d'écran.
+- Prise en charge des dossiers multiples.
+- Possibilité d'assigner des étiquettes à n'importe quel fond d'écran.
+- Peut scanner les répertoires .nomedia, utile si vous voulez garder vos fonds d'écran hors de la galerie.
+- Appliquer des filtres de flou et de couleur dynamiquement sur n'importe quel fond d'écran avant de l'utiliser.
+- Des animations simples et jolies avec des optimisations adéquates.
+- Compresse ou réduit les images à la volée.
+- Pas de publicité, pas de suivi, pas d'analytique, pas de permission internet, pas de permission inutile.
+- Prise en charge automatique du changement de fond d'écran avec des dossiers dédiés et des étiquettes pour chaque écran.
+- Changer le fond d'écran en utilisant le fond d'écran animé de l'application
+- Modifier et appliquer des filtres sur des fonds d'écran sans perte et en temps réel.
+- Sélecteur de fond d'écran animé intégré.
+- Support du mode sombre.
+- L'interface utilisateur Glassmorphique basée sur les effets de flou en temps réel et les ombres caustiques.
+- Thème de couleur Material You.
+- Version entièrement reproductible.
+- Aucun chargement de l'architecture logicielle.
+- Client WallHaven intégré pour explorer et télécharger des fonds d'écran.
