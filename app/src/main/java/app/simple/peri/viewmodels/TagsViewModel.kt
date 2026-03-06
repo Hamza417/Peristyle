@@ -117,6 +117,33 @@ class TagsViewModel(application: Application, private val id: Int = 0, private v
         }
     }
 
+    fun removeTagFromWallpaper(tagName: String, wallpaperId: Int, onSuccess: () -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val database = TagsDatabase.getInstance(getApplication())
+            val tagsDao = database?.tagsDao()
+
+            if (tagsDao?.isTagExists(tagName)!!) {
+                val tag = tagsDao.getTagByID(tagName)
+                tag.sum.remove(wallpaperId)
+
+                if (tag.sum.isEmpty()) {
+                    // Delete the tag if no wallpapers are left
+                    tagsDao.deleteTag(tag)
+                } else {
+                    // Update the tag with the new sum
+                    tagsDao.insertTag(tag)
+                }
+
+                loadTags()
+                loadWallpaperTags(wallpaperId)
+            }
+
+            withContext(Dispatchers.Main) {
+                onSuccess()
+            }
+        }
+    }
+
     private fun createRandomTagsForTesting() {
         viewModelScope.launch(Dispatchers.IO) {
             Log.d("TagsViewModel", "Creating random tags for testing...")

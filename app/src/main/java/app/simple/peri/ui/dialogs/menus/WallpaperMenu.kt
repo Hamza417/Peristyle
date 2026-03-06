@@ -27,6 +27,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -43,14 +44,17 @@ import androidx.core.app.ShareCompat
 import androidx.core.content.FileProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import app.simple.peri.R
+import app.simple.peri.factories.TagsViewModelFactory
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.ui.commons.FolderBrowser
 import app.simple.peri.ui.commons.MenuItemWithIcon
+import app.simple.peri.ui.dialogs.common.RemoveTagDialog
 import app.simple.peri.ui.dialogs.common.SureDialog
 import app.simple.peri.utils.ConditionUtils.invert
 import app.simple.peri.utils.FileUtils.toFile
 import app.simple.peri.utils.FileUtils.toSize
 import app.simple.peri.viewmodels.ComposeWallpaperViewModel
+import app.simple.peri.viewmodels.TagsViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -71,7 +75,13 @@ fun WallpaperMenu(
     val coroutineScope = rememberCoroutineScope()
     var launchDirectoryPicker by remember { mutableStateOf(false) }
     var deleteSure by remember { mutableStateOf(false) }
+    var showRemoveTagDialog by remember { mutableStateOf(false) }
     val composeWallpaperViewModel: ComposeWallpaperViewModel = viewModel(LocalActivity.current as ComponentActivity)
+    val tagsViewModel: TagsViewModel = viewModel(
+            factory = TagsViewModelFactory(wallpaper.id)
+    )
+
+    val wallpaperTags = tagsViewModel.getWallpaperTags().observeAsState(emptyList())
 
     if (launchDirectoryPicker) {
         FolderBrowser(
@@ -107,6 +117,15 @@ fun WallpaperMenu(
                 onDismiss = {
                     deleteSure = false
                     setShowDialog(true)
+                }
+        )
+    }
+
+    if (showRemoveTagDialog) {
+        RemoveTagDialog(
+                wallpaper = wallpaper,
+                onDismiss = {
+                    showRemoveTagDialog = false
                 }
         )
     }
@@ -198,6 +217,17 @@ fun WallpaperMenu(
                                     setShowDialog(false)
                                 }
                         )
+
+                        // Show Remove Tag option only if wallpaper has tags
+                        if (wallpaperTags.value?.isNotEmpty() == true) {
+                            MenuItemWithIcon(
+                                    icon = Icons.AutoMirrored.Rounded.Label,
+                                    text = context.getString(R.string.remove_tag),
+                                    onClick = {
+                                        showRemoveTagDialog = true
+                                    }
+                            )
+                        }
 
                         MenuItemWithIcon(
                                 icon = Icons.Rounded.MoveDown,
