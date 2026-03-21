@@ -140,7 +140,8 @@
     <string name="linear_auto_wallpaper">Pick in Linear Order</string>
     <string name="copy">Copy</string>
     <string name="restart">Restart</string>
-    <string name="permission_granted">Permission Granted</string>
+    <string name="permission_granted">Granted</string>
+    <string name="permission_not_granted">Not Granted</string>
     <string name="permissions">Permissions</string>
     <string name="external_storage">Allow Files Access</string>
     <string name="external_storage_summary">Will be used to show the current system wallpaper in the home screen.</string>

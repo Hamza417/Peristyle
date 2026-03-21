@@ -1,11 +1,5 @@
 package app.simple.peri.ui.screens
 
-import ButtonPreference
-import ClickablePreference
-import DescriptionPreference
-import SecondaryClickablePreference
-import SecondaryHeader
-import SwitchPreference
 import android.app.WallpaperManager
 import android.content.ComponentName
 import android.content.Intent
@@ -42,7 +36,13 @@ import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.services.AutoWallpaperService
 import app.simple.peri.services.LiveAutoWallpaperService
+import app.simple.peri.ui.commons.ButtonPreference
 import app.simple.peri.ui.commons.COMMON_PADDING
+import app.simple.peri.ui.commons.ClickablePreference
+import app.simple.peri.ui.commons.DescriptionPreference
+import app.simple.peri.ui.commons.SecondaryClickablePreference
+import app.simple.peri.ui.commons.SecondaryHeader
+import app.simple.peri.ui.commons.SwitchPreference
 import app.simple.peri.ui.commons.TopHeader
 import app.simple.peri.ui.dialogs.autowallpaper.ColorSpaceSelectionDialog
 import app.simple.peri.ui.dialogs.autowallpaper.FoldersDialog

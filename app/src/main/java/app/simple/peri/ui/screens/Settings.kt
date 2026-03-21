@@ -1,10 +1,5 @@
 package app.simple.peri.ui.screens
 
-import ClickablePreference
-import DescriptionPreference
-import OtherApps
-import SecondaryHeader
-import SwitchPreference
 import android.content.Intent
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -28,6 +23,11 @@ import app.simple.peri.R
 import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.ui.commons.COMMON_PADDING
+import app.simple.peri.ui.commons.ClickablePreference
+import app.simple.peri.ui.commons.DescriptionPreference
+import app.simple.peri.ui.commons.OtherApps
+import app.simple.peri.ui.commons.SecondaryHeader
+import app.simple.peri.ui.commons.SwitchPreference
 import app.simple.peri.ui.commons.TopHeader
 import app.simple.peri.ui.dialogs.common.ShowWarningDialog
 import app.simple.peri.ui.dialogs.common.SureDialog

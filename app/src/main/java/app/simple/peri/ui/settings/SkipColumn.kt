@@ -1,13 +1,13 @@
 package app.simple.peri.ui.settings
 
-import DescriptionPreference
-import SecondaryHeader
-import SwitchPreference
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import app.simple.peri.R
 import app.simple.peri.preferences.MainComposePreferences
+import app.simple.peri.ui.commons.DescriptionPreference
+import app.simple.peri.ui.commons.SecondaryHeader
+import app.simple.peri.ui.commons.SwitchPreference
 
 @Composable
 fun SkipColumn() {

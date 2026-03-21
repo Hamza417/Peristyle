@@ -1,8 +1,5 @@
 package app.simple.peri.ui.screens
 
-import ClickablePreference
-import DescriptionPreference
-import SecondaryHeader
 import android.Manifest
 import android.content.ActivityNotFoundException
 import android.content.Context
@@ -37,6 +34,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -50,14 +48,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.NotificationManagerCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import app.simple.peri.BuildConfig
 import app.simple.peri.R
 import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.ui.commons.COMMON_PADDING
+import app.simple.peri.ui.commons.ClickablePreference
+import app.simple.peri.ui.commons.DescriptionPreference
 import app.simple.peri.ui.commons.FolderBrowser
 import app.simple.peri.ui.commons.InitDisplayDimension
+import app.simple.peri.ui.commons.SecondaryHeader
 import app.simple.peri.ui.commons.TopHeader
 import app.simple.peri.ui.dialogs.common.ShowWarningDialog
 import app.simple.peri.ui.nav.Routes
@@ -158,6 +162,45 @@ fun Permissions(modifier: Modifier, context: Context, navController: NavControll
     var requestMediaImages by remember { mutableStateOf(false) }
     var requestNotificationPermission by remember { mutableStateOf(false) }
 
+    var storageGranted by remember {
+        mutableStateOf(
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) Environment.isExternalStorageManager()
+                else PermissionUtils.checkStoragePermission(context)
+        )
+    }
+    var batteryGranted by remember { mutableStateOf(context.isBatteryOptimizationDisabled()) }
+    var mediaGranted by remember {
+        mutableStateOf(
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) PermissionUtils.checkMediaImagesPermission(context)
+                else true
+        )
+    }
+    var notificationGranted by remember {
+        mutableStateOf(
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) NotificationManagerCompat.from(context).areNotificationsEnabled()
+                else true
+        )
+    }
+
+    // Re-check all permission states when the activity resumes from system settings
+    val activity = LocalActivity.current
+    val lifecycleOwner = activity as? LifecycleOwner
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                storageGranted = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) Environment.isExternalStorageManager()
+                else PermissionUtils.checkStoragePermission(context)
+                batteryGranted = context.isBatteryOptimizationDisabled()
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    mediaGranted = PermissionUtils.checkMediaImagesPermission(context)
+                    notificationGranted = NotificationManagerCompat.from(context).areNotificationsEnabled()
+                }
+            }
+        }
+        lifecycleOwner?.lifecycle?.addObserver(observer)
+        onDispose { lifecycleOwner?.lifecycle?.removeObserver(observer) }
+    }
+
     if (showExternalPermissionDialog) {
         ShowWarningDialog(
                 title = context.getString(R.string.external_storage),
@@ -189,20 +232,26 @@ fun Permissions(modifier: Modifier, context: Context, navController: NavControll
     }
 
     if (requestPermissionLauncher) {
-        RequestStoragePermissions()
+        RequestStoragePermissions { granted ->
+            requestPermissionLauncher = false
+            if (granted) storageGranted = true
+        }
     }
 
     if (requestNotificationPermission) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            RequestNotificationPermission()
+            RequestNotificationPermission { granted ->
+                requestNotificationPermission = false
+                if (granted) notificationGranted = true
+            }
         }
     }
 
     if (requestMediaImages) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            RequestReadMediaImagesPermission {
+            RequestReadMediaImagesPermission { granted ->
                 requestMediaImages = false
-                showExternalPermissionDialog = false
+                if (granted) mediaGranted = true
             }
         }
     }
@@ -215,10 +264,13 @@ fun Permissions(modifier: Modifier, context: Context, navController: NavControll
         ClickablePreference(
                 title = context.getString(R.string.external_storage),
                 description = context.getString(R.string.external_storage_summary),
+                statusText = if (storageGranted) context.getString(R.string.permission_granted)
+                else context.getString(R.string.permission_not_granted),
         ) {
             when {
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
                     if (Environment.isExternalStorageManager()) {
+                        storageGranted = true
                         showExternalPermissionDialog = true
                     } else {
                         try {
@@ -232,6 +284,7 @@ fun Permissions(modifier: Modifier, context: Context, navController: NavControll
 
                 else -> {
                     if (PermissionUtils.checkStoragePermission(context)) {
+                        storageGranted = true
                         requestPermissionLauncher = false
                         showExternalPermissionDialog = true
                     } else {
@@ -245,8 +298,11 @@ fun Permissions(modifier: Modifier, context: Context, navController: NavControll
         ClickablePreference(
                 title = context.getString(R.string.battery_optimization),
                 description = context.getString(R.string.battery_optimization_summary),
+                statusText = if (batteryGranted) context.getString(R.string.permission_granted)
+                else context.getString(R.string.permission_not_granted),
                 onClick = {
                     if (context.isBatteryOptimizationDisabled()) {
+                        batteryGranted = true
                         showBatteryOptimizationDialog = true
                     } else {
                         context.requestIgnoreBatteryOptimizations()
@@ -258,8 +314,11 @@ fun Permissions(modifier: Modifier, context: Context, navController: NavControll
             ClickablePreference(
                     title = context.getString(R.string.allow_media_access),
                     description = context.getString(R.string.external_storage_summary),
+                    statusText = if (mediaGranted) context.getString(R.string.permission_granted)
+                    else context.getString(R.string.permission_not_granted),
                     onClick = {
                         if (PermissionUtils.checkMediaImagesPermission(context)) {
+                            mediaGranted = true
                             requestMediaImages = false
                             showExternalPermissionDialog = true
                         } else {
@@ -288,8 +347,11 @@ fun Permissions(modifier: Modifier, context: Context, navController: NavControll
             ClickablePreference(
                     title = context.getString(R.string.notifications),
                     description = context.getString(R.string.notifications_summary),
+                    statusText = if (notificationGranted) context.getString(R.string.permission_granted)
+                    else context.getString(R.string.permission_not_granted),
                     onClick = {
                         if (NotificationManagerCompat.from(context).areNotificationsEnabled()) {
+                            notificationGranted = true
                             showNotificationDialog = true
                         } else {
                             requestNotificationPermission = true
@@ -402,23 +464,17 @@ fun PermissionText(text: String, summary: String = "") {
 }
 
 @Composable
-fun RequestStoragePermissions() {
-    val requestPermissionLauncher = rememberLauncherForActivityResult(
+fun RequestStoragePermissions(onResult: (Boolean) -> Unit = {}) {
+    val launcher = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
-        // Handle the result of the permission request
-        permissions.forEach { (permission, isGranted) ->
-            if (isGranted) {
-                Log.d("Permission", "$permission granted")
-            } else {
-                Log.d("Permission", "$permission denied")
-            }
-        }
+        val granted = permissions[Manifest.permission.READ_EXTERNAL_STORAGE] == true
+        Log.d("Permission", "READ_EXTERNAL_STORAGE ${if (granted) "granted" else "denied"}")
+        onResult(granted)
     }
 
-    // Ensure the launcher is initialized before launching the permission request
     LaunchedEffect(Unit) {
-        requestPermissionLauncher.launch(
+        launcher.launch(
                 arrayOf(
                         Manifest.permission.READ_EXTERNAL_STORAGE,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE
@@ -429,42 +485,31 @@ fun RequestStoragePermissions() {
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
-fun RequestNotificationPermission() {
-    val requestPermissionLauncher = rememberLauncherForActivityResult(
+fun RequestNotificationPermission(onResult: (Boolean) -> Unit = {}) {
+    val launcher = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
-        // Handle the result of the permission request
-        if (isGranted) {
-            Log.d("Permission", "NOTIFICATION granted")
-        } else {
-            Log.d("Permission", "NOTIFICATION denied")
-        }
+        Log.d("Permission", "POST_NOTIFICATIONS ${if (isGranted) "granted" else "denied"}")
+        onResult(isGranted)
     }
 
-    // Ensure the launcher is initialized before launching the permission request
     LaunchedEffect(Unit) {
-        requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
     }
 }
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
-fun RequestReadMediaImagesPermission(onCancel: () -> Unit) {
-    val requestPermissionLauncher = rememberLauncherForActivityResult(
+fun RequestReadMediaImagesPermission(onResult: (Boolean) -> Unit = {}) {
+    val launcher = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
-        // Handle the result of the permission request
-        if (isGranted) {
-            Log.d("Permission", "READ_EXTERNAL_STORAGE granted")
-        } else {
-            Log.d("Permission", "READ_EXTERNAL_STORAGE denied")
-            onCancel()
-        }
+        Log.d("Permission", "READ_MEDIA_IMAGES ${if (isGranted) "granted" else "denied"}")
+        onResult(isGranted)
     }
 
-    // Ensure the launcher is initialized before launching the permission request
     LaunchedEffect(Unit) {
-        requestPermissionLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES)
+        launcher.launch(Manifest.permission.READ_MEDIA_IMAGES)
     }
 }
 

@@ -1,3 +1,5 @@
+package app.simple.peri.ui.commons
+
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -84,6 +86,7 @@ fun SwitchPreference(title: String,
 fun ClickablePreference(@SuppressLint("ModifierParameter") modifier: Modifier? = null,
                         title: String,
                         description: String = "",
+                        statusText: String? = null,
                         onClick: () -> Unit) {
 
     val verticalPadding = 16.dp
@@ -105,8 +108,22 @@ fun ClickablePreference(@SuppressLint("ModifierParameter") modifier: Modifier? =
                     .padding(start = PREF_HORIZONTAL_PADDING,
                              end = PREF_HORIZONTAL_PADDING,
                              top = verticalPadding,
-                             bottom = if (description.isNotEmpty()) 0.dp else verticalPadding),
+                             bottom = if (statusText != null || description.isNotEmpty()) 0.dp else verticalPadding),
         )
+        if (statusText != null) {
+            Text(
+                    text = statusText,
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 12.sp,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = PREF_HORIZONTAL_PADDING,
+                                 end = PREF_HORIZONTAL_PADDING,
+                                 top = 2.dp,
+                                 bottom = if (description.isNotEmpty()) 0.dp else verticalPadding),
+            )
+        }
         if (description.isNotEmpty()) {
             Text(
                     text = description,
