@@ -142,7 +142,6 @@
     <string name="copy">Kopyala</string>
     <string name="restart">Yeniden Başlat</string>
     <string name="permission_granted">İzin verildi</string>
-    <string name="permission_not_granted">İzin verilmedi</string>
     <string name="permissions">İzinler</string>
     <string name="external_storage">Dosya Erişimine İzin Ver</string>
     <string name="external_storage_summary">Ana ekranda mevcut sistem duvar kağıdını göstermek için kullanılacaktır.</string>
