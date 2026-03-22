@@ -273,5 +273,5 @@
     <string name="retry">Yeniden dene</string>
     <string name="no_wallpapers_found">Duvar kağıdı bulunamadı</string>
     <string name="edit_query">Sorguyu Düzenle</string>
-    <string name="delete_folder_warning">%1$s klasörünü ve %2$d duvar kağıtlarını kalıcı olarak silmek istediğinizden emin misiniz.</string>
+    <string name="delete_folder_warning">%1$s klasörünü ve %2$d duvar kağıtlarını kalıcı olarak silmek istediğinizden emin misiniz?</string>
 </resources>
