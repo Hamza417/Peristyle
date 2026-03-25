@@ -1,1 +1,1 @@
-Gestion simple de fonds d'écran avec rotation auto et dossiers multiples
+Gérez vos fonds d'écran simplement, avec rotation auto et multi-dossiers.
