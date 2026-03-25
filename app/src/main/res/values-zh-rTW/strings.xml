@@ -61,7 +61,7 @@
     <string name="both">兩者</string>
     <string name="scroll_to_top">滾動到頂端</string>
     <string name="clear_cache_message">已清除 %1$s</string>
-    <string name="initiate_recreate_database_message">啟動資料庫重建程序...</string>
+    <string name="initiate_recreate_database_message">啟動資料庫重建程序…</string>
     <string name="reload_metadata">重新載入中繼資料</string>
     <string name="failed_files">無法載入這些檔案。您要刪除它們嗎？\n</string>
     <string name="security">安全性</string>
