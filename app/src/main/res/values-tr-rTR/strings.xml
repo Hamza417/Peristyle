@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="sort">Sırala</string>
     <string name="settings">Ayarlar</string>
@@ -142,6 +142,7 @@
     <string name="copy">Kopyala</string>
     <string name="restart">Yeniden Başlat</string>
     <string name="permission_granted">İzin verildi</string>
+    <string name="permission_not_granted">İzin verilmedi</string>
     <string name="permissions">İzinler</string>
     <string name="external_storage">Dosya Erişimine İzin Ver</string>
     <string name="external_storage_summary">Ana ekranda mevcut sistem duvar kağıdını göstermek için kullanılacaktır.</string>
@@ -272,6 +273,5 @@
     <string name="retry">Yeniden dene</string>
     <string name="no_wallpapers_found">Duvar kağıdı bulunamadı</string>
     <string name="edit_query">Sorguyu Düzenle</string>
-    <string name="delete_folder_warning">%1$s klasörünü ve %2$d duvar kağıtlarını kalıcı olarak silmek istediğinizden emin misiniz?</string>
-    <string name="permission_not_granted">İzin Verilmedi</string>
+    <string name="delete_folder_warning">%1$s klasörünü ve %2$d duvar kağıtlarını kalıcı olarak silmek istediğinizden emin misiniz.</string>
 </resources>
