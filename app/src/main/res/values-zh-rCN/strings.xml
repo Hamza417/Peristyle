@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="sort">排序</string>
     <string name="settings">设置</string>
@@ -271,4 +271,7 @@
     <string name="retry">重试</string>
     <string name="no_wallpapers_found">找不到壁纸</string>
     <string name="edit_query">编辑查询</string>
+    <string name="permission_not_granted">未授予</string>
+    <string name="remove_tag">删除标签</string>
+    <string name="delete_folder_warning">您确定要永久删除 %1$s 文件夹和 %2$d 壁纸吗？</string>
 </resources>

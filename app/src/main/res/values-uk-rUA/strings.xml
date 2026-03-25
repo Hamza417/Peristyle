@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="sort">Сортувати</string>
     <string name="settings">Налаштування</string>
@@ -271,4 +271,7 @@
     <string name="retry">Повторити</string>
     <string name="no_wallpapers_found">Шпалери не знайдено!</string>
     <string name="edit_query">Редагувати запит</string>
+    <string name="permission_not_granted">Не надано</string>
+    <string name="remove_tag">Видалити тег</string>
+    <string name="delete_folder_warning">Ви впевнені, що хочете остаточно видалити папку %1$s і шпалери %2$d?</string>
 </resources>

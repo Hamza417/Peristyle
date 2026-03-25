@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="sort">Sortuj</string>
     <string name="settings">Ustawienia</string>
@@ -272,4 +272,6 @@
     <string name="no_wallpapers_found">Nie znaleziono tapet</string>
     <string name="edit_query">Edytuj zapytanie</string>
     <string name="delete_folder_warning">Czy na pewno chcesz trwale usunąć folder %1$s i %2$d tapety?</string>
+    <string name="permission_not_granted">Nie przyznano</string>
+    <string name="remove_tag">Usuń znacznik</string>
 </resources>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="sort">الفرز</string>
     <string name="settings">الإعدادات</string>
@@ -232,4 +232,46 @@
     <string name="skip_when_condition_summary">تخطي إعداد الخلفية تحت ظروف معينة وانتظار الدورة التالية.</string>
     <string name="skip">تخطي</string>
     <string name="skip_when_low_battery">التخطي إذا كانت البطارية منخفضة</string>
+    <string name="permission_not_granted">غير ممنوحة</string>
+    <string name="remove_tag">إزالة العلامة</string>
+    <string name="lock">قفل</string>
+    <string name="double_tap_to_change_wallpaper">انقر نقرًا مزدوجًا للتغيير</string>
+    <string name="double_tap_to_change_wallpaper_summary">يجب أن يتغير النقر المزدوج على الشاشة الرئيسية أو شاشة القفل إلى الخلفية التالية.</string>
+    <string name="disable_animations">تعطيل الرسوم المتحركة</string>
+    <string name="random">عشوائي</string>
+    <string name="delete_summary">حذف الخلفية نهائيًا بعد ضبطها عدة مرات.</string>
+    <string name="times">%1$d مرة</string>
+    <string name="disable">إبطال</string>
+    <string name="delete_after">حذف بعد</string>
+    <string name="search">يبحث</string>
+    <string name="category">فئة</string>
+    <string name="general">عام</string>
+    <string name="anime">أنيمي</string>
+    <string name="people">الناس</string>
+    <string name="query">استفسار</string>
+    <string name="resolution">دقة</string>
+    <string name="at_least">على الأقل</string>
+    <string name="ratios">النسب</string>
+    <string name="set_phone_resolution">ضبط دقة الهاتف</string>
+    <string name="interval">فاصلة</string>
+    <string name="downloading">جارٍ التنزيل</string>
+    <string name="purity">نقاء</string>
+    <string name="views">%1$d مشاهدة</string>
+    <string name="skipping_wallpaper_change">تم تخطي حدث تغيير الخلفية إلى الدورة التالية!</string>
+    <string name="method">طريقة</string>
+    <string name="wallpaper_set_method_summary">الطريقة المستخدمة أثناء ضبط الخلفيات في الجهاز.</string>
+    <string name="color_space">مساحة اللون</string>
+    <string name="color_space_summary">قم بتعيين مساحة اللون المستخدمة للصور النقطية لخلفية الشاشة التي تم فك تشفيرها.</string>
+    <string name="sdcard_issue">بطاقات SD بطيئة للغاية بالنسبة للإدخال/الإخراج العشوائي. الرجاء استخدامه وفقا لتقديرك الخاص.</string>
+    <string name="same_wallpaper_for_both">نفس ورق الجدران</string>
+    <string name="same_wallpaper_for_both_summary">استخدم نفس الخلفية العشوائية لكلتا الشاشتين. يعمل فقط إذا لم يتم تعيين أي مجلد أو علامة لأي من الشاشتين.</string>
+    <string name="skip_palettes">تخطي اللوحات</string>
+    <string name="skip_palettes_summary">تخطي إنشاء اللوحات لتمكين أوقات تحميل أسرع على حساب ظلال الصور الملونة.</string>
+    <string name="create_new_folder">قم بإنشاء مجلد جديد</string>
+    <string name="custom">مخصص</string>
+    <string name="error_generic">تعذر تحميل الخلفيات.</string>
+    <string name="retry">أعد المحاولة</string>
+    <string name="no_wallpapers_found">لم يتم العثور على خلفيات</string>
+    <string name="edit_query">تحرير الاستعلام</string>
+    <string name="delete_folder_warning">هل أنت متحقِّق أنك تريد حذف مجلد %1$s و%2$d خلفية بشكل دائم.</string>
 </resources>

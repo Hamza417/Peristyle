@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="sort">排序</string>
     <string name="settings">設定</string>
@@ -266,4 +266,12 @@
     <string name="skip_palettes">略過調色盤</string>
     <string name="skip_palettes_summary">略過產生調色盤以加快載入速度，但代價是圖片陰影將失去色調。</string>
     <string name="create_new_folder">新增資料夾</string>
+    <string name="permission_not_granted">未授予</string>
+    <string name="remove_tag">刪除標籤</string>
+    <string name="custom">風俗</string>
+    <string name="error_generic">無法加載壁紙。</string>
+    <string name="retry">重試</string>
+    <string name="no_wallpapers_found">沒有找到壁紙</string>
+    <string name="edit_query">編輯查詢</string>
+    <string name="delete_folder_warning">您確定要永久刪除 %1$s 資料夾和 %2$d 桌布嗎？</string>
 </resources>

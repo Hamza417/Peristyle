@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="sort">Trier</string>
     <string name="settings">Propriétés</string>
@@ -272,4 +272,6 @@
     <string name="no_wallpapers_found">Aucun fond d\'écran trouvé</string>
     <string name="edit_query">Modifier la requête</string>
     <string name="delete_folder_warning">Êtes-vous sûr de vouloir supprimer définitivement %1$s dossier(s) et %2$d fond(s) d\'écran.</string>
+    <string name="permission_not_granted">Non accordé</string>
+    <string name="remove_tag">Supprimer la balise</string>
 </resources>

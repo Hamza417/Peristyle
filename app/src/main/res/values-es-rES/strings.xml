@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="sort">Ordenar</string>
     <string name="settings">Configuración</string>
@@ -235,4 +235,43 @@
     <string name="lock">Bloquear</string>
     <string name="double_tap_to_change_wallpaper">Doble toque para cambiar</string>
     <string name="double_tap_to_change_wallpaper_summary">Pulsar dos veces en la pantalla de inicio o de bloqueo debería cambiar al siguiente fondo de pantalla.</string>
+    <string name="permission_not_granted">No concedido</string>
+    <string name="remove_tag">Quitar etiqueta</string>
+    <string name="disable_animations">Deshabilitar animaciones</string>
+    <string name="random">Aleatorio</string>
+    <string name="delete_summary">Elimina permanentemente el fondo de pantalla después de haberlo configurado varias veces.</string>
+    <string name="times">%1$d veces</string>
+    <string name="disable">Desactivar</string>
+    <string name="delete_after">Eliminar después</string>
+    <string name="search">Buscar</string>
+    <string name="category">Categoría</string>
+    <string name="general">General</string>
+    <string name="anime">animado</string>
+    <string name="people">Gente</string>
+    <string name="query">Consulta</string>
+    <string name="resolution">Resolución</string>
+    <string name="at_least">Al menos</string>
+    <string name="ratios">proporciones</string>
+    <string name="set_phone_resolution">Establecer resolución del teléfono</string>
+    <string name="interval">Intervalo</string>
+    <string name="downloading">Descargando</string>
+    <string name="purity">Pureza</string>
+    <string name="views">%1$d Vistas</string>
+    <string name="skipping_wallpaper_change">¡El evento de cambio de fondo de pantalla pasó al siguiente ciclo!</string>
+    <string name="method">Método</string>
+    <string name="wallpaper_set_method_summary">Método utilizado al configurar fondos de pantalla en el dispositivo.</string>
+    <string name="color_space">Espacio de color</string>
+    <string name="color_space_summary">Establezca el espacio de color utilizado para los mapas de bits del fondo de pantalla decodificados.</string>
+    <string name="sdcard_issue">Las tarjetas SD son extremadamente lentas para E/S aleatorias. Úselo a su propia discreción.</string>
+    <string name="same_wallpaper_for_both">Mismo fondo de pantalla</string>
+    <string name="same_wallpaper_for_both_summary">Utilice el mismo fondo de pantalla aleatorio para ambas pantallas. Solo funciona si no hay ninguna carpeta o etiqueta configurada para ninguna de las pantallas.</string>
+    <string name="skip_palettes">Saltar paletas</string>
+    <string name="skip_palettes_summary">Omita la generación de paletas para permitir tiempos de carga más rápidos a costa de sombras de imágenes teñidas.</string>
+    <string name="create_new_folder">Crear una nueva carpeta</string>
+    <string name="custom">Costumbre</string>
+    <string name="error_generic">No se pudieron cargar fondos de pantalla.</string>
+    <string name="retry">Rever</string>
+    <string name="no_wallpapers_found">No se encontraron fons de pantalla</string>
+    <string name="edit_query">Editar consulta</string>
+    <string name="delete_folder_warning">¿Estás seguro de que deseas eliminar permanentemente la carpeta %1$s y los fondos de pantalla de %2$d?</string>
 </resources>

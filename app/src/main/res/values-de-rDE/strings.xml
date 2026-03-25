@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="sort">Sortieren</string>
     <string name="settings">Einstellungen</string>
@@ -271,4 +271,7 @@
     <string name="retry">Erneut versuchen</string>
     <string name="no_wallpapers_found">Keine Hintergrundbilder gefunden</string>
     <string name="edit_query">Abfrage bearbeiten</string>
+    <string name="permission_not_granted">Nicht gewährt</string>
+    <string name="remove_tag">Tag entfernen</string>
+    <string name="delete_folder_warning">Sind Sie sicher, dass Sie den Ordner %1$s und %2$d Hintergrundbilder dauerhaft löschen möchten?</string>
 </resources>

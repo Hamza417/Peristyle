@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="sort">Sırala</string>
     <string name="settings">Ayarlar</string>
@@ -273,4 +273,5 @@
     <string name="no_wallpapers_found">Duvar kağıdı bulunamadı</string>
     <string name="edit_query">Sorguyu Düzenle</string>
     <string name="delete_folder_warning">%1$s klasörünü ve %2$d duvar kağıtlarını kalıcı olarak silmek istediğinizden emin misiniz?</string>
+    <string name="permission_not_granted">İzin Verilmedi</string>
 </resources>
