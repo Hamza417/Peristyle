@@ -34,6 +34,7 @@ import app.simple.peri.ui.dialogs.common.SureDialog
 import app.simple.peri.ui.dialogs.settings.CacheDirectoryDialog
 import app.simple.peri.ui.dialogs.settings.ConcurrencyDialog
 import app.simple.peri.ui.dialogs.settings.DeveloperProfileDialog
+import app.simple.peri.ui.dialogs.settings.FelicityDialog
 import app.simple.peri.ui.dialogs.settings.GridSpanSelectionDialog
 import app.simple.peri.ui.dialogs.settings.InureAppManagerDialog
 import app.simple.peri.ui.dialogs.settings.OrderDialog
@@ -337,8 +338,15 @@ fun Settings(navController: NavController? = null) {
             }
         }
         item {
+            val felicityDialog = remember { mutableStateOf(false) }
             val inureDialog = remember { mutableStateOf(false) }
             val positionalDialog = remember { mutableStateOf(false) }
+
+            if (felicityDialog.value) {
+                FelicityDialog {
+                    felicityDialog.value = false
+                }
+            }
 
             if (inureDialog.value) {
                 InureAppManagerDialog {
@@ -355,6 +363,14 @@ fun Settings(navController: NavController? = null) {
             SecondaryHeader(title = context.getString(R.string.other_apps))
 
             OtherApps(
+                    title = context.getString(R.string.felicity_music_player),
+                    description = context.getString(R.string.felicity_music_player_summary),
+                    iconResId = R.drawable.felicity,
+            ) {
+                felicityDialog.value = true
+            }
+
+            OtherApps(
                     title = context.getString(R.string.inure_app_manager),
                     description = context.getString(R.string.inure_app_manager_summary),
                     iconResId = R.drawable.inure,
@@ -368,16 +384,6 @@ fun Settings(navController: NavController? = null) {
                     iconResId = R.drawable.positional,
             ) {
                 positionalDialog.value = true
-            }
-
-            OtherApps(
-                    title = context.getString(R.string.felicity_music_player),
-                    description = context.getString(R.string.felicity_music_player_summary),
-                    iconResId = R.drawable.felicity,
-            ) {
-                val intent = Intent(Intent.ACTION_VIEW)
-                intent.data = "https://github.com/Hamza417/Felicity".toUri()
-                context.startActivity(intent)
             }
         }
     }
