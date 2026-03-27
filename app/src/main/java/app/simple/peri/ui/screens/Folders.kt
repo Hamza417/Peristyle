@@ -59,8 +59,8 @@ import app.simple.peri.ui.commons.BottomHeader
 import app.simple.peri.ui.commons.COMMON_PADDING
 import app.simple.peri.ui.commons.FolderBrowser
 import app.simple.peri.ui.commons.TopHeader
+import app.simple.peri.ui.dialogs.common.ConfirmDeleteDialog
 import app.simple.peri.ui.dialogs.common.ShowWarningDialog
-import app.simple.peri.ui.dialogs.common.SureDialog
 import app.simple.peri.ui.dialogs.folders.FolderMenu
 import app.simple.peri.ui.nav.Routes
 import app.simple.peri.ui.theme.LocalBarsSize
@@ -235,7 +235,7 @@ fun FolderItem(folder: Folder, navController: NavController? = null, composeWall
     }
 
     if (showSureDeleteDialog) {
-        SureDialog(
+        ConfirmDeleteDialog(
                 title = stringResource(R.string.delete),
                 message = stringResource(R.string.delete_folder_warning, folder.name ?: "", folder.count),
                 onSure = {

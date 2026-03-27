@@ -12,4 +12,5 @@
     <string name="wallpaper_manager" translatable="false">Wallpaper Manager API</string>
     <string name="predictive_back" translatable="false">Predictive Back</string>
     <string name="wallhaven" translatable="false">Wallhaven</string>
+    <string name="type_confirm_to_delete" translatable="false">Type \"confirm\" to delete</string>
 </resources>
