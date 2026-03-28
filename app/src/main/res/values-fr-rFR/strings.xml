@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="sort">Trier</string>
     <string name="settings">Propriétés</string>
@@ -141,7 +141,8 @@
     <string name="linear_auto_wallpaper">Choisir dans l\'ordre linéaire</string>
     <string name="copy">Copier</string>
     <string name="restart">Redémarrer</string>
-    <string name="permission_granted">Autorisation accordée</string>
+    <string name="permission_granted">Accordé</string>
+    <string name="permission_not_granted">Non accordé</string>
     <string name="permissions">Autorisations</string>
     <string name="external_storage">Autoriser l’accès aux fichiers</string>
     <string name="external_storage_summary">Sera utilisé pour afficher le fond d\'écran du système actuel sur l\'écran d\'accueil.</string>
@@ -160,6 +161,7 @@
     <string name="warning_indicator_title">Masquer l\'indicateur d\'avertissement</string>
     <string name="warning_indicator_summary">Masquer l\'indicateur d\'avertissement pour les fonds d\'écran excessifs de la liste des fonds d\'écran.</string>
     <string name="add_tag">Ajouter une étiquette</string>
+    <string name="remove_tag">Supprimer l\'étiquette</string>
     <string name="add">Ajouter</string>
     <string name="tag_count">%1$d fonds d\'écran</string>
     <string name="image_shadow_title">Ombre de l\'image</string>
@@ -271,7 +273,5 @@
     <string name="retry">Réessayer</string>
     <string name="no_wallpapers_found">Aucun fond d\'écran trouvé</string>
     <string name="edit_query">Modifier la requête</string>
-    <string name="delete_folder_warning">Êtes-vous sûr de vouloir supprimer définitivement %1$s dossier(s) et %2$d fond(s) d\'écran.</string>
-    <string name="permission_not_granted">Non accordé</string>
-    <string name="remove_tag">Supprimer la balise</string>
+    <string name="delete_folder_warning">Êtes-vous sûr de vouloir supprimer définitivement le dossier %1$s et ses %2$d fonds d\'écran ? Cette action ne peut pas être annulée et supprimera les fichiers du stockage de votre appareil.</string>
 </resources>
