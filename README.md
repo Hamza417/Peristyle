@@ -4,23 +4,19 @@ Simple wallpaper manager app for Android.
 
 ## Why Peristyle?
 
-Peristyle is created to be extremely simple and sophisticated wallpaper manager and browser app
-for Android. It solves the problem of having too many features and bloated apps and having
-very minimal support for locally stored wallpapers. What if you just wanted an app that allows
-you to browse and select your own locally stored wallpapers and lets you manage and set wallpapers
-from there? then Peristyle is for you :)
+Peristyle is created to be an extremely simple and sophisticated wallpaper manager and browser app for Android. It solves the problem of bloated apps with too many features which have very minimal support for locally stored wallpapers. You just wanted an app that allows you to browse, select, manage, and set your own locally stored wallpapers? Then Peristyle is for you :)
 
 ## Features
 
-- Simple architecture, browse wallpapers and use system wallpaper manager to set them as wallpaper.
+- Simple architecture. Browse images and use the system wallpaper manager to set them as wallpapers.
 - Multiple folders support.
 - Ability to assign Tags to any wallpaper.
-- Can scan .nomedia directories, useful if you want to keep your wallpapers away from gallery.
+- Can scan .nomedia directories. Useful if you want to keep your wallpapers out of your gallery.
 - Apply blur and color filters dynamically on any wallpaper before applying.
 - Simple yet pretty animations with proper optimizations.
 - Compress or reduce images on the fly.
 - No ads, no tracking, no analytics, no internet permissions, no unnecessary permissions.
-- Auto wallpaper change support with dedicated folders and tags for each screens.
+- Auto wallpaper change support with dedicated folders and tags for each screen.
 - Change wallpaper using app's live wallpaper
 - Edit and apply filters on wallpapers losslessly in realtime.
 - Built-in live wallpaper picker.
@@ -51,29 +47,24 @@ from there? then Peristyle is for you :)
 
 ## Triggering AutoWallpaperService externally
 
-Peristyle supports triggering the AutoWallpaperService externally using the following
-intent: `app.peristyle.START_AUTO_WALLPAPER_SERVICE`
+Peristyle supports triggering the AutoWallpaperService externally using the following intent: `app.peristyle.START_AUTO_WALLPAPER_SERVICE`
 
-**_You can use any automation or scheduling tool and create your own scenario to change wallpaper for any custom event such as locking/unlocking or as you need._**
+**_You can use any automation or scheduling tool and create your own scenarios to change the wallpaper for any custom event such as locking, unlocking, etc._**
 
 ## Permission Usage
 
-Peristyle needs `MANAGE_EXTERNAL_STORAGE` and `READ_MEDIA_IMAGES` to be allowed to show the system
-wallpapers in the app.
-It has been discussed in
-the [Issue #72](https://github.com/Hamza417/Peristyle/issues/72#issuecomment-2357558761).
+Peristyle needs `MANAGE_EXTERNAL_STORAGE` and `READ_MEDIA_IMAGES` to be allowed to show the system wallpapers in the app.
+This has been discussed in [Issue #72](https://github.com/Hamza417/Peristyle/issues/72#issuecomment-2357558761).
 
-The `REQUEST_IGNORE_BATTERY_OPTIMIZATIONS` is used to run Auto Wallpaper service whenever required.
+The `REQUEST_IGNORE_BATTERY_OPTIMIZATIONS` permission is used to run the AutoWallpaperService whenever required.
 
-And an access to all the wallpaper directories whichever the user specifies.
+Additionally requires access to any wallpaper directories the user specifies.
 
 ## Translate
 
 [![Crowdin](https://badges.crowdin.net/peristyle/localized.svg)](https://crowdin.com/project/peristyle)
 
-Peristyle supports localization, If you want to
-translate Peristyle in your language/s, you can do
-so [here on Crowdin](https://crowdin.com/project/peristyle).
+Peristyle supports localization. If you want to translate Peristyle into your own language(s), you can do so [here on Crowdin](https://crowdin.com/project/peristyle).
 
 [Contributors](https://crowdin.com/project/peristyle/members)
 
