@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,6 +29,7 @@ import app.simple.peri.ui.constants.DIALOG_OPTION_FONT_SIZE
 fun MenuItemWithIcon(
         icon: ImageVector,
         text: String,
+        summary: String? = null,
         onClick: () -> Unit,
         isDestructive: Boolean = false,
         @SuppressLint("ModifierParameter") modifier: Modifier = Modifier
@@ -58,17 +60,45 @@ fun MenuItemWithIcon(
 
         Spacer(modifier = Modifier.width(16.dp))
 
-        Text(
-                text = text,
-                fontSize = DIALOG_OPTION_FONT_SIZE,
-                fontWeight = FontWeight.Bold,
-                color = if (isDestructive) {
-                    MaterialTheme.colorScheme.error
-                } else {
-                    MaterialTheme.colorScheme.onSurface
-                },
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-        )
+        if (summary != null) {
+            Column {
+                Text(
+                        text = text,
+                        fontSize = DIALOG_OPTION_FONT_SIZE,
+                        fontWeight = FontWeight.Bold,
+                        color = if (isDestructive) {
+                            MaterialTheme.colorScheme.error
+                        } else {
+                            MaterialTheme.colorScheme.onSurface
+                        },
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                )
+
+                Text(
+                        text = summary,
+                        fontSize = PREFERENCE_DESCRIPTION_SIZE,
+                        fontWeight = FontWeight.Normal,
+                        color = if (isDestructive) {
+                            MaterialTheme.colorScheme.error
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        }
+                )
+            }
+        } else {
+            Text(
+                    text = text,
+                    fontSize = DIALOG_OPTION_FONT_SIZE,
+                    fontWeight = FontWeight.Bold,
+                    color = if (isDestructive) {
+                        MaterialTheme.colorScheme.error
+                    } else {
+                        MaterialTheme.colorScheme.onSurface
+                    },
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+            )
+        }
     }
 }

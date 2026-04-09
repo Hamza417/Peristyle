@@ -80,6 +80,7 @@ fun FolderMenu(folder: Folder? = null, onDismiss: () -> Unit, onOptionSelected: 
                         MenuItemWithIcon(
                                 icon = Icons.Rounded.Block,
                                 text = revokeText,
+                                summary = stringResource(R.string.revoke_folder_desc),
                                 onClick = {
                                     onOptionSelected(revokeText)
                                     onDismiss()
