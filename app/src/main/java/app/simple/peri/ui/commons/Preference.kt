@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.sp
 val PREFERENCE_TITLE_SIZE = 18.sp
 val PREFERENCE_DESCRIPTION_SIZE = 14.sp
 val PREF_HORIZONTAL_PADDING = 16.dp
+val PREF_SUMMARY_SIZE = 12.sp
 
 @Composable
 fun SwitchPreference(title: String,

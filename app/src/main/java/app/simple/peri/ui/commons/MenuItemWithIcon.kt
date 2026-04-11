@@ -77,7 +77,7 @@ fun MenuItemWithIcon(
 
                 Text(
                         text = summary,
-                        fontSize = PREFERENCE_DESCRIPTION_SIZE,
+                        fontSize = PREF_SUMMARY_SIZE,
                         fontWeight = FontWeight.Normal,
                         color = if (isDestructive) {
                             MaterialTheme.colorScheme.error

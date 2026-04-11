@@ -274,4 +274,6 @@
     <string name="edit_query">Edit Query</string>
     <string name="delete_folder_warning">Are you sure you want to permanently delete %1$s folder and its %2$d wallpapers? This action cannot be undone and will delete the files from your device storage.</string>
     <string name="revoke_folder_desc">Revoke access to this folder and remove it from the app. This option will not delete the files.</string>
+    <string name="compress_summary">Compress wallpaper to reduce size at the cost of quality.</string>
+    <string name="reduce_resolution_summary">Cut the reslution by half, changes image size and dimensions but preserves the quality.</string>
 </resources>

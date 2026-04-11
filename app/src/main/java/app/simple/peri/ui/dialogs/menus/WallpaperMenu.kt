@@ -273,6 +273,7 @@ fun WallpaperMenu(
                             MenuItemWithIcon(
                                     icon = Icons.Rounded.Compress,
                                     text = context.getString(R.string.compress),
+                                    summary = context.getString(R.string.compress_summary),
                                     onClick = {
                                         onCompress()
                                         setShowDialog(false)
@@ -283,6 +284,7 @@ fun WallpaperMenu(
                         MenuItemWithIcon(
                                 icon = Icons.Rounded.PhotoSizeSelectLarge,
                                 text = context.getString(R.string.reduce_resolution),
+                                summary = context.getString(R.string.reduce_resolution_summary),
                                 onClick = {
                                     onReduceResolution()
                                     setShowDialog(false)
