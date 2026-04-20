@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="sort">Sortieren</string>
     <string name="settings">Einstellungen</string>
@@ -141,7 +141,8 @@
     <string name="linear_auto_wallpaper">In linearer Reihenfolge auswählen</string>
     <string name="copy">Kopieren</string>
     <string name="restart">Neu starten</string>
-    <string name="permission_granted">Berechtigung erteilt</string>
+    <string name="permission_granted">Erteilt</string>
+    <string name="permission_not_granted">Nicht erteilt</string>
     <string name="permissions">Berechtigungen</string>
     <string name="external_storage">Dateizugriff erlauben</string>
     <string name="external_storage_summary">Wird verwendet, um den aktuellen Systemhintergrund des Startbildschirms anzuzeigen.</string>
@@ -149,7 +150,7 @@
     <string name="battery_optimization_summary">Akku-Optimierung deaktivieren, um sicherzustellen, dass Auto-Hintergrundbild korrekt funktioniert.</string>
     <string name="current_wallpaper">Aktuelles Hintergrundbild</string>
     <string name="wallpapers">Hintergrundbilder</string>
-    <string name="tags">Tags</string>
+    <string name="tags">Schlagworte</string>
     <string name="setup">Einrichtung</string>
     <string name="folder">Ordner</string>
     <string name="select_folder">Ordner auswählen</string>
@@ -159,18 +160,19 @@
     <string name="interface_settings">Benutzeroberfläche</string>
     <string name="warning_indicator_title">Warnhinweis ausblenden</string>
     <string name="warning_indicator_summary">Warnhinweis für zu große Hintergrundbilder in der Liste ausblenden.</string>
-    <string name="add_tag">Tag hinzufügen</string>
+    <string name="add_tag">Schlagwort hinzufügen</string>
+    <string name="remove_tag">Schlagwort entfernen</string>
     <string name="add">Hinzufügen</string>
     <string name="tag_count">%1$d Hintergrundbilder</string>
     <string name="image_shadow_title">Bildschatten</string>
     <string name="image_shadow_summary">Füge einen verschwommenen Schatten hinter den Hintergrundbildern in der Liste hinzu.\n\nDeaktivieren, wenn Performance-Probleme auftreten.</string>
     <string name="github_summary">Repository der App öffnen</string>
-    <string name="tags_summary">Tags, die Hintergrundbildern zugewiesen sind, werden hier erscheinen.</string>
+    <string name="tags_summary">Schlagwörter, die Hintergrundbildern zugewiesen sind, werden hier angezeigt.</string>
     <string name="sort_summary">Sortierungsform der Liste für Hintergrundbilder.</string>
     <string name="order_summary">Aufsteigende oder absteigende Reihenfolge für die Liste.</string>
     <string name="duration">Dauer</string>
     <string name="source">Quelle</string>
-    <string name="source_summary">Weise jedem Bildschirm ein bestimmtes Tag oder einen Ordner zu. Wenn kein Tag, Ordner oder ein leerer Ordner zugewiesen ist, wird ein zufälliges Hintergrundbild aus der Sammlung gewählt.</string>
+    <string name="source_summary">Weisen Sie jedem Bildschirm ein bestimmtes Schlagwort oder einen bestimmten Ordner zu. Wenn kein Schlagwort, Ordner oder ein leerer Ordner zugewiesen ist, wird ein zufälliger Hintergrund aus der Sammlung gewählt.</string>
     <string name="not_set">Nicht festgelegt</string>
     <string name="duration_summary">Verzögerung zwischen jedem Auslöser oder Auto-Hintergrund ausschalten.</string>
     <string name="select_folder_info">Du kannst später in der App weitere Ordner hinzufügen.</string>
@@ -262,7 +264,7 @@
     <string name="color_space_summary">Lege den Farbraum zur Dekodierung von Hintergrundbild-Bitmaps fest.</string>
     <string name="sdcard_issue">SD-Karten sind in der zufälligen Ein-/Ausgabe sehr langsam. Verwende sie nach eigenem Ermessen.</string>
     <string name="same_wallpaper_for_both">Gleiches Hintergrundbild</string>
-    <string name="same_wallpaper_for_both_summary">Benutze dasselbe zufällige Hintergrundbild für beide Bildschirme. Funktioniert nur, wenn kein Ordner oder Tag für einen der beiden Bildschirme gesetzt ist.</string>
+    <string name="same_wallpaper_for_both_summary">Benutze dasselbe zufällige Hintergrundbild für beide Bildschirme. Funktioniert nur, wenn kein Ordner oder Schlagwort für einen der beiden Bildschirme gesetzt ist.</string>
     <string name="skip_palettes">Paletten überspringen</string>
     <string name="skip_palettes_summary">Generieren von Paletten überspringen, um schnellere Ladezeiten auf Kosten farbiger Bildschatten zu ermöglichen.</string>
     <string name="create_new_folder">Neuen Ordner erstellen</string>
@@ -271,7 +273,8 @@
     <string name="retry">Erneut versuchen</string>
     <string name="no_wallpapers_found">Keine Hintergrundbilder gefunden</string>
     <string name="edit_query">Abfrage bearbeiten</string>
-    <string name="permission_not_granted">Nicht gewährt</string>
-    <string name="remove_tag">Tag entfernen</string>
-    <string name="delete_folder_warning">Sind Sie sicher, dass Sie den Ordner %1$s und %2$d Hintergrundbilder dauerhaft löschen möchten?</string>
+    <string name="delete_folder_warning">Sind Sie sicher, dass Sie den Ordner %1$s und seine %2$d Wallpaper dauerhaft löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden und löscht die Dateien vom Gerätespeicher.</string>
+    <string name="revoke_folder_desc">Widerrufen Sie den Zugriff auf diesen Ordner und entfernen Sie ihn aus der App. Diese Option löscht die Dateien nicht.</string>
+    <string name="compress_summary">Hintergrundbild komprimieren, um die Größe auf Kosten der Qualität zu reduzieren.</string>
+    <string name="reduce_resolution_summary">Verringert die Auflösung um die Hälfte, ändert die Bildgröße und Dimensionen, aber erhält die Qualität.</string>
 </resources>
