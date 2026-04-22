@@ -15,13 +15,14 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.core.net.toUri
 import app.simple.peri.R
 
+private const val FELICITY_PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=app.simple.felicity"
 private const val FELICITY_GITHUB_URL = "https://github.com/Hamza417/Felicity"
 private const val FELICITY_TELEGRAM_URL = "https://t.me/felicity_music_player"
 
 @Composable
 fun FelicityDialog(onDismiss: () -> Unit) {
     val context = LocalContext.current
-    val list = listOf("GitHub", "Telegram Channel")
+    val list = listOf("Play Store", "GitHub", "Telegram Channel")
 
     AlertDialog(
             onDismissRequest = {
@@ -38,10 +39,12 @@ fun FelicityDialog(onDismiss: () -> Unit) {
                                 modifier = Modifier.fillMaxWidth(),
                                 onClick = {
                                     val url = when (index) {
-                                        0 -> FELICITY_GITHUB_URL
-                                        1 -> FELICITY_TELEGRAM_URL
+                                        0 -> FELICITY_PLAY_STORE_URL
+                                        1 -> FELICITY_GITHUB_URL
+                                        2 -> FELICITY_TELEGRAM_URL
                                         else -> FELICITY_GITHUB_URL
                                     }
+
                                     val intent = Intent(Intent.ACTION_VIEW, url.toUri())
                                     context.startActivity(intent)
                                 }) {
