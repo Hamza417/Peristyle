@@ -274,4 +274,7 @@
     <string name="no_wallpapers_found">Aucun fond d\'écran trouvé</string>
     <string name="edit_query">Modifier la requête</string>
     <string name="delete_folder_warning">Êtes-vous sûr de vouloir supprimer définitivement le dossier %1$s et ses %2$d fonds d\'écran ? Cette action ne peut pas être annulée et supprimera les fichiers du stockage de votre appareil.</string>
+    <string name="revoke_folder_desc">Révoquer l\'accès à ce dossier et le supprimer de l\'application. Cette option ne supprimera pas les fichiers.</string>
+    <string name="compress_summary">Compresser le fond d\'écran pour réduire la taille au détriment de la qualité.</string>
+    <string name="reduce_resolution_summary">Diminuer la résolution de moitié, modifie la taille de l\'image et les dimensions mais préserve la qualité.</string>
 </resources>
