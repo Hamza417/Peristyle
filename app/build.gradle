@@ -195,7 +195,7 @@ dependencies {
     implementation 'com.github.bumptech.glide:okhttp3-integration:5.0.7'
     //noinspection NewerVersionAvailable
     implementation "com.github.bumptech.glide:compose:1.0.0-beta01"
-    ksp 'com.github.bumptech.glide:ksp:5.0.7'
+    ksp 'com.github.Hamza417.glide:ksp:d1311d8d06'
 
     // Room
     //noinspection GradleDependency
