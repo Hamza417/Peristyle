@@ -41,13 +41,13 @@ import app.simple.peri.R
 import app.simple.peri.extensions.BaseComponentActivity
 import app.simple.peri.preferences.PathPickerPreferences
 import app.simple.peri.preferences.SharedPreferences
+import app.simple.peri.storage.RemovableStorageExtensions.getPrimarySDCardPath
 import app.simple.peri.ui.commons.COMMON_PADDING
 import app.simple.peri.ui.commons.TopHeader
 import app.simple.peri.ui.dialogs.common.ShowWarningDialog
 import app.simple.peri.ui.dialogs.folders.CreateFolderDialog
 import app.simple.peri.ui.theme.PeristyleTheme
 import app.simple.peri.utils.FileUtils.toSize
-import app.simple.peri.utils.SDCard
 import java.io.File
 
 class PathPickerActivity : BaseComponentActivity() {
@@ -61,7 +61,7 @@ class PathPickerActivity : BaseComponentActivity() {
             // Resolve sdcard root and last picked path synchronously for initial state
             val sdCardRoot = remember {
                 try {
-                    SDCard.findSdCardPath(applicationContext).absolutePath
+                    applicationContext.getPrimarySDCardPath()?.absolutePath
                 } catch (_: NullPointerException) {
                     null
                 }
@@ -171,7 +171,7 @@ class PathPickerActivity : BaseComponentActivity() {
                                     sdcardMode = sdcardMode.not()
                                     try {
                                         mainPath = if (sdcardMode) {
-                                            SDCard.findSdCardPath(applicationContext).absolutePath
+                                            applicationContext.getPrimarySDCardPath()?.absolutePath
                                         } else {
                                             Environment.getExternalStorageDirectory().absolutePath
                                         }
