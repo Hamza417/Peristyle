@@ -39,7 +39,7 @@ static def getEnvOrProperty(envKey, properties) {
 
 android {
     namespace 'app.simple.peri'
-    compileSdk = 36
+    compileSdk = 37
 
     buildFeatures {
         viewBinding = true
@@ -50,7 +50,7 @@ android {
     defaultConfig {
         applicationId "app.simple.peri"
         minSdk = 24
-        targetSdk = 36
+        targetSdk = 37
         versionCode 956
         versionName "v9.5.6"
 
