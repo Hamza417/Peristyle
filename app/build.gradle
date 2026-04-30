@@ -39,7 +39,7 @@ static def getEnvOrProperty(envKey, properties) {
 
 android {
     namespace 'app.simple.peri'
-    compileSdk = 37
+    compileSdk = 36
 
     buildFeatures {
         viewBinding = true
@@ -50,9 +50,9 @@ android {
     defaultConfig {
         applicationId "app.simple.peri"
         minSdk = 24
-        targetSdk = 37
-        versionCode 960
-        versionName "v9.6.0"
+        targetSdk = 36
+        versionCode 956
+        versionName "v9.5.6"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -195,7 +195,7 @@ dependencies {
     implementation 'com.github.bumptech.glide:okhttp3-integration:5.0.7'
     //noinspection NewerVersionAvailable
     implementation "com.github.bumptech.glide:compose:1.0.0-beta01"
-    ksp 'com.github.Hamza417.glide:ksp:d1311d8d06'
+    ksp 'com.github.bumptech.glide:ksp:5.0.7'
 
     // Room
     //noinspection GradleDependency
