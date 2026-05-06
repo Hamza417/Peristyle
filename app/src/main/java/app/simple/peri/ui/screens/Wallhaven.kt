@@ -60,14 +60,12 @@ import app.simple.peri.models.WallhavenFilter
 import app.simple.peri.models.WallhavenResponse
 import app.simple.peri.models.WallhavenWallpaper
 import app.simple.peri.preferences.MainComposePreferences
-import app.simple.peri.ui.commons.BottomHeader
-import app.simple.peri.ui.commons.COMMON_PADDING
-import app.simple.peri.ui.commons.TopHeader
+import app.simple.peri.ui.commons.AnchoredHeader
 import app.simple.peri.ui.commons.WallpaperDimensionsText
+import app.simple.peri.ui.commons.isScrollingUp
 import app.simple.peri.ui.dialogs.wallhaven.WallhavenSearchDialog
 import app.simple.peri.ui.nav.Routes
 import app.simple.peri.ui.theme.LocalBarsSize
-import app.simple.peri.utils.ConditionUtils.invert
 import app.simple.peri.utils.ConditionUtils.isNotNull
 import app.simple.peri.viewmodels.WallhavenViewModel
 import com.bumptech.glide.integration.compose.CrossFade
@@ -113,14 +111,12 @@ fun WallhavenScreen(navController: NavController? = null) {
     val hazeState = remember { HazeState() }
     var searchDialog by remember { mutableStateOf(false) }
     val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
-    var bottomHeaderHeight by remember { mutableStateOf(0.dp) }
+    var headerHeight by remember { mutableStateOf(0.dp) }
 
     val topPadding = 8.dp + LocalBarsSize.current.statusBarHeight
-    val bottomPadding = 8.dp + if (MainComposePreferences.getBottomHeader()) {
-        bottomHeaderHeight
-    } else {
-        LocalBarsSize.current.navigationBarHeight
-    }
+    val bottomPadding = 8.dp + LocalBarsSize.current.navigationBarHeight
+
+    val isScrollingUp = viewModel.lazyGridState.isScrollingUp()
 
     // Helper flags to prevent early flashing of empty/error UI before initial load completes
     val isRefreshNotLoading = wallpapers.loadState.refresh is LoadState.NotLoading
@@ -177,38 +173,20 @@ fun WallhavenScreen(navController: NavController? = null) {
                     .fillMaxSize()
                     .hazeSource(state = hazeState),
                 contentPadding = PaddingValues(
-                        top = if (MainComposePreferences.getBottomHeader()) {
-                            if (MainComposePreferences.getMarginBetween()) {
-                                topPadding
-                            } else {
-                                0.dp
-                            }
+                        top = if (!MainComposePreferences.getBottomHeader()) {
+                            if (MainComposePreferences.getMarginBetween()) topPadding + headerHeight else headerHeight
                         } else {
-                            topPadding
+                            if (MainComposePreferences.getMarginBetween()) topPadding else 0.dp
                         },
                         start = if (MainComposePreferences.getMarginBetween()) 8.dp else 0.dp,
                         end = if (MainComposePreferences.getMarginBetween()) 8.dp else 0.dp,
-                        bottom = if (MainComposePreferences.getMarginBetween()) {
-                            bottomPadding
+                        bottom = if (MainComposePreferences.getBottomHeader()) {
+                            if (MainComposePreferences.getMarginBetween()) bottomPadding + headerHeight else bottomPadding + headerHeight - 8.dp
                         } else {
-                            bottomPadding - 8.dp
+                            if (MainComposePreferences.getMarginBetween()) bottomPadding else bottomPadding - 8.dp
                         }
                 )
         ) {
-            if (MainComposePreferences.getBottomHeader().invert()) {
-                item(span = StaggeredGridItemSpan.FullLine) {
-                    TopHeader(
-                            title = stringResource(R.string.wallhaven),
-                            modifier = Modifier.padding(COMMON_PADDING),
-                            navController = navController,
-                            isShowSearch = true,
-                            onSearch = {
-                                searchDialog = true
-                            },
-                            count = meta?.total ?: 0,
-                    )
-                }
-            }
 
             // Show current filter params
             item(span = StaggeredGridItemSpan.FullLine) {
@@ -299,28 +277,23 @@ fun WallhavenScreen(navController: NavController? = null) {
             }
         }
 
-        if (MainComposePreferences.getBottomHeader()) {
-            val density = LocalDensity.current
-
-            BottomHeader(
-                    title = stringResource(R.string.wallhaven),
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .onGloballyPositioned {
-                            bottomHeaderHeight = with(density) {
-                                it.size.height.toDp()
-                            }
-                        },
-                    navController = navController,
-                    hazeState = hazeState,
-                    navigationBarHeight = LocalBarsSize.current.navigationBarHeight,
-                    isSearch = true,
-                    onSearch = {
-                        searchDialog = true
+        val density = LocalDensity.current
+        AnchoredHeader(
+                title = stringResource(R.string.wallhaven),
+                modifier = Modifier
+                    .align(if (MainComposePreferences.getBottomHeader()) Alignment.BottomCenter else Alignment.TopCenter)
+                    .onGloballyPositioned {
+                        headerHeight = with(density) { it.size.height.toDp() }
                     },
-                    count = meta?.total ?: 0,
-            )
-        }
+                navController = navController,
+                hazeState = hazeState,
+                statusBarHeight = LocalBarsSize.current.statusBarHeight,
+                navigationBarHeight = LocalBarsSize.current.navigationBarHeight,
+                isShowSearch = true,
+                onSearch = { searchDialog = true },
+                count = meta?.total ?: 0,
+                isVisible = isScrollingUp,
+        )
     }
 }
 
