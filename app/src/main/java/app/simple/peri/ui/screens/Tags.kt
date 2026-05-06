@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
+import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Text
@@ -39,9 +40,9 @@ import app.simple.peri.R
 import app.simple.peri.factories.TagsViewModelFactory
 import app.simple.peri.models.Tag
 import app.simple.peri.preferences.MainComposePreferences
-import app.simple.peri.ui.commons.BottomHeader
+import app.simple.peri.ui.commons.AnchoredHeader
 import app.simple.peri.ui.commons.COMMON_PADDING
-import app.simple.peri.ui.commons.TopHeader
+import app.simple.peri.ui.commons.isScrollingUp
 import app.simple.peri.ui.dialogs.tags.TagsMenu
 import app.simple.peri.ui.nav.Routes
 import app.simple.peri.ui.theme.LocalBarsSize
@@ -61,13 +62,15 @@ fun Tags(navController: NavController? = null) {
     )
     val tags = remember { mutableStateListOf<Tag>() }
     val hazeState = remember { HazeState() }
-    var bottomHeaderHeight by remember { mutableStateOf(0.dp) }
+    val gridState = rememberLazyStaggeredGridState()
+    val isScrollingUp = gridState.isScrollingUp()
+    var headerHeight by remember { mutableStateOf(0.dp) }
 
-    val bottomPadding = 8.dp + if (MainComposePreferences.getBottomHeader()) {
-        bottomHeaderHeight
-    } else {
-        LocalBarsSize.current.navigationBarHeight
-    }
+    val topPadding = 8.dp + LocalBarsSize.current.statusBarHeight
+    val bottomPadding = 8.dp + LocalBarsSize.current.navigationBarHeight
+
+    val contentTopPadding = if (!MainComposePreferences.getBottomHeader()) topPadding + headerHeight else topPadding
+    val contentBottomPadding = if (MainComposePreferences.getBottomHeader()) bottomPadding + headerHeight else bottomPadding
 
     tagsViewModel.getTags().observeAsState().value?.let {
         Log.d("Tags", "Received tags: ${it.size}")
@@ -78,26 +81,17 @@ fun Tags(navController: NavController? = null) {
     Box {
         LazyVerticalStaggeredGrid(
                 columns = StaggeredGridCells.Fixed(2),
+                state = gridState,
                 modifier = Modifier
                     .fillMaxSize()
                     .hazeSource(state = hazeState),
                 contentPadding = PaddingValues(
-                        top = 8.dp + LocalBarsSize.current.statusBarHeight,
+                        top = contentTopPadding,
                         start = 8.dp,
                         end = 8.dp,
-                        bottom = bottomPadding
+                        bottom = contentBottomPadding
                 ),
         ) {
-            if (MainComposePreferences.getBottomHeader().not()) {
-                item(span = StaggeredGridItemSpan.FullLine) {
-                    TopHeader(
-                            title = stringResource(R.string.tags),
-                            modifier = Modifier.padding(COMMON_PADDING),
-                            count = tags.size,
-                            navController = navController
-                    )
-                }
-            }
             if (tags.isEmpty()) {
                 item(span = StaggeredGridItemSpan.FullLine) {
                     Text(
@@ -114,22 +108,21 @@ fun Tags(navController: NavController? = null) {
             }
         }
 
-        if (MainComposePreferences.getBottomHeader()) {
-            val density = LocalDensity.current
-
-            BottomHeader(
-                    title = stringResource(R.string.tags),
-                    count = tags.size,
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .onGloballyPositioned {
-                            bottomHeaderHeight = with(density) { it.size.height.toDp() }
-                        },
-                    navController = navController,
-                    hazeState = hazeState,
-                    navigationBarHeight = LocalBarsSize.current.navigationBarHeight
-            )
-        }
+        val density = LocalDensity.current
+        AnchoredHeader(
+                title = stringResource(R.string.tags),
+                count = tags.size,
+                modifier = Modifier
+                    .align(if (MainComposePreferences.getBottomHeader()) Alignment.BottomCenter else Alignment.TopCenter)
+                    .onGloballyPositioned {
+                        headerHeight = with(density) { it.size.height.toDp() }
+                    },
+                navController = navController,
+                hazeState = hazeState,
+                statusBarHeight = LocalBarsSize.current.statusBarHeight,
+                navigationBarHeight = LocalBarsSize.current.navigationBarHeight,
+                isVisible = isScrollingUp,
+        )
     }
 }
 

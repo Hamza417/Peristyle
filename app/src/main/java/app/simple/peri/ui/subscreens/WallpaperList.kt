@@ -36,17 +36,16 @@ import app.simple.peri.models.Folder
 import app.simple.peri.models.PostWallpaperData
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.preferences.MainComposePreferences
-import app.simple.peri.ui.commons.BottomHeader
+import app.simple.peri.ui.commons.AnchoredHeader
 import app.simple.peri.ui.commons.COMMON_PADDING
 import app.simple.peri.ui.commons.SelectionMenu
 import app.simple.peri.ui.commons.TextWithIcon
-import app.simple.peri.ui.commons.TopHeader
 import app.simple.peri.ui.commons.WallpaperItem
+import app.simple.peri.ui.commons.isScrollingUp
 import app.simple.peri.ui.dialogs.common.PleaseWaitDialog
 import app.simple.peri.ui.dialogs.common.PostScalingChangeDialog
 import app.simple.peri.ui.nav.Routes
 import app.simple.peri.ui.theme.LocalBarsSize
-import app.simple.peri.utils.ConditionUtils.invert
 import app.simple.peri.viewmodels.FolderDataViewModel
 import app.simple.peri.viewmodels.StateViewModel
 import app.simple.peri.viewmodels.WallpaperListViewModel
@@ -96,13 +95,21 @@ fun WallpaperList(navController: NavController? = null) {
     var showPleaseWaitDialog by remember { mutableStateOf(false) }
     val hazeState = remember { HazeState() }
     val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
-    var bottomHeaderHeight by remember { mutableStateOf(0.dp) }
+    var headerHeight by remember { mutableStateOf(0.dp) }
+    val isScrollingUp = wallpaperListViewModel.lazyGridState.isScrollingUp()
 
     val topPadding = 8.dp + LocalBarsSize.current.statusBarHeight
-    val bottomPadding = 8.dp + if (MainComposePreferences.getBottomHeader()) {
-        bottomHeaderHeight
+    val bottomPadding = 8.dp + LocalBarsSize.current.navigationBarHeight
+
+    val contentTopPadding = if (!MainComposePreferences.getBottomHeader()) {
+        if (MainComposePreferences.getMarginBetween()) topPadding + headerHeight else headerHeight
     } else {
-        LocalBarsSize.current.navigationBarHeight
+        if (MainComposePreferences.getMarginBetween()) topPadding else 0.dp
+    }
+    val contentBottomPadding = if (MainComposePreferences.getBottomHeader()) {
+        if (MainComposePreferences.getMarginBetween()) bottomPadding + headerHeight else bottomPadding + headerHeight - 8.dp
+    } else {
+        if (MainComposePreferences.getMarginBetween()) bottomPadding else bottomPadding - 8.dp
     }
 
     if (showPleaseWaitDialog) {
@@ -123,34 +130,12 @@ fun WallpaperList(navController: NavController? = null) {
                     .fillMaxSize()
                     .hazeSource(state = hazeState),
                 contentPadding = PaddingValues(
-                        top = if (MainComposePreferences.getBottomHeader()) {
-                            if (MainComposePreferences.getMarginBetween()) {
-                                topPadding
-                            } else {
-                                0.dp
-                            }
-                        } else {
-                            topPadding
-                        },
+                        top = contentTopPadding,
                         start = if (MainComposePreferences.getMarginBetween()) 8.dp else 0.dp,
                         end = if (MainComposePreferences.getMarginBetween()) 8.dp else 0.dp,
-                        bottom = if (MainComposePreferences.getMarginBetween()) {
-                            bottomPadding
-                        } else {
-                            bottomPadding - 8.dp
-                        }
+                        bottom = contentBottomPadding
                 )
         ) {
-            if (MainComposePreferences.getBottomHeader().invert()) {
-                item(span = StaggeredGridItemSpan.FullLine) {
-                    TopHeader(
-                            title = folder.name ?: stringResource(R.string.unknown),
-                            count = wallpapers.size,
-                            modifier = Modifier.padding(COMMON_PADDING),
-                            navController = navController
-                    )
-                }
-            }
 
             if (MainComposePreferences.getShowWarningIndicator() && MainComposePreferences.getWallpaperDetails()) {
                 item(span = StaggeredGridItemSpan.FullLine) {
@@ -242,21 +227,20 @@ fun WallpaperList(navController: NavController? = null) {
             )
         }
 
-        if (MainComposePreferences.getBottomHeader()) {
-            val density = LocalDensity.current
-
-            BottomHeader(
-                    title = folder.name ?: stringResource(R.string.unknown),
-                    count = wallpapers.size,
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .onGloballyPositioned {
-                            bottomHeaderHeight = with(density) { it.size.height.toDp() }
-                        },
-                    navController = navController,
-                    hazeState = hazeState,
-                    navigationBarHeight = LocalBarsSize.current.navigationBarHeight
-            )
-        }
+        val density = LocalDensity.current
+        AnchoredHeader(
+                title = folder.name ?: stringResource(R.string.unknown),
+                count = wallpapers.size,
+                modifier = Modifier
+                    .align(if (MainComposePreferences.getBottomHeader()) Alignment.BottomCenter else Alignment.TopCenter)
+                    .onGloballyPositioned {
+                        headerHeight = with(density) { it.size.height.toDp() }
+                    },
+                navController = navController,
+                hazeState = hazeState,
+                statusBarHeight = LocalBarsSize.current.statusBarHeight,
+                navigationBarHeight = LocalBarsSize.current.navigationBarHeight,
+                isVisible = isScrollingUp,
+        )
     }
 }
