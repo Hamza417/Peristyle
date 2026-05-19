@@ -5,13 +5,16 @@ import android.content.Context
 import android.graphics.Bitmap
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ScreenLockPortrait
+import androidx.compose.material.icons.rounded.Screenshot
+import androidx.compose.material.icons.rounded.Splitscreen
+import androidx.compose.material.icons.rounded.Upload
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -19,13 +22,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.simple.peri.R
 import app.simple.peri.models.Wallpaper
-import app.simple.peri.ui.constants.DIALOG_OPTION_FONT_SIZE
+import app.simple.peri.ui.commons.MenuItemWithIcon
 import app.simple.peri.ui.dialogs.common.ShowWarningDialog
 
 @Composable
@@ -59,89 +60,46 @@ fun ScreenSelectionDialog(setShowDialog: (Boolean) -> Unit, context: Context, bi
                 )
             },
             text = {
-                Column {
-                    Button(
-                            onClick = {
-                                setWallpaper(context, WallpaperManager.FLAG_LOCK, bitmap)
-                                setShowDialog(false)
-                            },
-                            colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color.Transparent,
-                                    contentColor = MaterialTheme.colorScheme.onSurface,
-                            ),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                    ) {
-                        Text(
-                                text = context.getString(R.string.lock_screen),
-                                fontSize = DIALOG_OPTION_FONT_SIZE,
-                                color = MaterialTheme.colorScheme.onSurface,
-                                fontWeight = FontWeight.Bold
+                LazyColumn {
+                    item {
+                        MenuItemWithIcon(
+                                icon = Icons.Rounded.ScreenLockPortrait,
+                                text = stringResource(R.string.lock_screen),
+                                onClick = {
+                                    setWallpaper(context, WallpaperManager.FLAG_LOCK, bitmap)
+                                    setShowDialog(false)
+                                },
                         )
-                    }
 
-                    Spacer(modifier = Modifier.height(5.dp))
-
-                    Button(
-                            onClick = {
-                                setWallpaper(context, WallpaperManager.FLAG_SYSTEM, bitmap)
-                                setShowDialog(false)
-                            },
-                            colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color.Transparent,
-                                    contentColor = MaterialTheme.colorScheme.onSurface
-                            ),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                    ) {
-                        Text(
-                                text = context.getString(R.string.home_screen),
-                                fontSize = DIALOG_OPTION_FONT_SIZE,
-                                color = MaterialTheme.colorScheme.onSurface,
-                                fontWeight = FontWeight.Bold
+                        MenuItemWithIcon(
+                                icon = Icons.Rounded.Screenshot,
+                                text = stringResource(R.string.home_screen),
+                                onClick = {
+                                    setWallpaper(context, WallpaperManager.FLAG_SYSTEM, bitmap)
+                                    setShowDialog(false)
+                                },
                         )
-                    }
 
-                    Spacer(modifier = Modifier.height(5.dp))
-
-                    Button(
-                            onClick = {
-                                setWallpaper(context, WallpaperManager.FLAG_SYSTEM or WallpaperManager.FLAG_LOCK, bitmap)
-                                setShowDialog(false)
-                            },
-                            colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color.Transparent,
-                                    contentColor = MaterialTheme.colorScheme.onSurface,
-                            ),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                    ) {
-                        Text(
-                                text = context.getString(R.string.both),
-                                color = MaterialTheme.colorScheme.onSurface,
-                                fontSize = DIALOG_OPTION_FONT_SIZE,
-                                fontWeight = FontWeight.Bold
+                        MenuItemWithIcon(
+                                icon = Icons.Rounded.Splitscreen,
+                                text = stringResource(R.string.both),
+                                onClick = {
+                                    setWallpaper(context, WallpaperManager.FLAG_SYSTEM or WallpaperManager.FLAG_LOCK, bitmap)
+                                    setShowDialog(false)
+                                },
                         )
-                    }
 
-                    Spacer(modifier = Modifier.height(5.dp))
+                        HorizontalDivider(
+                                modifier = Modifier.padding(vertical = 8.dp),
+                                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+                        )
 
-                    Button(
-                            onClick = {
-                                shouldExport.value = true
-                            },
-                            colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color.Transparent,
-                                    contentColor = MaterialTheme.colorScheme.onSurface,
-                            ),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                    ) {
-                        Text(
-                                text = context.getString(R.string.export),
-                                color = MaterialTheme.colorScheme.onSurface,
-                                fontSize = DIALOG_OPTION_FONT_SIZE,
-                                fontWeight = FontWeight.Bold
+                        MenuItemWithIcon(
+                                icon = Icons.Rounded.Upload,
+                                text = stringResource(R.string.export),
+                                onClick = {
+                                    shouldExport.value = true
+                                }
                         )
                     }
                 }
