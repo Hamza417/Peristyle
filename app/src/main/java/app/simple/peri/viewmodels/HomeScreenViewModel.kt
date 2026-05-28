@@ -174,6 +174,8 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
                     systemWallpaperData.postValue(Wallpaper.createFromFile(systemFile, getApplication()))
                 } catch (_: IOException) {
                     // bad system wallpaper??
+                } catch (_: SecurityException) {
+                    // we should not be here but just in case
                 }
             }
         }
@@ -198,6 +200,8 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
                     lockWallpaperData.postValue(Wallpaper.createFromFile(lockFile, getApplication()))
                 } catch (_: IOException) {
                     // bad lock wallpaper??
+                } catch (_: SecurityException) {
+                    // we should not be here but just in case
                 }
             }
         }
