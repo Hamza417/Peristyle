@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
-import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -31,11 +30,10 @@ import app.simple.peri.models.PostWallpaperData
 import app.simple.peri.models.Tag
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.preferences.MainComposePreferences
-import app.simple.peri.ui.commons.BottomHeader
-import app.simple.peri.ui.commons.COMMON_PADDING
+import app.simple.peri.ui.commons.AnchoredHeader
 import app.simple.peri.ui.commons.SelectionMenu
-import app.simple.peri.ui.commons.TopHeader
 import app.simple.peri.ui.commons.WallpaperItem
+import app.simple.peri.ui.commons.isScrollingUp
 import app.simple.peri.ui.dialogs.common.PleaseWaitDialog
 import app.simple.peri.ui.dialogs.common.PostScalingChangeDialog
 import app.simple.peri.ui.nav.Routes
@@ -67,20 +65,28 @@ fun TaggedWallpapers(navController: NavController? = null) {
 
     val hazeState = remember { HazeState() }
     val wallpaperListViewModel: WallpaperListViewModel =
-        viewModel() // We should use a dedicated ViewModel for this
+        viewModel()
     val isSelectionMode by wallpaperListViewModel.isSelectionMode.collectAsState()
     val selectionCount by wallpaperListViewModel.selectedWallpapers.collectAsState()
     var showPleaseWaitDialog by remember { mutableStateOf(false) }
     val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
     val wallpaperData = remember { mutableStateOf<PostWallpaperData?>(null) }
     var showWallpaperComparisonDialog by remember { mutableStateOf(false) }
-    var bottomHeaderHeight by remember { mutableStateOf(0.dp) }
+    var headerHeight by remember { mutableStateOf(0.dp) }
+    val isScrollingUp = wallpaperListViewModel.lazyGridState.isScrollingUp()
 
     val topPadding = 8.dp + LocalBarsSize.current.statusBarHeight
-    val bottomPadding = 8.dp + if (MainComposePreferences.getBottomHeader()) {
-        bottomHeaderHeight
+    val bottomPadding = 8.dp + LocalBarsSize.current.navigationBarHeight
+
+    val contentTopPadding = if (!MainComposePreferences.getBottomHeader()) {
+        if (MainComposePreferences.getMarginBetween()) topPadding + headerHeight else headerHeight
     } else {
-        LocalBarsSize.current.navigationBarHeight
+        if (MainComposePreferences.getMarginBetween()) topPadding else 0.dp
+    }
+    val contentBottomPadding = if (MainComposePreferences.getBottomHeader()) {
+        if (MainComposePreferences.getMarginBetween()) bottomPadding + headerHeight else bottomPadding + headerHeight - 8.dp
+    } else {
+        if (MainComposePreferences.getMarginBetween()) bottomPadding else bottomPadding - 8.dp
     }
 
     if (showPleaseWaitDialog) {
@@ -108,33 +114,12 @@ fun TaggedWallpapers(navController: NavController? = null) {
                     .fillMaxSize()
                     .hazeSource(state = hazeState),
                 contentPadding = PaddingValues(
-                        top = if (MainComposePreferences.getBottomHeader()) {
-                            if (MainComposePreferences.getMarginBetween()) {
-                                topPadding
-                            } else {
-                                0.dp
-                            }
-                        } else {
-                            topPadding
-                        },
+                        top = contentTopPadding,
                         start = if (MainComposePreferences.getMarginBetween()) 8.dp else 0.dp,
                         end = if (MainComposePreferences.getMarginBetween()) 8.dp else 0.dp,
-                        bottom = if (MainComposePreferences.getMarginBetween()) {
-                            bottomPadding
-                        } else {
-                            bottomPadding - 8.dp
-                        }
+                        bottom = contentBottomPadding
                 )
         ) {
-            if (MainComposePreferences.getBottomHeader().not()) {
-                item(span = StaggeredGridItemSpan.FullLine) {
-                    TopHeader(
-                            title = tag.name, count = wallpapers.size,
-                            modifier = Modifier.padding(COMMON_PADDING),
-                            navController = navController
-                    )
-                }
-            }
             items(wallpapers.size) { index ->
                 WallpaperItem(
                         wallpaper = wallpapers[index],
@@ -206,21 +191,20 @@ fun TaggedWallpapers(navController: NavController? = null) {
             )
         }
 
-        if (MainComposePreferences.getBottomHeader()) {
-            val density = LocalDensity.current
-
-            BottomHeader(
-                    title = tag.name,
-                    count = wallpapers.size,
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .onGloballyPositioned {
-                            bottomHeaderHeight = with(density) { it.size.height.toDp() }
-                        },
-                    navController = navController,
-                    hazeState = hazeState,
-                    navigationBarHeight = LocalBarsSize.current.navigationBarHeight
-            )
-        }
+        val density = LocalDensity.current
+        AnchoredHeader(
+                title = tag.name,
+                count = wallpapers.size,
+                modifier = Modifier
+                    .align(if (MainComposePreferences.getBottomHeader()) Alignment.BottomCenter else Alignment.TopCenter)
+                    .onGloballyPositioned {
+                        headerHeight = with(density) { it.size.height.toDp() }
+                    },
+                navController = navController,
+                hazeState = hazeState,
+                statusBarHeight = LocalBarsSize.current.statusBarHeight,
+                navigationBarHeight = LocalBarsSize.current.navigationBarHeight,
+                isVisible = isScrollingUp,
+        )
     }
 }

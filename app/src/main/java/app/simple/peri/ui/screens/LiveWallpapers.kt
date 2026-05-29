@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -57,9 +56,8 @@ import app.simple.peri.R
 import app.simple.peri.activities.main.LocalDisplaySize
 import app.simple.peri.models.LiveWallpaperInfo
 import app.simple.peri.preferences.MainComposePreferences
-import app.simple.peri.ui.commons.BottomHeader
-import app.simple.peri.ui.commons.COMMON_PADDING
-import app.simple.peri.ui.commons.TopHeader
+import app.simple.peri.ui.commons.AnchoredHeader
+import app.simple.peri.ui.commons.isScrollingUp
 import app.simple.peri.ui.dialogs.livewallpapers.LiveWallpapersMenu
 import app.simple.peri.ui.theme.LocalBarsSize
 import app.simple.peri.viewmodels.LiveWallpapersViewModel
@@ -78,15 +76,15 @@ fun LiveWallpapers(navController: NavHostController) {
     val hazeState = remember { HazeState() }
     val listState = rememberLazyGridState()
 
-    var bottomHeaderHeight by remember { mutableStateOf(0.dp) }
+    var headerHeight by remember { mutableStateOf(0.dp) }
     val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+    val isScrollingUp = listState.isScrollingUp()
 
     val topPadding = 8.dp + LocalBarsSize.current.statusBarHeight
-    val bottomPadding = 8.dp + if (MainComposePreferences.getBottomHeader()) {
-        bottomHeaderHeight
-    } else {
-        LocalBarsSize.current.navigationBarHeight
-    }
+    val bottomPadding = 8.dp + LocalBarsSize.current.navigationBarHeight
+
+    val contentTopPadding = if (!MainComposePreferences.getBottomHeader()) topPadding + headerHeight else topPadding
+    val contentBottomPadding = if (MainComposePreferences.getBottomHeader()) bottomPadding + headerHeight else bottomPadding
 
     liveWallpapersViewModel.getLiveWallpapersLiveData().observeAsState().value?.let {
         liveWallpapers.clear()
@@ -120,22 +118,12 @@ fun LiveWallpapers(navController: NavHostController) {
                     .fillMaxSize()
                     .hazeSource(state = hazeState),
                 contentPadding = PaddingValues(
-                        top = topPadding,
+                        top = contentTopPadding,
                         start = 8.dp,
                         end = 8.dp,
-                        bottom = bottomPadding
+                        bottom = contentBottomPadding
                 )
         ) {
-            if (MainComposePreferences.getBottomHeader().not()) {
-                item(span = { GridItemSpan(maxLineSpan) }) {
-                    TopHeader(
-                            title = stringResource(R.string.live_wallpapers),
-                            count = liveWallpapers.size,
-                            modifier = Modifier.padding(COMMON_PADDING),
-                            navController = navController
-                    )
-                }
-            }
             items(liveWallpapers.size) { index ->
                 val liveWallpaperInfo = liveWallpapers[index]
                 val context = LocalContext.current
@@ -271,22 +259,21 @@ fun LiveWallpapers(navController: NavHostController) {
             }
         }
 
-        if (MainComposePreferences.getBottomHeader()) {
-            val density = LocalDensity.current
-
-            BottomHeader(
-                    title = stringResource(R.string.live_wallpapers),
-                    count = liveWallpapers.size,
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .onGloballyPositioned {
-                            bottomHeaderHeight = with(density) { it.size.height.toDp() }
-                        },
-                    navController = navController,
-                    hazeState = hazeState,
-                    navigationBarHeight = LocalBarsSize.current.navigationBarHeight
-            )
-        }
+        val density = LocalDensity.current
+        AnchoredHeader(
+                title = stringResource(R.string.live_wallpapers),
+                count = liveWallpapers.size,
+                modifier = Modifier
+                    .align(if (MainComposePreferences.getBottomHeader()) Alignment.BottomCenter else Alignment.TopCenter)
+                    .onGloballyPositioned {
+                        headerHeight = with(density) { it.size.height.toDp() }
+                    },
+                navController = navController,
+                hazeState = hazeState,
+                statusBarHeight = LocalBarsSize.current.statusBarHeight,
+                navigationBarHeight = LocalBarsSize.current.navigationBarHeight,
+                isVisible = isScrollingUp,
+        )
     }
 }
 

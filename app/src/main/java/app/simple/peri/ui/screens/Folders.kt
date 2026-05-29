@@ -19,7 +19,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
-import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
+import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
@@ -55,16 +55,14 @@ import app.simple.peri.R
 import app.simple.peri.glide.folders.ContextFolder
 import app.simple.peri.models.Folder
 import app.simple.peri.preferences.MainComposePreferences
-import app.simple.peri.ui.commons.BottomHeader
-import app.simple.peri.ui.commons.COMMON_PADDING
+import app.simple.peri.ui.commons.AnchoredHeader
 import app.simple.peri.ui.commons.FolderBrowser
-import app.simple.peri.ui.commons.TopHeader
+import app.simple.peri.ui.commons.isScrollingUp
 import app.simple.peri.ui.dialogs.common.ConfirmDeleteDialog
 import app.simple.peri.ui.dialogs.common.ShowWarningDialog
 import app.simple.peri.ui.dialogs.folders.FolderMenu
 import app.simple.peri.ui.nav.Routes
 import app.simple.peri.ui.theme.LocalBarsSize
-import app.simple.peri.utils.ConditionUtils.invert
 import app.simple.peri.utils.FileUtils.toSize
 import app.simple.peri.viewmodels.ComposeWallpaperViewModel
 import com.bumptech.glide.integration.compose.CrossFade
@@ -81,14 +79,23 @@ fun Folders(navController: NavController? = null) {
     val folders by composeWallpaperViewModel.getFoldersLiveData().observeAsState(emptyList())
     var requestPermission by remember { mutableStateOf(false) }
     val hazeState = remember { HazeState() }
+    val gridState = rememberLazyStaggeredGridState()
+    val isScrollingUp = gridState.isScrollingUp()
 
-    var bottomHeaderHeight by remember { mutableStateOf(0.dp) }
+    var headerHeight by remember { mutableStateOf(0.dp) }
 
     val topPadding = 8.dp + LocalBarsSize.current.statusBarHeight
-    val bottomPadding = 8.dp + if (MainComposePreferences.getBottomHeader()) {
-        bottomHeaderHeight
+    val bottomPadding = 8.dp + LocalBarsSize.current.navigationBarHeight
+
+    val contentTopPadding = if (!MainComposePreferences.getBottomHeader()) {
+        topPadding + headerHeight
     } else {
-        LocalBarsSize.current.navigationBarHeight
+        topPadding
+    }
+    val contentBottomPadding = if (MainComposePreferences.getBottomHeader()) {
+        bottomPadding + headerHeight
+    } else {
+        bottomPadding
     }
 
     if (requestPermission) {
@@ -105,26 +112,17 @@ fun Folders(navController: NavController? = null) {
     Box {
         LazyVerticalStaggeredGrid(
                 columns = StaggeredGridCells.Fixed(2),
+                state = gridState,
                 modifier = Modifier
                     .fillMaxSize()
                     .hazeSource(state = hazeState),
                 contentPadding = PaddingValues(
-                        top = topPadding,
+                        top = contentTopPadding,
                         start = 8.dp,
                         end = 8.dp,
-                        bottom = bottomPadding
+                        bottom = contentBottomPadding
                 )
         ) {
-            if (MainComposePreferences.getBottomHeader().invert()) {
-                item(span = StaggeredGridItemSpan.FullLine) {
-                    TopHeader(
-                            title = stringResource(R.string.folder),
-                            count = folders.size,
-                            modifier = Modifier.padding(COMMON_PADDING),
-                            navController = navController
-                    )
-                }
-            }
             items(folders.size) { index ->
                 FolderItem(
                         folder = folders[index],
@@ -157,22 +155,21 @@ fun Folders(navController: NavController? = null) {
             }
         }
 
-        if (MainComposePreferences.getBottomHeader()) {
-            val density = LocalDensity.current
-
-            BottomHeader(
-                    title = stringResource(R.string.folder),
-                    count = folders.size,
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .onGloballyPositioned {
-                            bottomHeaderHeight = with(density) { it.size.height.toDp() }
-                        },
-                    navController = navController,
-                    hazeState = hazeState,
-                    navigationBarHeight = LocalBarsSize.current.navigationBarHeight,
-            )
-        }
+        val density = LocalDensity.current
+        AnchoredHeader(
+                title = stringResource(R.string.folder),
+                count = folders.size,
+                modifier = Modifier
+                    .align(if (MainComposePreferences.getBottomHeader()) Alignment.BottomCenter else Alignment.TopCenter)
+                    .onGloballyPositioned {
+                        headerHeight = with(density) { it.size.height.toDp() }
+                    },
+                navController = navController,
+                hazeState = hazeState,
+                statusBarHeight = LocalBarsSize.current.statusBarHeight,
+                navigationBarHeight = LocalBarsSize.current.navigationBarHeight,
+                isVisible = isScrollingUp,
+        )
     }
 }
 
