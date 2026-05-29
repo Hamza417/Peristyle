@@ -94,7 +94,8 @@ fun Tags(navController: NavController? = null) {
                             title = stringResource(R.string.tags),
                             modifier = Modifier.padding(COMMON_PADDING),
                             count = tags.size,
-                            navController = navController
+                            navController = navController,
+                            isHideAutoWallpaper = true
                     )
                 }
             }
@@ -127,6 +128,7 @@ fun Tags(navController: NavController? = null) {
                         },
                     navController = navController,
                     hazeState = hazeState,
+                    isShowAutoWallpaper = false,
                     navigationBarHeight = LocalBarsSize.current.navigationBarHeight
             )
         }

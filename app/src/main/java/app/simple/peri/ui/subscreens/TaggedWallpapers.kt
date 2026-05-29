@@ -131,7 +131,8 @@ fun TaggedWallpapers(navController: NavController? = null) {
                     TopHeader(
                             title = tag.name, count = wallpapers.size,
                             modifier = Modifier.padding(COMMON_PADDING),
-                            navController = navController
+                            navController = navController,
+                            isHideAutoWallpaper = true
                     )
                 }
             }
@@ -219,7 +220,8 @@ fun TaggedWallpapers(navController: NavController? = null) {
                         },
                     navController = navController,
                     hazeState = hazeState,
-                    navigationBarHeight = LocalBarsSize.current.navigationBarHeight
+                    navigationBarHeight = LocalBarsSize.current.navigationBarHeight,
+                    isShowAutoWallpaper = false
             )
         }
     }

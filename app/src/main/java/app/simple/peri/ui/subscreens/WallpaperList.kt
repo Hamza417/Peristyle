@@ -147,7 +147,8 @@ fun WallpaperList(navController: NavController? = null) {
                             title = folder.name ?: stringResource(R.string.unknown),
                             count = wallpapers.size,
                             modifier = Modifier.padding(COMMON_PADDING),
-                            navController = navController
+                            navController = navController,
+                            isHideAutoWallpaper = true
                     )
                 }
             }
@@ -255,7 +256,8 @@ fun WallpaperList(navController: NavController? = null) {
                         },
                     navController = navController,
                     hazeState = hazeState,
-                    navigationBarHeight = LocalBarsSize.current.navigationBarHeight
+                    navigationBarHeight = LocalBarsSize.current.navigationBarHeight,
+                    isShowAutoWallpaper = false
             )
         }
     }

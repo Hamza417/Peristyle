@@ -132,7 +132,8 @@ fun LiveWallpapers(navController: NavHostController) {
                             title = stringResource(R.string.live_wallpapers),
                             count = liveWallpapers.size,
                             modifier = Modifier.padding(COMMON_PADDING),
-                            navController = navController
+                            navController = navController,
+                            isHideAutoWallpaper = true
                     )
                 }
             }
@@ -284,7 +285,8 @@ fun LiveWallpapers(navController: NavHostController) {
                         },
                     navController = navController,
                     hazeState = hazeState,
-                    navigationBarHeight = LocalBarsSize.current.navigationBarHeight
+                    navigationBarHeight = LocalBarsSize.current.navigationBarHeight,
+                    isShowAutoWallpaper = false
             )
         }
     }

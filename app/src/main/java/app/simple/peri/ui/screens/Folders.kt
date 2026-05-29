@@ -121,7 +121,8 @@ fun Folders(navController: NavController? = null) {
                             title = stringResource(R.string.folder),
                             count = folders.size,
                             modifier = Modifier.padding(COMMON_PADDING),
-                            navController = navController
+                            navController = navController,
+                            isHideAutoWallpaper = true,
                     )
                 }
             }
@@ -171,6 +172,7 @@ fun Folders(navController: NavController? = null) {
                     navController = navController,
                     hazeState = hazeState,
                     navigationBarHeight = LocalBarsSize.current.navigationBarHeight,
+                    isShowAutoWallpaper = true,
             )
         }
     }

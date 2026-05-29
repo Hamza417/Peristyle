@@ -184,7 +184,7 @@ fun BottomHeader(title: String,
                  navController: NavController? = null,
                  isSettings: Boolean = false,
                  isSearch: Boolean = false,
-                 isAutoWallpaper: Boolean = false,
+                 isShowAutoWallpaper: Boolean = false,
                  onSearch: (() -> Unit)? = null,
                  hazeState: HazeState,
                  navigationBarHeight: Dp
@@ -262,7 +262,7 @@ fun BottomHeader(title: String,
                 )
             }
 
-            if (isAutoWallpaper.not()) {
+            if (isShowAutoWallpaper.not()) {
                 IconButton(
                         onClick = {
                             autoWallpaperScreenSelection.value = true

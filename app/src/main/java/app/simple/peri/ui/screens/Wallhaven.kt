@@ -206,6 +206,7 @@ fun WallhavenScreen(navController: NavController? = null) {
                                 searchDialog = true
                             },
                             count = meta?.total ?: 0,
+                            isHideAutoWallpaper = true
                     )
                 }
             }
@@ -319,6 +320,7 @@ fun WallhavenScreen(navController: NavController? = null) {
                         searchDialog = true
                     },
                     count = meta?.total ?: 0,
+                    isShowAutoWallpaper = false
             )
         }
     }

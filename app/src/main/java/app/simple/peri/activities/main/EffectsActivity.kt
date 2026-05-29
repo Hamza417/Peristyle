@@ -108,7 +108,8 @@ class EffectsActivity : BaseComponentActivity() {
                         title = stringResource(R.string.saved_effects),
                         count = effects.size,
                         modifier = Modifier.padding(COMMON_PADDING),
-                        isHideSettings = true
+                        isHideSettings = true,
+                        isHideAutoWallpaper = true
                 )
             }
             if (effects.isEmpty()) {
