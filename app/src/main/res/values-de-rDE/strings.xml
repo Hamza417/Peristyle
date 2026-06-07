@@ -277,4 +277,5 @@
     <string name="revoke_folder_desc">Widerrufen Sie den Zugriff auf diesen Ordner und entfernen Sie ihn aus der App. Diese Option löscht die Dateien nicht.</string>
     <string name="compress_summary">Hintergrundbild komprimieren, um die Größe auf Kosten der Qualität zu reduzieren.</string>
     <string name="reduce_resolution_summary">Verringert die Auflösung um die Hälfte, ändert die Bildgröße und Dimensionen, aber erhält die Qualität.</string>
+    <string name="set_with">Festlegen mit…</string>
 </resources>
