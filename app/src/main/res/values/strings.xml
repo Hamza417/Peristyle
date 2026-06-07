@@ -276,4 +276,5 @@
     <string name="revoke_folder_desc">Revoke access to this folder and remove it from the app. This option will not delete the files.</string>
     <string name="compress_summary">Compress wallpaper to reduce size at the cost of quality.</string>
     <string name="reduce_resolution_summary">Cut the reslution by half, changes image size and dimensions but preserves the quality.</string>
+    <string name="set_with">Set With…</string>
 </resources>

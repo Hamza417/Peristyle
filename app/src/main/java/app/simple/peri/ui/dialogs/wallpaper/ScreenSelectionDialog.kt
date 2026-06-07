@@ -2,6 +2,7 @@ package app.simple.peri.ui.dialogs.wallpaper
 
 import android.app.WallpaperManager
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -24,10 +25,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.content.FileProvider
 import app.simple.peri.R
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.ui.commons.MenuItemWithIcon
 import app.simple.peri.ui.dialogs.common.ShowWarningDialog
+import app.simple.peri.utils.FileUtils.withDelete
+import java.io.File
 
 @Composable
 fun ScreenSelectionDialog(setShowDialog: (Boolean) -> Unit, context: Context, bitmap: Bitmap, wallpaper: Wallpaper) {
@@ -101,6 +105,15 @@ fun ScreenSelectionDialog(setShowDialog: (Boolean) -> Unit, context: Context, bi
                                     shouldExport.value = true
                                 }
                         )
+
+                        MenuItemWithIcon(
+                                icon = Icons.Rounded.Upload,
+                                text = stringResource(R.string.set_with),
+                                onClick = {
+                                    setWallpaperWithDedicatedApp(bitmap, context)
+                                    setShowDialog(false)
+                                }
+                        )
                     }
                 }
             },
@@ -120,6 +133,27 @@ fun setWallpaper(context: Context, flags: Int, bitmap: Bitmap) {
     val wallpaperManager = WallpaperManager.getInstance(context)
     wallpaperManager.setWallpaperOffsetSteps(0F, 0F)
     wallpaperManager.setBitmap(bitmap, null, true, flags)
+}
+
+fun setWallpaperWithDedicatedApp(bitmap: Bitmap, context: Context) {
+    File(context.cacheDir, "temp_wallpaper.png").withDelete { file ->
+        file.outputStream().use { outputStream ->
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+        }
+
+        val uri = FileProvider.getUriForFile(
+                context, "${context.packageName}.provider", file)
+
+        val intent = Intent(Intent.ACTION_ATTACH_DATA).apply {
+            setDataAndType(uri, "image/*")
+            putExtra("mimeType", "image/*")
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+
+        Intent.createChooser(intent, "Set Wallpaper with...").let { chooser ->
+            context.startActivity(chooser)
+        }
+    }
 }
 
 @Composable

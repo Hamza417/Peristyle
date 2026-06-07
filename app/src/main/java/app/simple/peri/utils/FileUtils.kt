@@ -106,4 +106,12 @@ object FileUtils {
     fun String.toFileUri(context: Context): Uri {
         return FileProvider.getUriForFile(context, context.packageName + ".provider", File(this))
     }
+
+    fun File.withDelete(action: (File) -> Unit = {}) {
+        if (this.exists()) {
+            this.delete()
+        }
+
+        action(this)
+    }
 }
