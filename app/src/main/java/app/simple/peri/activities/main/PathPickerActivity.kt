@@ -172,6 +172,7 @@ class PathPickerActivity : BaseComponentActivity() {
                                     try {
                                         mainPath = if (sdcardMode) {
                                             applicationContext.getPrimarySDCardPath()?.absolutePath
+                                                ?: throw NullPointerException("SD Card path is null")
                                         } else {
                                             Environment.getExternalStorageDirectory().absolutePath
                                         }
