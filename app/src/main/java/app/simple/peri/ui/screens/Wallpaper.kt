@@ -465,12 +465,12 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
                             append(", ")
                             when (wallpaper) {
                                 is Wallpaper -> {
-                                    append(context.getString(R.string.times, setTimes?.usageCount ?: 0))
+                                    append(stringResource(R.string.times, setTimes?.usageCount ?: 0))
                                 }
                                 is WallhavenWallpaper -> {
                                     append((wallpaper as WallhavenWallpaper).category)
                                     append(", ")
-                                    append(context.getString(R.string.views, (wallpaper as WallhavenWallpaper).viewsCount))
+                                    append(stringResource(R.string.views, (wallpaper as WallhavenWallpaper).viewsCount))
                                 }
                             }
                         },
@@ -682,7 +682,7 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
                                             modifier = Modifier.size(18.dp)
                                     )
                                     Spacer(modifier = Modifier.width(6.dp))
-                                    Text(text = context.getString(R.string.save), fontSize = 14.sp, color = Color.White)
+                                    Text(text = stringResource(R.string.save), fontSize = 14.sp, color = Color.White)
                                 }
                             }
                         }
@@ -705,7 +705,7 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
                                         modifier = Modifier.size(18.dp)
                                 )
                                 Spacer(modifier = Modifier.width(6.dp))
-                                Text(text = context.getString(R.string.edit), fontSize = 14.sp, color = Color.White)
+                                Text(text = stringResource(R.string.edit), fontSize = 14.sp, color = Color.White)
                             }
                         }
 
@@ -726,7 +726,7 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
                                         modifier = Modifier.size(18.dp)
                                 )
                                 Spacer(modifier = Modifier.width(6.dp))
-                                Text(text = context.getString(R.string.saved_effects), fontSize = 14.sp, color = Color.White)
+                                Text(text = stringResource(R.string.saved_effects), fontSize = 14.sp, color = Color.White)
                             }
                         }
                     }
@@ -740,7 +740,7 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
                             colors = ButtonDefaults.buttonColors(containerColor = Color.White.copy(alpha = 0.25f), contentColor = Color.White),
                             modifier = Modifier.height(34.dp)
                     ) {
-                        Text(text = context.getString(R.string.set_as_wallpaper), fontSize = 14.sp, color = Color.White)
+                        Text(text = stringResource(R.string.set_as_wallpaper), fontSize = 14.sp, color = Color.White)
                     }
                 }
             }
