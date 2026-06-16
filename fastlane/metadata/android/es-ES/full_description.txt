@@ -19,3 +19,4 @@ Funciones:
 - Colores de tema Material You.
 - Compilación completamente reproducible.
 - Arquitectura de software sin carga.
+- Cliente de WallHaven integrado para navegar y descargar fondos de pantalla.
