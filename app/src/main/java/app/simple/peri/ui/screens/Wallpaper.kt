@@ -753,6 +753,8 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
                             setShowDialog = { showScreenSelectionDialog = it },
                             context = context,
                             bitmap = bitmap!!,
+                            blurValue = blurValue,
+                            colorMatrix = colorMatrix,
                             wallpaper = wallpaper as Wallpaper
                     )
                 }
@@ -789,7 +791,9 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
                                 setShowDialog = { showScreenSelectionDialog = it },
                                 context = context,
                                 bitmap = bitmap!!,
-                                wallpaper = downloadedWallpaper!!
+                                blurValue = blurValue,
+                                colorMatrix = colorMatrix,
+                                wallpaper = downloadedWallpaper!!,
                         )
                     }
                 }
