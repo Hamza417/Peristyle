@@ -458,9 +458,9 @@ fun ImageCard(wallpaper: WallhavenWallpaper, navController: NavController? = nul
                         Text(
                                 text = wallpaper.path.substringAfterLast("/"),
                                 modifier = Modifier
-                                    .padding(start = 12.dp, top = 12.dp, end = 12.dp),
+                                    .padding(start = 16.dp, top = 16.dp, end = 16.dp),
                                 textAlign = TextAlign.Start,
-                                fontSize = 14.sp,
+                                fontSize = 18.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = Color.White,
                                 maxLines = 1,

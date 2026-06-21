@@ -302,10 +302,10 @@ fun FolderItem(folder: Folder, navController: NavController? = null, composeWall
                     Text(
                             text = folder.name ?: "",
                             modifier = Modifier
-                                .padding(start = 12.dp, top = 12.dp, end = 12.dp)
+                                .padding(start = 16.dp, top = 16.dp, end = 16.dp)
                                 .weight(1f),
                             textAlign = TextAlign.Start,
-                            fontSize = 14.sp, // Set the font size
+                            fontSize = 20.sp, // Set the font size
                             fontWeight = FontWeight.Bold, // Make the text bold
                             color = Color.White, // Set the text color
                             maxLines = 1,
@@ -316,8 +316,8 @@ fun FolderItem(folder: Folder, navController: NavController? = null, composeWall
                             imageVector = if (folder.isNomedia) Icons.Rounded.VisibilityOff else Icons.Rounded.Visibility,
                             contentDescription = "No media",
                             modifier = Modifier
-                                .padding(start = 8.dp, top = 12.dp, end = 12.dp)
-                                .size(12.dp),
+                                .padding(start = 8.dp, top = 16.dp, end = 16.dp)
+                                .size(14.dp),
                             tint = Color.White
                     )
                 }
@@ -325,11 +325,11 @@ fun FolderItem(folder: Folder, navController: NavController? = null, composeWall
                 Text(
                         text = stringResource(id = R.string.tag_count, folder.count) + ", " + folder.totalSize.toSize(),
                         textAlign = TextAlign.Start,
-                        fontSize = 12.sp,
+                        fontSize = 14.sp,
                         fontWeight = FontWeight.Light,
                         color = Color.White,
                         modifier = Modifier
-                            .padding(start = 12.dp, bottom = 12.dp, end = 12.dp)
+                            .padding(start = 16.dp, bottom = 16.dp, end = 16.dp)
                             .basicMarquee(), // Add this for marquee effect
                         maxLines = 1, // Required for marquee
                         overflow = TextOverflow.Visible // Required for marquee
