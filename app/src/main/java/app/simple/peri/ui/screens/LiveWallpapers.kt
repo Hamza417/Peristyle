@@ -236,14 +236,14 @@ fun LiveWallpapers(navController: NavHostController) {
                                     text = liveWallpaperInfo.name,
                                     modifier = Modifier
                                         .padding(
-                                                start = 16.dp,
-                                                top = 16.dp,
-                                                end = 16.dp,
-                                                bottom = if (hasDescription) 0.dp else 16.dp
+                                                start = 12.dp,
+                                                top = 12.dp,
+                                                end = 12.dp,
+                                                bottom = if (hasDescription) 0.dp else 12.dp
                                         )
                                         .basicMarquee(),
                                     textAlign = TextAlign.Start,
-                                    fontSize = 18.sp,
+                                    fontSize = 14.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = Color.White,
                                     maxLines = 1,
@@ -255,11 +255,11 @@ fun LiveWallpapers(navController: NavHostController) {
                                 Text(
                                         text = liveWallpaperInfo.description,
                                         textAlign = TextAlign.Start,
-                                        fontSize = 14.sp,
+                                        fontSize = 12.sp,
                                         fontWeight = FontWeight.Light,
                                         color = Color.White,
                                         modifier = Modifier
-                                            .padding(start = 16.dp, top = 4.dp, bottom = 16.dp, end = 16.dp)
+                                            .padding(start = 12.dp, bottom = 12.dp, end = 12.dp)
                                             .basicMarquee(),
                                         maxLines = 1,
                                         overflow = TextOverflow.Visible,

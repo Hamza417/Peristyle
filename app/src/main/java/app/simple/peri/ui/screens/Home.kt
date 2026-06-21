@@ -262,7 +262,15 @@ fun Home(navController: NavController? = null) {
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun WallpaperItem(title: String, position: Int, onClick: () -> Unit, onNextWallpaper: () -> Unit, onDeleteWallpaper: () -> Unit, modifier: Modifier = Modifier, wallpaper: Wallpaper?) {
+fun WallpaperItem(
+        title: String,
+        position: Int,
+        onClick: () -> Unit,
+        onNextWallpaper: () -> Unit,
+        onDeleteWallpaper: () -> Unit,
+        modifier: Modifier = Modifier,
+        wallpaper: Wallpaper?) {
+
     val currentScale = remember {
         mutableStateOf(ContentScale.Crop)
     }
@@ -383,9 +391,9 @@ fun WallpaperItem(title: String, position: Int, onClick: () -> Unit, onNextWallp
                 Text(
                         text = title,
                         modifier = Modifier
-                            .padding(start = 16.dp, top = 16.dp, end = 16.dp),
+                            .padding(start = 12.dp, top = 12.dp, end = 12.dp),
                         textAlign = TextAlign.Start,
-                        fontSize = 24.sp,
+                        fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.White,
                         maxLines = 1,
@@ -421,9 +429,9 @@ fun WallpaperItem(title: String, position: Int, onClick: () -> Unit, onNextWallp
                 Text(
                         text = info,
                         modifier = Modifier
-                            .padding(start = 16.dp, top = 4.dp, bottom = 16.dp, end = 16.dp),
+                            .padding(start = 12.dp, bottom = 12.dp, end = 12.dp),
                         textAlign = TextAlign.Start,
-                        fontSize = 16.sp, // Set the font size
+                        fontSize = 12.sp, // Set the font size
                         fontWeight = FontWeight.Light, // Make the text bold
                         color = Color.White, // Set the text color
                 )

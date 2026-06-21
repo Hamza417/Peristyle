@@ -184,17 +184,17 @@ fun TagItem(tag: Tag, navController: NavController? = null) {
                 Text(
                         text = tag.name,
                         fontWeight = FontWeight.Bold,
-                        fontSize = 20.sp,
+                        fontSize = 14.sp,
                         color = Color.White,
-                        modifier = Modifier.padding(start = COMMON_PADDING, end = COMMON_PADDING, top = COMMON_PADDING)
+                        modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 12.dp)
                 )
 
                 Text(
                         text = stringResource(id = R.string.tag_count, tag.sum.count()),
-                        fontSize = 14.sp,
+                        fontSize = 12.sp,
                         fontWeight = FontWeight.Light,
                         color = Color.White,
-                        modifier = Modifier.padding(start = COMMON_PADDING, end = COMMON_PADDING, bottom = COMMON_PADDING)
+                        modifier = Modifier.padding(start = 12.dp, end = 12.dp, bottom = 12.dp)
                 )
             }
         }

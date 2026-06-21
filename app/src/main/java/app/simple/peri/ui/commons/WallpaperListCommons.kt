@@ -292,10 +292,10 @@ fun WallpaperItem(
                         Text(
                                 text = wallpaper.name ?: "",
                                 modifier = Modifier
-                                    .padding(start = 16.dp, top = 16.dp, end = 16.dp)
+                                    .padding(start = 12.dp, top = 12.dp, end = 12.dp)
                                     .basicMarquee(),
                                 textAlign = TextAlign.Start,
-                                fontSize = 18.sp,
+                                fontSize = 14.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = Color.White,
                                 maxLines = 1,
@@ -322,7 +322,7 @@ fun WallpaperDimensionsText(
 
     Row(
             modifier = Modifier
-                .padding(start = 16.dp, top = 4.dp, bottom = 16.dp, end = 16.dp),
+                .padding(start = 12.dp, top = 0.dp, bottom = 12.dp, end = 12.dp),
             verticalAlignment = Alignment.CenterVertically
     ) {
         when (wallpaper) {
@@ -330,7 +330,7 @@ fun WallpaperDimensionsText(
                 Text(
                         text = "${wallpaper.width ?: 0}x${wallpaper.height ?: 0}, ${wallpaper.size.toSize()}",
                         textAlign = TextAlign.Start,
-                        fontSize = 14.sp,
+                        fontSize = 12.sp,
                         fontWeight = FontWeight.Light,
                         color = Color.White,
                         modifier = Modifier
@@ -344,7 +344,7 @@ fun WallpaperDimensionsText(
                 Text(
                         text = "${wallpaper.resolution}, ${wallpaper.fileSize.toSize()}",
                         textAlign = TextAlign.Start,
-                        fontSize = 14.sp,
+                        fontSize = 12.sp,
                         fontWeight = FontWeight.Light,
                         color = Color.White,
                         modifier = Modifier
