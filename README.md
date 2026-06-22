@@ -29,7 +29,8 @@ Peristyle is created to be an extremely simple and sophisticated wallpaper manag
 
 ## Stats
 
-![GitHub all releases](https://img.shields.io/github/downloads/Hamza417/Peri/total?label=Total%20Downloads&color=white)
+![GitHub all releases](https://img.shields.io/github/downloads/Hamza417/Peri/total?label=Total%20Downloads%20(GitHub)&color=white)
+![](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fgithub.com%2Fkitswas%2Ffdroid-metrics-dashboard%2Fraw%2Frefs%2Fheads%2Fmain%2Fprocessed%2Ftotal%2Fapp.simple.peri.json&query=%24.total_downloads&logo=fdroid&label=Total%20Downloads%20(F-Droid))
 
 ## Download
 
