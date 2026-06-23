@@ -40,6 +40,7 @@ import app.simple.peri.abstraction.AutoWallpaperUtils
 import app.simple.peri.activities.main.LocalDisplaySize
 import app.simple.peri.constants.Misc
 import app.simple.peri.models.Wallpaper
+import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.ui.commons.MenuItemWithIcon
 import app.simple.peri.ui.constants.DIALOG_OPTION_FONT_SIZE
 import app.simple.peri.ui.dialogs.common.PleaseWaitDialog
@@ -62,7 +63,7 @@ fun ScreenSelectionDialog(
 
     val shouldExport = remember { mutableStateOf(false) }
     val showDoneDialog = remember { mutableStateOf(false) }
-    val isChecked = remember { mutableStateOf(true) }
+    val isCropWallpaper = remember { mutableStateOf(MainComposePreferences.getWallpaperCropMode()) }
     val showPleaseWaitDialog = remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
@@ -110,9 +111,10 @@ fun ScreenSelectionDialog(
                             Checkbox(
                                     modifier = Modifier.padding(start = 0.dp, end = 16.dp)
                                         .size(24.dp),
-                                    checked = isChecked.value,
+                                    checked = isCropWallpaper.value,
                                     onCheckedChange = {
-                                        isChecked.value = it
+                                        MainComposePreferences.setWallpaperCropMode(it)
+                                        isCropWallpaper.value = it
                                     }
                             )
                             Text(
@@ -120,7 +122,7 @@ fun ScreenSelectionDialog(
                                     fontSize = DIALOG_OPTION_FONT_SIZE,
                                     fontWeight = FontWeight.Bold,
                                     fontStyle = FontStyle.Italic,
-                                    color = MaterialTheme.colorScheme.tertiary,
+                                    color = MaterialTheme.colorScheme.onSurface,
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis
                             )
@@ -142,7 +144,7 @@ fun ScreenSelectionDialog(
                                                 flags = WallpaperManager.FLAG_LOCK,
                                                 providedBitmap = bitmap,
                                                 wallpaper = wallpaper,
-                                                crop = isChecked.value,
+                                                crop = isCropWallpaper.value,
                                                 blurValue = blurValue,
                                                 colorMatrix = colorMatrix,
                                                 width = width,
@@ -164,7 +166,7 @@ fun ScreenSelectionDialog(
                                                 flags = WallpaperManager.FLAG_SYSTEM,
                                                 providedBitmap = bitmap,
                                                 wallpaper = wallpaper,
-                                                crop = isChecked.value,
+                                                crop = isCropWallpaper.value,
                                                 blurValue = blurValue,
                                                 colorMatrix = colorMatrix,
                                                 width = width,
@@ -186,7 +188,7 @@ fun ScreenSelectionDialog(
                                                 flags = WallpaperManager.FLAG_SYSTEM or WallpaperManager.FLAG_LOCK,
                                                 providedBitmap = bitmap,
                                                 wallpaper = wallpaper,
-                                                crop = isChecked.value,
+                                                crop = isCropWallpaper.value,
                                                 blurValue = blurValue,
                                                 colorMatrix = colorMatrix,
                                                 width = width,

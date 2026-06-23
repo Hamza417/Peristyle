@@ -76,6 +76,7 @@ object MainComposePreferences {
     private const val MARGIN_BETWEEN = "margin_between_wallpapers"
     private const val SKIP_PALETTE = "skip_palette"
     private const val SAVED_DEVICE_RESOLUTION = "device_resolution"
+    private const val WALLPAPER_CROP_MODE = "wallpaper_crop_mode"
 
     const val DISABLE_ANIMATIONS = "disable_animations"
     const val PREDICTIVE_BACK = "predictive_back"
@@ -922,5 +923,15 @@ object MainComposePreferences {
 
     fun getSavedHeight(): Int? {
         return getSavedDeviceResolution()?.second
+    }
+
+    // ----------------------------------------------------------------------------------------------------- //
+
+    fun getWallpaperCropMode(): Boolean {
+        return getSharedPreferences().getBoolean(WALLPAPER_CROP_MODE, true)
+    }
+
+    fun setWallpaperCropMode(value: Boolean) {
+        getSharedPreferences().edit().putBoolean(WALLPAPER_CROP_MODE, value).apply()
     }
 }
