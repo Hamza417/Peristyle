@@ -6,9 +6,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ScreenLockPortrait
@@ -17,7 +15,6 @@ import androidx.compose.material.icons.rounded.Splitscreen
 import androidx.compose.material.icons.rounded.Upload
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -26,13 +23,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
 import app.simple.peri.R
@@ -41,8 +34,8 @@ import app.simple.peri.activities.main.LocalDisplaySize
 import app.simple.peri.constants.Misc
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.preferences.MainComposePreferences
+import app.simple.peri.ui.commons.MenuItemWithCheckbox
 import app.simple.peri.ui.commons.MenuItemWithIcon
-import app.simple.peri.ui.constants.DIALOG_OPTION_FONT_SIZE
 import app.simple.peri.ui.dialogs.common.PleaseWaitDialog
 import app.simple.peri.ui.dialogs.common.ShowWarningDialog
 import app.simple.peri.utils.BitmapUtils.applyEffects
@@ -104,29 +97,15 @@ fun ScreenSelectionDialog(
             text = {
                 LazyColumn {
                     item {
-                        Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.padding(horizontal = 4.dp, vertical = 12.dp)
-                        ) {
-                            Checkbox(
-                                    modifier = Modifier.padding(start = 0.dp, end = 16.dp)
-                                        .size(24.dp),
-                                    checked = isCropWallpaper.value,
-                                    onCheckedChange = {
-                                        MainComposePreferences.setWallpaperCropMode(it)
-                                        isCropWallpaper.value = it
-                                    }
-                            )
-                            Text(
-                                    text = stringResource(id = R.string.crop_wallpaper),
-                                    fontSize = DIALOG_OPTION_FONT_SIZE,
-                                    fontWeight = FontWeight.Bold,
-                                    fontStyle = FontStyle.Italic,
-                                    color = MaterialTheme.colorScheme.onSurface,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
-                            )
-                        }
+                        MenuItemWithCheckbox(
+                                isChecked = isCropWallpaper.value,
+                                text = stringResource(R.string.crop_wallpaper),
+                                summary = stringResource(R.string.crop_wallpaper_summary),
+                                onCheckedChange = {
+                                    MainComposePreferences.setWallpaperCropMode(it)
+                                    isCropWallpaper.value = it
+                                }
+                        )
 
                         HorizontalDivider(
                                 modifier = Modifier.padding(vertical = 8.dp),
