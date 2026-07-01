@@ -70,7 +70,16 @@ fun ScreenSelectionDialog(
     }
 
     if (shouldExport.value) {
-        ExportWallpaper(context, bitmap, wallpaper) {
+        ExportWallpaper(
+                context = context,
+                providedBitmap = bitmap,
+                wallpaper = wallpaper,
+                crop = isCropWallpaper.value,
+                blurValue = blurValue,
+                colorMatrix = colorMatrix,
+                width = width,
+                height = height
+        ) {
             shouldExport.value = false
             showDoneDialog.value = true
         }
@@ -195,7 +204,18 @@ fun ScreenSelectionDialog(
                                 icon = Icons.Rounded.Upload,
                                 text = stringResource(R.string.set_with),
                                 onClick = {
-                                    setWallpaperWithDedicatedApp(bitmap, context)
+                                    setWallpaperWithDedicatedApp(
+                                            context = context,
+                                            flags = WallpaperManager.FLAG_SYSTEM or WallpaperManager.FLAG_LOCK,
+                                            providedBitmap = bitmap,
+                                            wallpaper = wallpaper,
+                                            crop = isCropWallpaper.value,
+                                            blurValue = blurValue,
+                                            colorMatrix = colorMatrix,
+                                            width = width,
+                                            height = height
+                                    )
+
                                     setShowDialog(false)
                                 }
                         )
@@ -260,10 +280,33 @@ suspend fun setWallpaper(
     }
 }
 
-fun setWallpaperWithDedicatedApp(bitmap: Bitmap, context: Context) {
+fun setWallpaperWithDedicatedApp(
+        context: Context,
+        flags: Int,
+        providedBitmap: Bitmap,
+        wallpaper: Wallpaper,
+        crop: Boolean = false,
+        blurValue: Float,
+        colorMatrix: ColorMatrix,
+        width: Int,
+        height: Int) {
     File(context.cacheDir, "temp_wallpaper.png").withDelete { file ->
         file.outputStream().use { outputStream ->
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+            if (crop) {
+                providedBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+            } else {
+                AutoWallpaperUtils.getBitmapFromFile(
+                        wallpaper.filePath,
+                        width,
+                        height,
+                        crop = false,
+                        recycle = false) {
+                    it.applyEffects(
+                            blur = blurValue.times(Misc.BLUR_TIMES),
+                            colorMatrix = colorMatrix)
+                    it.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+                }
+            }
         }
 
         val uri = FileProvider.getUriForFile(
@@ -282,15 +325,42 @@ fun setWallpaperWithDedicatedApp(bitmap: Bitmap, context: Context) {
 }
 
 @Composable
-fun ExportWallpaper(context: Context, bitmap: Bitmap, wallpaper: Wallpaper, onExport: () -> Unit = {}) {
+fun ExportWallpaper(
+        context: Context,
+        providedBitmap: Bitmap,
+        wallpaper: Wallpaper,
+        crop: Boolean = false,
+        blurValue: Float,
+        colorMatrix: ColorMatrix,
+        width: Int,
+        height: Int,
+        onExport: () -> Unit = {}
+) {
     val wallpaperExportLauncher = rememberLauncherForActivityResult(
             ActivityResultContracts.CreateDocument("image/x-png")) { uri ->
-        uri?.let {
-            context.contentResolver.openOutputStream(it)?.use { outputStream ->
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-            }
+        uri?.let { uri ->
+            context.contentResolver.openOutputStream(uri)?.use { outputStream ->
+                // Apply effects to the bitmap before exporting
+                if (crop) {
+                    providedBitmap
+                        .compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+                } else {
+                    AutoWallpaperUtils.getBitmapFromFile(
+                            wallpaper.filePath,
+                            width,
+                            height,
+                            crop = false,
+                            recycle = false) {
+                        it.applyEffects(
+                                blur = blurValue.times(Misc.BLUR_TIMES),
+                                colorMatrix = colorMatrix)
 
-            onExport()
+                        it.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+                    }
+                }
+
+                onExport()
+            }
         }
     }
 
