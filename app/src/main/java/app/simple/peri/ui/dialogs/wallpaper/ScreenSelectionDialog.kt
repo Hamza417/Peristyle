@@ -70,6 +70,7 @@ fun ScreenSelectionDialog(
     }
 
     if (shouldExport.value) {
+        showPleaseWaitDialog.value = true
         ExportWallpaper(
                 context = context,
                 providedBitmap = bitmap,
@@ -204,9 +205,10 @@ fun ScreenSelectionDialog(
                                 icon = Icons.Rounded.Upload,
                                 text = stringResource(R.string.set_with),
                                 onClick = {
+                                    showPleaseWaitDialog.value = true
+
                                     setWallpaperWithDedicatedApp(
                                             context = context,
-                                            flags = WallpaperManager.FLAG_SYSTEM or WallpaperManager.FLAG_LOCK,
                                             providedBitmap = bitmap,
                                             wallpaper = wallpaper,
                                             crop = isCropWallpaper.value,
@@ -282,7 +284,6 @@ suspend fun setWallpaper(
 
 fun setWallpaperWithDedicatedApp(
         context: Context,
-        flags: Int,
         providedBitmap: Bitmap,
         wallpaper: Wallpaper,
         crop: Boolean = false,
@@ -301,10 +302,10 @@ fun setWallpaperWithDedicatedApp(
                         height,
                         crop = false,
                         recycle = false) {
-                    it.applyEffects(
+                    val bitmap = it.applyEffects(
                             blur = blurValue.times(Misc.BLUR_TIMES),
                             colorMatrix = colorMatrix)
-                    it.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
                 }
             }
         }
@@ -351,11 +352,11 @@ fun ExportWallpaper(
                             height,
                             crop = false,
                             recycle = false) {
-                        it.applyEffects(
+                        val bitmap = it.applyEffects(
                                 blur = blurValue.times(Misc.BLUR_TIMES),
                                 colorMatrix = colorMatrix)
 
-                        it.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
                     }
                 }
 
