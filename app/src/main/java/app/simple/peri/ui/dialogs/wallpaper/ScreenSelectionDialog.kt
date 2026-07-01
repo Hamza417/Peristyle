@@ -341,30 +341,39 @@ fun ExportWallpaper(
         height: Int,
         onExport: () -> Unit = {}
 ) {
-    val wallpaperExportLauncher = rememberLauncherForActivityResult(
-            ActivityResultContracts.CreateDocument("image/x-png")) { uri ->
-        uri?.let { uri ->
-            context.contentResolver.openOutputStream(uri)?.use { outputStream ->
-                // Apply effects to the bitmap before exporting
-                if (crop) {
-                    providedBitmap
-                        .compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-                } else {
-                    AutoWallpaperUtils.getBitmapFromFile(
-                            wallpaper.filePath,
-                            width,
-                            height,
-                            crop = false,
-                            recycle = false) {
-                        val bitmap = it.applyEffects(
-                                blur = blurValue.times(Misc.BLUR_TIMES),
-                                colorMatrix = colorMatrix)
+    // Remember a coroutine scope tied to this composable
+    val coroutineScope = rememberCoroutineScope()
 
-                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+    val wallpaperExportLauncher = rememberLauncherForActivityResult(
+            ActivityResultContracts.CreateDocument("image/x-png")
+    ) { uri ->
+        uri?.let { resolvedUri ->
+            coroutineScope.launch(Dispatchers.IO) {
+                try {
+                    context.contentResolver.openOutputStream(resolvedUri)?.use { outputStream ->
+                        if (crop) {
+                            providedBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+                        } else {
+                            AutoWallpaperUtils.getBitmapFromFile(
+                                    wallpaper.filePath,
+                                    width,
+                                    height,
+                                    crop = false,
+                                    recycle = false
+                            ) {
+                                val bitmap = it.applyEffects(
+                                        blur = blurValue.times(Misc.BLUR_TIMES),
+                                        colorMatrix = colorMatrix
+                                )
+                                bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+                            }
+                        }
+                    }
+                } finally {
+                    withContext(Dispatchers.Main) {
+                        onExport()
                     }
                 }
-
-                onExport()
             }
         }
     }
