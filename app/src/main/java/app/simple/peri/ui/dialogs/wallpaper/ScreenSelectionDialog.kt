@@ -205,20 +205,22 @@ fun ScreenSelectionDialog(
                                 icon = Icons.Rounded.Upload,
                                 text = stringResource(R.string.set_with),
                                 onClick = {
-                                    showPleaseWaitDialog.value = true
+                                    scope.launch {
+                                        showPleaseWaitDialog.value = true
 
-                                    setWallpaperWithDedicatedApp(
-                                            context = context,
-                                            providedBitmap = bitmap,
-                                            wallpaper = wallpaper,
-                                            crop = isCropWallpaper.value,
-                                            blurValue = blurValue,
-                                            colorMatrix = colorMatrix,
-                                            width = width,
-                                            height = height
-                                    )
+                                        setWallpaperWithDedicatedApp(
+                                                context = context,
+                                                providedBitmap = bitmap,
+                                                wallpaper = wallpaper,
+                                                crop = isCropWallpaper.value,
+                                                blurValue = blurValue,
+                                                colorMatrix = colorMatrix,
+                                                width = width,
+                                                height = height
+                                        )
 
-                                    setShowDialog(false)
+                                        setShowDialog(false)
+                                    }
                                 }
                         )
                     }
@@ -282,7 +284,7 @@ suspend fun setWallpaper(
     }
 }
 
-fun setWallpaperWithDedicatedApp(
+suspend fun setWallpaperWithDedicatedApp(
         context: Context,
         providedBitmap: Bitmap,
         wallpaper: Wallpaper,
@@ -291,36 +293,38 @@ fun setWallpaperWithDedicatedApp(
         colorMatrix: ColorMatrix,
         width: Int,
         height: Int) {
-    File(context.cacheDir, "temp_wallpaper.png").withDelete { file ->
-        file.outputStream().use { outputStream ->
-            if (crop) {
-                providedBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-            } else {
-                AutoWallpaperUtils.getBitmapFromFile(
-                        wallpaper.filePath,
-                        width,
-                        height,
-                        crop = false,
-                        recycle = false) {
-                    val bitmap = it.applyEffects(
-                            blur = blurValue.times(Misc.BLUR_TIMES),
-                            colorMatrix = colorMatrix)
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+    withContext(Dispatchers.IO) {
+        File(context.cacheDir, "temp_wallpaper.png").withDelete { file ->
+            file.outputStream().use { outputStream ->
+                if (crop) {
+                    providedBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+                } else {
+                    AutoWallpaperUtils.getBitmapFromFile(
+                            wallpaper.filePath,
+                            width,
+                            height,
+                            crop = false,
+                            recycle = false) {
+                        val bitmap = it.applyEffects(
+                                blur = blurValue.times(Misc.BLUR_TIMES),
+                                colorMatrix = colorMatrix)
+                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+                    }
                 }
             }
-        }
 
-        val uri = FileProvider.getUriForFile(
-                context, "${context.packageName}.provider", file)
+            val uri = FileProvider.getUriForFile(
+                    context, "${context.packageName}.provider", file)
 
-        val intent = Intent(Intent.ACTION_ATTACH_DATA).apply {
-            setDataAndType(uri, "image/*")
-            putExtra("mimeType", "image/*")
-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        }
+            val intent = Intent(Intent.ACTION_ATTACH_DATA).apply {
+                setDataAndType(uri, "image/*")
+                putExtra("mimeType", "image/*")
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
 
-        Intent.createChooser(intent, "Set Wallpaper with...").let { chooser ->
-            context.startActivity(chooser)
+            Intent.createChooser(intent, "Set Wallpaper with...").let { chooser ->
+                context.startActivity(chooser)
+            }
         }
     }
 }
