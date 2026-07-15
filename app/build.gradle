@@ -53,8 +53,8 @@ android {
         minSdk = 24
         //noinspection OldTargetApi
         targetSdk = 36
-        versionCode 972
-        versionName "v9.7.2"
+        versionCode 973
+        versionName "v9.7.3"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -114,6 +114,7 @@ android {
 
         debug {
             minifyEnabled false
+            //noinspection NotShrinkingResources
             shrinkResources false
             vcsInfo.include false
             if (signingConfigs.release != null && signingConfigs.release.storeFile != null) {
