@@ -235,7 +235,11 @@
     <string name="skip_when_low_battery">Skip When Low Battery</string>
     <string name="lock">Lock</string>
     <string name="double_tap_to_change_wallpaper">Double Tap to Change</string>
-    <string name="double_tap_to_change_wallpaper_summary">Double tapping the home or lock screen should change to next wallpaper.</string>
+    <string name="double_tap_to_change_wallpaper_summary">Double-tap the home or lock screen to switch to the next wallpaper.</string>
+    <string name="two_finger_swipe_to_change_wallpaper">Two-Finger Swipe</string>
+    <string name="two_finger_swipe_to_change_wallpaper_summary">Swipe up or down with two fingers on the home screen to switch to the next wallpaper.</string>
+    <string name="three_finger_swipe_to_change_wallpaper">Three-Finger Swipe</string>
+    <string name="three_finger_swipe_to_change_wallpaper_summary">Swipe up or down with three fingers on the home screen to switch to the next wallpaper.</string>
     <string name="disable_animations">Disable Animations</string>
     <string name="random">Random</string>
     <string name="delete_summary">Permanently delete wallpaper after it has been set for a number of times.</string>
@@ -277,4 +281,5 @@
     <string name="compress_summary">Compress wallpaper to reduce size at the cost of quality.</string>
     <string name="reduce_resolution_summary">Cut the reslution by half, changes image size and dimensions but preserves the quality.</string>
     <string name="set_with">Set With…</string>
+    <string name="gestures">Gestures</string>
 </resources>
