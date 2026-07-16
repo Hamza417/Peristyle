@@ -335,9 +335,9 @@ fun LiveAutoWallpaper(navController: NavController? = null) {
             SwitchPreference(
                     title = context.getString(R.string.double_tap_to_change_wallpaper),
                     description = context.getString(R.string.double_tap_to_change_wallpaper_summary),
-                    checked = MainComposePreferences.getDoubleTapToChange()
+                    checked = MainComposePreferences.getGestureToChange()
             ) {
-                MainComposePreferences.setDoubleTapToChange(it)
+                MainComposePreferences.setGestureToChange(it)
             }
 
             if (showDeleteDialog.value) {
