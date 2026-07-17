@@ -69,7 +69,7 @@ object MainComposePreferences {
     private const val DONT_CHANGE_WHEN_LANDSCAPE = "dont_change_when_landscape"
     private const val DONT_CHANGE_WHEN_PORTRAIT = "dont_change_when_portrait"
     private const val DONT_CHANGE_WHEN_LOW_BATTERY = "dont_change_when_low_battery"
-    private const val GESTURE_TO_CHANGE = "double_tap_to_change"
+    private const val DOUBLE_TAP_TO_CHANGE = "double_tap_to_change"
     private const val MAX_SET_COUNT = "max_set_count"
     private const val WALLPAPER_SET_METHOD = "wallpaper_set_method"
     private const val WALLPAPER_COLOR_SPACE = "wallpaper_color_space"
@@ -798,12 +798,12 @@ object MainComposePreferences {
 
     // ----------------------------------------------------------------------------------------------------- //
 
-    fun getGestureToChange(): Boolean {
-        return getSharedPreferences().getBoolean(GESTURE_TO_CHANGE, false)
+    fun getDoubleTapToChange(): Boolean {
+        return getSharedPreferences().getBoolean(DOUBLE_TAP_TO_CHANGE, false)
     }
 
-    fun setGestureToChange(value: Boolean) {
-        getSharedPreferences().edit().putBoolean(GESTURE_TO_CHANGE, value).apply()
+    fun setDoubleTapToChange(value: Boolean) {
+        getSharedPreferences().edit().putBoolean(DOUBLE_TAP_TO_CHANGE, value).apply()
     }
 
     // ----------------------------------------------------------------------------------------------------- //

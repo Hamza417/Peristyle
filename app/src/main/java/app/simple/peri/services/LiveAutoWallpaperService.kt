@@ -7,20 +7,17 @@ import android.content.IntentFilter
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
-import android.hardware.display.DisplayManager
-import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.service.wallpaper.WallpaperService
 import android.util.Log
 import android.view.Choreographer
-import android.view.Display
+import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.SurfaceHolder
-import android.view.WindowManager
 import androidx.core.content.IntentCompat
 import app.simple.peri.abstraction.AutoWallpaperUtils.getBitmapFromFile
-import app.simple.peri.extensions.WallpaperGestureProcessor
+import app.simple.peri.extensions.DoubleTapListener
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.preferences.SharedPreferences
@@ -37,7 +34,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okio.FileNotFoundException
-import kotlin.time.Duration.Companion.milliseconds
 
 class LiveAutoWallpaperService : WallpaperService() {
 
@@ -143,7 +139,19 @@ class LiveAutoWallpaperService : WallpaperService() {
 
     private inner class LiveAutoWallpaperEngine : Engine() {
 
-        private lateinit var gestureProcessor: WallpaperGestureProcessor
+        // Simplified gesture detector for double-tap functionality
+        private val gestureDetector = GestureDetector(
+                applicationContext,
+                DoubleTapListener {
+                    if (MainComposePreferences.getDoubleTapToChange()) {
+                        requestNextWallpaperDebounced(REASON_DOUBLE_TAP)
+                        true
+                    } else {
+                        Log.w(TAG, "Double tap to change wallpaper is disabled in preferences")
+                        false
+                    }
+                }
+        )
 
         private var bitmap: Bitmap? = null
 
@@ -242,11 +250,6 @@ class LiveAutoWallpaperService : WallpaperService() {
             scheduleNextFrame()
         }
 
-        override fun onCreate(surfaceHolder: SurfaceHolder?) {
-            super.onCreate(surfaceHolder)
-            setTouchEventsEnabled(true)
-        }
-
         override fun onSurfaceCreated(holder: SurfaceHolder?) {
             super.onSurfaceCreated(holder)
             if (isPreview) {
@@ -254,70 +257,6 @@ class LiveAutoWallpaperService : WallpaperService() {
             } else {
                 requestNextWallpaperDebounced(REASON_SURFACE_CREATED)
             }
-
-            gestureProcessor = WallpaperGestureProcessor(
-                    context = getUiSafeContext(),
-                    onDoubleTap = {
-                        Log.d(TAG, "Double-tap detected")
-                        if (MainComposePreferences.getGestureToChange()) {
-                            requestNextWallpaperDebounced(REASON_GESTURE_TRIGGERED)
-                        } else {
-                            Log.d(TAG, "Double-tap gesture is disabled, ignoring")
-                        }
-                    },
-                    onThreeFingerSwipe = { direction ->
-                        Log.d(TAG, "Three-finger swipe detected: $direction")
-
-                        if (MainComposePreferences.getGestureToChange()) {
-                            when (direction) {
-                                WallpaperGestureProcessor.Direction.UP -> {
-                                    Log.d(TAG, "Three-finger swipe UP detected")
-                                    requestNextWallpaperDebounced(REASON_GESTURE_TRIGGERED)
-                                }
-                                WallpaperGestureProcessor.Direction.DOWN -> {
-                                    Log.d(TAG, "Three-finger swipe DOWN detected")
-                                    // Handle three-finger swipe down action here
-                                }
-                                WallpaperGestureProcessor.Direction.LEFT -> {
-                                    Log.d(TAG, "Three-finger swipe LEFT detected")
-                                    // Handle three-finger swipe left action here
-                                }
-                                WallpaperGestureProcessor.Direction.RIGHT -> {
-                                    Log.d(TAG, "Three-finger swipe RIGHT detected")
-                                    // Handle three-finger swipe right action here
-                                }
-                            }
-                        } else {
-                            Log.d(TAG, "Three-finger swipe gesture is disabled, ignoring")
-                        }
-                    },
-                    onTwoFingerSwipe = { direction ->
-                        Log.d(TAG, "Two-finger swipe detected: $direction")
-
-                        if (MainComposePreferences.getGestureToChange()) {
-                            when (direction) {
-                                WallpaperGestureProcessor.Direction.UP -> {
-                                    Log.d(TAG, "Two-finger swipe UP detected")
-                                    requestNextWallpaperDebounced(REASON_GESTURE_TRIGGERED)
-                                }
-                                WallpaperGestureProcessor.Direction.DOWN -> {
-                                    Log.d(TAG, "Two-finger swipe DOWN detected")
-                                    // Handle two-finger swipe down action here
-                                }
-                                WallpaperGestureProcessor.Direction.LEFT -> {
-                                    Log.d(TAG, "Two-finger swipe LEFT detected")
-                                    // Handle two-finger swipe left action here
-                                }
-                                WallpaperGestureProcessor.Direction.RIGHT -> {
-                                    Log.d(TAG, "Two-finger swipe RIGHT detected")
-                                    // Handle two-finger swipe right action here
-                                }
-                            }
-                        } else {
-                            Log.d(TAG, "Two-finger swipe gesture is disabled, ignoring")
-                        }
-                    }
-            )
         }
 
         override fun onSurfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {
@@ -417,7 +356,7 @@ class LiveAutoWallpaperService : WallpaperService() {
 
         override fun onTouchEvent(event: MotionEvent?) {
             if (event != null) {
-                gestureProcessor.processTouchEvent(event)
+                gestureDetector.onTouchEvent(event)
             } else {
                 Log.w(TAG, "Received null MotionEvent in onTouchEvent")
             }
@@ -428,7 +367,7 @@ class LiveAutoWallpaperService : WallpaperService() {
         // Debounce window - coalesce storms of triggers into one request.
         requestNextJob?.cancel()
         requestNextJob = requestScope.launch {
-            delay(NEXT_WALLPAPER_DEBOUNCE_MS.milliseconds)
+            delay(NEXT_WALLPAPER_DEBOUNCE_MS)
             Log.d(TAG, "Requesting next wallpaper (debounced), reason=$reason")
             askNextWallpaper()
         }
@@ -446,18 +385,6 @@ class LiveAutoWallpaperService : WallpaperService() {
         applicationContext.startService(intent)
     }
 
-    private fun getUiSafeContext(): Context {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            // Android 12+: Create a proper WindowContext for the wallpaper
-            val displayManager = getSystemService(Context.DISPLAY_SERVICE) as DisplayManager
-            val display = displayManager.getDisplay(Display.DEFAULT_DISPLAY)
-            createWindowContext(display, WindowManager.LayoutParams.TYPE_WALLPAPER, null)
-        } else {
-            // Android 11 and below: The Service context is perfectly fine
-            this@LiveAutoWallpaperService
-        }
-    }
-
     companion object {
         private const val TAG = "LiveAutoWallpaperService"
         const val NEXT_WALLPAPER = "action.SAME_WALLPAPER"
@@ -469,7 +396,7 @@ class LiveAutoWallpaperService : WallpaperService() {
 
         private const val REASON_SCREEN_ON = "screen_on"
         private const val REASON_SCREEN_OFF = "screen_off"
-        private const val REASON_GESTURE_TRIGGERED = "gesture_triggered"
+        private const val REASON_DOUBLE_TAP = "double_tap"
         private const val REASON_SURFACE_CREATED = "surface_created"
 
         fun getIntent(context: Context, action: String): Intent {
