@@ -332,6 +332,14 @@ fun LiveAutoWallpaper(navController: NavController? = null) {
                 MainComposePreferences.setAutoWallpaperNotification(it)
             }
 
+            SwitchPreference(
+                    title = stringResource(R.string.double_tap_to_change_wallpaper),
+                    description = stringResource(R.string.double_tap_to_change_wallpaper_summary),
+                    checked = MainComposePreferences.getGestureToChange()
+            ) {
+                MainComposePreferences.setGestureToChange(it)
+            }
+
             if (showDeleteDialog.value) {
                 UsageTimesDeleteDialog {
                     showDeleteDialog.value = false
@@ -370,33 +378,6 @@ fun LiveAutoWallpaper(navController: NavController? = null) {
                             MainComposePreferences.setAutoWallpaperScaleBlue(scaleBlue)
                         }
                 )
-            }
-        }
-        item {
-            SecondaryHeader(title = stringResource(R.string.gestures))
-
-            SwitchPreference(
-                    title = stringResource(R.string.double_tap_to_change_wallpaper),
-                    description = stringResource(R.string.double_tap_to_change_wallpaper_summary),
-                    checked = MainComposePreferences.isDoubleTapToChange()
-            ) {
-                MainComposePreferences.setDoubleTapToChange(it)
-            }
-
-            SwitchPreference(
-                    title = stringResource(R.string.two_finger_swipe_to_change_wallpaper),
-                    description = stringResource(R.string.two_finger_swipe_to_change_wallpaper_summary),
-                    checked = MainComposePreferences.isTwoFingerSwipeUpToChange()
-            ) {
-                MainComposePreferences.setTwoFingerSwipeUpToChange(it)
-            }
-
-            SwitchPreference(
-                    title = stringResource(R.string.three_finger_swipe_to_change_wallpaper),
-                    description = stringResource(R.string.three_finger_swipe_to_change_wallpaper_summary),
-                    checked = MainComposePreferences.isThreeFingerSwipeUpToChange()
-            ) {
-                MainComposePreferences.isThreeFingerSwipeUpToChange()
             }
         }
         item {
