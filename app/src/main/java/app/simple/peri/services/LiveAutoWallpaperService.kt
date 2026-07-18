@@ -259,7 +259,7 @@ class LiveAutoWallpaperService : WallpaperService() {
                     context = getUiSafeContext(),
                     onDoubleTap = {
                         Log.d(TAG, "Double-tap detected")
-                        if (MainComposePreferences.getGestureToChange()) {
+                        if (MainComposePreferences.isDoubleTapToChange()) {
                             requestNextWallpaperDebounced(REASON_GESTURE_TRIGGERED)
                         } else {
                             Log.d(TAG, "Double-tap gesture is disabled, ignoring")
@@ -268,7 +268,7 @@ class LiveAutoWallpaperService : WallpaperService() {
                     onThreeFingerSwipe = { direction ->
                         Log.d(TAG, "Three-finger swipe detected: $direction")
 
-                        if (MainComposePreferences.getGestureToChange()) {
+                        if (MainComposePreferences.isThreeFingerSwipeUpToChange()) {
                             when (direction) {
                                 WallpaperGestureProcessor.Direction.UP -> {
                                     Log.d(TAG, "Three-finger swipe UP detected")
@@ -276,7 +276,7 @@ class LiveAutoWallpaperService : WallpaperService() {
                                 }
                                 WallpaperGestureProcessor.Direction.DOWN -> {
                                     Log.d(TAG, "Three-finger swipe DOWN detected")
-                                    // Handle three-finger swipe down action here
+                                    requestNextWallpaperDebounced(REASON_GESTURE_TRIGGERED)
                                 }
                                 WallpaperGestureProcessor.Direction.LEFT -> {
                                     Log.d(TAG, "Three-finger swipe LEFT detected")
@@ -294,7 +294,7 @@ class LiveAutoWallpaperService : WallpaperService() {
                     onTwoFingerSwipe = { direction ->
                         Log.d(TAG, "Two-finger swipe detected: $direction")
 
-                        if (MainComposePreferences.getGestureToChange()) {
+                        if (MainComposePreferences.isTwoFingerSwipeUpToChange()) {
                             when (direction) {
                                 WallpaperGestureProcessor.Direction.UP -> {
                                     Log.d(TAG, "Two-finger swipe UP detected")
@@ -302,7 +302,7 @@ class LiveAutoWallpaperService : WallpaperService() {
                                 }
                                 WallpaperGestureProcessor.Direction.DOWN -> {
                                     Log.d(TAG, "Two-finger swipe DOWN detected")
-                                    // Handle two-finger swipe down action here
+                                    requestNextWallpaperDebounced(REASON_GESTURE_TRIGGERED)
                                 }
                                 WallpaperGestureProcessor.Direction.LEFT -> {
                                     Log.d(TAG, "Two-finger swipe LEFT detected")
