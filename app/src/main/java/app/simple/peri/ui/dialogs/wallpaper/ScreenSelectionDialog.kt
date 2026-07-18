@@ -52,6 +52,7 @@ fun ScreenSelectionDialog(
         bitmap: Bitmap,
         wallpaper: Wallpaper,
         blurValue: Float,
+        onSetWallpaper: () -> Unit,
         colorMatrix: ColorMatrix) {
 
     val shouldExport = remember { mutableStateOf(false) }
@@ -139,6 +140,7 @@ fun ScreenSelectionDialog(
                                                 width = width,
                                                 height = height
                                         )
+                                        onSetWallpaper()
                                         setShowDialog(false)
                                     }
                                 }
@@ -161,6 +163,7 @@ fun ScreenSelectionDialog(
                                                 width = width,
                                                 height = height
                                         )
+                                        onSetWallpaper()
                                         setShowDialog(false)
                                     }
                                 }
@@ -183,6 +186,7 @@ fun ScreenSelectionDialog(
                                                 width = width,
                                                 height = height
                                         )
+                                        onSetWallpaper()
                                         setShowDialog(false)
                                     }
                                 }
@@ -219,6 +223,7 @@ fun ScreenSelectionDialog(
                                                 height = height
                                         )
 
+                                        onSetWallpaper()
                                         setShowDialog(false)
                                     }
                                 }
