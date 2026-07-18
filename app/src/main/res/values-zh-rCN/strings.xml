@@ -277,4 +277,5 @@
     <string name="revoke_folder_desc">撤销对此文件夹的访问权限并将其从应用中移除。此选项不会删除文件。</string>
     <string name="compress_summary">压缩壁纸以降低大小，同时降低质量。</string>
     <string name="reduce_resolution_summary">将分辨率减半，改变图像的尺寸与规格，但保留画质。</string>
+    <string name="set_with">设置为…</string>
 </resources>
