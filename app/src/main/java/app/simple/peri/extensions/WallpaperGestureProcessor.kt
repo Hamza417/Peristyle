@@ -13,56 +13,76 @@ class WallpaperGestureProcessor(
 ) {
     enum class Direction { UP, DOWN, LEFT, RIGHT }
 
-    // Track the highest number of fingers touching the screen during a single gesture
     private var maxPointers = 1
+    private var initialX = 0f
+    private var initialY = 0f
+    private var isSwiping = false
 
+    // Distance in pixels required to register a swipe.
+    // Triggering early (e.g., 150px) beats the OS screenshot gesture to the punch.
+    private val swipeThreshold = 150f
+
+    // Keep GestureDetector ONLY for complex single-touch gestures like Double Tap
     private val gestureDetector = GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
-
         override fun onDoubleTap(e: MotionEvent): Boolean {
             onDoubleTap?.invoke()
             return true
         }
-
-        override fun onFling(e1: MotionEvent?, e2: MotionEvent, velocityX: Float, velocityY: Float): Boolean {
-            if (e1 == null) return false
-
-            // Calculate swipe direction
-            val diffY = e2.y - e1.y
-            val diffX = e2.x - e1.x
-            val direction = if (abs(diffX) > abs(diffY)) {
-                if (diffX > 0) Direction.RIGHT else Direction.LEFT
-            } else {
-                if (diffY > 0) Direction.DOWN else Direction.UP
-            }
-
-            // Trigger the correct callback based on the max fingers recorded
-            return when (maxPointers) {
-                2 -> {
-                    onTwoFingerSwipe?.invoke(direction)
-                    true
-                }
-                3 -> {
-                    onThreeFingerSwipe?.invoke(direction)
-                    true
-                }
-                else -> false
-            }
-        }
     })
 
-    // Feed the MotionEvents from the Wallpaper Engine into this function
     fun processTouchEvent(event: MotionEvent) {
-        // Reset our pointer tracker when a new touch sequence begins
-        if (event.actionMasked == MotionEvent.ACTION_DOWN) {
-            maxPointers = 1
-        }
-
-        // If more fingers touch down, update our max count
-        if (event.actionMasked == MotionEvent.ACTION_POINTER_DOWN) {
-            maxPointers = maxOf(maxPointers, event.pointerCount)
-        }
-
-        // Pass the event to the gesture detector
+        // Feed events to detector for double tap
         gestureDetector.onTouchEvent(event)
+
+        when (event.actionMasked) {
+            MotionEvent.ACTION_DOWN -> {
+                maxPointers = 1
+                initialX = event.x
+                initialY = event.y
+                isSwiping = true
+            }
+
+            MotionEvent.ACTION_POINTER_DOWN -> {
+                maxPointers = maxOf(maxPointers, event.pointerCount)
+            }
+
+            MotionEvent.ACTION_MOVE -> {
+                // Only process multitouch swipes manually
+                if (!isSwiping || maxPointers < 2) return
+
+                val diffX = event.x - initialX
+                val diffY = event.y - initialY
+
+                // If distance crosses the threshold, trigger the swipe immediately
+                if (abs(diffX) > swipeThreshold || abs(diffY) > swipeThreshold) {
+                    val direction = if (abs(diffX) > abs(diffY)) {
+                        if (diffX > 0) Direction.RIGHT else Direction.LEFT
+                    } else {
+                        if (diffY > 0) Direction.DOWN else Direction.UP
+                    }
+
+                    when (maxPointers) {
+                        2 -> {
+                            onTwoFingerSwipe?.invoke(direction)
+                        }
+                        3 -> {
+                            onThreeFingerSwipe?.invoke(direction)
+                        }
+                    }
+
+                    // Mark as false so we don't trigger multiple times in a single swipe
+                    isSwiping = false
+                }
+            }
+
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_POINTER_UP, MotionEvent.ACTION_CANCEL -> {
+                // Reset swiping state when fingers are lifted or the OS cancels the gesture
+                when (event.actionMasked) {
+                    MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                        isSwiping = false
+                    }
+                }
+            }
+        }
     }
 }
