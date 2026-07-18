@@ -755,10 +755,7 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
                             bitmap = bitmap!!,
                             blurValue = blurValue,
                             colorMatrix = colorMatrix,
-                            wallpaper = wallpaper as Wallpaper,
-                            onSetWallpaper = {
-                                wallpaperUsageViewModel.incrementUsageCount((wallpaper as Wallpaper))
-                            }
+                            wallpaper = wallpaper as Wallpaper
                     )
                 }
                 is WallhavenWallpaper -> {
@@ -797,9 +794,6 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
                                 blurValue = blurValue,
                                 colorMatrix = colorMatrix,
                                 wallpaper = downloadedWallpaper!!,
-                                onSetWallpaper = {
-                                    /* no-op */
-                                }
                         )
                     }
                 }
