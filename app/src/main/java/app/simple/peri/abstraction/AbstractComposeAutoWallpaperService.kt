@@ -289,6 +289,12 @@ abstract class AbstractComposeAutoWallpaperService : AbstractAutoWallpaperServic
     }
 
     private suspend fun getWallpaperFromList(wallpapers: List<Wallpaper>?, position: Int, isHomeScreen: Boolean): Wallpaper? {
+        if (wallpapers.isNullOrEmpty()) {
+            Log.e(TAG, "No wallpapers found in the list")
+            showErrorNotification("No wallpapers found in the list")
+            return null
+        }
+
         if (isHomeScreen) {
             Log.i(TAG, "Getting home screen wallpaper at position: $position")
         } else {
@@ -299,12 +305,12 @@ abstract class AbstractComposeAutoWallpaperService : AbstractAutoWallpaperServic
             MainPreferences.isLinearAutoWallpaper() -> {
                 Log.i(TAG, "Linear auto wallpaper mode enabled, skipping non-repeating wallpapers")
                 try {
-                    return wallpapers?.get(position).also {
+                    return wallpapers.get(position).also {
                         MainComposePreferences.setLastWallpaperPosition(isHomeScreen, position)
                     }
                 } catch (_: IndexOutOfBoundsException) {
                     MainComposePreferences.resetLastWallpaperPosition(isHomeScreen)
-                    return wallpapers?.get(0)
+                    return wallpapers[0]
                 }
             }
             else -> {
@@ -313,16 +319,16 @@ abstract class AbstractComposeAutoWallpaperService : AbstractAutoWallpaperServic
                     Log.i(TAG, "Selecting a random wallpaper from the list")
                     val usedIds = getLastUsedWallpapers(isHomeScreen, wallpapers)?.map { it.id }?.toSet() ?: emptySet()
                     wallpapers
-                        ?.filterNot { wallpaper -> wallpaper.id in usedIds }
-                        ?.random(Random(System.currentTimeMillis()))
+                        .filterNot { wallpaper -> wallpaper.id in usedIds }
+                        .random(Random(System.currentTimeMillis()))
                 } catch (_: NoSuchElementException) {
                     Log.i(TAG, "No non-repeating wallpapers found, selecting a random wallpaper from the entire list")
-                    wallpapers?.random(Random(System.currentTimeMillis()))
+                    wallpapers.random(Random(System.currentTimeMillis()))
                 }
 
-                Log.i(TAG, "Selected wallpaper: ${wallpaper?.id}")
+                Log.i(TAG, "Selected wallpaper: ${wallpaper.id}")
 
-                wallpaper?.let {
+                wallpaper.let {
                     insertWallpaperToLastUsedDatabase(it, isHomeScreen) // mark this wallpaper as used
                 }
 
