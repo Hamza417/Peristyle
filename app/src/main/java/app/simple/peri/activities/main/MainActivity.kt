@@ -67,6 +67,12 @@ class MainComposeActivity : BaseComponentActivity(), OnSharedPreferenceChangeLis
 
     private fun resolveInitialRouteFromIntent(intent: Intent?): String? {
         if (intent == null) return null
+
+        // Handle wallpaper picker intent
+        if (intent.action == Intent.ACTION_SET_WALLPAPER) {
+            return Routes.FOLDERS
+        }
+
         val data: Uri? = intent.data
         val host = data?.host ?: return null
         return when (host) {
