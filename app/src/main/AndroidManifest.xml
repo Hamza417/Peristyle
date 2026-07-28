@@ -52,6 +52,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
+            <!-- Handle wallpaper picker requests from launchers -->
+            <intent-filter>
+                <action android:name="android.intent.action.SET_WALLPAPER" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
             <!-- Handle deep links from shortcuts -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
