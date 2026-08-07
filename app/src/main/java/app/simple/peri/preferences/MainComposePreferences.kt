@@ -79,6 +79,7 @@ object MainComposePreferences {
     private const val SKIP_PALETTE = "skip_palette"
     private const val SAVED_DEVICE_RESOLUTION = "device_resolution"
     private const val WALLPAPER_CROP_MODE = "wallpaper_crop_mode"
+    private const val NOTIFICATION_DELETE_BUTTON = "notification_delete_button"
 
     const val DISABLE_ANIMATIONS = "disable_animations"
     const val PREDICTIVE_BACK = "predictive_back"
@@ -951,5 +952,15 @@ object MainComposePreferences {
 
     fun setWallpaperCropMode(value: Boolean) {
         getSharedPreferences().edit().putBoolean(WALLPAPER_CROP_MODE, value).apply()
+    }
+
+    // ----------------------------------------------------------------------------------------------------- //
+
+    fun isNotificationDeleteButtonEnabled(): Boolean {
+        return getSharedPreferences().getBoolean(NOTIFICATION_DELETE_BUTTON, true)
+    }
+
+    fun setNotificationDeleteButtonEnabled(value: Boolean) {
+        getSharedPreferences().edit().putBoolean(NOTIFICATION_DELETE_BUTTON, value).apply()
     }
 }
