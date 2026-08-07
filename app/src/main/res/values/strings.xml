@@ -282,4 +282,6 @@
     <string name="reduce_resolution_summary">Cut the reslution by half, changes image size and dimensions but preserves the quality.</string>
     <string name="set_with">Set With…</string>
     <string name="gestures">Gestures</string>
+    <string name="delete_button">Delete Button</string>
+    <string name="delete_button_summary">Show a button to delete wallpaper from notification.</string>
 </resources>

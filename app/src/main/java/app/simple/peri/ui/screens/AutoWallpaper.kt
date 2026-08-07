@@ -49,6 +49,7 @@ import app.simple.peri.ui.dialogs.autowallpaper.TimeSelectionDialog
 import app.simple.peri.ui.dialogs.autowallpaper.UsageTimesDeleteDialog
 import app.simple.peri.ui.dialogs.autowallpaper.WallpaperMethodDialog
 import app.simple.peri.ui.dialogs.wallpaper.AutoWallpaperEffectsDialog
+import app.simple.peri.ui.settings.NotificationColumn
 import app.simple.peri.ui.settings.SkipColumn
 import app.simple.peri.ui.theme.LocalBarsSize
 
@@ -578,14 +579,6 @@ fun AutoWallpaper(navController: NavController? = null) {
                 MainPreferences.setLinearAutoWallpaper(it)
             }
 
-            SwitchPreference(
-                    title = stringResource(R.string.notifications),
-                    description = stringResource(R.string.notifications_summary),
-                    checked = MainComposePreferences.getAutoWallpaperNotification(),
-            ) {
-                MainComposePreferences.setAutoWallpaperNotification(it)
-            }
-
             if (showDeleteDialog.value) {
                 UsageTimesDeleteDialog {
                     showDeleteDialog.value = false
@@ -631,6 +624,9 @@ fun AutoWallpaper(navController: NavController? = null) {
                         }
                 )
             }
+        }
+        item {
+            NotificationColumn()
         }
         item {
             SkipColumn()
