@@ -150,22 +150,24 @@ object WallpaperServiceNotification {
                 this, notificationId, Intent.createChooser(sendIntent, null), PENDING_INTENT_FLAGS)
 
         val notification = NotificationCompat.Builder(this, channelId)
-            .setSmallIcon(R.drawable.ic_peristyle)
-            .setContentText(applicationContext.getString(
-                    R.string.wallpaper_changed,
-                    if (isHomeScreen) {
-                        applicationContext.getString(R.string.home_screen)
-                    } else {
-                        applicationContext.getString(R.string.lock_screen)
-                    }))
-            .addAction(R.drawable.ic_delete, applicationContext.getString(R.string.delete_current_wallpaper), deletePendingIntent)
-            .addAction(R.drawable.ic_share, applicationContext.getString(R.string.send), sendPendingIntent)
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-            .setSilent(true)
-            .setStyle(NotificationCompat.BigPictureStyle().bigPicture(bitmap))
-            .build()
 
-        notificationManager.notify(notificationId, notification)
+        notification.setSmallIcon(R.drawable.ic_peristyle)
+        notification.setContentText(applicationContext.getString(
+                R.string.wallpaper_changed,
+                if (isHomeScreen) {
+                    applicationContext.getString(R.string.home_screen)
+                } else {
+                    applicationContext.getString(R.string.lock_screen)
+                }))
+        if (MainComposePreferences.isNotificationDeleteButtonEnabled()) {
+            notification.addAction(R.drawable.ic_delete, applicationContext.getString(R.string.delete_current_wallpaper), deletePendingIntent)
+        }
+        notification.addAction(R.drawable.ic_share, applicationContext.getString(R.string.send), sendPendingIntent)
+        notification.setPriority(NotificationCompat.PRIORITY_DEFAULT)
+        notification.setSilent(true)
+        notification.setStyle(NotificationCompat.BigPictureStyle().bigPicture(bitmap))
+
+        notificationManager.notify(notificationId, notification.build())
     }
 
     fun postChangingWallpaperNotification(context: Context, text: String) {
