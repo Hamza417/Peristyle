@@ -2,6 +2,7 @@ package app.simple.peri.ui.dialogs.autowallpaper
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
@@ -66,6 +67,10 @@ fun TagsDialog(selected: String, setShowing: (Boolean) -> Unit, onTag: (Tag) -> 
                                                     MaterialTheme.colorScheme.onSurface
                                                 }
                                         )
+
+                                        // Space out with middle gap between tag name and count
+                                        Spacer(modifier = Modifier.weight(1f))
+
                                         Text(
                                                 text = stringResource(id = R.string.tag_count, tag.sum.count()),
                                                 fontWeight = FontWeight.Light,
