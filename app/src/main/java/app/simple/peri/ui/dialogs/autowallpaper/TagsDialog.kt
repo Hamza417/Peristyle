@@ -16,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -58,11 +59,22 @@ fun TagsDialog(selected: String, setShowing: (Boolean) -> Unit, onTag: (Tag) -> 
                                     ) {
                                         Text(
                                                 text = tag.name,
+                                                fontWeight = FontWeight.Bold,
                                                 color = if (tag.name == selected) {
                                                     MaterialTheme.colorScheme.onPrimary
                                                 } else {
                                                     MaterialTheme.colorScheme.onSurface
                                                 }
+                                        )
+                                        Text(
+                                                text = stringResource(id = R.string.tag_count, tag.sum.count()),
+                                                fontWeight = FontWeight.Light,
+                                                color = if (tag.name == selected) {
+                                                    MaterialTheme.colorScheme.onPrimary
+                                                } else {
+                                                    MaterialTheme.colorScheme.onSurface
+                                                },
+                                                modifier = Modifier.padding(start = 8.dp)
                                         )
                                     }
                                 }
