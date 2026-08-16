@@ -4,6 +4,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
@@ -66,6 +67,10 @@ fun FoldersDialog(selected: Int, setShowing: (Boolean) -> Unit, onFolder: (Folde
                                                 MaterialTheme.colorScheme.onSurface
                                             }
                                     )
+
+                                    // Space out with middle gap between folder name and count
+                                    Spacer(modifier = Modifier.weight(1f))
+
                                     Text(
                                             text = stringResource(id = R.string.tag_count, folder.count),
                                             fontWeight = FontWeight.Light,
