@@ -233,6 +233,7 @@
     <string name="skip_when_condition_summary">Skip setting wallpaper under certain conditions and wait for the next cycle.</string>
     <string name="skip">Skip</string>
     <string name="skip_when_low_battery">Skip When Low Battery</string>
+    <string name="skip_when_screen_off">Skip When Screen Off</string>
     <string name="lock">Lock</string>
     <string name="double_tap_to_change_wallpaper">Double Tap to Change</string>
     <string name="double_tap_to_change_wallpaper_summary">Double-tap the home or lock screen to switch to the next wallpaper.</string>

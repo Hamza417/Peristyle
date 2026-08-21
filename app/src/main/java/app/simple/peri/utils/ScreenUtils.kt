@@ -124,11 +124,11 @@ object ScreenUtils {
         return resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
     }
 
-    fun isDeviceLocked(context: Context): Boolean {
-        return (context.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager).isDeviceLocked
+    fun Context.isDeviceLocked(): Boolean {
+        return (getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager).isDeviceLocked
     }
 
-    fun isDeviceSleeping(context: Context): Boolean {
-        return (context.getSystemService(Context.POWER_SERVICE) as PowerManager).isInteractive
+    fun Context.isDeviceSleeping(): Boolean {
+        return !(getSystemService(Context.POWER_SERVICE) as PowerManager).isInteractive
     }
 }

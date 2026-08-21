@@ -69,6 +69,7 @@ object MainComposePreferences {
     private const val DONT_CHANGE_WHEN_LANDSCAPE = "dont_change_when_landscape"
     private const val DONT_CHANGE_WHEN_PORTRAIT = "dont_change_when_portrait"
     private const val DONT_CHANGE_WHEN_LOW_BATTERY = "dont_change_when_low_battery"
+    private const val DONT_CHANGE_WHEN_SCREEN_OFF = "dont_change_when_screen_off"
     private const val DOUBLE_TAP_TO_CHANGE = "double_tap_to_change"
     private const val TWO_FINGER_SWIPE_UP_TO_CHANGE = "two_finger_swipe_up_to_change"
     private const val THREE_FINGER_SWIPE_UP_TO_CHANGE = "three_finger_swipe_up_to_change"
@@ -797,6 +798,16 @@ object MainComposePreferences {
 
     fun setDontChangeWhenLowBattery(value: Boolean) {
         getSharedPreferences().edit().putBoolean(DONT_CHANGE_WHEN_LOW_BATTERY, value).apply()
+    }
+
+    // ----------------------------------------------------------------------------------------------------- //
+
+    fun getDontChangeWhenScreenOff(): Boolean {
+        return getSharedPreferences().getBoolean(DONT_CHANGE_WHEN_SCREEN_OFF, false)
+    }
+
+    fun setDontChangeWhenScreenOff(value: Boolean) {
+        getSharedPreferences().edit().putBoolean(DONT_CHANGE_WHEN_SCREEN_OFF, value).apply()
     }
 
     // ----------------------------------------------------------------------------------------------------- //
