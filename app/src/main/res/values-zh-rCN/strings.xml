@@ -234,9 +234,14 @@
     <string name="skip_when_condition_summary">在某些条件下跳过设定壁纸，并等待到下一个循环再设置。</string>
     <string name="skip">跳过</string>
     <string name="skip_when_low_battery">电量不足时跳过</string>
+    <string name="skip_when_screen_off">屏幕关闭时跳过</string>
     <string name="lock">锁定</string>
     <string name="double_tap_to_change_wallpaper">双击以更改</string>
-    <string name="double_tap_to_change_wallpaper_summary">双击主屏幕或锁屏更改为下一个壁纸。</string>
+    <string name="double_tap_to_change_wallpaper_summary">双击主屏幕或锁定屏幕，即可切换到下一张壁纸。</string>
+    <string name="two_finger_swipe_to_change_wallpaper">双指滑动</string>
+    <string name="two_finger_swipe_to_change_wallpaper_summary">在主屏幕上用双指向上或向下滑动，即可切换到下一张壁纸。</string>
+    <string name="three_finger_swipe_to_change_wallpaper">三指轻扫</string>
+    <string name="three_finger_swipe_to_change_wallpaper_summary">在主屏幕上用三指向上或向下滑动，即可切换到下一张壁纸。</string>
     <string name="disable_animations">禁用动画</string>
     <string name="random">随机</string>
     <string name="delete_summary">在某张壁纸被设定使用了一定次数之后，就永久删除它。</string>
@@ -278,4 +283,7 @@
     <string name="compress_summary">压缩壁纸以降低大小，同时降低质量。</string>
     <string name="reduce_resolution_summary">将分辨率减半，改变图像的尺寸与规格，但保留画质。</string>
     <string name="set_with">设置为…</string>
+    <string name="gestures">手势</string>
+    <string name="delete_button">删除按钮</string>
+    <string name="delete_button_summary">显示一个按钮，用于从通知中删除壁纸。</string>
 </resources>

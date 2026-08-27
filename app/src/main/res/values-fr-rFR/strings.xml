@@ -234,9 +234,14 @@
     <string name="skip_when_condition_summary">Ignorer le réglage du fond d\'écran sous certaines conditions et attendre le prochain cycle.</string>
     <string name="skip">Ignorer</string>
     <string name="skip_when_low_battery">Ignorer lorsque batterie faible</string>
+    <string name="skip_when_screen_off">Ignorer lorsque l\'écran est éteint</string>
     <string name="lock">Verrouiller</string>
     <string name="double_tap_to_change_wallpaper">Double appui pour changer</string>
-    <string name="double_tap_to_change_wallpaper_summary">Tapez deux fois sur l\'écran d\'accueil ou sur l\'écran de verrouillage pour passer au fond d\'écran suivant.</string>
+    <string name="double_tap_to_change_wallpaper_summary">Tapotez deux fois sur l\'écran d\'accueil ou sur l\'écran de verrouillage pour passer au fond d\'écran suivant.</string>
+    <string name="two_finger_swipe_to_change_wallpaper">Balayage à deux doigts</string>
+    <string name="two_finger_swipe_to_change_wallpaper_summary">Glissez vers le haut ou vers le bas avec deux doigts sur l\'écran d\'accueil pour passer au fond d\'écran suivant.</string>
+    <string name="three_finger_swipe_to_change_wallpaper">Balayage à trois doigts</string>
+    <string name="three_finger_swipe_to_change_wallpaper_summary">Glissez vers le haut ou vers le bas avec trois doigts sur l\'écran d\'accueil pour passer au fond d\'écran suivant.</string>
     <string name="disable_animations">Désactiver les animations</string>
     <string name="random">Aléatoire</string>
     <string name="delete_summary">Supprimer définitivement le fond d\'écran après avoir été défini un certain nombre de fois.</string>
@@ -277,4 +282,8 @@
     <string name="revoke_folder_desc">Révoquer l\'accès à ce dossier et le supprimer de l\'application. Cette option ne supprimera pas les fichiers.</string>
     <string name="compress_summary">Compresser le fond d\'écran pour réduire la taille au détriment de la qualité.</string>
     <string name="reduce_resolution_summary">Diminuer la résolution de moitié, modifie la taille de l\'image et les dimensions mais préserve la qualité.</string>
+    <string name="set_with">Serti de…</string>
+    <string name="gestures">Gestes</string>
+    <string name="delete_button">Bouton Supprimer</string>
+    <string name="delete_button_summary">Afficher un bouton pour supprimer le fond d\'écran de la notification.</string>
 </resources>
