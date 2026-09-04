@@ -1,6 +1,5 @@
 package app.simple.peri.ui.dialogs.settings
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -51,7 +50,6 @@ fun SortDialog(onDismiss: () -> Unit) {
                 Column(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalAlignment = Alignment.Start,
-                        verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     list.forEach { item ->
                         val label = item.first
