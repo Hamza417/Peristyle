@@ -1,5 +1,6 @@
 package app.simple.peri.ui.screens
 
+import android.annotation.SuppressLint
 import android.app.Activity.RESULT_OK
 import android.app.WallpaperManager
 import android.content.ComponentName
@@ -69,6 +70,7 @@ import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeEffect
 import dev.chrisbanes.haze.hazeSource
 
+@SuppressLint("LocalContextGetResourceValueCall")
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun LiveWallpapers(navController: NavHostController) {
@@ -197,7 +199,9 @@ fun LiveWallpapers(navController: NavHostController) {
                                         }
                                     },
                                     onLongClick = {
-                                        showWallpaperMenu = true
+                                        if (liveWallpaperInfo.resolveInfo.serviceInfo.packageName != context.packageName) {
+                                            showWallpaperMenu = true
+                                        }
                                     },
                             ),
                         elevation = CardDefaults.cardElevation(
