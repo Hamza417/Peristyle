@@ -20,7 +20,7 @@ import app.simple.peri.ui.constants.DIALOG_OPTION_FONT_SIZE
 @Composable
 fun LiveWallpapersMenu(liveWallpaperInfo: LiveWallpaperInfo? = null, onDismiss: () -> Unit, onOptionSelected: (String) -> Unit) {
     val options = listOf(
-            stringResource(R.string.delete)
+            stringResource(R.string.uninstall)
     )
 
     AlertDialog(

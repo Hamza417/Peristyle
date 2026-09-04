@@ -285,4 +285,5 @@
     <string name="gestures">Gestures</string>
     <string name="delete_button">Delete Button</string>
     <string name="delete_button_summary">Show a button to delete wallpaper from notification.</string>
+    <string name="uninstall">Uninstall</string>
 </resources>
