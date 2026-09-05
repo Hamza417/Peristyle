@@ -179,7 +179,6 @@
     <string name="developer_profile">开发者资料</string>
     <string name="allow_media_access">允许访问媒体</string>
     <string name="allow_media_access_info">无法手动授予对系统壁纸的访问权限，选择“全部允许”将允许应用自动访问这些文件。</string>
-    <string name="lock_screen_wallpaper_info">锁屏壁纸在 Android 14 下不可用</string>
     <string name="effects">效果</string>
     <string name="apply_effects_summary">将效果应用于壁纸。</string>
     <string name="default_effects">默认效果</string>

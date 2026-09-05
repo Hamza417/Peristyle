@@ -177,7 +177,6 @@
     <string name="developer_profile">Profil Dewelopera</string>
     <string name="allow_media_access">Zezwalaj na Dostęp do Mediów</string>
     <string name="allow_media_access_info">Nie udało się udzielić ręcznego dostępu do tapet systemu. Wybranie opcji \'Zezwól na Wszystko\', pozwoli aplikacji na automatyczne przyznanie dostępu do plików.</string>
-    <string name="lock_screen_wallpaper_info">Tapeta ekranu blokady nie jest dostępna poniżej Androida 14</string>
     <string name="effects">Efekty</string>
     <string name="apply_effects_summary">Zastosuj efekty na tapetach.</string>
     <string name="default_effects">Domyślne efekty</string>

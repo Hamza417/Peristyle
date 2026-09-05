@@ -177,7 +177,6 @@
     <string name="developer_profile">開發者資料</string>
     <string name="allow_media_access">允許媒體存取權</string>
     <string name="allow_media_access_info">無法手動授予存取系統桌布的權限，選取「全部允許」將允許應用程式自動存取檔案。</string>
-    <string name="lock_screen_wallpaper_info">Android 14 以下版本無法使用鎖定螢幕桌布功能</string>
     <string name="effects">效果</string>
     <string name="apply_effects_summary">在桌布上套用效果。</string>
     <string name="default_effects">預設效果</string>

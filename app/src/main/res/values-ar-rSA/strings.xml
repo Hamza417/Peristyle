@@ -177,7 +177,6 @@
     <string name="developer_profile">ملف المطور الشخصي</string>
     <string name="allow_media_access">السماح بالوصول إلى الوسائط</string>
     <string name="allow_media_access_info">من غير الممكن للسماح بالوصول إلى خلفيات النظام يدويًا، تحديد السماح للكل سيسمح للتطبيق للوصول إلى الملفات تلقائيًا.</string>
-    <string name="lock_screen_wallpaper_info">خلفية شاشة القفل غير متوفرة لما أدنى من Android 14</string>
     <string name="effects">التأثيرات</string>
     <string name="apply_effects_summary">تطبيق التأثيرات على الخلفيات.</string>
     <string name="default_effects">التأثيرات الافتراضية</string>

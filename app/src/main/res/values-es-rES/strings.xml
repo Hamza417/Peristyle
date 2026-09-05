@@ -179,7 +179,6 @@
     <string name="developer_profile">Perfil del desarrollador</string>
     <string name="allow_media_access">Permitir acceso multimedia</string>
     <string name="allow_media_access_info">No es posible conceder manualmente el acceso a los fondos de pantalla del sistema, seleccione \"Permitir todos\" permitirá que la aplicación acceda automáticamente a los archivos.</string>
-    <string name="lock_screen_wallpaper_info">Fondo de Pantalla de Bloqueo no está disponible en versiones inferiores a Android 14</string>
     <string name="effects">Efectos</string>
     <string name="apply_effects_summary">Aplicar efectos sobre los fondos de pantalla.</string>
     <string name="default_effects">Efectos por defecto</string>

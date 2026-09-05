@@ -179,7 +179,6 @@
     <string name="developer_profile">Profil du développeur</string>
     <string name="allow_media_access">Autoriser l\'accès aux médias</string>
     <string name="allow_media_access_info">Il n\'est pas possible d\'accorder manuellement l\'accès aux fonds d\'écran du système, sélectionner \"Tout autoriser\" permet à l\'application d\'accéder automatiquement aux fichiers.</string>
-    <string name="lock_screen_wallpaper_info">Le fond d\'écran de verrouillage n\'est pas disponible en dessous d\'Android 14</string>
     <string name="effects">Effets</string>
     <string name="apply_effects_summary">Appliquer des effets sur les fonds d\'écran.</string>
     <string name="default_effects">Effets par défaut</string>

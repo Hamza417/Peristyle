@@ -177,7 +177,6 @@
     <string name="developer_profile">Hồ sơ nhà phát triển</string>
     <string name="allow_media_access">Cho phép truy cập dữ liệu</string>
     <string name="allow_media_access_info">Không thể cấp quyền truy cập vào hình nền hệ thống theo cách thủ công, chọn Cho phép tất cả sẽ cho phép ứng dụng tự động truy cập vào các tệp.</string>
-    <string name="lock_screen_wallpaper_info">Hình nền màn hình khóa không khả dụng ở phiên bản Android 14 trở xuống</string>
     <string name="effects">Hiệu ứng</string>
     <string name="apply_effects_summary">Thêm hiệu ứng cho hình nền.</string>
     <string name="default_effects">Hiệu ứng mặc định</string>

@@ -177,7 +177,6 @@
     <string name="developer_profile">Profilo dello sviluppatore</string>
     <string name="allow_media_access">Permetti accesso alle immagini</string>
     <string name="allow_media_access_info">Non è possibile garantire manualmente l\'accesso agli sfondi di sistema, selezionare \'\'permetti tutti\'\' permetterà all\'app di accedere automaticamente ai file.</string>
-    <string name="lock_screen_wallpaper_info">Schermata di blocco non è disponibile sotto Android 14</string>
     <string name="effects">Effetti</string>
     <string name="apply_effects_summary">Applica effetti agli sfondi.</string>
     <string name="default_effects">Effetti predefiniti</string>

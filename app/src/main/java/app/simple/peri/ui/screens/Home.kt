@@ -1,7 +1,7 @@
 package app.simple.peri.ui.screens
 
+import android.annotation.SuppressLint
 import android.graphics.drawable.Drawable
-import android.os.Build
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -262,7 +262,15 @@ fun Home(navController: NavController? = null) {
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun WallpaperItem(title: String, position: Int, onClick: () -> Unit, onNextWallpaper: () -> Unit, onDeleteWallpaper: () -> Unit, modifier: Modifier = Modifier, wallpaper: Wallpaper?) {
+fun WallpaperItem(
+        title: String,
+        position: Int,
+        onClick: () -> Unit,
+        onNextWallpaper: () -> Unit,
+        onDeleteWallpaper: () -> Unit,
+        modifier: Modifier = Modifier,
+        wallpaper: Wallpaper?) {
+
     val currentScale = remember {
         mutableStateOf(ContentScale.Crop)
     }
@@ -318,12 +326,19 @@ fun WallpaperItem(title: String, position: Int, onClick: () -> Unit, onNextWallp
             ) {
                 it.addListener(object : RequestListener<Drawable> {
                     override fun onLoadFailed(
-                            e: GlideException?, model: Any?, target: Target<Drawable>, isFirstResource: Boolean): Boolean {
+                            e: GlideException?,
+                            model: Any?,
+                            target: Target<Drawable>,
+                            isFirstResource: Boolean): Boolean {
                         return false
                     }
 
                     override fun onResourceReady(
-                            resource: Drawable, model: Any, target: Target<Drawable>?, dataSource: DataSource, isFirstResource: Boolean): Boolean {
+                            resource: Drawable,
+                            model: Any,
+                            target: Target<Drawable>?,
+                            dataSource: DataSource,
+                            isFirstResource: Boolean): Boolean {
                         return false
                     }
                 })
@@ -392,34 +407,12 @@ fun WallpaperItem(title: String, position: Int, onClick: () -> Unit, onNextWallp
                         overflow = TextOverflow.Ellipsis
                 )
 
-                val info = when (title) {
-                    stringResource(id = R.string.lock_screen) -> {
-                        when {
-                            Build.VERSION.SDK_INT > Build.VERSION_CODES.TIRAMISU -> {
-                                buildString {
-                                    append((wallpaper?.width ?: 0).toString())
-                                    append("x")
-                                    append((wallpaper?.height ?: 0).toString())
-                                }
-                            }
-
-                            else -> {
-                                stringResource(id = R.string.lock_screen_wallpaper_info)
-                            }
-                        }
-                    }
-
-                    else -> {
-                        buildString {
+                Text(
+                        text = buildString { // Display wallpaper dimensions
                             append((wallpaper?.width ?: 0).toString())
                             append("x")
                             append((wallpaper?.height ?: 0).toString())
-                        }
-                    }
-                }
-
-                Text(
-                        text = info,
+                        },
                         modifier = Modifier
                             .padding(start = 16.dp, top = 4.dp, bottom = 16.dp, end = 16.dp),
                         textAlign = TextAlign.Start,
@@ -432,6 +425,7 @@ fun WallpaperItem(title: String, position: Int, onClick: () -> Unit, onNextWallp
     }
 }
 
+@SuppressLint("LocalContextGetResourceValueCall")
 @Composable
 fun Header(title: String, modifier: Modifier = Modifier, navController: NavController? = null) {
     val context = LocalContext.current
@@ -494,6 +488,7 @@ fun Header(title: String, modifier: Modifier = Modifier, navController: NavContr
     }
 }
 
+@SuppressLint("LocalContextGetResourceValueCall")
 @Composable
 fun BottomMenu(modifier: Modifier = Modifier, navController: NavController? = null) {
     val height = 60.dp
@@ -591,8 +586,14 @@ fun BottomMenu(modifier: Modifier = Modifier, navController: NavController? = nu
     }
 }
 
+@SuppressLint("LocalContextGetResourceValueCall")
 @Composable
-fun BottomMenuItem(modifier: Modifier = Modifier, @StringRes title: Int = 0, imageVector: ImageVector = Icons.Rounded.Circle, onClick: () -> Unit = {}) {
+fun BottomMenuItem(
+        modifier: Modifier = Modifier,
+        @StringRes title: Int = 0,
+        imageVector: ImageVector = Icons.Rounded.Circle,
+        onClick: () -> Unit = {}) {
+
     val context = LocalContext.current
 
     Column(

@@ -177,7 +177,6 @@
     <string name="developer_profile">Профіль розробника</string>
     <string name="allow_media_access">Дозволити доступ до медіа</string>
     <string name="allow_media_access_info">Неможливо вручну надати доступ до системних шпалер, вибір «Дозволити все» дозволить застосунку автоматично отримувати доступ до файлів.</string>
-    <string name="lock_screen_wallpaper_info">Шпалери екрану блокування не доступні при версії менше Android 14</string>
     <string name="effects">Ефекти</string>
     <string name="apply_effects_summary">Застосувати ефекти на шпалерах.</string>
     <string name="default_effects">Ефекти за замовчуванням</string>

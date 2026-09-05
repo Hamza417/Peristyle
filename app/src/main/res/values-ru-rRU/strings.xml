@@ -177,7 +177,6 @@
     <string name="developer_profile">Профиль разработчика</string>
     <string name="allow_media_access">Разрешить доступ к медиафайлам</string>
     <string name="allow_media_access_info">Невозможно вручную предоставить доступ к системным обоям. Выбрав «Разрешить все» позволит приложению автоматически получать доступ к файлам.</string>
-    <string name="lock_screen_wallpaper_info">Обои экрана блокировки не доступны ниже Android 14</string>
     <string name="effects">Эффекты</string>
     <string name="apply_effects_summary">Применить эффекты на обои.</string>
     <string name="default_effects">Эффекты по умолчанию</string>

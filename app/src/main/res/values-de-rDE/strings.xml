@@ -179,7 +179,6 @@
     <string name="developer_profile">Entwicklerprofil</string>
     <string name="allow_media_access">Medienzugriff erlauben</string>
     <string name="allow_media_access_info">Es ist nicht möglich, den Zugriff auf System-Hintergründe manuell zu gewähren, durch \"Alle erlauben\" wird der App automatisch Zugriff auf die Dateien gewährt.</string>
-    <string name="lock_screen_wallpaper_info">Sperrbildschirm-Hintergrundbild ist vor Android 14 nicht verfügbar</string>
     <string name="effects">Effekte</string>
     <string name="apply_effects_summary">Effekte auf Hintergrundbilder anwenden.</string>
     <string name="default_effects">Standardeffekte</string>
