@@ -5,6 +5,7 @@ import android.app.WallpaperManager
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
@@ -33,6 +34,7 @@ import kotlinx.coroutines.sync.withLock
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
+import kotlin.time.Duration.Companion.milliseconds
 
 class HomeScreenViewModel(application: Application) : AndroidViewModel(application), OnSharedPreferenceChangeListener {
 
@@ -91,7 +93,7 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
     init {
         fun post() {
             postCurrentSystemWallpaper()
-            Log.i("HomeScreenViewModel", "Wallpaper colors changed")
+            Log.i(TAG, "Wallpaper colors changed")
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
@@ -111,7 +113,7 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
                 val interval = 16L // Update 60 times per second
                 while (countDownFlow.value > 0) {
                     ensureActive()
-                    delay(interval)
+                    delay(interval.milliseconds)
                     countDownFlow.value -= interval
                 }
 
@@ -126,25 +128,25 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
     fun stopCountDownFlow() {
         countDownJobs.forEach { it.cancel() }
         countDownJobs.clear()
-        Log.i("HomeScreenViewModel", "Countdown flow stopped")
+        Log.i(TAG, "Countdown flow stopped")
     }
 
     fun resumeCountDownFlow() {
         stopCountDownFlow()
         startCountDownFlow()
-        Log.i("HomeScreenViewModel", "Countdown flow resumed")
+        Log.i(TAG, "Countdown flow resumed")
     }
 
     fun pauseCountdown() {
         stopCountDownFlow()
         isCountdownPaused.value = true
-        Log.i("HomeScreenViewModel", "Countdown paused")
+        Log.i(TAG, "Countdown paused")
     }
 
     fun resumeCountdown() {
         isCountdownPaused.value = false
         startCountDownFlow()
-        Log.i("HomeScreenViewModel", "Countdown resumed")
+        Log.i(TAG, "Countdown resumed")
     }
 
     fun toggleCountdownPause() {
@@ -156,7 +158,7 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
     }
 
     private fun postCurrentSystemWallpaper() {
-        Log.i("HomeScreenViewModel", "Posting current system wallpaper")
+        Log.i(TAG, "Posting current system wallpaper")
         viewModelScope.launch(Dispatchers.IO) {
             if (PermissionUtils.checkStoragePermission(getApplication())) {
                 try {
@@ -182,27 +184,50 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
     }
 
     private fun postCurrentLockWallpaper() {
-        Log.i("HomeScreenViewModel", "Posting current lock wallpaper")
+        Log.i(TAG, "Posting current lock wallpaper")
         viewModelScope.launch(Dispatchers.IO) {
-            if (PermissionUtils.checkStoragePermission(getApplication())) {
-                try {
-                    val wallpaperManager = WallpaperManager.getInstance(getApplication())
-                    val lockBitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                        wallpaperManager.getDrawable(WallpaperManager.FLAG_LOCK)?.toBitmap()
-                    } else {
-                        wallpaperManager.drawable?.toBitmap()
+            if (!PermissionUtils.checkStoragePermission(getApplication())) return@launch
+
+            try {
+                val wallpaperManager = WallpaperManager.getInstance(getApplication())
+                var lockBitmap: Bitmap? = null
+
+                // Fetch Lock Screen Wallpaper based on Android version
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                    lockBitmap = wallpaperManager.getDrawable(WallpaperManager.FLAG_LOCK)?.toBitmap()
+                } else
+                    wallpaperManager.getWallpaperFile(WallpaperManager.FLAG_LOCK)?.use { pfd ->
+                        lockBitmap = BitmapFactory.decodeFileDescriptor(pfd.fileDescriptor)
                     }
 
-                    val lockFile = createTempFile(LOCK_WALLPAPER.replace("$", System.currentTimeMillis().div(1000).toString()))
-
-                    lockFile.outputStream().use { lockBitmap?.compress(Bitmap.CompressFormat.PNG, 100, it) }
-
-                    lockWallpaperData.postValue(Wallpaper.createFromFile(lockFile, getApplication()))
-                } catch (_: IOException) {
-                    // bad lock wallpaper??
-                } catch (_: SecurityException) {
-                    // we should not be here but just in case
+                // Fallback to system wallpaper if lock is null (Shared state or decode failure)
+                if (lockBitmap == null) {
+                    Log.i(TAG, "Lock wallpaper null, falling back to system")
+                    lockBitmap = wallpaperManager.drawable?.toBitmap()
                 }
+
+                // Early return if both failed to prevent creating an empty file
+                if (lockBitmap == null) {
+                    Log.e(TAG, "Failed to retrieve any wallpaper bitmap")
+                    return@launch
+                }
+
+                // Create file and compress ONLY after guaranteeing a valid bitmap
+                val lockFile = createTempFile(LOCK_WALLPAPER.replace("$", System.currentTimeMillis().div(1000).toString()))
+
+                lockFile.outputStream().use {
+                    lockBitmap?.compress(Bitmap.CompressFormat.PNG, 100, it)
+                }
+
+                lockWallpaperData.postValue(Wallpaper.createFromFile(lockFile, getApplication()))
+
+            } catch (e: IOException) {
+                e.printStackTrace()
+            } catch (e: SecurityException) {
+                e.printStackTrace()
+            } catch (e: Exception) {
+                // Catch OOMs during decode/toBitmap
+                e.printStackTrace()
             }
         }
     }
@@ -211,7 +236,8 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
         viewModelScope.launch(Dispatchers.Default) {
             try {
                 randomWallpaperData.postValue(getRandomWallpaperFromDatabase())
-            } catch (_: NoSuchElementException) {
+            } catch (e: NoSuchElementException) {
+                e.printStackTrace()
             }
         }
 
@@ -222,13 +248,15 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
     private fun postLastLiveWallpaper() {
         viewModelScope.launch(Dispatchers.Default) {
             try {
-                MainComposePreferences.getLastLiveWallpaperPath()?.toFile()?.let {
-                    Wallpaper.createFromFile(it, getApplication()).let {
+                MainComposePreferences.getLastLiveWallpaperPath()?.toFile()?.let { file ->
+                    Wallpaper.createFromFile(file, getApplication()).let {
                         lastLiveWallpaper.postValue(it)
                     }
                 }
-            } catch (_: NullPointerException) {
-            } catch (_: FileNotFoundException) {
+            } catch (e: NullPointerException) {
+                e.printStackTrace()
+            } catch (e: FileNotFoundException) {
+                e.printStackTrace()
             }
         }
 
@@ -304,7 +332,7 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
                     wallpaperDatabase?.wallpaperDao()?.delete(wallpaper)
                     onDelete()
                 } else {
-                    Log.e("HomeScreenViewModel", "Failed to delete wallpaper: ${wallpaper.name}")
+                    Log.e(TAG, "Failed to delete wallpaper: ${wallpaper.name}")
                 }
             }
         }
@@ -313,6 +341,7 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
     companion object {
         private const val SYSTEM_WALLPAPER = "system_wallpaper_$.png"
         private const val LOCK_WALLPAPER = "lock_wallpaper_$.png"
+        private const val TAG = "HomeScreenViewModel"
         const val RANDOM_WALLPAPER_DELAY = 15000L
     }
 }
