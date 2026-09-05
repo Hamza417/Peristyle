@@ -93,6 +93,7 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
     init {
         fun post() {
             postCurrentSystemWallpaper()
+            postCurrentLockWallpaper()
             Log.i(TAG, "Wallpaper colors changed")
         }
 
