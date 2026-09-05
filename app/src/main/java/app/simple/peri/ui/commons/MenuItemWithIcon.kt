@@ -79,11 +79,7 @@ fun MenuItemWithIcon(
                         text = summary,
                         fontSize = PREF_SUMMARY_SIZE,
                         fontWeight = FontWeight.Normal,
-                        color = if (isDestructive) {
-                            MaterialTheme.colorScheme.error
-                        } else {
-                            MaterialTheme.colorScheme.onSurfaceVariant
-                        }
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         } else {

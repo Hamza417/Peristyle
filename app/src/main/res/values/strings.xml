@@ -286,4 +286,5 @@
     <string name="delete_button">Delete Button</string>
     <string name="delete_button_summary">Show a button to delete wallpaper from notification.</string>
     <string name="uninstall">Uninstall</string>
+    <string name="uninstall_live_wallpaper_summary">Uninstall the live wallpaper from the device.</string>
 </resources>
