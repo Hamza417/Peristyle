@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.PhoneAndroid
@@ -32,6 +34,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import app.simple.peri.R
 import app.simple.peri.activities.main.LocalDisplaySize
@@ -110,6 +113,27 @@ fun WallhavenSearchDialog(
                                     query = it
                                     WallHavenPreferences.setQuery(it)
                                 },
+                                singleLine = true,
+                                keyboardOptions = KeyboardOptions(
+                                        imeAction = ImeAction.Search
+                                ),
+                                keyboardActions = KeyboardActions(
+                                        onSearch = {
+                                            onSearch(
+                                                    WallhavenFilter(
+                                                            query = query,
+                                                            categories = categories,
+                                                            purity = purity,
+                                                            atleast = atleast,
+                                                            resolution = resolution,
+                                                            ratios = ratios,
+                                                            sorting = sorting,
+                                                            order = order
+                                                    )
+                                            )
+                                            onDismiss()
+                                        }
+                                ),
                                 label = { Text(stringResource(R.string.query)) },
                                 modifier = Modifier.fillMaxWidth()
                         )
