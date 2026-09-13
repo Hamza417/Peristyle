@@ -583,10 +583,7 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
                         coroutineScope.launch {
                             bitmap = graphicsLayer.toImageBitmap().asAndroidBitmap()
                                 .copy(MainComposePreferences.getWallpaperColorSpace(), true)
-                                .applyEffects(
-                                        blur = blurValue.times(Misc.BLUR_TIMES),
-                                        colorMatrix = colorMatrix
-                                )
+                                .applyEffects(blur = blurValue.times(Misc.BLUR_TIMES))
 
                             showScreenSelectionDialog = true
                             showWallpaperLaunchedEffect.value = false
@@ -754,7 +751,6 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
                             context = context,
                             bitmap = bitmap!!,
                             blurValue = blurValue,
-                            colorMatrix = colorMatrix,
                             wallpaper = wallpaper as Wallpaper,
                             onSetWallpaper = {
                                 wallpaperUsageViewModel.incrementUsageCount((wallpaper as Wallpaper))
@@ -777,10 +773,7 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
 
                         bitmap = graphicsLayer.toImageBitmap().asAndroidBitmap()
                             .copy(MainComposePreferences.getWallpaperColorSpace(), true)
-                            .applyEffects(
-                                    blur = blurValue.times(Misc.BLUR_TIMES),
-                                    colorMatrix = colorMatrix
-                            )
+                            .applyEffects(blur = blurValue.times(Misc.BLUR_TIMES))
 
                         showPleaseWaitDialog = false
                     }
@@ -795,7 +788,6 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
                                 context = context,
                                 bitmap = bitmap!!,
                                 blurValue = blurValue,
-                                colorMatrix = colorMatrix,
                                 wallpaper = downloadedWallpaper!!,
                                 onSetWallpaper = {
                                     /* no-op */

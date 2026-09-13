@@ -24,7 +24,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
@@ -52,8 +51,8 @@ fun ScreenSelectionDialog(
         bitmap: Bitmap,
         wallpaper: Wallpaper,
         blurValue: Float,
-        onSetWallpaper: () -> Unit,
-        colorMatrix: ColorMatrix) {
+        onSetWallpaper: () -> Unit
+) {
 
     val shouldExport = remember { mutableStateOf(false) }
     val showDoneDialog = remember { mutableStateOf(false) }
@@ -78,7 +77,6 @@ fun ScreenSelectionDialog(
                 wallpaper = wallpaper,
                 crop = isCropWallpaper.value,
                 blurValue = blurValue,
-                colorMatrix = colorMatrix,
                 width = width,
                 height = height
         ) {
@@ -136,7 +134,6 @@ fun ScreenSelectionDialog(
                                                 wallpaper = wallpaper,
                                                 crop = isCropWallpaper.value,
                                                 blurValue = blurValue,
-                                                colorMatrix = colorMatrix,
                                                 width = width,
                                                 height = height
                                         )
@@ -159,7 +156,6 @@ fun ScreenSelectionDialog(
                                                 wallpaper = wallpaper,
                                                 crop = isCropWallpaper.value,
                                                 blurValue = blurValue,
-                                                colorMatrix = colorMatrix,
                                                 width = width,
                                                 height = height
                                         )
@@ -182,7 +178,6 @@ fun ScreenSelectionDialog(
                                                 wallpaper = wallpaper,
                                                 crop = isCropWallpaper.value,
                                                 blurValue = blurValue,
-                                                colorMatrix = colorMatrix,
                                                 width = width,
                                                 height = height
                                         )
@@ -218,7 +213,6 @@ fun ScreenSelectionDialog(
                                                 wallpaper = wallpaper,
                                                 crop = isCropWallpaper.value,
                                                 blurValue = blurValue,
-                                                colorMatrix = colorMatrix,
                                                 width = width,
                                                 height = height
                                         )
@@ -250,7 +244,6 @@ suspend fun setWallpaper(
         wallpaper: Wallpaper,
         crop: Boolean = false,
         blurValue: Float,
-        colorMatrix: ColorMatrix,
         width: Int,
         height: Int
 ) {
@@ -274,9 +267,7 @@ suspend fun setWallpaper(
                     // Apply blur and color adjustments to the bitmap
                     wallpaperManager.setBitmap(
                             /* fullImage = */
-                            it.applyEffects(
-                                    blur = blurValue.times(Misc.BLUR_TIMES),
-                                    colorMatrix = colorMatrix),
+                            it.applyEffects(blur = blurValue.times(Misc.BLUR_TIMES)),
                             /* visibleCropHint = */ null,
                             /* allowBackup = */ true,
                             /* which = */ flags)
@@ -295,7 +286,6 @@ suspend fun setWallpaperWithDedicatedApp(
         wallpaper: Wallpaper,
         crop: Boolean = false,
         blurValue: Float,
-        colorMatrix: ColorMatrix,
         width: Int,
         height: Int) {
     withContext(Dispatchers.IO) {
@@ -310,9 +300,7 @@ suspend fun setWallpaperWithDedicatedApp(
                             height,
                             crop = false,
                             recycle = false) {
-                        val bitmap = it.applyEffects(
-                                blur = blurValue.times(Misc.BLUR_TIMES),
-                                colorMatrix = colorMatrix)
+                        val bitmap = it.applyEffects(blur = blurValue.times(Misc.BLUR_TIMES))
                         bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
                     }
                 }
@@ -341,7 +329,6 @@ fun ExportWallpaper(
         wallpaper: Wallpaper,
         crop: Boolean = false,
         blurValue: Float,
-        colorMatrix: ColorMatrix,
         width: Int,
         height: Int,
         onExport: () -> Unit = {}
@@ -366,10 +353,7 @@ fun ExportWallpaper(
                                     crop = false,
                                     recycle = false
                             ) {
-                                val bitmap = it.applyEffects(
-                                        blur = blurValue.times(Misc.BLUR_TIMES),
-                                        colorMatrix = colorMatrix
-                                )
+                                val bitmap = it.applyEffects(blur = blurValue.times(Misc.BLUR_TIMES))
                                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
                             }
                         }

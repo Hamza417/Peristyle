@@ -165,10 +165,12 @@ object BitmapUtils {
     /**
      * For compose interface only
      */
-    fun Bitmap.applyEffects(blur: Float, colorMatrix: ComposeUiGraphicsColorMatrix): Bitmap {
+    fun Bitmap.applyEffects(blur: Float, colorMatrix: ComposeUiGraphicsColorMatrix? = null): Bitmap {
         // Apply the combined color matrix to the bitmap
         val paint = Paint()
-        paint.colorFilter = ColorMatrixColorFilter(colorMatrix.toAndroidXColorMatrix())
+        if (colorMatrix != null) {
+            paint.colorFilter = ColorMatrixColorFilter(colorMatrix.toAndroidXColorMatrix())
+        }
         val bitmap = createBitmap(width, height, config ?: Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
         canvas.drawBitmap(this, 0f, 0f, paint)
