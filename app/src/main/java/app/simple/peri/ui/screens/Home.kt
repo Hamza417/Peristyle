@@ -226,17 +226,13 @@ fun Home(navController: NavController? = null) {
                                 ((pagerState.currentPage - pageIndex) + pagerState.currentPageOffsetFraction).absoluteValue
                             val startScale = 0.95f
 
-                            scaleX = lerp(
+                            val scale = lerp(
                                     start = startScale,
                                     stop = 1f,
                                     fraction = 1f - pageOffset.coerceIn(0f, 1f),
                             )
-
-                            scaleY = lerp(
-                                    start = startScale,
-                                    stop = 1f,
-                                    fraction = 1f - pageOffset.coerceIn(0f, 1f),
-                            )
+                            scaleX = scale
+                            scaleY = scale
                         }
                         .padding(8.dp),
                     wallpaper = wallpaper,
