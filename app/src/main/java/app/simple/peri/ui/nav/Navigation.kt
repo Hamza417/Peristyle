@@ -15,6 +15,7 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.navigation.compose.NavHost
@@ -48,16 +49,20 @@ fun PeristyleNavigation(context: Context, initialRoute: String? = null) {
     val navController = rememberNavController()
     val disableAnimations = remember { mutableStateOf(MainComposePreferences.getDisableAnimations()) }
     val predictiveBack = remember { mutableStateOf(MainComposePreferences.isPredictiveBack()) }
-    val startDestination = if (isSetupComplete(context)) Routes.IMMERSIVE_HOME else Routes.SETUP
+    val homeInterface = remember { mutableIntStateOf(MainComposePreferences.getHomeInterface()) }
+    val startDestination = if (isSetupComplete(context)) Routes.HOME else Routes.SETUP
 
     DisposableEffect(Unit) {
-        val listener = android.content.SharedPreferences.OnSharedPreferenceChangeListener { sharedPreferences, key ->
+        val listener = android.content.SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
             when (key) {
                 MainComposePreferences.DISABLE_ANIMATIONS -> {
                     disableAnimations.value = MainComposePreferences.getDisableAnimations()
                 }
                 MainComposePreferences.PREDICTIVE_BACK -> {
                     predictiveBack.value = MainComposePreferences.isPredictiveBack()
+                }
+                MainComposePreferences.HOME_INTERFACE -> {
+                    homeInterface.intValue = MainComposePreferences.getHomeInterface()
                 }
             }
         }
@@ -114,11 +119,11 @@ fun PeristyleNavigation(context: Context, initialRoute: String? = null) {
         }
 
         composable(Routes.HOME) {
-            Home(navController)
-        }
-
-        composable(Routes.IMMERSIVE_HOME) {
-            ImmersiveHome(navController)
+            if (homeInterface.intValue == MainComposePreferences.HOME_INTERFACE_PERISTYLE) {
+                Home(navController)
+            } else {
+                ImmersiveHome(navController)
+            }
         }
 
         composable(Routes.WALLPAPER) {
@@ -149,7 +154,7 @@ fun PeristyleNavigation(context: Context, initialRoute: String? = null) {
             Folders(navController)
         }
 
-        composable(Routes.TAGGED_WALLPAPERS) { backStackEntry ->
+        composable(Routes.TAGGED_WALLPAPERS) {
             TaggedWallpapers(navController)
         }
 
