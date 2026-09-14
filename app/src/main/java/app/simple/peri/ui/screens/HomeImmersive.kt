@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -324,31 +325,33 @@ fun ImmersiveWallpaperItem(
         if (position == RANDOM_WALLPAPER_POSITION_FS) {
             Row(
                     modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(top = LocalBarsSize.current.statusBarHeight + 80.dp, end = 16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        .align(Alignment.TopCenter)
+                        .fillMaxWidth()
+                        .padding(
+                                top = LocalBarsSize.current.statusBarHeight + 80.dp,
+                                start = 24.dp,
+                                end = 24.dp
+                        ),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
             ) {
-                CircularCountdownProgress(
-                        modifier = Modifier
-                            .align(Alignment.CenterVertically)
-                )
+                CircularCountdownProgress()
+
+                Spacer(modifier = Modifier.weight(1f))
 
                 CircularIconButton(
                         onClick = { homeScreenViewModel.toggleCountdownPause() },
-                        imageVector = if (isCountdownPaused) Icons.Rounded.PlayArrow else Icons.Rounded.Pause,
-                        modifier = Modifier.align(Alignment.CenterVertically)
+                        imageVector = if (isCountdownPaused) Icons.Rounded.PlayArrow else Icons.Rounded.Pause
                 )
 
                 CircularIconButton(
                         onClick = { onNextWallpaper() },
-                        imageVector = Icons.Rounded.FastForward,
-                        modifier = Modifier.align(Alignment.CenterVertically)
+                        imageVector = Icons.Rounded.FastForward
                 )
 
                 CircularIconButton(
                         onClick = { showDeleteDialog.value = true },
-                        imageVector = Icons.Rounded.Delete,
-                        modifier = Modifier.align(Alignment.CenterVertically)
+                        imageVector = Icons.Rounded.Delete
                 )
             }
         }
