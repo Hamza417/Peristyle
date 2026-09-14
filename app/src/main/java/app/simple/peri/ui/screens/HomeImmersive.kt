@@ -56,7 +56,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -67,7 +66,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.util.lerp
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
@@ -100,7 +98,6 @@ import dev.chrisbanes.haze.HazeDefaults
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeEffect
 import dev.chrisbanes.haze.hazeSource
-import kotlin.math.absoluteValue
 
 const val RANDOM_WALLPAPER_POSITION_FS = 0
 const val HOME_SCREEN_POSITION_FS = 1
@@ -202,19 +199,7 @@ fun ImmersiveHome(navController: NavController? = null) {
                         }
                     },
                     modifier = Modifier
-                        .fillMaxSize()
-                        .graphicsLayer {
-                            val pageOffset =
-                                ((pagerState.currentPage - pageIndex) + pagerState.currentPageOffsetFraction).absoluteValue
-
-                            // Subtle parallax effect for full screen swipe
-                            translationX = pageOffset * size.width * 0.2f
-                            alpha = lerp(
-                                    start = 0.5f,
-                                    stop = 1f,
-                                    fraction = 1f - pageOffset.coerceIn(0f, 1f),
-                            )
-                        },
+                        .fillMaxSize(),
                     wallpaper = wallpaper,
                     onNextWallpaper = {
                         homeScreenViewModel.nextRandomWallpaper()
