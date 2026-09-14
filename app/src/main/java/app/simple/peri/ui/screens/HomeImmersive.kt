@@ -605,7 +605,7 @@ fun ImmersiveBottomMenuItem(
                     .clip(RoundedCornerShape(32.dp))
                     .hazeEffect(
                             state = hazeState,
-                            style = HazeDefaults.style(backgroundColor = Color(0x30000000), blurRadius = 20.dp)
+                            style = HazeDefaults.style(backgroundColor = Color(0x86000000), blurRadius = 20.dp)
                     )
                     .combinedClickable(
                             onClick = onClick,
