@@ -25,6 +25,7 @@ import app.simple.peri.preferences.SharedPreferences
 import app.simple.peri.ui.screens.AutoWallpaper
 import app.simple.peri.ui.screens.Folders
 import app.simple.peri.ui.screens.Home
+import app.simple.peri.ui.screens.ImmersiveHome
 import app.simple.peri.ui.screens.LiveAutoWallpaper
 import app.simple.peri.ui.screens.LiveWallpapers
 import app.simple.peri.ui.screens.Settings
@@ -47,7 +48,7 @@ fun PeristyleNavigation(context: Context, initialRoute: String? = null) {
     val navController = rememberNavController()
     val disableAnimations = remember { mutableStateOf(MainComposePreferences.getDisableAnimations()) }
     val predictiveBack = remember { mutableStateOf(MainComposePreferences.isPredictiveBack()) }
-    val startDestination = if (isSetupComplete(context)) Routes.HOME else Routes.SETUP
+    val startDestination = if (isSetupComplete(context)) Routes.IMMERSIVE_HOME else Routes.SETUP
 
     DisposableEffect(Unit) {
         val listener = android.content.SharedPreferences.OnSharedPreferenceChangeListener { sharedPreferences, key ->
@@ -114,6 +115,10 @@ fun PeristyleNavigation(context: Context, initialRoute: String? = null) {
 
         composable(Routes.HOME) {
             Home(navController)
+        }
+
+        composable(Routes.IMMERSIVE_HOME) {
+            ImmersiveHome(navController)
         }
 
         composable(Routes.WALLPAPER) {

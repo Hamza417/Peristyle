@@ -5,6 +5,7 @@ object Routes {
     const val WALLHAVEN_ARG = "wallhaven_arg"
     const val SETUP = "setup"
     const val HOME = "home"
+    const val IMMERSIVE_HOME = "immersive_home"
     const val LIST = "list"
     const val WALLPAPER = "wallpaper"
     const val SETTINGS = "settings"
