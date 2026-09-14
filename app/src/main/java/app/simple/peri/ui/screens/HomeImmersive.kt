@@ -185,7 +185,7 @@ fun ImmersiveHome(navController: NavController? = null) {
                 else -> randomWallpaper
             }
 
-            FullscreenWallpaperItem(
+            ImmersiveWallpaperItem(
                     position = currentPage.id,
                     title = when (currentPage.id) {
                         HOME_SCREEN_POSITION_FS -> stringResource(id = R.string.home_screen)
@@ -227,7 +227,7 @@ fun ImmersiveHome(navController: NavController? = null) {
         }
 
         // Overlay Header on Top
-        FullscreenHeader(
+        ImmersiveHeader(
                 title = stringResource(id = R.string.app_name),
                 modifier = Modifier
                     .align(Alignment.TopCenter)
@@ -240,7 +240,7 @@ fun ImmersiveHome(navController: NavController? = null) {
         )
 
         // Overlay Bottom Menu on Bottom exactly as originally styled
-        FullscreenBottomMenu(
+        ImmersiveBottomMenu(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .padding(bottom = LocalBarsSize.current.navigationBarHeight)
@@ -253,7 +253,7 @@ fun ImmersiveHome(navController: NavController? = null) {
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun FullscreenWallpaperItem(
+fun ImmersiveWallpaperItem(
         title: String,
         position: Int,
         onClick: () -> Unit,
@@ -413,7 +413,7 @@ fun FullscreenWallpaperItem(
 
 @SuppressLint("LocalContextGetResourceValueCall")
 @Composable
-fun FullscreenHeader(title: String, modifier: Modifier = Modifier, navController: NavController? = null) {
+fun ImmersiveHeader(title: String, modifier: Modifier = Modifier, navController: NavController? = null) {
     val context = LocalContext.current
     val autoWallpaperScreenSelection = remember { mutableStateOf(false) }
 
@@ -479,7 +479,7 @@ fun FullscreenHeader(title: String, modifier: Modifier = Modifier, navController
 
 @SuppressLint("LocalContextGetResourceValueCall")
 @Composable
-fun FullscreenBottomMenu(modifier: Modifier = Modifier, navController: NavController? = null) {
+fun ImmersiveBottomMenu(modifier: Modifier = Modifier, navController: NavController? = null) {
     val height = 60.dp
     val rowPadding = 16.dp
     val context = LocalContext.current
@@ -504,7 +504,7 @@ fun FullscreenBottomMenu(modifier: Modifier = Modifier, navController: NavContro
                 .padding(start = rowPadding, end = rowPadding),
             verticalAlignment = Alignment.CenterVertically
     ) {
-        FullscreenBottomMenuItem(
+        ImmersiveBottomMenuItem(
                 modifier = Modifier
                     .weight(0.2F)
                     .height(height),
@@ -514,7 +514,7 @@ fun FullscreenBottomMenu(modifier: Modifier = Modifier, navController: NavContro
             navController?.navigate(Routes.TAGS)
         }
 
-        FullscreenBottomMenuItem(
+        ImmersiveBottomMenuItem(
                 modifier = Modifier
                     .weight(0.2F)
                     .height(height),
@@ -524,7 +524,7 @@ fun FullscreenBottomMenu(modifier: Modifier = Modifier, navController: NavContro
             wallhavenSearchParametersDialog.value = true
         }
 
-        FullscreenBottomMenuItem(
+        ImmersiveBottomMenuItem(
                 modifier = Modifier
                     .weight(0.2F)
                     .height(height),
@@ -577,7 +577,7 @@ fun FullscreenBottomMenu(modifier: Modifier = Modifier, navController: NavContro
 
 @SuppressLint("LocalContextGetResourceValueCall")
 @Composable
-fun FullscreenBottomMenuItem(
+fun ImmersiveBottomMenuItem(
         modifier: Modifier = Modifier,
         @StringRes title: Int = 0,
         imageVector: ImageVector = Icons.Rounded.Circle,
