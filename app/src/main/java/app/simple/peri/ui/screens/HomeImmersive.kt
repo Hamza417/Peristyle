@@ -44,7 +44,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
@@ -139,6 +138,7 @@ fun ImmersiveHome(navController: NavController? = null) {
     val lockWallpaper = homeScreenViewModel.getLockWallpaper().observeAsState().value
     val randomWallpaper = homeScreenViewModel.getRandomWallpaper().observeAsState().value
     val lastLiveWallpaper = homeScreenViewModel.getLastLiveWallpaper().observeAsState().value
+    val hazeState = remember { HazeState() }
 
     DisposableEffect(ProcessLifecycleOwner.get()) {
         val observer = object : DefaultLifecycleObserver {
@@ -193,6 +193,7 @@ fun ImmersiveHome(navController: NavController? = null) {
                         LIVE_AUTO_WALLPAPER_POSITION_FS -> stringResource(id = R.string.live_auto_wallpaper)
                         else -> wallpaper?.name ?: ""
                     },
+                    hazeState = hazeState,
                     onClick = {
                         if (wallpaper != null) {
                             navController?.navigate(Routes.WALLPAPER) {
@@ -241,6 +242,7 @@ fun ImmersiveHome(navController: NavController? = null) {
 
         // Overlay Bottom Menu on Bottom exactly as originally styled
         ImmersiveBottomMenu(
+                hazeState = hazeState,
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .padding(bottom = LocalBarsSize.current.navigationBarHeight)
@@ -256,6 +258,7 @@ fun ImmersiveHome(navController: NavController? = null) {
 fun ImmersiveWallpaperItem(
         title: String,
         position: Int,
+        hazeState: HazeState,
         onClick: () -> Unit,
         onNextWallpaper: () -> Unit,
         onDeleteWallpaper: () -> Unit,
@@ -266,7 +269,6 @@ fun ImmersiveWallpaperItem(
         mutableStateOf(ContentScale.Crop)
     }
 
-    val hazeState = remember { HazeState() }
     val showDeleteDialog = remember { mutableStateOf(false) }
 
     val homeScreenViewModel: HomeScreenViewModel = viewModel(LocalActivity.current as ComponentActivity)
@@ -479,7 +481,10 @@ fun ImmersiveHeader(title: String, modifier: Modifier = Modifier, navController:
 
 @SuppressLint("LocalContextGetResourceValueCall")
 @Composable
-fun ImmersiveBottomMenu(modifier: Modifier = Modifier, navController: NavController? = null) {
+fun ImmersiveBottomMenu(
+        hazeState: HazeState,
+        modifier: Modifier = Modifier,
+        navController: NavController? = null) {
     val height = 60.dp
     val rowPadding = 16.dp
     val context = LocalContext.current
@@ -505,6 +510,7 @@ fun ImmersiveBottomMenu(modifier: Modifier = Modifier, navController: NavControl
             verticalAlignment = Alignment.CenterVertically
     ) {
         ImmersiveBottomMenuItem(
+                hazeState = hazeState,
                 modifier = Modifier
                     .weight(0.2F)
                     .height(height),
@@ -515,6 +521,7 @@ fun ImmersiveBottomMenu(modifier: Modifier = Modifier, navController: NavControl
         }
 
         ImmersiveBottomMenuItem(
+                hazeState = hazeState,
                 modifier = Modifier
                     .weight(0.2F)
                     .height(height),
@@ -525,6 +532,7 @@ fun ImmersiveBottomMenu(modifier: Modifier = Modifier, navController: NavControl
         }
 
         ImmersiveBottomMenuItem(
+                hazeState = hazeState,
                 modifier = Modifier
                     .weight(0.2F)
                     .height(height),
@@ -538,10 +546,18 @@ fun ImmersiveBottomMenu(modifier: Modifier = Modifier, navController: NavControl
                 elevation = CardDefaults.cardElevation(
                         defaultElevation = 0.dp
                 ),
+                colors = CardDefaults.cardColors(
+                        containerColor = Color.Transparent,
+                ),
                 modifier = Modifier
                     .padding(8.dp)
                     .weight(0.4f)
                     .height(height)
+                    .clip(RoundedCornerShape(32.dp))
+                    .hazeEffect(
+                            state = hazeState,
+                            style = HazeDefaults.style(backgroundColor = Color(0x30000000), blurRadius = 20.dp)
+                    )
                     .combinedClickable(
                             onClick = {
                                 navController?.navigate(Routes.FOLDERS)
@@ -559,13 +575,11 @@ fun ImmersiveBottomMenu(modifier: Modifier = Modifier, navController: NavControl
                             interactionSource = remember { MutableInteractionSource() }
                     ),
                 shape = RoundedCornerShape(32.dp),
-                colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                ),
         ) {
             Icon(
                     imageVector = Icons.Rounded.Folder,
                     contentDescription = null,
+                    tint = Color.White,
                     modifier = Modifier
                         .size(64.dp)
                         .padding(16.dp)
@@ -578,6 +592,7 @@ fun ImmersiveBottomMenu(modifier: Modifier = Modifier, navController: NavControl
 @SuppressLint("LocalContextGetResourceValueCall")
 @Composable
 fun ImmersiveBottomMenuItem(
+        hazeState: HazeState,
         modifier: Modifier = Modifier,
         @StringRes title: Int = 0,
         imageVector: ImageVector = Icons.Rounded.Circle,
@@ -593,9 +608,17 @@ fun ImmersiveBottomMenuItem(
                 elevation = CardDefaults.cardElevation(
                         defaultElevation = 0.dp
                 ),
+                colors = CardDefaults.cardColors(
+                        containerColor = Color.Transparent,
+                ),
                 modifier = modifier
                     .padding(start = 4.dp, end = 4.dp)
                     .aspectRatio(1f)
+                    .clip(RoundedCornerShape(32.dp))
+                    .hazeEffect(
+                            state = hazeState,
+                            style = HazeDefaults.style(backgroundColor = Color(0x30000000), blurRadius = 20.dp)
+                    )
                     .combinedClickable(
                             onClick = onClick,
                             onLongClick = {
@@ -615,6 +638,7 @@ fun ImmersiveBottomMenuItem(
             Icon(
                     imageVector = imageVector,
                     contentDescription = null,
+                    tint = Color.White,
                     modifier = Modifier
                         .fillMaxHeight()
                         .fillMaxWidth()
