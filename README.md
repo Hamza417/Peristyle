@@ -45,6 +45,7 @@ Peristyle is created to be an extremely simple and sophisticated wallpaper manag
 | ![04](./fastlane/metadata/android/en-US/images/phoneScreenshots/04.png) | ![05](./fastlane/metadata/android/en-US/images/phoneScreenshots/05.png) | ![06](./fastlane/metadata/android/en-US/images/phoneScreenshots/06.png) |
 | ![07](./fastlane/metadata/android/en-US/images/phoneScreenshots/07.png) | ![08](./fastlane/metadata/android/en-US/images/phoneScreenshots/08.png) | ![09](./fastlane/metadata/android/en-US/images/phoneScreenshots/09.png) |
 | ![10](./fastlane/metadata/android/en-US/images/phoneScreenshots/10.png) | ![11](./fastlane/metadata/android/en-US/images/phoneScreenshots/11.png) | ![12](./fastlane/metadata/android/en-US/images/phoneScreenshots/12.png) |
+| ![13](./fastlane/metadata/android/en-US/images/phoneScreenshots/13.png) |                                                                         |                                                                         |
 
 ## Triggering AutoWallpaperService externally
 
@@ -59,7 +60,7 @@ This has been discussed in [Issue #72](https://github.com/Hamza417/Peristyle/iss
 
 The `REQUEST_IGNORE_BATTERY_OPTIMIZATIONS` permission is used to run the AutoWallpaperService whenever required.
 
-Additionally requires access to any wallpaper directories the user specifies.
+Additionally, requires access to any wallpaper directories the user specifies.
 
 ## Translate
 
