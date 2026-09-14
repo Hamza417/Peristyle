@@ -55,6 +55,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -369,9 +370,16 @@ fun FullscreenWallpaperItem(
                 modifier = Modifier
                     .align(Alignment.BottomStart)
                     .fillMaxWidth()
-                    .padding(bottom = LocalBarsSize.current.navigationBarHeight + 110.dp) // Push above bottom menu
-                    .hazeEffect(state = hazeState,
-                                style = HazeDefaults.style(backgroundColor = Color(0x30000000), blurRadius = 20.dp)
+                    // Horizontal margin and push above bottom menu
+                    .padding(
+                            start = 16.dp,
+                            end = 16.dp,
+                            bottom = LocalBarsSize.current.navigationBarHeight + 120.dp
+                    )
+                    .clip(RoundedCornerShape(24.dp)) // Rounds the background
+                    .hazeEffect(
+                            state = hazeState,
+                            style = HazeDefaults.style(backgroundColor = Color(0x30000000), blurRadius = 20.dp)
                     )
         ) {
             Text(
@@ -379,7 +387,7 @@ fun FullscreenWallpaperItem(
                     modifier = Modifier
                         .padding(start = 24.dp, top = 16.dp, end = 24.dp),
                     textAlign = TextAlign.Start,
-                    fontSize = 28.sp,
+                    fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White,
                     maxLines = 1,
