@@ -36,6 +36,7 @@ import app.simple.peri.ui.dialogs.settings.ConcurrencyDialog
 import app.simple.peri.ui.dialogs.settings.DeveloperProfileDialog
 import app.simple.peri.ui.dialogs.settings.FelicityDialog
 import app.simple.peri.ui.dialogs.settings.GridSpanSelectionDialog
+import app.simple.peri.ui.dialogs.settings.HomeInterfaceSelectionDialog
 import app.simple.peri.ui.dialogs.settings.InureAppManagerDialog
 import app.simple.peri.ui.dialogs.settings.OrderDialog
 import app.simple.peri.ui.dialogs.settings.ShowPositionalDialog
@@ -75,6 +76,7 @@ fun Settings(navController: NavController? = null) {
                     isHideSettings = true)
         }
         item { // Interface
+            val homeInterfaceSelectionDialog = remember { mutableStateOf(false) }
             val gridSpanSelectionDialog = remember { mutableStateOf(false) }
 
             if (gridSpanSelectionDialog.value) {
@@ -87,7 +89,21 @@ fun Settings(navController: NavController? = null) {
                 )
             }
 
+            if (homeInterfaceSelectionDialog.value) {
+                HomeInterfaceSelectionDialog(
+                        onDismiss = { homeInterfaceSelectionDialog.value = false }
+                )
+            }
+
             SecondaryHeader(title = context.getString(R.string.interface_settings))
+
+            ClickablePreference(
+                    title = context.getString(R.string.home),
+                    description = context.getString(R.string.home_summary),
+                    onClick = {
+                        homeInterfaceSelectionDialog.value = true
+                    }
+            )
 
             ClickablePreference(
                     title = context.getString(R.string.grid_span),

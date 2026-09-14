@@ -84,6 +84,12 @@ object MainComposePreferences {
 
     const val DISABLE_ANIMATIONS = "disable_animations"
     const val PREDICTIVE_BACK = "predictive_back"
+    const val HOME_INTERFACE = "home_interface"
+
+    // ----------------------------------------------------------------------------------------------------- //
+
+    const val HOME_INTERFACE_PERISTYLE = 0
+    const val HOME_INTERFACE_IMMERSIVE = 1
 
     // ----------------------------------------------------------------------------------------------------- //
 
@@ -973,5 +979,15 @@ object MainComposePreferences {
 
     fun setNotificationDeleteButtonEnabled(value: Boolean) {
         getSharedPreferences().edit().putBoolean(NOTIFICATION_DELETE_BUTTON, value).apply()
+    }
+
+    // ----------------------------------------------------------------------------------------------------- //
+
+    fun getHomeInterface(): Int {
+        return getSharedPreferences().getInt(HOME_INTERFACE, HOME_INTERFACE_PERISTYLE)
+    }
+
+    fun setHomeInterface(value: Int) {
+        getSharedPreferences().edit().putInt(HOME_INTERFACE, value).apply()
     }
 }
