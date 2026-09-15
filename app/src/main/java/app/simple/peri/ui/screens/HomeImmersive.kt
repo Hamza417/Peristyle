@@ -231,8 +231,10 @@ fun ImmersiveHome(navController: NavController? = null) {
                 hazeState = hazeState,
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
-                    .padding(bottom = LocalBarsSize.current.navigationBarHeight)
-                    .padding(8.dp)
+                    .padding(
+                            start = 8.dp,
+                            end = 8.dp,
+                            bottom = LocalBarsSize.current.navigationBarHeight)
                     .height(120.dp),
                 navController = navController
         )
@@ -473,6 +475,7 @@ fun ImmersiveBottomMenu(
         hazeState: HazeState,
         modifier: Modifier = Modifier,
         navController: NavController? = null) {
+
     val height = 60.dp
     val rowPadding = 16.dp
     val context = LocalContext.current
