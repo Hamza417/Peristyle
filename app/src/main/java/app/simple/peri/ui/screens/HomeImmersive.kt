@@ -379,7 +379,7 @@ fun ImmersiveWallpaperItem(
                     modifier = Modifier
                         .padding(start = 24.dp, top = 16.dp, end = 24.dp),
                     textAlign = TextAlign.Start,
-                    fontSize = 18.sp,
+                    fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White,
                     maxLines = 1,
@@ -395,7 +395,7 @@ fun ImmersiveWallpaperItem(
                     modifier = Modifier
                         .padding(start = 24.dp, top = 4.dp, bottom = 16.dp, end = 24.dp),
                     textAlign = TextAlign.Start,
-                    fontSize = 16.sp,
+                    fontSize = 14.sp,
                     fontWeight = FontWeight.Light,
                     color = Color.White.copy(alpha = 0.8f),
             )
