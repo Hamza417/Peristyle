@@ -45,6 +45,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
@@ -538,7 +539,7 @@ fun ImmersiveBottomMenu(
                         defaultElevation = 0.dp
                 ),
                 colors = CardDefaults.cardColors(
-                        containerColor = Color.Transparent,
+                        containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
                 ),
                 modifier = Modifier
                     .padding(8.dp)
