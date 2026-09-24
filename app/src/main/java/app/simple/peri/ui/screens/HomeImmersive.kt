@@ -278,11 +278,6 @@ fun ImmersiveWallpaperItem(
     Box(
             modifier = modifier
                 .fillMaxSize()
-                .combinedClickable(
-                        onClick = onClick,
-                        indication = null,
-                        interactionSource = remember { MutableInteractionSource() }
-                )
     ) {
         GlideImage(
                 model = wallpaper?.filePath?.toFile(),
@@ -322,6 +317,21 @@ fun ImmersiveWallpaperItem(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(Color.Black.copy(alpha = 0.2f))
+        )
+        
+        // Valid click region restricted to the middle of the screen
+        Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(
+                            top = LocalBarsSize.current.statusBarHeight + 140.dp, // Clears header and top controls
+                            bottom = LocalBarsSize.current.navigationBarHeight + 220.dp // Clears bottom menu and title
+                    )
+                    .combinedClickable(
+                            onClick = onClick,
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() }
+                    )
         )
 
         if (position == RANDOM_WALLPAPER_POSITION_FS) {
