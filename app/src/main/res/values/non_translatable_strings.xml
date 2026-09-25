@@ -12,5 +12,7 @@
     <string name="wallpaper_manager" translatable="false">Wallpaper Manager API</string>
     <string name="predictive_back" translatable="false">Predictive Back</string>
     <string name="wallhaven" translatable="false">Wallhaven</string>
+    <string name="nomedia" translatable="false">NOMEDIA</string>
+    <string name="delete_progress" translatable="false">%1$d/%2$d - %3$s</string>
     <string name="type_confirm_to_delete" translatable="false">Type \"confirm\" to delete</string>
 </resources>
