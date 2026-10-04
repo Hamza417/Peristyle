@@ -89,6 +89,7 @@ import app.simple.peri.ui.dialogs.wallhaven.WallhavenSearchDialog
 import app.simple.peri.ui.nav.Routes
 import app.simple.peri.ui.theme.LocalBarsSize
 import app.simple.peri.utils.FileUtils.toFile
+import app.simple.peri.utils.FileUtils.toSize
 import app.simple.peri.utils.ServiceUtils
 import app.simple.peri.viewmodels.HomeScreenViewModel
 import com.bumptech.glide.integration.compose.CrossFade
@@ -408,6 +409,8 @@ fun WallpaperItem(
                             append((wallpaper?.width ?: 0).toString())
                             append("x")
                             append((wallpaper?.height ?: 0).toString())
+                            append(", ")
+                            append(wallpaper?.size?.toSize())
                         },
                         modifier = Modifier
                             .padding(start = 16.dp, top = 4.dp, bottom = 16.dp, end = 16.dp),
