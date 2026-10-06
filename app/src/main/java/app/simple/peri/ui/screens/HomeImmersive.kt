@@ -81,7 +81,7 @@ import app.simple.peri.ui.commons.CircularCountdownProgress
 import app.simple.peri.ui.commons.CircularIconButton
 import app.simple.peri.ui.commons.InitDisplayDimension
 import app.simple.peri.ui.dialogs.autowallpaper.AutoWallpaperPageSelectionDialog
-import app.simple.peri.ui.dialogs.common.SureDialog
+import app.simple.peri.ui.dialogs.common.HazeSureDialog
 import app.simple.peri.ui.dialogs.wallhaven.WallhavenSearchDialog
 import app.simple.peri.ui.nav.Routes
 import app.simple.peri.ui.theme.LocalBarsSize
@@ -264,144 +264,153 @@ fun ImmersiveWallpaperItem(
     val homeScreenViewModel: HomeScreenViewModel = viewModel(LocalActivity.current as ComponentActivity)
     val isCountdownPaused = homeScreenViewModel.isCountdownPaused.collectAsState().value
 
-    if (showDeleteDialog.value) {
-        SureDialog(
-                message = wallpaper?.name ?: wallpaper?.filePath ?: "",
-                onSure = {
-                    onDeleteWallpaper()
-                    showDeleteDialog.value = false
-                },
-                onDismiss = {
-                    showDeleteDialog.value = false
-                }
-        )
-    }
-
-    Box(
-            modifier = modifier
-                .fillMaxSize()
-                .combinedClickable(
-                        onClick = onClick,
-                        indication = null,
-                        interactionSource = remember { MutableInteractionSource() }
-                )
-    ) {
-        GlideImage(
-                model = wallpaper?.filePath?.toFile(),
-                contentDescription = null,
-                transition = CrossFade,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .hazeSource(state = hazeState),
-                alignment = Alignment.Center,
-                failure = placeholder(painter = painterResource(id = R.drawable.no_image_placeholder)),
-                contentScale = currentScale.value,
-        ) {
-            it.addListener(object : RequestListener<Drawable> {
-                override fun onLoadFailed(
-                        e: GlideException?,
-                        model: Any?,
-                        target: Target<Drawable>,
-                        isFirstResource: Boolean): Boolean {
-                    return false
-                }
-
-                override fun onResourceReady(
-                        resource: Drawable,
-                        model: Any,
-                        target: Target<Drawable>?,
-                        dataSource: DataSource,
-                        isFirstResource: Boolean): Boolean {
-                    return false
-                }
-            })
-                .disallowHardwareConfig()
-                .fitCenter()
-        }
-
-        // Dark gradient/overlay for readability of text and icons
+    Box(modifier = modifier.fillMaxSize()) {
         Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color.Black.copy(alpha = 0.2f))
-        )
-
-        if (position == RANDOM_WALLPAPER_POSITION_FS) {
-            Row(
+                    .combinedClickable(
+                            onClick = onClick,
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() }
+                    )
+        ) {
+            GlideImage(
+                    model = wallpaper?.filePath?.toFile(),
+                    contentDescription = null,
+                    transition = CrossFade,
                     modifier = Modifier
-                        .align(Alignment.TopCenter)
-                        .fillMaxWidth()
-                        .padding(
-                                top = LocalBarsSize.current.statusBarHeight + 80.dp,
-                                start = 24.dp,
-                                end = 24.dp
-                        ),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                        .fillMaxSize()
+                        .hazeSource(state = hazeState),
+                    alignment = Alignment.Center,
+                    failure = placeholder(painter = painterResource(id = R.drawable.no_image_placeholder)),
+                    contentScale = currentScale.value,
             ) {
-                CircularCountdownProgress()
+                it.addListener(object : RequestListener<Drawable> {
+                    override fun onLoadFailed(
+                            e: GlideException?,
+                            model: Any?,
+                            target: Target<Drawable>,
+                            isFirstResource: Boolean): Boolean {
+                        return false
+                    }
 
-                Spacer(modifier = Modifier.weight(1f))
+                    override fun onResourceReady(
+                            resource: Drawable,
+                            model: Any,
+                            target: Target<Drawable>?,
+                            dataSource: DataSource,
+                            isFirstResource: Boolean): Boolean {
+                        return false
+                    }
+                })
+                    .disallowHardwareConfig()
+                    .fitCenter()
+            }
 
-                CircularIconButton(
-                        onClick = { homeScreenViewModel.toggleCountdownPause() },
-                        imageVector = if (isCountdownPaused) Icons.Rounded.PlayArrow else Icons.Rounded.Pause
+            // Dark gradient/overlay for readability of text and icons
+            Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(alpha = 0.2f))
+            )
+
+            if (position == RANDOM_WALLPAPER_POSITION_FS) {
+                Row(
+                        modifier = Modifier
+                            .align(Alignment.TopCenter)
+                            .fillMaxWidth()
+                            .padding(
+                                    top = LocalBarsSize.current.statusBarHeight + 80.dp,
+                                    start = 24.dp,
+                                    end = 24.dp
+                            ),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                ) {
+                    CircularCountdownProgress()
+
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    CircularIconButton(
+                            onClick = {
+                                homeScreenViewModel.toggleCountdownPause()
+                            },
+                            imageVector = if (isCountdownPaused) Icons.Rounded.PlayArrow else Icons.Rounded.Pause
+                    )
+
+                    CircularIconButton(
+                            onClick = {
+                                onNextWallpaper()
+                            },
+                            imageVector = Icons.Rounded.FastForward
+                    )
+
+                    CircularIconButton(
+                            onClick = {
+                                showDeleteDialog.value = true
+                            },
+                            imageVector = Icons.Rounded.Delete
+                    )
+                }
+            }
+
+            Column(
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .fillMaxWidth()
+                        // Horizontal margin and push above bottom menu
+                        .padding(
+                                start = 16.dp,
+                                end = 16.dp,
+                                bottom = LocalBarsSize.current.navigationBarHeight + 120.dp
+                        )
+                        .clip(RoundedCornerShape(24.dp)) // Rounds the background
+                        .hazeEffect(
+                                state = hazeState,
+                                style = HazeDefaults.style(backgroundColor = Color(0x30000000), blurRadius = 20.dp)
+                        )
+            ) {
+                Text(
+                        text = title,
+                        modifier = Modifier
+                            .padding(start = 24.dp, top = 16.dp, end = 24.dp),
+                        textAlign = TextAlign.Start,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                 )
 
-                CircularIconButton(
-                        onClick = { onNextWallpaper() },
-                        imageVector = Icons.Rounded.FastForward
-                )
-
-                CircularIconButton(
-                        onClick = { showDeleteDialog.value = true },
-                        imageVector = Icons.Rounded.Delete
+                Text(
+                        text = buildString {
+                            append((wallpaper?.width ?: 0).toString())
+                            append("x")
+                            append((wallpaper?.height ?: 0).toString())
+                            append(", ")
+                            append(wallpaper?.size?.toSize())
+                        },
+                        modifier = Modifier
+                            .padding(start = 24.dp, top = 4.dp, bottom = 16.dp, end = 24.dp),
+                        textAlign = TextAlign.Start,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Light,
+                        color = Color.White.copy(alpha = 0.8f),
                 )
             }
         }
 
-        Column(
-                modifier = Modifier
-                    .align(Alignment.BottomStart)
-                    .fillMaxWidth()
-                    // Horizontal margin and push above bottom menu
-                    .padding(
-                            start = 16.dp,
-                            end = 16.dp,
-                            bottom = LocalBarsSize.current.navigationBarHeight + 120.dp
-                    )
-                    .clip(RoundedCornerShape(24.dp)) // Rounds the background
-                    .hazeEffect(
-                            state = hazeState,
-                            style = HazeDefaults.style(backgroundColor = Color(0x30000000), blurRadius = 20.dp)
-                    )
-        ) {
-            Text(
-                    text = title,
-                    modifier = Modifier
-                        .padding(start = 24.dp, top = 16.dp, end = 24.dp),
-                    textAlign = TextAlign.Start,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-            )
-
-            Text(
-                    text = buildString {
-                        append((wallpaper?.width ?: 0).toString())
-                        append("x")
-                        append((wallpaper?.height ?: 0).toString())
-                        append(", ")
-                        append(wallpaper?.size?.toSize())
+        if (showDeleteDialog.value) {
+            HazeSureDialog(
+                    message = wallpaper?.name ?: wallpaper?.filePath ?: "",
+                    hazeState = hazeState,
+                    onSure = {
+                        onDeleteWallpaper()
+                        showDeleteDialog.value = false
                     },
-                    modifier = Modifier
-                        .padding(start = 24.dp, top = 4.dp, bottom = 16.dp, end = 24.dp),
-                    textAlign = TextAlign.Start,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Light,
-                    color = Color.White.copy(alpha = 0.8f),
+                    onDismiss = {
+                        showDeleteDialog.value = false
+                    }
             )
         }
     }
