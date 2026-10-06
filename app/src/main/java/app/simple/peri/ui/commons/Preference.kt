@@ -1,6 +1,7 @@
 package app.simple.peri.ui.commons
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,6 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -84,33 +86,31 @@ fun SwitchPreference(title: String,
 }
 
 @Composable
-fun ClickablePreference(@SuppressLint("ModifierParameter") modifier: Modifier? = null,
-                        title: String,
-                        description: String = "",
-                        statusText: String? = null,
-                        onClick: () -> Unit) {
+fun ClickablePreference(
+        @SuppressLint("ModifierParameter") modifier: Modifier? = null,
+        title: String,
+        description: String = "",
+        statusText: String? = null,
+        onClick: () -> Unit
+) {
 
     val verticalPadding = 16.dp
 
-    Card(
-            modifier = modifier ?: Modifier
-                .fillMaxWidth(),
-            shape = RoundedCornerShape(PREF_HORIZONTAL_PADDING),
-            colors = CardDefaults.cardColors(
-                    containerColor = Color.Transparent,
-            ),
-            onClick = onClick
+    Column(
+            modifier = (modifier ?: Modifier.fillMaxWidth())
+                .clip(RoundedCornerShape(PREF_HORIZONTAL_PADDING))
+                .clickable(onClick = onClick)
+                .padding(
+                        horizontal = PREF_HORIZONTAL_PADDING,
+                        vertical = verticalPadding
+                )
     ) {
         Text(
                 text = title,
                 fontWeight = FontWeight.Bold,
-                fontSize = PREFERENCE_TITLE_SIZE,
-                modifier = Modifier
-                    .padding(start = PREF_HORIZONTAL_PADDING,
-                             end = PREF_HORIZONTAL_PADDING,
-                             top = verticalPadding,
-                             bottom = if (statusText != null || description.isNotEmpty()) 0.dp else verticalPadding),
+                fontSize = PREFERENCE_TITLE_SIZE
         )
+
         if (statusText != null) {
             Text(
                     text = statusText,
@@ -119,22 +119,16 @@ fun ClickablePreference(@SuppressLint("ModifierParameter") modifier: Modifier? =
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(start = PREF_HORIZONTAL_PADDING,
-                                 end = PREF_HORIZONTAL_PADDING,
-                                 top = 2.dp,
-                                 bottom = if (description.isNotEmpty()) 0.dp else verticalPadding),
+                        .padding(top = 2.dp)
             )
         }
+
         if (description.isNotEmpty()) {
             Text(
                     text = description,
                     fontWeight = FontWeight.Normal,
                     fontSize = PREFERENCE_DESCRIPTION_SIZE,
-                    modifier = Modifier
-                        .padding(start = PREF_HORIZONTAL_PADDING,
-                                 end = PREF_HORIZONTAL_PADDING,
-                                 top = 4.dp,
-                                 bottom = verticalPadding),
+                    modifier = Modifier.padding(top = 4.dp)
             )
         }
     }
@@ -163,10 +157,12 @@ fun SecondaryClickablePreference(@SuppressLint("ModifierParameter") modifier: Mo
                 fontSize = PREFERENCE_TITLE_SIZE,
                 color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier
-                    .padding(start = PREF_HORIZONTAL_PADDING,
-                             end = PREF_HORIZONTAL_PADDING,
-                             top = verticalPadding,
-                             bottom = if (description.isNotEmpty()) 0.dp else verticalPadding),
+                    .padding(
+                            start = PREF_HORIZONTAL_PADDING,
+                            end = PREF_HORIZONTAL_PADDING,
+                            top = verticalPadding,
+                            bottom = if (description.isNotEmpty()) 0.dp else verticalPadding
+                    ),
         )
         if (description.isNotEmpty()) {
             Text(
@@ -174,10 +170,12 @@ fun SecondaryClickablePreference(@SuppressLint("ModifierParameter") modifier: Mo
                     fontWeight = FontWeight.Normal,
                     fontSize = PREFERENCE_DESCRIPTION_SIZE,
                     modifier = Modifier
-                        .padding(start = PREF_HORIZONTAL_PADDING,
-                                 end = PREF_HORIZONTAL_PADDING,
-                                 top = 4.dp,
-                                 bottom = verticalPadding),
+                        .padding(
+                                start = PREF_HORIZONTAL_PADDING,
+                                end = PREF_HORIZONTAL_PADDING,
+                                top = 4.dp,
+                                bottom = verticalPadding
+                        ),
             )
         }
     }
@@ -188,7 +186,11 @@ fun SecondaryHeader(title: String) {
     Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = PREF_HORIZONTAL_PADDING, end = PREF_HORIZONTAL_PADDING, top = 24.dp),
+                .padding(
+                        start = PREF_HORIZONTAL_PADDING,
+                        end = PREF_HORIZONTAL_PADDING,
+                        top = 24.dp
+                ),
             verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
@@ -200,47 +202,50 @@ fun SecondaryHeader(title: String) {
 }
 
 @Composable
-fun OtherApps(title: String, description: String, iconResId: Int, onClick: () -> Unit) {
+fun OtherApps(
+        title: String,
+        description: String,
+        iconResId: Int,
+        onClick: () -> Unit) {
+
     val verticalPadding = 16.dp
     val iconSize = 72.dp
 
-    Card(
+    Row(
             modifier = Modifier
-                .fillMaxWidth(),
-            shape = RoundedCornerShape(PREF_HORIZONTAL_PADDING),
-            colors = CardDefaults.cardColors(
-                    containerColor = Color.Transparent,
-            ),
-            onClick = onClick
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(PREF_HORIZONTAL_PADDING))
+                .clickable(onClick = onClick)
+                // Apply the inner padding directly to the Row after making it clickable
+                .padding(
+                        horizontal = PREF_HORIZONTAL_PADDING,
+                        vertical = verticalPadding
+                ),
+            verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(
-                modifier = Modifier.padding(start = PREF_HORIZONTAL_PADDING, end = PREF_HORIZONTAL_PADDING, top = verticalPadding, bottom = verticalPadding),
-                verticalAlignment = Alignment.CenterVertically
+        Icon(
+                painter = painterResource(id = iconResId),
+                contentDescription = null,
+                tint = Color.Unspecified,
+                modifier = Modifier
+                    .padding(end = 16.dp)
+                    .size(iconSize)
+        )
+        Column(
+                modifier = Modifier.padding(start = 16.dp)
         ) {
-            Icon(
-                    painter = painterResource(id = iconResId),
-                    contentDescription = null,
-                    tint = Color.Unspecified,
-                    modifier = Modifier
-                        .padding(end = 16.dp)
-                        .size(iconSize)
+            Text(
+                    text = title,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = PREFERENCE_TITLE_SIZE,
+                    modifier = Modifier.padding(bottom = 4.dp)
             )
-            Column(
-                    modifier = Modifier.padding(start = 16.dp)
-            ) {
-                Text(
-                        text = title,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = PREFERENCE_TITLE_SIZE,
-                        modifier = Modifier.padding(bottom = 4.dp)
-                )
-                Text(
-                        text = description,
-                        fontWeight = FontWeight.Normal,
-                        fontSize = PREFERENCE_DESCRIPTION_SIZE,
-                        modifier = Modifier.padding(bottom = 8.dp)
-                )
-            }
+            Text(
+                    text = description,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = PREFERENCE_DESCRIPTION_SIZE,
+                    modifier = Modifier.padding(bottom = 8.dp)
+            )
         }
     }
 }
