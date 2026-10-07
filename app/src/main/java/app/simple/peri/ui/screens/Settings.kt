@@ -66,7 +66,8 @@ fun Settings(navController: NavController? = null) {
                     start = 8.dp,
                     end = 8.dp,
                     top = COMMON_PADDING + LocalBarsSize.current.statusBarHeight,
-                    bottom = 8.dp + LocalBarsSize.current.navigationBarHeight)
+                    bottom = 8.dp + LocalBarsSize.current.navigationBarHeight
+            )
     ) {
         item { // Header
             TopHeader(
@@ -95,51 +96,51 @@ fun Settings(navController: NavController? = null) {
                 )
             }
 
-            SecondaryHeader(title = context.getString(R.string.interface_settings))
+            SecondaryHeader(title = stringResource(R.string.interface_settings))
 
             ClickablePreference(
-                    title = context.getString(R.string.home),
-                    description = context.getString(R.string.home_summary),
+                    title = stringResource(R.string.home),
+                    description = stringResource(R.string.home_summary),
                     onClick = {
                         homeInterfaceSelectionDialog.value = true
                     }
             )
 
             ClickablePreference(
-                    title = context.getString(R.string.grid_span),
-                    description = context.getString(R.string.grid_span_summary),
+                    title = stringResource(R.string.grid_span),
+                    description = stringResource(R.string.grid_span_summary),
                     onClick = {
                         gridSpanSelectionDialog.value = true
                     }
             )
 
             SwitchPreference(
-                    title = context.getString(R.string.image_shadow_title),
-                    description = context.getString(R.string.image_shadow_summary),
+                    title = stringResource(R.string.image_shadow_title),
+                    description = stringResource(R.string.image_shadow_summary),
                     checked = MainComposePreferences.getShowImageShadow()
             ) {
                 MainComposePreferences.setShowImageShadow(it)
             }
 
             SwitchPreference(
-                    title = context.getString(R.string.skip_palettes),
-                    description = context.getString(R.string.skip_palettes_summary),
+                    title = stringResource(R.string.skip_palettes),
+                    description = stringResource(R.string.skip_palettes_summary),
                     checked = MainComposePreferences.skipPalette()
             ) {
                 MainComposePreferences.setSkipPalette(it)
             }
 
             SwitchPreference(
-                    title = context.getString(R.string.original_aspect_ratio),
-                    description = context.getString(R.string.original_aspect_ratio_summary),
+                    title = stringResource(R.string.original_aspect_ratio),
+                    description = stringResource(R.string.original_aspect_ratio_summary),
                     checked = MainComposePreferences.isOriginalAspectRatio(),
             ) {
                 MainComposePreferences.setOriginalAspectRatio(it)
             }
 
             SwitchPreference(
-                    title = context.getString(R.string.bottom_bar),
-                    description = context.getString(R.string.bottom_bar_summary),
+                    title = stringResource(R.string.bottom_bar),
+                    description = stringResource(R.string.bottom_bar_summary),
                     checked = MainComposePreferences.getBottomHeader()
             ) {
                 MainComposePreferences.setBottomHeader(it)
@@ -164,8 +165,8 @@ fun Settings(navController: NavController? = null) {
 
             if (isWallpaperDetails.value) {
                 SwitchPreference(
-                        title = context.getString(R.string.warning_indicator_title),
-                        description = context.getString(R.string.warning_indicator_summary),
+                        title = stringResource(R.string.warning_indicator_title),
+                        description = stringResource(R.string.warning_indicator_summary),
                         checked = MainComposePreferences.getShowWarningIndicator().invert()
                 ) {
                     MainComposePreferences.setShowWarningIndicator(it.invert())
@@ -195,8 +196,8 @@ fun Settings(navController: NavController? = null) {
 
             if (showClearCacheDialog.value) {
                 ShowWarningDialog(
-                        title = context.getString(R.string.clear_cache),
-                        warning = context.getString(R.string.clear_cache_message, totalCache.longValue.toSize()),
+                        title = stringResource(R.string.clear_cache),
+                        warning = stringResource(R.string.clear_cache_message, totalCache.longValue.toSize()),
                         onDismiss = {
                             showClearCacheDialog.value = false
                         })
@@ -231,8 +232,8 @@ fun Settings(navController: NavController? = null) {
 
             if (showRecreateDatabaseDialog.value) {
                 SureDialog(
-                        title = context.getString(R.string.recreate_database),
-                        message = context.getString(R.string.recreate_database_message),
+                        title = stringResource(R.string.recreate_database),
+                        message = stringResource(R.string.recreate_database_message),
                         onSure = {
                             composeWallpaperViewModel.recreateDatabase()
                             showRecreateDatabaseDialog.value = false
@@ -243,26 +244,26 @@ fun Settings(navController: NavController? = null) {
                 )
             }
 
-            SecondaryHeader(title = context.getString(R.string.data))
+            SecondaryHeader(title = stringResource(R.string.data))
 
             // Sort
             ClickablePreference(
-                    title = context.getString(R.string.sort),
-                    description = context.getString(R.string.sort_summary)
+                    title = stringResource(R.string.sort),
+                    description = stringResource(R.string.sort_summary)
             ) {
                 showSortDialog.value = true
             }
 
             // Order
             ClickablePreference(
-                    title = context.getString(R.string.order),
-                    description = context.getString(R.string.order_summary)
+                    title = stringResource(R.string.order),
+                    description = stringResource(R.string.order_summary)
             ) {
                 showOrderDialog.value = true
             }
 
             SwitchPreference(
-                    title = context.getString(R.string.ignore_dot_files),
+                    title = stringResource(R.string.ignore_dot_files),
                     checked = MainPreferences.isIgnoreDotFiles(),
                     topPadding = 8.dp
             ) {
@@ -270,7 +271,7 @@ fun Settings(navController: NavController? = null) {
             }
 
             SwitchPreference(
-                    title = context.getString(R.string.ignore_subdirectories),
+                    title = stringResource(R.string.ignore_subdirectories),
                     checked = MainPreferences.isIgnoreSubDirs(),
                     topPadding = 8.dp
             ) {
@@ -278,37 +279,37 @@ fun Settings(navController: NavController? = null) {
             }
 
             ClickablePreference(
-                    title = context.getString(R.string.max_process),
-                    description = context.getString(R.string.max_process_summary),
+                    title = stringResource(R.string.max_process),
+                    description = stringResource(R.string.max_process_summary),
             ) {
                 showConcurrencyDialog.value = true
             }
 
             ClickablePreference(
-                    title = context.getString(R.string.clear_cache),
+                    title = stringResource(R.string.clear_cache),
             ) {
                 showCacheListDialog.value = true
             }
 
             ClickablePreference(
-                    title = context.getString(R.string.recreate_database),
+                    title = stringResource(R.string.recreate_database),
             ) {
                 showRecreateDatabaseDialog.value = true
             }
         }
         item { // Accessibility
-            SecondaryHeader(title = context.getString(R.string.accessibility))
+            SecondaryHeader(title = stringResource(R.string.accessibility))
 
             SwitchPreference(
-                    title = context.getString(R.string.show_lock_screen_wallpaper),
-                    description = context.getString(R.string.show_lock_screen_wallpaper_summary),
+                    title = stringResource(R.string.show_lock_screen_wallpaper),
+                    description = stringResource(R.string.show_lock_screen_wallpaper_summary),
                     checked = MainComposePreferences.getShowLockScreenWallpaper()
             ) {
                 MainComposePreferences.setShowLockScreenWallpaper(it)
             }
 
             SwitchPreference(
-                    title = context.getString(R.string.disable_animations),
+                    title = stringResource(R.string.disable_animations),
                     checked = MainComposePreferences.getDisableAnimations(),
                     topPadding = 8.dp
             ) {
@@ -316,7 +317,7 @@ fun Settings(navController: NavController? = null) {
             }
 
             SwitchPreference(
-                    title = context.getString(R.string.predictive_back),
+                    title = stringResource(R.string.predictive_back),
                     checked = MainComposePreferences.isPredictiveBack(),
                     topPadding = 8.dp
             ) {
@@ -332,15 +333,15 @@ fun Settings(navController: NavController? = null) {
                 }
             }
 
-            SecondaryHeader(title = context.getString(R.string.about))
+            SecondaryHeader(title = stringResource(R.string.about))
 
             DescriptionPreference(
                     description = BuildConfig.VERSION_NAME,
             )
 
             ClickablePreference(
-                    title = context.getString(R.string.github),
-                    description = context.getString(R.string.github_summary))
+                    title = stringResource(R.string.github),
+                    description = stringResource(R.string.github_summary))
             {
                 val intent = Intent(Intent.ACTION_VIEW)
                 intent.data = "https://github.com/Hamza417/Peristyle".toUri()
@@ -348,7 +349,7 @@ fun Settings(navController: NavController? = null) {
             }
 
             ClickablePreference(
-                    title = context.getString(R.string.developer_profile))
+                    title = stringResource(R.string.developer_profile))
             {
                 showDeveloperProfileDialog.value = true
             }
@@ -376,27 +377,27 @@ fun Settings(navController: NavController? = null) {
                 }
             }
 
-            SecondaryHeader(title = context.getString(R.string.other_apps))
+            SecondaryHeader(title = stringResource(R.string.other_apps))
 
             OtherApps(
-                    title = context.getString(R.string.felicity_music_player),
-                    description = context.getString(R.string.felicity_music_player_summary),
+                    title = stringResource(R.string.felicity_music_player),
+                    description = stringResource(R.string.felicity_music_player_summary),
                     iconResId = R.drawable.felicity,
             ) {
                 felicityDialog.value = true
             }
 
             OtherApps(
-                    title = context.getString(R.string.inure_app_manager),
-                    description = context.getString(R.string.inure_app_manager_summary),
+                    title = stringResource(R.string.inure_app_manager),
+                    description = stringResource(R.string.inure_app_manager_summary),
                     iconResId = R.drawable.inure,
             ) {
                 inureDialog.value = true
             }
 
             OtherApps(
-                    title = context.getString(R.string.positional),
-                    description = context.getString(R.string.positional_summary),
+                    title = stringResource(R.string.positional),
+                    description = stringResource(R.string.positional_summary),
                     iconResId = R.drawable.positional,
             ) {
                 positionalDialog.value = true
