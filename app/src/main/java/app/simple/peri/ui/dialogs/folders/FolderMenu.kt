@@ -41,7 +41,9 @@ fun FolderMenu(folder: Folder? = null, onDismiss: () -> Unit, onOptionSelected: 
     }
 
     AlertDialog(
-            onDismissRequest = { onDismiss() },
+            onDismissRequest = {
+                onDismiss()
+            },
             title = {
                 Column {
                     Text(
