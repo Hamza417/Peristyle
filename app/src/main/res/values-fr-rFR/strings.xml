@@ -30,8 +30,6 @@
     <string name="preparing">Préparation en cours</string>
     <string name="copying">Copie du fond d\'écran dans le dossier système.</string>
     <string name="deleting">Suppression en cours</string>
-    <string name="delete_progress">%1$d/%2$d - %3$s</string>
-    <string name="nomedia">NOMEDIA</string>
     <string name="nomedia_message">Le répertoire actuel /%1$s ne contient pas de fichier nomedia il peut donc être utilisé par d\'autres applications de galerie, voulez-vous cacher ce répertoire ?</string>
     <string name="yes">Oui</string>
     <string name="nomedia_success">Le fichier .nomedia a été créé avec succès !\n\nATTENTION : Les fichiers peuvent toujours être visibles par les programmes qui ignorent le fichier .nomedia.</string>
@@ -285,4 +283,8 @@
     <string name="gestures">Gestes</string>
     <string name="delete_button">Bouton Supprimer</string>
     <string name="delete_button_summary">Afficher un bouton pour supprimer le fond d\'écran de la notification.</string>
+    <string name="uninstall">Désinstaller</string>
+    <string name="uninstall_live_wallpaper_summary">Désinstallez le fond d\'écran animé de cet appareil.</string>
+    <string name="home_summary">Modifier l\'interface d\'accueil de l\'application.</string>
+    <string name="immersive">Immersif</string>
 </resources>
