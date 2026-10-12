@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="sort">Sırala</string>
     <string name="settings">Ayarlar</string>
-    <string name="set_as_wallpaper">Duvar Kağıdı Yap</string>
+    <string name="set_as_wallpaper">Duvar Kağıdı Olarak Ayarla</string>
     <string name="wallpaper_settings">Duvar Kağıdı Ayarları</string>
     <string name="send">Gönder</string>
     <string name="delete">Sil</string>
