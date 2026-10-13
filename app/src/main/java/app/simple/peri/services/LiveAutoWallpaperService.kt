@@ -373,25 +373,16 @@ class LiveAutoWallpaperService : WallpaperService() {
                                     canvas.drawBitmap(bmp, 0f, 0f, fadePaint)
                                 }
                             }
-                            TRANSITION_ZOOM_IN -> {
-                                bitmap?.let { bmp ->
-                                    canvas.drawBitmap(bmp, 0f, 0f, null)
-                                }
-
+                            TRANSITION_ZOOM -> {
                                 oldBitmap?.let { bmp ->
                                     canvas.save()
-                                    val scale = 1.0f + (0.5f * transitionProgress)
+                                    // Old bitmap zooms in slightly (1.0 -> 1.2) as it is covered
+                                    val scale = 1.0f + (0.2f * transitionProgress)
                                     val px = bmp.width / 2f
                                     val py = bmp.height / 2f
                                     canvas.scale(scale, scale, px, py)
-                                    fadePaint.alpha = ((1f - transitionProgress) * 255).toInt().coerceIn(0, 255)
-                                    canvas.drawBitmap(bmp, 0f, 0f, fadePaint)
-                                    canvas.restore()
-                                }
-                            }
-                            TRANSITION_ZOOM_OUT -> {
-                                oldBitmap?.let { bmp ->
                                     canvas.drawBitmap(bmp, 0f, 0f, null)
+                                    canvas.restore()
                                 }
 
                                 bitmap?.let { bmp ->
@@ -520,8 +511,7 @@ class LiveAutoWallpaperService : WallpaperService() {
         private const val NEXT_WALLPAPER_DEBOUNCE_MS = 400L
 
         const val TRANSITION_CROSSFADE = 0
-        const val TRANSITION_ZOOM_IN = 1
-        const val TRANSITION_ZOOM_OUT = 2
+        const val TRANSITION_ZOOM = 1
 
         private const val REASON_SCREEN_ON = "screen_on"
         private const val REASON_SCREEN_OFF = "screen_off"

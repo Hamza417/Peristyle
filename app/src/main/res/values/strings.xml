@@ -289,6 +289,5 @@
     <string name="transition_effect">Transition Effect</string>
     <string name="transition_effect_summary">Change the transition effect when the live wallpaper changes.</string>
     <string name="crossfade">Crossfade</string>
-    <string name="zoom_in">Zoom In</string>
-    <string name="zoom_out">Zoom Out</string>
+    <string name="zoom">Zoom</string>
 </resources>
