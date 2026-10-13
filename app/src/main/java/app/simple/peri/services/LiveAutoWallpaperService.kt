@@ -7,6 +7,8 @@ import android.content.IntentFilter
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
+import android.graphics.Rect
+import android.graphics.RectF
 import android.hardware.display.DisplayManager
 import android.os.Build
 import android.os.Handler
@@ -349,8 +351,19 @@ class LiveAutoWallpaperService : WallpaperService() {
                     }
 
                     isFading && oldBitmap != null && bitmap != null -> {
+                        val effect = MainComposePreferences.getLiveWallpaperTransitionEffect()
+
+                        val duration = when (effect) {
+                            TRANSITION_BLOCKS -> {
+                                1000L // Slower duration for some transitions if required
+                            }
+                            else -> {
+                                CROSSFADE_DURATION
+                            }
+                        }
+
                         val elapsedTime = System.currentTimeMillis() - fadeStartTime
-                        val linearProgress = (elapsedTime.toFloat() / CROSSFADE_DURATION).coerceIn(0f, 1f)
+                        val linearProgress = (elapsedTime.toFloat() / duration).coerceIn(0f, 1f)
 
                         // Apply decelerate effect (ease-out quadratic)
                         transitionProgress = 1f - (1f - linearProgress) * (1f - linearProgress)
@@ -359,8 +372,6 @@ class LiveAutoWallpaperService : WallpaperService() {
                             isFading = false
                             transitionProgress = 1.0f
                         }
-
-                        val effect = MainComposePreferences.getLiveWallpaperTransitionEffect()
 
                         when (effect) {
                             TRANSITION_CROSSFADE -> {
@@ -394,6 +405,60 @@ class LiveAutoWallpaperService : WallpaperService() {
                                     fadePaint.alpha = (transitionProgress * 255).toInt().coerceIn(0, 255)
                                     canvas.drawBitmap(bmp, 0f, 0f, fadePaint)
                                     canvas.restore()
+                                }
+                            }
+                            TRANSITION_BLOCKS -> {
+                                oldBitmap?.let { bmp ->
+                                    canvas.drawBitmap(bmp, 0f, 0f, null)
+                                }
+
+                                bitmap?.let { bmp ->
+                                    val cols = 8
+                                    val rows = (cols * (bmp.height.toFloat() / bmp.width.toFloat()))
+                                        .toInt()
+                                        .coerceAtLeast(1)
+                                    val blockW = bmp.width.toFloat() / cols
+                                    val blockH = bmp.height.toFloat() / rows
+
+                                    val totalDiagonals = cols + rows - 1
+                                    val step = 1f / (totalDiagonals + 1)
+
+                                    for (row in 0 until rows) {
+                                        for (column in 0 until cols) {
+                                            val diagonal = column + row
+                                            val diagonalStart = diagonal * step
+                                            val diagonalEnd = diagonalStart + (step * 2) // overlap slightly
+
+                                            if (transitionProgress > diagonalStart) {
+                                                val blockProgress =
+                                                    ((transitionProgress - diagonalStart) / (diagonalEnd - diagonalStart))
+                                                        .coerceIn(0f, 1f)
+
+                                                val left = column * blockW
+                                                val top = row * blockH
+                                                val right = if (column == cols - 1) bmp.width.toFloat() else left + blockW
+                                                val bottom = if (row == rows - 1) bmp.height.toFloat() else top + blockH
+
+                                                val srcRect = Rect(
+                                                        left.toInt(),
+                                                        top.toInt(),
+                                                        right.toInt(),
+                                                        bottom.toInt())
+
+                                                val dstRect = RectF(left, top, right, bottom)
+
+                                                if (transitionProgress >= 1f || blockProgress >= 1f) {
+                                                    canvas.drawBitmap(bmp, srcRect, dstRect, null)
+                                                } else {
+                                                    fadePaint.alpha = (blockProgress * 255)
+                                                        .toInt()
+                                                        .coerceIn(0, 255)
+
+                                                    canvas.drawBitmap(bmp, srcRect, dstRect, fadePaint)
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
                             }
                             else -> {
@@ -512,6 +577,7 @@ class LiveAutoWallpaperService : WallpaperService() {
 
         const val TRANSITION_CROSSFADE = 0
         const val TRANSITION_ZOOM = 1
+        const val TRANSITION_BLOCKS = 2
 
         private const val REASON_SCREEN_ON = "screen_on"
         private const val REASON_SCREEN_OFF = "screen_off"

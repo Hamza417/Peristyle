@@ -23,7 +23,8 @@ import app.simple.peri.services.LiveAutoWallpaperService
 fun TransitionEffectSelectionDialog(onDismiss: () -> Unit) {
     val options = listOf(
             Pair(R.string.crossfade, LiveAutoWallpaperService.TRANSITION_CROSSFADE),
-            Pair(R.string.zoom, LiveAutoWallpaperService.TRANSITION_ZOOM)
+            Pair(R.string.zoom, LiveAutoWallpaperService.TRANSITION_ZOOM),
+            Pair(R.string.diagonal_blocks, LiveAutoWallpaperService.TRANSITION_BLOCKS)
     )
 
     val storedOption = MainComposePreferences.getLiveWallpaperTransitionEffect()
