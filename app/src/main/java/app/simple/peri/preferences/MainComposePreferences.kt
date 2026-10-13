@@ -85,6 +85,7 @@ object MainComposePreferences {
     const val DISABLE_ANIMATIONS = "disable_animations"
     const val PREDICTIVE_BACK = "predictive_back"
     const val HOME_INTERFACE = "home_interface"
+    private const val LIVE_WALLPAPER_TRANSITION_EFFECT = "transition_effect"
 
     // ----------------------------------------------------------------------------------------------------- //
 
@@ -115,6 +116,16 @@ object MainComposePreferences {
         } else {
             getGridSpanCountPortrait()
         }
+    }
+
+    // ----------------------------------------------------------------------------------------------------- //
+
+    fun getLiveWallpaperTransitionEffect(): Int {
+        return getSharedPreferences().getInt(LIVE_WALLPAPER_TRANSITION_EFFECT, app.simple.peri.services.LiveAutoWallpaperService.TRANSITION_CROSSFADE)
+    }
+
+    fun setLiveWallpaperTransitionEffect(value: Int) {
+        getSharedPreferences().edit().putInt(LIVE_WALLPAPER_TRANSITION_EFFECT, value).apply()
     }
 
     // ----------------------------------------------------------------------------------------------------- //

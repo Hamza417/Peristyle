@@ -48,6 +48,7 @@ import app.simple.peri.ui.dialogs.autowallpaper.ColorSpaceSelectionDialog
 import app.simple.peri.ui.dialogs.autowallpaper.FoldersDialog
 import app.simple.peri.ui.dialogs.autowallpaper.TagsDialog
 import app.simple.peri.ui.dialogs.autowallpaper.TimeSelectionDialog
+import app.simple.peri.ui.dialogs.autowallpaper.TransitionEffectSelectionDialog
 import app.simple.peri.ui.dialogs.autowallpaper.UsageTimesDeleteDialog
 import app.simple.peri.ui.dialogs.wallpaper.AutoWallpaperEffectsDialog
 import app.simple.peri.ui.settings.NotificationColumn
@@ -290,6 +291,7 @@ fun LiveAutoWallpaper(navController: NavController? = null) {
             val showEffectsDialog = remember { mutableStateOf(false) }
             val showDeleteDialog = remember { mutableStateOf(false) }
             val showColorSpaceDialog = remember { mutableStateOf(false) }
+            val showTransitionDialog = remember { mutableStateOf(false) }
 
             SecondaryHeader(title = stringResource(R.string.settings))
 
@@ -298,6 +300,14 @@ fun LiveAutoWallpaper(navController: NavController? = null) {
                     description = stringResource(R.string.default_effects_summary),
                     onClick = {
                         showEffectsDialog.value = true
+                    }
+            )
+
+            ClickablePreference(
+                    title = stringResource(R.string.transition_effect),
+                    description = stringResource(R.string.transition_effect_summary),
+                    onClick = {
+                        showTransitionDialog.value = true
                     }
             )
 
@@ -328,6 +338,12 @@ fun LiveAutoWallpaper(navController: NavController? = null) {
             if (showDeleteDialog.value) {
                 UsageTimesDeleteDialog {
                     showDeleteDialog.value = false
+                }
+            }
+
+            if (showTransitionDialog.value) {
+                TransitionEffectSelectionDialog {
+                    showTransitionDialog.value = false
                 }
             }
 

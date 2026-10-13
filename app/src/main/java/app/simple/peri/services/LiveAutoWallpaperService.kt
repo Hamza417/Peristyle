@@ -350,19 +350,71 @@ class LiveAutoWallpaperService : WallpaperService() {
 
                     isFading && oldBitmap != null && bitmap != null -> {
                         val elapsedTime = System.currentTimeMillis() - fadeStartTime
-                        transitionProgress = (elapsedTime.toFloat() / CROSSFADE_DURATION).coerceIn(0f, 1f)
+                        val linearProgress = (elapsedTime.toFloat() / CROSSFADE_DURATION).coerceIn(0f, 1f)
 
-                        if (transitionProgress >= 1.0f) {
+                        // Apply decelerate effect (ease-out quadratic)
+                        transitionProgress = 1f - (1f - linearProgress) * (1f - linearProgress)
+
+                        if (linearProgress >= 1.0f) {
                             isFading = false
+                            transitionProgress = 1.0f
                         }
 
-                        oldBitmap?.let { bmp ->
-                            canvas.drawBitmap(bmp, 0f, 0f, null)
-                        }
+                        val effect = MainComposePreferences.getLiveWallpaperTransitionEffect()
 
-                        bitmap?.let { bmp ->
-                            fadePaint.alpha = (transitionProgress * 255).toInt().coerceIn(0, 255)
-                            canvas.drawBitmap(bmp, 0f, 0f, fadePaint)
+                        when (effect) {
+                            TRANSITION_CROSSFADE -> {
+                                oldBitmap?.let { bmp ->
+                                    canvas.drawBitmap(bmp, 0f, 0f, null)
+                                }
+
+                                bitmap?.let { bmp ->
+                                    fadePaint.alpha = (transitionProgress * 255).toInt().coerceIn(0, 255)
+                                    canvas.drawBitmap(bmp, 0f, 0f, fadePaint)
+                                }
+                            }
+                            TRANSITION_ZOOM_IN -> {
+                                bitmap?.let { bmp ->
+                                    canvas.drawBitmap(bmp, 0f, 0f, null)
+                                }
+
+                                oldBitmap?.let { bmp ->
+                                    canvas.save()
+                                    val scale = 1.0f + (0.5f * transitionProgress)
+                                    val px = bmp.width / 2f
+                                    val py = bmp.height / 2f
+                                    canvas.scale(scale, scale, px, py)
+                                    fadePaint.alpha = ((1f - transitionProgress) * 255).toInt().coerceIn(0, 255)
+                                    canvas.drawBitmap(bmp, 0f, 0f, fadePaint)
+                                    canvas.restore()
+                                }
+                            }
+                            TRANSITION_ZOOM_OUT -> {
+                                oldBitmap?.let { bmp ->
+                                    canvas.drawBitmap(bmp, 0f, 0f, null)
+                                }
+
+                                bitmap?.let { bmp ->
+                                    canvas.save()
+                                    val scale = 1.5f - (0.5f * transitionProgress)
+                                    val px = bmp.width / 2f
+                                    val py = bmp.height / 2f
+                                    canvas.scale(scale, scale, px, py)
+                                    fadePaint.alpha = (transitionProgress * 255).toInt().coerceIn(0, 255)
+                                    canvas.drawBitmap(bmp, 0f, 0f, fadePaint)
+                                    canvas.restore()
+                                }
+                            }
+                            else -> {
+                                oldBitmap?.let { bmp ->
+                                    canvas.drawBitmap(bmp, 0f, 0f, null)
+                                }
+
+                                bitmap?.let { bmp ->
+                                    fadePaint.alpha = (transitionProgress * 255).toInt().coerceIn(0, 255)
+                                    canvas.drawBitmap(bmp, 0f, 0f, fadePaint)
+                                }
+                            }
                         }
 
                         if (!isFading) {
@@ -466,6 +518,10 @@ class LiveAutoWallpaperService : WallpaperService() {
         const val MSG_SET_WALLPAPER = 1
         private const val CROSSFADE_DURATION = 500L
         private const val NEXT_WALLPAPER_DEBOUNCE_MS = 400L
+
+        const val TRANSITION_CROSSFADE = 0
+        const val TRANSITION_ZOOM_IN = 1
+        const val TRANSITION_ZOOM_OUT = 2
 
         private const val REASON_SCREEN_ON = "screen_on"
         private const val REASON_SCREEN_OFF = "screen_off"

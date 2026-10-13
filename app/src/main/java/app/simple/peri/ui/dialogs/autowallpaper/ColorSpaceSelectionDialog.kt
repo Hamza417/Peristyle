@@ -47,7 +47,6 @@ fun ColorSpaceSelectionDialog(onDismiss: () -> Unit) {
                             text = stringResource(id = R.string.color_space_summary),
                             fontSize = 12.sp,
                             color = MaterialTheme.colorScheme.secondary,
-                            lineHeight = 16.sp
                     )
                 }
             },

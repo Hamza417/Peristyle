@@ -286,4 +286,9 @@
     <string name="uninstall_live_wallpaper_summary">Uninstall the live wallpaper from the device.</string>
     <string name="home_summary">Change the home interface of the app.</string>
     <string name="immersive">Immersive</string>
+    <string name="transition_effect">Transition Effect</string>
+    <string name="transition_effect_summary">Change the transition effect when the live wallpaper changes.</string>
+    <string name="crossfade">Crossfade</string>
+    <string name="zoom_in">Zoom In</string>
+    <string name="zoom_out">Zoom Out</string>
 </resources>
