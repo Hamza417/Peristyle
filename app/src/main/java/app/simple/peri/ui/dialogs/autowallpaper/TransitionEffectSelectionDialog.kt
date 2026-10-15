@@ -24,7 +24,8 @@ fun TransitionEffectSelectionDialog(onDismiss: () -> Unit) {
     val options = listOf(
             Pair(R.string.crossfade, LiveAutoWallpaperService.TRANSITION_CROSSFADE),
             Pair(R.string.zoom, LiveAutoWallpaperService.TRANSITION_ZOOM),
-            Pair(R.string.diagonal_blocks, LiveAutoWallpaperService.TRANSITION_BLOCKS)
+            Pair(R.string.diagonal_blocks, LiveAutoWallpaperService.TRANSITION_BLOCKS),
+            Pair(R.string.circular_reveal, LiveAutoWallpaperService.TRANSITION_CIRCULAR_REVEAL)
     )
 
     val storedOption = MainComposePreferences.getLiveWallpaperTransitionEffect()

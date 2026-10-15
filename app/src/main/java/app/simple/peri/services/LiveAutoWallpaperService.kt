@@ -7,6 +7,7 @@ import android.content.IntentFilter
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
+import android.graphics.Path.Direction
 import android.graphics.Rect
 import android.graphics.RectF
 import android.hardware.display.DisplayManager
@@ -39,6 +40,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okio.FileNotFoundException
+import kotlin.math.hypot
 import kotlin.time.Duration.Companion.milliseconds
 
 class LiveAutoWallpaperService : WallpaperService() {
@@ -354,7 +356,7 @@ class LiveAutoWallpaperService : WallpaperService() {
                         val effect = MainComposePreferences.getLiveWallpaperTransitionEffect()
 
                         val duration = when (effect) {
-                            TRANSITION_BLOCKS -> {
+                            TRANSITION_BLOCKS, TRANSITION_CIRCULAR_REVEAL -> {
                                 1000L // Slower duration for some transitions if required
                             }
                             else -> {
@@ -404,6 +406,26 @@ class LiveAutoWallpaperService : WallpaperService() {
                                     canvas.scale(scale, scale, px, py)
                                     fadePaint.alpha = (transitionProgress * 255).toInt().coerceIn(0, 255)
                                     canvas.drawBitmap(bmp, 0f, 0f, fadePaint)
+                                    canvas.restore()
+                                }
+                            }
+                            TRANSITION_CIRCULAR_REVEAL -> {
+                                oldBitmap?.let { bmp ->
+                                    canvas.drawBitmap(bmp, 0f, 0f, null)
+                                }
+
+                                bitmap?.let { bmp ->
+                                    val centerX = bmp.width / 2f
+                                    val centerY = bmp.height / 2f
+                                    val maxRadius = hypot(centerX.toDouble(), centerY.toDouble()).toFloat()
+                                    val currentRadius = maxRadius * transitionProgress
+
+                                    val path = android.graphics.Path()
+                                    path.addCircle(centerX, centerY, currentRadius, Direction.CW)
+
+                                    canvas.save()
+                                    canvas.clipPath(path)
+                                    canvas.drawBitmap(bmp, 0f, 0f, null)
                                     canvas.restore()
                                 }
                             }
@@ -578,6 +600,7 @@ class LiveAutoWallpaperService : WallpaperService() {
         const val TRANSITION_CROSSFADE = 0
         const val TRANSITION_ZOOM = 1
         const val TRANSITION_BLOCKS = 2
+        const val TRANSITION_CIRCULAR_REVEAL = 3
 
         private const val REASON_SCREEN_ON = "screen_on"
         private const val REASON_SCREEN_OFF = "screen_off"
