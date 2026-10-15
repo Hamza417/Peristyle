@@ -85,7 +85,7 @@ object MainComposePreferences {
     const val DISABLE_ANIMATIONS = "disable_animations"
     const val PREDICTIVE_BACK = "predictive_back"
     const val HOME_INTERFACE = "home_interface"
-    private const val LIVE_WALLPAPER_TRANSITION_EFFECT = "transition_effect"
+    const val LIVE_WALLPAPER_TRANSITION_EFFECT = "transition_effect"
 
     // ----------------------------------------------------------------------------------------------------- //
 

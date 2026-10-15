@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
@@ -27,6 +28,8 @@ import app.simple.peri.extensions.WallpaperGestureProcessor
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.preferences.SharedPreferences
+import app.simple.peri.preferences.SharedPreferences.registerSharedPreferenceChangeListener
+import app.simple.peri.preferences.SharedPreferences.unregisterSharedPreferenceChangeListener
 import app.simple.peri.utils.BitmapUtils.applyEffects
 import app.simple.peri.utils.ConditionUtils.invert
 import app.simple.peri.utils.FileUtils.toFile
@@ -43,7 +46,7 @@ import okio.FileNotFoundException
 import kotlin.math.hypot
 import kotlin.time.Duration.Companion.milliseconds
 
-class LiveAutoWallpaperService : WallpaperService() {
+class LiveAutoWallpaperService : WallpaperService(), OnSharedPreferenceChangeListener {
 
     private var engine: LiveAutoWallpaperEngine? = null
     private var handler: Handler? = null
@@ -54,6 +57,7 @@ class LiveAutoWallpaperService : WallpaperService() {
     private var fadeStartTime: Long = -1L
     private var oldBitmap: Bitmap? = null
     private var isFading = false
+    private var effect: Int = TRANSITION_CROSSFADE
 
     // Coalesce rapid triggers (screen on/off + double-tap storms)
     private val requestScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
@@ -61,7 +65,10 @@ class LiveAutoWallpaperService : WallpaperService() {
 
     override fun onCreate() {
         super.onCreate()
+
         SharedPreferences.init(applicationContext)
+        registerSharedPreferenceChangeListener()
+        setTransitionEffect()
 
         handler = Handler(Looper.getMainLooper()) { msg ->
             when (msg.what) {
@@ -72,6 +79,7 @@ class LiveAutoWallpaperService : WallpaperService() {
                         Log.w(TAG, "MSG_SET_WALLPAPER received with null/blank path")
                         return@Handler true
                     }
+                    setTransitionEffect()
                     engine?.setWallpaper(filePath, isPreviewRequest = req.isPreviewRequest)
                 }
             }
@@ -139,6 +147,8 @@ class LiveAutoWallpaperService : WallpaperService() {
         } catch (_: Exception) {
             // Receiver may already be unregistered in some edge cases.
         }
+
+        unregisterSharedPreferenceChangeListener()
         handler?.removeCallbacksAndMessages(null)
         requestScope.cancel()
     }
@@ -353,8 +363,6 @@ class LiveAutoWallpaperService : WallpaperService() {
                     }
 
                     isFading && oldBitmap != null && bitmap != null -> {
-                        val effect = MainComposePreferences.getLiveWallpaperTransitionEffect()
-
                         val duration = when (effect) {
                             TRANSITION_BLOCKS, TRANSITION_CIRCULAR_REVEAL -> {
                                 1000L // Slower duration for some transitions if required
@@ -588,6 +596,27 @@ class LiveAutoWallpaperService : WallpaperService() {
         }
     }
 
+    private fun setTransitionEffect() {
+        effect = if (MainComposePreferences.getLiveWallpaperTransitionEffect() == TRANSITION_RANDOM) {
+            listOf(
+                    TRANSITION_CROSSFADE,
+                    TRANSITION_ZOOM,
+                    TRANSITION_BLOCKS,
+                    TRANSITION_CIRCULAR_REVEAL
+            ).random()
+        } else {
+            MainComposePreferences.getLiveWallpaperTransitionEffect()
+        }
+    }
+
+    override fun onSharedPreferenceChanged(sharedPreferences: android.content.SharedPreferences?, key: String?) {
+        when (key) {
+            MainComposePreferences.LIVE_WALLPAPER_TRANSITION_EFFECT -> {
+                setTransitionEffect()
+            }
+        }
+    }
+
     companion object {
         private const val TAG = "LiveAutoWallpaperService"
         const val NEXT_WALLPAPER = "action.SAME_WALLPAPER"
@@ -601,6 +630,7 @@ class LiveAutoWallpaperService : WallpaperService() {
         const val TRANSITION_ZOOM = 1
         const val TRANSITION_BLOCKS = 2
         const val TRANSITION_CIRCULAR_REVEAL = 3
+        const val TRANSITION_RANDOM = -1
 
         private const val REASON_SCREEN_ON = "screen_on"
         private const val REASON_SCREEN_OFF = "screen_off"
