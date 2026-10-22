@@ -46,6 +46,7 @@ import app.simple.peri.ui.commons.SwitchPreference
 import app.simple.peri.ui.commons.TopHeader
 import app.simple.peri.ui.dialogs.autowallpaper.ColorSpaceSelectionDialog
 import app.simple.peri.ui.dialogs.autowallpaper.FoldersDialog
+import app.simple.peri.ui.dialogs.autowallpaper.PrioritySelectionDialog
 import app.simple.peri.ui.dialogs.autowallpaper.TagsDialog
 import app.simple.peri.ui.dialogs.autowallpaper.TimeSelectionDialog
 import app.simple.peri.ui.dialogs.autowallpaper.TransitionEffectSelectionDialog
@@ -292,6 +293,7 @@ fun LiveAutoWallpaper(navController: NavController? = null) {
             val showDeleteDialog = remember { mutableStateOf(false) }
             val showColorSpaceDialog = remember { mutableStateOf(false) }
             val showTransitionDialog = remember { mutableStateOf(false) }
+            val showPriorityDialog = remember { mutableStateOf(false) }
 
             SecondaryHeader(title = stringResource(R.string.settings))
 
@@ -316,6 +318,14 @@ fun LiveAutoWallpaper(navController: NavController? = null) {
                     description = stringResource(R.string.color_space_summary),
                     onClick = {
                         showColorSpaceDialog.value = true
+                    }
+            )
+
+            ClickablePreference(
+                    title = stringResource(R.string.wallpaper_pick_priority),
+                    description = stringResource(R.string.wallpaper_pick_priority_summary),
+                    onClick = {
+                        showPriorityDialog.value = true
                     }
             )
 
@@ -350,6 +360,12 @@ fun LiveAutoWallpaper(navController: NavController? = null) {
             if (showColorSpaceDialog.value) {
                 ColorSpaceSelectionDialog {
                     showColorSpaceDialog.value = false
+                }
+            }
+
+            if (showPriorityDialog.value) {
+                PrioritySelectionDialog {
+                    showPriorityDialog.value = false
                 }
             }
 

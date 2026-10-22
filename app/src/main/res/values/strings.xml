@@ -292,4 +292,9 @@
     <string name="zoom">Zoom</string>
     <string name="diagonal_blocks">Diagonal Blocks</string>
     <string name="circular_reveal">Circular Reveal</string>
+    <string name="default_priority">Default Priority</string>
+    <string name="new_wallpapers_first">New Wallpapers First</string>
+    <string name="old_wallpapers_first">Old Wallpapers First</string>
+    <string name="wallpaper_pick_priority">Wallpaper Pick Priority</string>
+    <string name="wallpaper_pick_priority_summary">Set the priority to pick wallpapers when auto wallpaper is changing.</string>
 </resources>

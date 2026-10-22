@@ -14,6 +14,7 @@ object MainComposePreferences {
     private const val GRID_SPAN_COUNT_LAND = "grid_span_count_land"
     private const val WARNING_INDICATOR = "warning_indicator"
     private const val IMAGE_SHADOW = "image_shadow"
+    private const val WALLPAPER_PICK_PRIORITY = "wallpaper_pick_priority"
     private const val IS_LOCK_SOURCE_SET = "is_lock_source_set"
     private const val IS_HOME_SOURCE_SET = "is_home_source_set"
     const val LOCK_TAG_ID = "lock_tag_id"
@@ -91,6 +92,18 @@ object MainComposePreferences {
 
     const val HOME_INTERFACE_PERISTYLE = 0
     const val HOME_INTERFACE_IMMERSIVE = 1
+
+    const val PRIORITY_DEFAULT = 0
+    const val PRIORITY_NEW_FIRST = 1
+    const val PRIORITY_OLD_FIRST = 2
+
+    fun getWallpaperPickPriority(): Int {
+        return getSharedPreferences().getInt(WALLPAPER_PICK_PRIORITY, PRIORITY_DEFAULT)
+    }
+
+    fun setWallpaperPickPriority(priority: Int) {
+        getSharedPreferences().edit().putInt(WALLPAPER_PICK_PRIORITY, priority).apply()
+    }
 
     // ----------------------------------------------------------------------------------------------------- //
 

@@ -295,6 +295,12 @@ abstract class AbstractComposeAutoWallpaperService : AbstractAutoWallpaperServic
             return null
         }
 
+        val sortedWallpapers = when (MainComposePreferences.getWallpaperPickPriority()) {
+            MainComposePreferences.PRIORITY_NEW_FIRST -> wallpapers.sortedByDescending { it.dateModified }
+            MainComposePreferences.PRIORITY_OLD_FIRST -> wallpapers.sortedBy { it.dateModified }
+            else -> wallpapers
+        }
+
         if (isHomeScreen) {
             Log.i(TAG, "Getting home screen wallpaper at position: $position")
         } else {
@@ -305,25 +311,35 @@ abstract class AbstractComposeAutoWallpaperService : AbstractAutoWallpaperServic
             MainPreferences.isLinearAutoWallpaper() -> {
                 Log.i(TAG, "Linear auto wallpaper mode enabled, skipping non-repeating wallpapers")
                 try {
-                    return wallpapers.get(position).also {
+                    return sortedWallpapers.get(position).also {
                         MainComposePreferences.setLastWallpaperPosition(isHomeScreen, position)
                     }
                 } catch (_: IndexOutOfBoundsException) {
                     MainComposePreferences.resetLastWallpaperPosition(isHomeScreen)
-                    return wallpapers[0]
+                    return sortedWallpapers[0]
                 }
             }
             else -> {
                 Log.i(TAG, "Random auto wallpaper mode enabled, selecting a non-repeating random wallpaper")
                 val wallpaper = try {
                     Log.i(TAG, "Selecting a random wallpaper from the list")
-                    val usedIds = getLastUsedWallpapers(isHomeScreen, wallpapers)?.map { it.id }?.toSet() ?: emptySet()
-                    wallpapers
-                        .filterNot { wallpaper -> wallpaper.id in usedIds }
-                        .random(Random(System.currentTimeMillis()))
+                    val usedIds = getLastUsedWallpapers(isHomeScreen, sortedWallpapers)?.map { it.id }?.toSet() ?: emptySet()
+
+                    val unusedWallpapers = sortedWallpapers.filterNot { wallpaper -> wallpaper.id in usedIds }
+
+                    if (MainComposePreferences.getWallpaperPickPriority() == MainComposePreferences.PRIORITY_DEFAULT) {
+                        unusedWallpapers.random(Random(System.currentTimeMillis()))
+                    } else {
+                        // Pick the first one from the sorted list to prioritize
+                        unusedWallpapers.first()
+                    }
                 } catch (_: NoSuchElementException) {
                     Log.i(TAG, "No non-repeating wallpapers found, selecting a random wallpaper from the entire list")
-                    wallpapers.random(Random(System.currentTimeMillis()))
+                    if (MainComposePreferences.getWallpaperPickPriority() == MainComposePreferences.PRIORITY_DEFAULT) {
+                        sortedWallpapers.random(Random(System.currentTimeMillis()))
+                    } else {
+                        sortedWallpapers.first()
+                    }
                 }
 
                 Log.i(TAG, "Selected wallpaper: ${wallpaper.id}")
