@@ -3,6 +3,7 @@ package app.simple.peri.ui.screens
 import android.app.WallpaperManager
 import android.content.ComponentName
 import android.content.Intent
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,6 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,6 +34,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import app.simple.peri.R
+import app.simple.peri.database.instances.LastHomeWallpapersDatabase
+import app.simple.peri.database.instances.LastLockWallpapersDatabase
 import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.preferences.MainPreferences
 import app.simple.peri.services.AutoWallpaperService
@@ -55,10 +59,15 @@ import app.simple.peri.ui.dialogs.wallpaper.AutoWallpaperEffectsDialog
 import app.simple.peri.ui.settings.NotificationColumn
 import app.simple.peri.ui.settings.SkipColumn
 import app.simple.peri.ui.theme.LocalBarsSize
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+
+const val TAG = "LiveAutoWallpaper"
 
 @Composable
 fun LiveAutoWallpaper(navController: NavController? = null) {
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
 
     LazyColumn(
             contentPadding = PaddingValues(
@@ -343,6 +352,12 @@ fun LiveAutoWallpaper(navController: NavController? = null) {
                     checked = MainPreferences.isLinearAutoWallpaper()
             ) {
                 MainPreferences.setLinearAutoWallpaper(it)
+                coroutineScope.launch(Dispatchers.IO) {
+                    LastHomeWallpapersDatabase.getInstance(context)?.wallpaperDao()?.nukeTable()
+                    LastLockWallpapersDatabase.getInstance(context)?.wallpaperDao()?.nukeTable()
+                    MainComposePreferences.resetLastWallpaperPositions()
+                    Log.i(TAG, "Cleared last used wallpapers entries as the preference changed")
+                }
             }
 
             if (showDeleteDialog.value) {
