@@ -61,6 +61,7 @@ class LiveAutoWallpaperService : WallpaperService(), OnSharedPreferenceChangeLis
 
     private var revealStartX = 0f
     private var revealStartY = 0f
+    private var revealMaxRadius = 0f
 
     // Coalesce rapid triggers (screen on/off + double-tap storms)
     private val requestScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
@@ -253,6 +254,12 @@ class LiveAutoWallpaperService : WallpaperService(), OnSharedPreferenceChangeLis
                 transitionProgress = 0f
                 revealStartX = (Math.random() * newBitmap.width).toFloat()
                 revealStartY = (Math.random() * newBitmap.height).toFloat()
+
+                val d1 = hypot(revealStartX.toDouble(), revealStartY.toDouble())
+                val d2 = hypot((newBitmap.width - revealStartX).toDouble(), revealStartY.toDouble())
+                val d3 = hypot(revealStartX.toDouble(), (newBitmap.height - revealStartY).toDouble())
+                val d4 = hypot((newBitmap.width - revealStartX).toDouble(), (newBitmap.height - revealStartY).toDouble())
+                revealMaxRadius = kotlin.math.max(kotlin.math.max(d1, d2), kotlin.math.max(d3, d4)).toFloat()
             }
 
             bitmap = newBitmap.applyEffects(MainComposePreferences.getWallpaperEffects())
@@ -347,7 +354,11 @@ class LiveAutoWallpaperService : WallpaperService(), OnSharedPreferenceChangeLis
 
         private fun drawFrameOnce(holder: SurfaceHolder) {
             val canvas: Canvas? = try {
-                holder.lockCanvas()
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    holder.lockHardwareCanvas()
+                } else {
+                    holder.lockCanvas()
+                }
             } catch (e: Exception) {
                 Log.w(TAG, "lockCanvas failed", e)
                 null
@@ -428,12 +439,7 @@ class LiveAutoWallpaperService : WallpaperService(), OnSharedPreferenceChangeLis
                                 }
 
                                 bitmap?.let { bmp ->
-                                    val d1 = hypot(revealStartX.toDouble(), revealStartY.toDouble())
-                                    val d2 = hypot((bmp.width - revealStartX).toDouble(), revealStartY.toDouble())
-                                    val d3 = hypot(revealStartX.toDouble(), (bmp.height - revealStartY).toDouble())
-                                    val d4 = hypot((bmp.width - revealStartX).toDouble(), (bmp.height - revealStartY).toDouble())
-                                    val maxRadius = kotlin.math.max(kotlin.math.max(d1, d2), kotlin.math.max(d3, d4)).toFloat()
-                                    val currentRadius = maxRadius * transitionProgress
+                                    val currentRadius = revealMaxRadius * transitionProgress
 
                                     val path = android.graphics.Path()
                                     path.addCircle(revealStartX, revealStartY, currentRadius, Direction.CW)
