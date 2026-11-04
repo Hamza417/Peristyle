@@ -59,6 +59,9 @@ class LiveAutoWallpaperService : WallpaperService(), OnSharedPreferenceChangeLis
     private var isFading = false
     private var effect: Int = TRANSITION_CROSSFADE
 
+    private var revealStartX = 0f
+    private var revealStartY = 0f
+
     // Coalesce rapid triggers (screen on/off + double-tap storms)
     private val requestScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private var requestNextJob: Job? = null
@@ -248,6 +251,8 @@ class LiveAutoWallpaperService : WallpaperService(), OnSharedPreferenceChangeLis
                 isFading = true
                 fadeStartTime = System.currentTimeMillis()
                 transitionProgress = 0f
+                revealStartX = (Math.random() * newBitmap.width).toFloat()
+                revealStartY = (Math.random() * newBitmap.height).toFloat()
             }
 
             bitmap = newBitmap.applyEffects(MainComposePreferences.getWallpaperEffects())
@@ -423,13 +428,15 @@ class LiveAutoWallpaperService : WallpaperService(), OnSharedPreferenceChangeLis
                                 }
 
                                 bitmap?.let { bmp ->
-                                    val centerX = bmp.width / 2f
-                                    val centerY = bmp.height / 2f
-                                    val maxRadius = hypot(centerX.toDouble(), centerY.toDouble()).toFloat()
+                                    val d1 = hypot(revealStartX.toDouble(), revealStartY.toDouble())
+                                    val d2 = hypot((bmp.width - revealStartX).toDouble(), revealStartY.toDouble())
+                                    val d3 = hypot(revealStartX.toDouble(), (bmp.height - revealStartY).toDouble())
+                                    val d4 = hypot((bmp.width - revealStartX).toDouble(), (bmp.height - revealStartY).toDouble())
+                                    val maxRadius = kotlin.math.max(kotlin.math.max(d1, d2), kotlin.math.max(d3, d4)).toFloat()
                                     val currentRadius = maxRadius * transitionProgress
 
                                     val path = android.graphics.Path()
-                                    path.addCircle(centerX, centerY, currentRadius, Direction.CW)
+                                    path.addCircle(revealStartX, revealStartY, currentRadius, Direction.CW)
 
                                     canvas.save()
                                     canvas.clipPath(path)

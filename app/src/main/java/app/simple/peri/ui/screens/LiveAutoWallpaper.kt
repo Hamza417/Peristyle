@@ -62,7 +62,7 @@ import app.simple.peri.ui.theme.LocalBarsSize
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-const val TAG = "LiveAutoWallpaper"
+private const val TAG = "LiveAutoWallpaper"
 
 @Composable
 fun LiveAutoWallpaper(navController: NavController? = null) {
