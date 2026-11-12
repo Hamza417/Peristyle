@@ -30,7 +30,7 @@ import androidx.core.content.FileProvider
 import app.simple.peri.R
 import app.simple.peri.abstraction.AutoWallpaperUtils
 import app.simple.peri.activities.main.LocalDisplaySize
-import app.simple.peri.constants.Misc
+import app.simple.peri.models.Effect
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.ui.commons.MenuItemWithCheckbox
@@ -50,7 +50,7 @@ fun ScreenSelectionDialog(
         context: Context,
         bitmap: Bitmap,
         wallpaper: Wallpaper,
-        blurValue: Float,
+        effect: Effect,
         onSetWallpaper: () -> Unit
 ) {
 
@@ -76,7 +76,7 @@ fun ScreenSelectionDialog(
                 providedBitmap = bitmap,
                 wallpaper = wallpaper,
                 crop = isCropWallpaper.value,
-                blurValue = blurValue,
+                effect = effect,
                 width = width,
                 height = height
         ) {
@@ -133,7 +133,7 @@ fun ScreenSelectionDialog(
                                                 providedBitmap = bitmap,
                                                 wallpaper = wallpaper,
                                                 crop = isCropWallpaper.value,
-                                                blurValue = blurValue,
+                                                effect = effect,
                                                 width = width,
                                                 height = height
                                         )
@@ -155,7 +155,7 @@ fun ScreenSelectionDialog(
                                                 providedBitmap = bitmap,
                                                 wallpaper = wallpaper,
                                                 crop = isCropWallpaper.value,
-                                                blurValue = blurValue,
+                                                effect = effect,
                                                 width = width,
                                                 height = height
                                         )
@@ -177,7 +177,7 @@ fun ScreenSelectionDialog(
                                                 providedBitmap = bitmap,
                                                 wallpaper = wallpaper,
                                                 crop = isCropWallpaper.value,
-                                                blurValue = blurValue,
+                                                effect = effect,
                                                 width = width,
                                                 height = height
                                         )
@@ -212,7 +212,7 @@ fun ScreenSelectionDialog(
                                                 providedBitmap = bitmap,
                                                 wallpaper = wallpaper,
                                                 crop = isCropWallpaper.value,
-                                                blurValue = blurValue,
+                                                effect = effect,
                                                 width = width,
                                                 height = height
                                         )
@@ -243,7 +243,7 @@ suspend fun setWallpaper(
         providedBitmap: Bitmap,
         wallpaper: Wallpaper,
         crop: Boolean = false,
-        blurValue: Float,
+        effect: Effect,
         width: Int,
         height: Int
 ) {
@@ -267,7 +267,7 @@ suspend fun setWallpaper(
                     // Apply blur and color adjustments to the bitmap
                     wallpaperManager.setBitmap(
                             /* fullImage = */
-                            it.applyEffects(blur = blurValue.times(Misc.BLUR_TIMES)),
+                            it.applyEffects(effect),
                             /* visibleCropHint = */ null,
                             /* allowBackup = */ true,
                             /* which = */ flags)
@@ -285,7 +285,7 @@ suspend fun setWallpaperWithDedicatedApp(
         providedBitmap: Bitmap,
         wallpaper: Wallpaper,
         crop: Boolean = false,
-        blurValue: Float,
+        effect: Effect,
         width: Int,
         height: Int) {
     withContext(Dispatchers.IO) {
@@ -300,7 +300,7 @@ suspend fun setWallpaperWithDedicatedApp(
                             height,
                             crop = false,
                             recycle = false) {
-                        val bitmap = it.applyEffects(blur = blurValue.times(Misc.BLUR_TIMES))
+                        val bitmap = it.applyEffects(effect)
                         bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
                     }
                 }
@@ -328,7 +328,7 @@ fun ExportWallpaper(
         providedBitmap: Bitmap,
         wallpaper: Wallpaper,
         crop: Boolean = false,
-        blurValue: Float,
+        effect: Effect,
         width: Int,
         height: Int,
         onExport: () -> Unit = {}
@@ -353,7 +353,7 @@ fun ExportWallpaper(
                                     crop = false,
                                     recycle = false
                             ) {
-                                val bitmap = it.applyEffects(blur = blurValue.times(Misc.BLUR_TIMES))
+                                val bitmap = it.applyEffects(effect)
                                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
                             }
                         }

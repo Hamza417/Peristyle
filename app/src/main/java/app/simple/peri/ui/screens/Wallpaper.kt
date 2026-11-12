@@ -744,13 +744,26 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
         }
 
         if (showScreenSelectionDialog) {
+            val effect = Effect(
+                    /* blurValue = */ blurValue,
+                    /* brightnessValue = */ brightnessValue,
+                    /* contrastValue = */ contrastValue,
+                    /* saturationValue = */ saturationValue,
+                    /* hueRedValue = */ hueValueRed,
+                    /* hueGreenValue = */ hueValueGreen,
+                    /* hueBlueValue = */ hueValueBlue,
+                    /* scaleRedValue = */ scaleValueRed,
+                    /* scaleGreenValue = */ scaleValueGreen,
+                    /* scaleBlueValue = */ scaleValueBlue
+            )
+
             when (wallpaper) {
                 is Wallpaper -> {
                     ScreenSelectionDialog(
                             setShowDialog = { showScreenSelectionDialog = it },
                             context = context,
                             bitmap = bitmap!!,
-                            blurValue = blurValue,
+                            effect = effect,
                             wallpaper = wallpaper as Wallpaper,
                             onSetWallpaper = {
                                 wallpaperUsageViewModel.incrementUsageCount((wallpaper as Wallpaper))
@@ -787,7 +800,7 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
                                 setShowDialog = { showScreenSelectionDialog = it },
                                 context = context,
                                 bitmap = bitmap!!,
-                                blurValue = blurValue,
+                                effect = effect,
                                 wallpaper = downloadedWallpaper!!,
                                 onSetWallpaper = {
                                     /* no-op */
