@@ -2,14 +2,16 @@ package app.simple.peri.ui.dialogs.autowallpaper
 
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,50 +42,47 @@ fun FoldersDialog(selected: Int, setShowing: (Boolean) -> Unit, onFolder: (Folde
             onDismissRequest = { },
             title = { Text(text = stringResource(R.string.folder)) },
             text = {
-                Column {
-                    folders.value.chunked(1).forEach { rowFolders ->
-                        Row(modifier = Modifier.fillMaxWidth()) {
-                            rowFolders.forEach { folder ->
-                                Button(
-                                        onClick = { onFolder(folder) },
-                                        colors = if (folder.hashcode == selected) {
-                                            ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-                                        } else {
-                                            ButtonDefaults.buttonColors(
-                                                    containerColor = Color.Transparent,
-                                                    contentColor = MaterialTheme.colorScheme.onSurface
-                                            )
-                                        },
-                                        modifier = Modifier
-                                            .weight(1f)
-                                            .padding(4.dp)
-                                ) {
-                                    Text(
-                                            text = folder.name,
-                                            fontWeight = FontWeight.Bold,
-                                            color = if (folder.hashcode == selected) {
-                                                MaterialTheme.colorScheme.onPrimary
-                                            } else {
-                                                MaterialTheme.colorScheme.onSurface
-                                            }
+                LazyColumn(modifier = Modifier.heightIn(max = 400.dp)) {
+                    items(folders.value) { folder ->
+                        Button(
+                                onClick = { onFolder(folder) },
+                                colors = if (folder.hashcode == selected) {
+                                    ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                                } else {
+                                    ButtonDefaults.buttonColors(
+                                            containerColor = Color.Transparent,
+                                            contentColor = MaterialTheme.colorScheme.onSurface
                                     )
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(4.dp)
+                        ) {
+                            Text(
+                                    text = folder.name,
+                                    fontWeight = FontWeight.Bold,
+                                    color = if (folder.hashcode == selected) {
+                                        MaterialTheme.colorScheme.onPrimary
+                                    } else {
+                                        MaterialTheme.colorScheme.onSurface
+                                    }
+                            )
 
-                                    // Space out with middle gap between folder name and count
-                                    Spacer(modifier = Modifier.weight(1f))
+                            // Space out with middle gap between folder name and count
+                            Spacer(modifier = Modifier.weight(1f))
 
-                                    Text(
-                                            text = stringResource(id = R.string.tag_count, folder.count),
-                                            fontWeight = FontWeight.Light,
-                                            color = if (folder.hashcode == selected) {
-                                                MaterialTheme.colorScheme.onPrimary
-                                            } else {
-                                                MaterialTheme.colorScheme.onSurface
-                                            },
-                                            modifier = Modifier.padding(start = 8.dp)
-                                    )
-                                }
-                            }
+                            Text(
+                                    text = stringResource(id = R.string.tag_count, folder.count),
+                                    fontWeight = FontWeight.Light,
+                                    color = if (folder.hashcode == selected) {
+                                        MaterialTheme.colorScheme.onPrimary
+                                    } else {
+                                        MaterialTheme.colorScheme.onSurface
+                                    },
+                                    modifier = Modifier.padding(start = 8.dp)
+                            )
                         }
+                        HorizontalDivider()
                     }
                 }
             },

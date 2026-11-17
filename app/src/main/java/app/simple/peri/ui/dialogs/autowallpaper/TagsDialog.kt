@@ -1,13 +1,15 @@
 package app.simple.peri.ui.dialogs.autowallpaper
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,50 +42,47 @@ fun TagsDialog(selected: String, setShowing: (Boolean) -> Unit, onTag: (Tag) -> 
             title = { Text(text = stringResource(R.string.tags)) },
             text = {
                 if (tags.value.isNotEmpty()) {
-                    Column {
-                        tags.value.chunked(3).forEach { rowTags ->
-                            Row(modifier = Modifier.fillMaxWidth()) {
-                                rowTags.forEach { tag ->
-                                    Button(
-                                            onClick = { onTag(tag) },
-                                            colors = if (tag.name == selected) {
-                                                ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-                                            } else {
-                                                ButtonDefaults.buttonColors(
-                                                        containerColor = Color.Transparent,
-                                                        contentColor = MaterialTheme.colorScheme.onSurface
-                                                )
-                                            },
-                                            modifier = Modifier
-                                                .weight(1f)
-                                                .padding(4.dp)
-                                    ) {
-                                        Text(
-                                                text = tag.name,
-                                                fontWeight = FontWeight.Bold,
-                                                color = if (tag.name == selected) {
-                                                    MaterialTheme.colorScheme.onPrimary
-                                                } else {
-                                                    MaterialTheme.colorScheme.onSurface
-                                                }
+                    LazyColumn(modifier = Modifier.heightIn(max = 400.dp)) {
+                        items(tags.value) { tag ->
+                            Button(
+                                    onClick = { onTag(tag) },
+                                    colors = if (tag.name == selected) {
+                                        ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                                    } else {
+                                        ButtonDefaults.buttonColors(
+                                                containerColor = Color.Transparent,
+                                                contentColor = MaterialTheme.colorScheme.onSurface
                                         )
+                                    },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(4.dp)
+                            ) {
+                                Text(
+                                        text = tag.name,
+                                        fontWeight = FontWeight.Bold,
+                                        color = if (tag.name == selected) {
+                                            MaterialTheme.colorScheme.onPrimary
+                                        } else {
+                                            MaterialTheme.colorScheme.onSurface
+                                        }
+                                )
 
-                                        // Space out with middle gap between tag name and count
-                                        Spacer(modifier = Modifier.weight(1f))
+                                // Space out with middle gap between tag name and count
+                                Spacer(modifier = Modifier.weight(1f))
 
-                                        Text(
-                                                text = stringResource(id = R.string.tag_count, tag.sum.count()),
-                                                fontWeight = FontWeight.Light,
-                                                color = if (tag.name == selected) {
-                                                    MaterialTheme.colorScheme.onPrimary
-                                                } else {
-                                                    MaterialTheme.colorScheme.onSurface
-                                                },
-                                                modifier = Modifier.padding(start = 8.dp)
-                                        )
-                                    }
-                                }
+                                Text(
+                                        text = stringResource(id = R.string.tag_count, tag.sum.count()),
+                                        fontWeight = FontWeight.Light,
+                                        color = if (tag.name == selected) {
+                                            MaterialTheme.colorScheme.onPrimary
+                                        } else {
+                                            MaterialTheme.colorScheme.onSurface
+                                        },
+                                        modifier = Modifier.padding(start = 8.dp)
+                                )
                             }
+                            HorizontalDivider()
                         }
                     }
                 } else {
