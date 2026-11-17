@@ -16,68 +16,76 @@ import com.bumptech.glide.load.data.DataFetcher
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.FutureTarget
 import com.bumptech.glide.signature.ObjectKey
-import java.io.IOException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 class TagsFetcher(private val contextTag: ContextTag) : DataFetcher<Bitmap> {
+
+    private var job: Job? = null
+
     override fun loadData(priority: Priority, callback: DataFetcher.DataCallback<in Bitmap>) {
-        try {
-            val wallpaperDatabase = WallpaperDatabase.getInstance(contextTag.context)!!
-            val wallpaperList = mutableListOf<Wallpaper>()
-            val bitmapList = mutableListOf<FutureTarget<Bitmap>>()
+        job = CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val wallpaperDatabase = WallpaperDatabase.getInstance(contextTag.context)!!
+                val wallpaperList = mutableListOf<Wallpaper>()
+                val bitmapList = mutableListOf<FutureTarget<Bitmap>>()
 
-            contextTag.tag.sum.forEach {
-                wallpaperList.add(wallpaperDatabase.wallpaperDao().getWallpaperByID(it)!!)
-            }
+                contextTag.tag.sum.forEach {
+                    wallpaperList.add(wallpaperDatabase.wallpaperDao().getWallpaperByID(it)!!)
+                }
 
-            val topWallpapers = wallpaperList.shuffled().take(TAG_COUNT)
+                val topWallpapers = wallpaperList.shuffled().take(TAG_COUNT)
 
-            topWallpapers.forEach { wallpaper ->
+                topWallpapers.forEach { wallpaper ->
+                    /**
+                     * Reference:
+                     * https://bumptech.github.io/glide/doc/getting-started.html#background-threads
+                     */
+                    val bitmap = Glide.with(contextTag.context)
+                        .asBitmap()
+                        .load(wallpaper.filePath)
+                        .centerCrop()
+                        .format(DecodeFormat.PREFER_RGB_565)
+                        .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                        .signature(ObjectKey(
+                                (wallpaper.filePath + displayDimension.getReducedWidth() + displayDimension.getReducedHeight())
+                                    .hashCode()))
+                        .error(R.drawable.no_image_placeholder)
+                        .submit(displayDimension.getReducedWidth(), displayDimension.getReducedHeight())
+
+                    bitmapList.add(bitmap)
+                }
+
+                // Create a grid of 3x2
+                val gridHeight = (topWallpapers.size / GRID_WIDTH).plus(
+                        when {
+                            topWallpapers.size % GRID_WIDTH == 0 -> 0
+                            else -> 1
+                        })
+                val bitmapWidth = displayDimension.getReducedWidth()
+                val bitmapHeight = displayDimension.getReducedHeight()
+                val gridBitmap = createBitmap(GRID_WIDTH * bitmapWidth, gridHeight * bitmapHeight)
+                val canvas = Canvas(gridBitmap)
+                canvas.drawColor(Color.TRANSPARENT)
+
+                for (i in bitmapList.indices) {
+                    val x = (i % GRID_WIDTH) * bitmapWidth
+                    val y = (i / GRID_WIDTH) * bitmapHeight
+                    canvas.drawBitmap(bitmapList[i].get(), x.toFloat(), y.toFloat(), null)
+                }
+
+                callback.onDataReady(gridBitmap)
+
                 /**
                  * Reference:
                  * https://bumptech.github.io/glide/doc/getting-started.html#background-threads
                  */
-                val bitmap = Glide.with(contextTag.context)
-                    .asBitmap()
-                    .load(wallpaper.filePath)
-                    .centerCrop()
-                    .format(DecodeFormat.PREFER_RGB_565)
-                    .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
-                    .signature(ObjectKey(
-                            (wallpaper.filePath + displayDimension.getReducedWidth() + displayDimension.getReducedHeight())
-                                .hashCode()))
-                    .error(R.drawable.no_image_placeholder)
-                    .submit(displayDimension.getReducedWidth(), displayDimension.getReducedHeight())
-
-                bitmapList.add(bitmap)
+                bitmapList.forEach { Glide.with(contextTag.context).clear(it) }
+            } catch (e: Exception) {
+                callback.onLoadFailed(e)
             }
-
-            // Create a grid of 3x2
-            val gridHeight = (topWallpapers.size / GRID_WIDTH).plus(
-                    when {
-                        topWallpapers.size % GRID_WIDTH == 0 -> 0
-                        else -> 1
-                    })
-            val bitmapWidth = displayDimension.getReducedWidth()
-            val bitmapHeight = displayDimension.getReducedHeight()
-            val gridBitmap = createBitmap(GRID_WIDTH * bitmapWidth, gridHeight * bitmapHeight)
-            val canvas = Canvas(gridBitmap)
-            canvas.drawColor(Color.TRANSPARENT)
-
-            for (i in bitmapList.indices) {
-                val x = (i % GRID_WIDTH) * bitmapWidth
-                val y = (i / GRID_WIDTH) * bitmapHeight
-                canvas.drawBitmap(bitmapList[i].get(), x.toFloat(), y.toFloat(), null)
-            }
-
-            callback.onDataReady(gridBitmap)
-
-            /**
-             * Reference:
-             * https://bumptech.github.io/glide/doc/getting-started.html#background-threads
-             */
-            bitmapList.forEach { Glide.with(contextTag.context).clear(it) }
-        } catch (e: IOException) {
-            callback.onLoadFailed(e)
         }
     }
 
@@ -86,7 +94,7 @@ class TagsFetcher(private val contextTag: ContextTag) : DataFetcher<Bitmap> {
     }
 
     override fun cancel() {
-        /* no-op */
+        job?.cancel()
     }
 
     override fun getDataClass(): Class<Bitmap> {

@@ -15,61 +15,74 @@ import com.bumptech.glide.load.data.DataFetcher
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.FutureTarget
 import com.bumptech.glide.signature.ObjectKey
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 class FolderFetcher(private val contextFolder: ContextFolder) : DataFetcher<Bitmap> {
+
+    private var job: Job? = null
+
     override fun loadData(priority: Priority, callback: DataFetcher.DataCallback<in Bitmap>) {
-        val wallpaperDatabase = WallpaperDatabase.getInstance(contextFolder.context)!!
-        val wallpaperList = wallpaperDatabase.wallpaperDao().getWallpapersByPathHashcode(contextFolder.folder.hashcode)
-        val bitmapList = mutableListOf<FutureTarget<Bitmap>>()
-        Log.i(TAG, "Loading wallpapers from folder: ${wallpaperList.size}")
+        job = CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val wallpaperDatabase = WallpaperDatabase.getInstance(contextFolder.context)!!
+                val wallpaperList = wallpaperDatabase.wallpaperDao().getWallpapersByPathHashcode(contextFolder.folder.hashcode)
+                val bitmapList = mutableListOf<FutureTarget<Bitmap>>()
+                Log.i(TAG, "Loading wallpapers from folder: ${wallpaperList.size}")
 
-        // Fetch top 6 wallpapers
-        val topWallpapers = wallpaperList.shuffled().take(GRID_COUNT)
+                // Fetch top 6 wallpapers
+                val topWallpapers = wallpaperList.shuffled().take(GRID_COUNT)
 
-        topWallpapers.forEach { wallpaper ->
-            /**
-             * Reference:
-             * https://bumptech.github.io/glide/doc/getting-started.html#background-threads
-             */
-            val bitmap = Glide.with(contextFolder.context)
-                .asBitmap()
-                .load(wallpaper.filePath)
-                .centerCrop()
-                .format(DecodeFormat.PREFER_RGB_565)
-                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
-                .signature(ObjectKey(
-                        (wallpaper.filePath + displayDimension.getReducedWidth() + displayDimension.getReducedHeight())
-                            .hashCode()))
-                .submit(displayDimension.getReducedWidth(), displayDimension.getReducedHeight())
+                topWallpapers.forEach { wallpaper ->
+                    /**
+                     * Reference:
+                     * https://bumptech.github.io/glide/doc/getting-started.html#background-threads
+                     */
+                    val bitmap = Glide.with(contextFolder.context)
+                        .asBitmap()
+                        .load(wallpaper.filePath)
+                        .centerCrop()
+                        .format(DecodeFormat.PREFER_RGB_565)
+                        .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                        .signature(ObjectKey(
+                                (wallpaper.filePath + displayDimension.getReducedWidth() + displayDimension.getReducedHeight())
+                                    .hashCode()))
+                        .submit(displayDimension.getReducedWidth(), displayDimension.getReducedHeight())
 
-            bitmapList.add(bitmap)
+                    bitmapList.add(bitmap)
+                }
+
+                // Create a grid of 3x2
+                val gridHeight = (topWallpapers.size / GRID_WIDTH).plus(
+                        when {
+                            topWallpapers.size % GRID_WIDTH == 0 -> 0
+                            else -> 1
+                        })
+                val bitmapWidth = displayDimension.getReducedWidth()
+                val bitmapHeight = displayDimension.getReducedHeight()
+                val gridBitmap = createBitmap(GRID_WIDTH * bitmapWidth, gridHeight * bitmapHeight)
+                val canvas = Canvas(gridBitmap)
+                canvas.drawColor(Color.TRANSPARENT)
+
+                for (i in bitmapList.indices) {
+                    val x = (i % GRID_WIDTH) * bitmapWidth
+                    val y = (i / GRID_WIDTH) * bitmapHeight
+                    canvas.drawBitmap(bitmapList[i].get(), x.toFloat(), y.toFloat(), null)
+                }
+
+                callback.onDataReady(gridBitmap)
+
+                /**
+                 * Reference:
+                 * https://bumptech.github.io/glide/doc/getting-started.html#background-threads
+                 */
+                bitmapList.forEach { Glide.with(contextFolder.context).clear(it) }
+            } catch (e: Exception) {
+                callback.onLoadFailed(e)
+            }
         }
-
-        // Create a grid of 3x2
-        val gridHeight = (topWallpapers.size / GRID_WIDTH).plus(
-                when {
-                    topWallpapers.size % GRID_WIDTH == 0 -> 0
-                    else -> 1
-                })
-        val bitmapWidth = displayDimension.getReducedWidth()
-        val bitmapHeight = displayDimension.getReducedHeight()
-        val gridBitmap = createBitmap(GRID_WIDTH * bitmapWidth, gridHeight * bitmapHeight)
-        val canvas = Canvas(gridBitmap)
-        canvas.drawColor(Color.TRANSPARENT)
-
-        for (i in bitmapList.indices) {
-            val x = (i % GRID_WIDTH) * bitmapWidth
-            val y = (i / GRID_WIDTH) * bitmapHeight
-            canvas.drawBitmap(bitmapList[i].get(), x.toFloat(), y.toFloat(), null)
-        }
-
-        callback.onDataReady(gridBitmap)
-
-        /**
-         * Reference:
-         * https://bumptech.github.io/glide/doc/getting-started.html#background-threads
-         */
-        bitmapList.forEach { Glide.with(contextFolder.context).clear(it) }
     }
 
     override fun cleanup() {
@@ -77,7 +90,7 @@ class FolderFetcher(private val contextFolder: ContextFolder) : DataFetcher<Bitm
     }
 
     override fun cancel() {
-        /* no-op */
+        job?.cancel()
     }
 
     override fun getDataClass(): Class<Bitmap> {
