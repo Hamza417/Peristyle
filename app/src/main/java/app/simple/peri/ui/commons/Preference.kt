@@ -10,8 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
@@ -142,40 +140,28 @@ fun SecondaryClickablePreference(@SuppressLint("ModifierParameter") modifier: Mo
 
     val verticalPadding = 16.dp
 
-    Card(
-            modifier = modifier ?: Modifier
-                .fillMaxWidth(),
-            shape = RoundedCornerShape(PREF_HORIZONTAL_PADDING),
-            colors = CardDefaults.cardColors(
-                    containerColor = Color.Transparent,
-            ),
-            onClick = onClick
+    Column(
+            modifier = (modifier ?: Modifier.fillMaxWidth())
+                .clip(RoundedCornerShape(PREF_HORIZONTAL_PADDING))
+                .clickable(onClick = onClick)
+                .padding(
+                        horizontal = PREF_HORIZONTAL_PADDING,
+                        vertical = verticalPadding
+                )
     ) {
         Text(
                 text = title,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = PREFERENCE_TITLE_SIZE,
                 color = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier
-                    .padding(
-                            start = PREF_HORIZONTAL_PADDING,
-                            end = PREF_HORIZONTAL_PADDING,
-                            top = verticalPadding,
-                            bottom = if (description.isNotEmpty()) 0.dp else verticalPadding
-                    ),
         )
+
         if (description.isNotEmpty()) {
             Text(
                     text = description,
                     fontWeight = FontWeight.Normal,
                     fontSize = PREFERENCE_DESCRIPTION_SIZE,
-                    modifier = Modifier
-                        .padding(
-                                start = PREF_HORIZONTAL_PADDING,
-                                end = PREF_HORIZONTAL_PADDING,
-                                top = 4.dp,
-                                bottom = verticalPadding
-                        ),
+                    modifier = Modifier.padding(top = 4.dp)
             )
         }
     }
