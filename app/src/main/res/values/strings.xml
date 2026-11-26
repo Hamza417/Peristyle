@@ -301,4 +301,8 @@
     <string name="file_path">Path</string>
     <string name="format">Format</string>
     <string name="bit_depth">Bit Depth</string>
+    <string name="prominent_color">Prominent Color</string>
+    <string name="orientation">Orientation</string>
+    <string name="aspect_ratio">Aspect Ratio</string>
+    <string name="megapixels">Megapixels</string>
 </resources>

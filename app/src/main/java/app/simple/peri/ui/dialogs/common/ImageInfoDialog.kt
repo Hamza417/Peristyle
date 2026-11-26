@@ -21,12 +21,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.simple.peri.R
 import app.simple.peri.models.Wallpaper
+import app.simple.peri.utils.CommonUtils
 import app.simple.peri.utils.FileUtils.toSize
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -98,27 +100,69 @@ fun ImageInfoDialog(
                                             value = "${wallpaper.width ?: 0}x${wallpaper.height ?: 0}",
                                             modifier = Modifier.weight(1f)
                                     )
+
+                                    val w = wallpaper.width ?: 0
+                                    val h = wallpaper.height ?: 0
+                                    val mp = if (w > 0 && h > 0) {
+                                        String.format(LocalLocale.current.platformLocale, "%.1f MP", (w * h) / 1000000.0)
+                                    } else {
+                                        "0 MP"
+                                    }
+
+                                    InfoItem(
+                                            label = stringResource(R.string.megapixels),
+                                            value = mp,
+                                            modifier = Modifier.weight(1f)
+                                    )
+                                }
+
+                                Row(modifier = Modifier.fillMaxWidth()) {
+                                    val w = wallpaper.width ?: 0
+                                    val h = wallpaper.height ?: 0
+                                    val orientation = when {
+                                        w > h -> stringResource(R.string.landscape)
+                                        h > w -> stringResource(R.string.portrait)
+                                        else -> "Square"
+                                    }
+                                    InfoItem(
+                                            label = stringResource(R.string.orientation),
+                                            value = orientation,
+                                            modifier = Modifier.weight(1f)
+                                    )
+
+                                    val aspectRatio = if (w > 0 && h > 0) {
+                                        val gcd = CommonUtils.gcd(w, h)
+                                        "${w / gcd}:${h / gcd}"
+                                    } else {
+                                        "-"
+                                    }
+
+                                    InfoItem(
+                                            label = stringResource(R.string.aspect_ratio),
+                                            value = aspectRatio,
+                                            modifier = Modifier.weight(1f)
+                                    )
+                                }
+
+                                Row(modifier = Modifier.fillMaxWidth()) {
                                     InfoItem(
                                             label = stringResource(R.string.size),
                                             value = wallpaper.size.toSize(),
                                             modifier = Modifier.weight(1f)
                                     )
-                                }
-
-                                Row(modifier = Modifier.fillMaxWidth()) {
                                     InfoItem(
                                             label = stringResource(R.string.format),
                                             value = format,
                                             modifier = Modifier.weight(1f)
                                     )
+                                }
+
+                                Row(modifier = Modifier.fillMaxWidth()) {
                                     InfoItem(
                                             label = stringResource(R.string.bit_depth),
                                             value = bitDepth,
                                             modifier = Modifier.weight(1f)
                                     )
-                                }
-
-                                Row(modifier = Modifier.fillMaxWidth()) {
                                     InfoItem(
                                             label = stringResource(R.string.color_space),
                                             value = colorSpace,
@@ -126,10 +170,19 @@ fun ImageInfoDialog(
                                     )
                                 }
 
-                                InfoItem(
-                                        label = stringResource(R.string.date),
-                                        value = SimpleDateFormat.getDateTimeInstance().format(Date(wallpaper.dateModified))
-                                )
+                                Row(modifier = Modifier.fillMaxWidth()) {
+                                    val prominentColorHex = String.format("#%06X", (0xFFFFFF and wallpaper.prominentColor))
+                                    InfoItem(
+                                            label = stringResource(R.string.prominent_color),
+                                            value = prominentColorHex,
+                                            modifier = Modifier.weight(1f)
+                                    )
+                                    InfoItem(
+                                            label = stringResource(R.string.date),
+                                            value = SimpleDateFormat.getDateInstance().format(Date(wallpaper.dateModified)),
+                                            modifier = Modifier.weight(1f)
+                                    )
+                                }
                             }
                         }
                 )
