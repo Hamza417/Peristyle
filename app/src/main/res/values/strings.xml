@@ -297,4 +297,8 @@
     <string name="old_wallpapers_first">Old Wallpapers First</string>
     <string name="wallpaper_pick_priority">Wallpaper Pick Priority</string>
     <string name="wallpaper_pick_priority_summary">Set the priority to pick wallpapers when auto wallpaper is changing.</string>
+    <string name="information">Information</string>
+    <string name="file_path">Path</string>
+    <string name="format">Format</string>
+    <string name="bit_depth">Bit Depth</string>
 </resources>

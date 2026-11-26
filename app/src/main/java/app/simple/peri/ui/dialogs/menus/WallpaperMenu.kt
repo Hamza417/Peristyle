@@ -15,6 +15,7 @@ import androidx.compose.material.icons.rounded.CheckBox
 import androidx.compose.material.icons.rounded.Compress
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.MoveDown
 import androidx.compose.material.icons.rounded.PhotoSizeSelectLarge
 import androidx.compose.material.icons.rounded.Refresh
@@ -48,6 +49,7 @@ import app.simple.peri.factories.TagsViewModelFactory
 import app.simple.peri.models.Wallpaper
 import app.simple.peri.ui.commons.FolderBrowser
 import app.simple.peri.ui.commons.MenuItemWithIcon
+import app.simple.peri.ui.dialogs.common.ImageInfoDialog
 import app.simple.peri.ui.dialogs.common.RemoveTagDialog
 import app.simple.peri.ui.dialogs.common.SureDialog
 import app.simple.peri.utils.ConditionUtils.invert
@@ -76,6 +78,7 @@ fun WallpaperMenu(
     var launchDirectoryPicker by remember { mutableStateOf(false) }
     var deleteSure by remember { mutableStateOf(false) }
     var showRemoveTagDialog by remember { mutableStateOf(false) }
+    var showImageInfoDialog by remember { mutableStateOf(false) }
     val composeWallpaperViewModel: ComposeWallpaperViewModel = viewModel(LocalActivity.current as ComponentActivity)
     val tagsViewModel: TagsViewModel = viewModel(
             factory = TagsViewModelFactory(wallpaper.id)
@@ -130,6 +133,15 @@ fun WallpaperMenu(
         )
     }
 
+    if (showImageInfoDialog) {
+        ImageInfoDialog(
+                wallpaper = wallpaper,
+                onDismiss = {
+                    showImageInfoDialog = false
+                }
+        )
+    }
+
     AlertDialog(
             onDismissRequest = { setShowDialog(false) },
             title = {
@@ -167,6 +179,14 @@ fun WallpaperMenu(
                 ) {
                     item {
                         // Common Actions Section
+                        MenuItemWithIcon(
+                                icon = Icons.Rounded.Info,
+                                text = context.getString(R.string.information),
+                                onClick = {
+                                    showImageInfoDialog = true
+                                }
+                        )
+
                         MenuItemWithIcon(
                                 icon = Icons.Rounded.Share,
                                 text = context.getString(R.string.send),
