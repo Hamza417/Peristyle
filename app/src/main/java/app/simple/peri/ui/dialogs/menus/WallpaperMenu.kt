@@ -181,7 +181,7 @@ fun WallpaperMenu(
                         // Common Actions Section
                         MenuItemWithIcon(
                                 icon = Icons.Rounded.Info,
-                                text = context.getString(R.string.information),
+                                text = stringResource(R.string.information),
                                 onClick = {
                                     showImageInfoDialog = true
                                 }
@@ -189,7 +189,7 @@ fun WallpaperMenu(
 
                         MenuItemWithIcon(
                                 icon = Icons.Rounded.Share,
-                                text = context.getString(R.string.send),
+                                text = stringResource(R.string.send),
                                 onClick = {
                                     val uri = FileProvider.getUriForFile(
                                             context,
@@ -199,7 +199,7 @@ fun WallpaperMenu(
 
                                     ShareCompat.IntentBuilder(context)
                                         .setType("image/*")
-                                        .setChooserTitle("Share Wallpaper")
+                                        .setChooserTitle(wallpaper.name ?: "")
                                         .setStream(uri)
                                         .startChooser()
                                     setShowDialog(false)
@@ -208,7 +208,7 @@ fun WallpaperMenu(
 
                         MenuItemWithIcon(
                                 icon = Icons.Rounded.Edit,
-                                text = context.getString(R.string.edit),
+                                text = stringResource(R.string.edit),
                                 onClick = {
                                     val uri = FileProvider.getUriForFile(
                                             context,
@@ -222,7 +222,7 @@ fun WallpaperMenu(
                                     context.startActivity(
                                             Intent.createChooser(
                                                     intent,
-                                                    context.getString(R.string.edit)
+                                                    wallpaper.name ?: ""
                                             )
                                     )
                                     setShowDialog(false)
@@ -231,7 +231,7 @@ fun WallpaperMenu(
 
                         MenuItemWithIcon(
                                 icon = Icons.AutoMirrored.Rounded.Label,
-                                text = context.getString(R.string.add_tag),
+                                text = stringResource(R.string.add_tag),
                                 onClick = {
                                     onAddTag()
                                     setShowDialog(false)
@@ -239,10 +239,10 @@ fun WallpaperMenu(
                         )
 
                         // Show Remove Tag option only if wallpaper has tags
-                        if (wallpaperTags.value?.isNotEmpty() == true) {
+                        if (wallpaperTags.value.isNotEmpty()) {
                             MenuItemWithIcon(
                                     icon = Icons.AutoMirrored.Rounded.Label,
-                                    text = context.getString(R.string.remove_tag),
+                                    text = stringResource(R.string.remove_tag),
                                     onClick = {
                                         showRemoveTagDialog = true
                                     }
@@ -251,7 +251,7 @@ fun WallpaperMenu(
 
                         MenuItemWithIcon(
                                 icon = Icons.Rounded.MoveDown,
-                                text = context.getString(R.string.move),
+                                text = stringResource(R.string.move),
                                 onClick = {
                                     launchDirectoryPicker = true
                                 }
@@ -265,7 +265,7 @@ fun WallpaperMenu(
                         // Selection Actions Section
                         MenuItemWithIcon(
                                 icon = Icons.Rounded.CheckBox,
-                                text = context.getString(R.string.select),
+                                text = stringResource(R.string.select),
                                 onClick = {
                                     onSelect()
                                     setShowDialog(false)
@@ -275,7 +275,7 @@ fun WallpaperMenu(
                         if (isAnySelected) {
                             MenuItemWithIcon(
                                     icon = Icons.Rounded.SelectAll,
-                                    text = context.getString(R.string.select_all_from_last),
+                                    text = stringResource(R.string.select_all_from_last),
                                     onClick = {
                                         onSelectToHere()
                                         setShowDialog(false)
@@ -292,8 +292,8 @@ fun WallpaperMenu(
                         if (wallpaper.isNotCompressible().invert()) {
                             MenuItemWithIcon(
                                     icon = Icons.Rounded.Compress,
-                                    text = context.getString(R.string.compress),
-                                    summary = context.getString(R.string.compress_summary),
+                                    text = stringResource(R.string.compress),
+                                    summary = stringResource(R.string.compress_summary),
                                     onClick = {
                                         onCompress()
                                         setShowDialog(false)
@@ -303,8 +303,8 @@ fun WallpaperMenu(
 
                         MenuItemWithIcon(
                                 icon = Icons.Rounded.PhotoSizeSelectLarge,
-                                text = context.getString(R.string.reduce_resolution),
-                                summary = context.getString(R.string.reduce_resolution_summary),
+                                text = stringResource(R.string.reduce_resolution),
+                                summary = stringResource(R.string.reduce_resolution_summary),
                                 onClick = {
                                     onReduceResolution()
                                     setShowDialog(false)
@@ -313,7 +313,7 @@ fun WallpaperMenu(
 
                         MenuItemWithIcon(
                                 icon = Icons.Rounded.Refresh,
-                                text = context.getString(R.string.reload_metadata),
+                                text = stringResource(R.string.reload_metadata),
                                 onClick = {
                                     composeWallpaperViewModel.reloadMetadata(wallpaper) {
                                         Log.i("WallpaperMenu", "Metadata reloaded: $it")
@@ -331,7 +331,7 @@ fun WallpaperMenu(
                         // Destructive Action Section
                         MenuItemWithIcon(
                                 icon = Icons.Rounded.Delete,
-                                text = context.getString(R.string.delete),
+                                text = stringResource(R.string.delete),
                                 onClick = {
                                     deleteSure = true
                                 },
