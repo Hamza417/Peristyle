@@ -1,3 +1,5 @@
+@file:Suppress("LocalVariableName")
+
 package app.simple.peri.ui.dialogs.common
 
 import android.graphics.BitmapFactory
@@ -41,10 +43,12 @@ fun ImageInfoDialog(
         wallpaper: Wallpaper,
         onDismiss: () -> Unit
 ) {
+    val UNKNOWN = "-"
+
     val context = LocalContext.current
-    var format by remember { mutableStateOf("-") }
-    var bitDepth by remember { mutableStateOf("-") }
-    var colorSpace by remember { mutableStateOf("-") }
+    var format by remember { mutableStateOf(UNKNOWN) }
+    var bitDepth by remember { mutableStateOf(UNKNOWN) }
+    var colorSpace by remember { mutableStateOf(UNKNOWN) }
 
     LaunchedEffect(wallpaper) {
         withContext(Dispatchers.IO) {
@@ -58,14 +62,14 @@ fun ImageInfoDialog(
                         BitmapFactory.decodeStream(it, null, options)
                     }
                 }
-                format = options.outMimeType?.substringAfterLast('/')?.uppercase(Locale.getDefault()) ?: "UNKNOWN"
+                format = options.outMimeType?.substringAfterLast('/')?.uppercase(Locale.getDefault()) ?: UNKNOWN
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    bitDepth = options.outConfig?.name ?: "UNKNOWN"
+                    bitDepth = options.outConfig?.name ?: UNKNOWN
                 }
 
                 colorSpace = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    options.outColorSpace?.name ?: "UNKNOWN"
+                    options.outColorSpace?.name ?: UNKNOWN
                 } else {
                     "SRGB"
                 }

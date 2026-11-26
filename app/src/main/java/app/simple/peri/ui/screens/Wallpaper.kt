@@ -23,6 +23,7 @@ import androidx.compose.material.icons.automirrored.rounded.Label
 import androidx.compose.material.icons.rounded.Bookmarks
 import androidx.compose.material.icons.rounded.Download
 import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Button
@@ -77,6 +78,7 @@ import app.simple.peri.preferences.MainComposePreferences
 import app.simple.peri.services.LiveAutoWallpaperService
 import app.simple.peri.ui.commons.FolderBrowser
 import app.simple.peri.ui.commons.LaunchEffectActivity
+import app.simple.peri.ui.dialogs.common.ImageInfoDialog
 import app.simple.peri.ui.dialogs.common.PleaseWaitDialog
 import app.simple.peri.ui.dialogs.wallpaper.EffectsDialog
 import app.simple.peri.ui.dialogs.wallpaper.ScreenSelectionDialog
@@ -166,6 +168,7 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
     val showEditDialog = remember { mutableStateOf(false) }
     val showDetailsCard = remember { mutableStateOf(true) }
     val launchEffectActivity = remember { mutableStateOf(false) }
+    val showWallpaperInfo = remember { mutableStateOf(false) }
 
     if (wallpaper is WallhavenWallpaper && (wallpaper as WallhavenWallpaper).id.isNotEmpty()) {
         LaunchedEffect((wallpaper as WallhavenWallpaper).id) {
@@ -220,6 +223,37 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
                 },
                 onCancel = {
                     showDownloadFolderScreen = false
+                }
+        )
+    }
+
+    if (showWallpaperInfo.value) {
+        val mappedWallpaper: Wallpaper = remember(wallpaper) {
+            when (val localWallpaper = wallpaper) {
+                is Wallpaper -> localWallpaper
+                is WallhavenWallpaper -> {
+                    Wallpaper().apply {
+                        name = "wallhaven-${localWallpaper.id}"
+                        uri = localWallpaper.path
+                        filePath = localWallpaper.path
+                        width = localWallpaper.resolution?.split("x")?.getOrNull(0)?.toIntOrNull()
+                        height = localWallpaper.resolution?.split("x")?.getOrNull(1)?.toIntOrNull()
+                        size = localWallpaper.fileSize
+                        prominentColor = try {
+                            android.graphics.Color.parseColor(localWallpaper.colors?.getOrNull(0) ?: "#00000000")
+                        } catch (_: Exception) {
+                            android.graphics.Color.TRANSPARENT
+                        }
+                    }
+                }
+                else -> Wallpaper()
+            }
+        }
+
+        ImageInfoDialog(
+                wallpaper = mappedWallpaper,
+                onDismiss = {
+                    showWallpaperInfo.value = false
                 }
         )
     }
@@ -609,9 +643,7 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
                         derivedStateOf {
                             val info = listState.layoutInfo
                             val first = info.visibleItemsInfo.firstOrNull()
-                            if (first == null) false else {
-                                first.index > 0 || first.offset < info.viewportStartOffset
-                            }
+                            first != null && (first.index > 0 || first.offset < info.viewportStartOffset)
                         }
                     }
                     val showEndFade by remember {
@@ -619,15 +651,11 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
                             val info = listState.layoutInfo
                             val last = info.visibleItemsInfo.lastOrNull()
                             val total = info.totalItemsCount
-                            if (last == null || total == 0) {
-                                false
+                            !(last == null || total == 0) && if (last.index < total - 1) {
+                                true
                             } else {
-                                if (last.index < total - 1) {
-                                    true
-                                } else {
-                                    val itemEnd = last.offset + last.size
-                                    itemEnd > info.viewportEndOffset
-                                }
+                                val itemEnd = last.offset + last.size
+                                itemEnd > info.viewportEndOffset
                             }
                         }
                     }
@@ -724,6 +752,27 @@ fun Wallpaper(navController: NavHostController, associatedWallpaper: Wallpaper? 
                                 )
                                 Spacer(modifier = Modifier.width(6.dp))
                                 Text(text = stringResource(R.string.saved_effects), fontSize = 14.sp, color = Color.White)
+                            }
+                        }
+
+                        item {
+                            Button(
+                                    onClick = {
+                                        showWallpaperInfo.value = true
+                                    },
+                                    shape = RoundedCornerShape(50),
+                                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
+                                    colors = ButtonDefaults.buttonColors(containerColor = Color.White.copy(alpha = 0.15f), contentColor = Color.White),
+                                    modifier = Modifier.height(34.dp)
+                            ) {
+                                Icon(
+                                        imageVector = Icons.Rounded.Info,
+                                        contentDescription = null,
+                                        tint = Color.White,
+                                        modifier = Modifier.size(18.dp)
+                                )
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text(text = stringResource(R.string.information), fontSize = 14.sp, color = Color.White)
                             }
                         }
                     }
