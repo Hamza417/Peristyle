@@ -7,6 +7,7 @@ import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
@@ -176,17 +177,9 @@ fun WallpaperMenu(
             text = {
                 LazyColumn(
                         modifier = Modifier.fillMaxWidth()
+                            .heightIn(max = 400.dp)
                 ) {
                     item {
-                        // Common Actions Section
-                        MenuItemWithIcon(
-                                icon = Icons.Rounded.Info,
-                                text = stringResource(R.string.information),
-                                onClick = {
-                                    showImageInfoDialog = true
-                                }
-                        )
-
                         MenuItemWithIcon(
                                 icon = Icons.Rounded.Share,
                                 text = stringResource(R.string.send),
@@ -257,6 +250,29 @@ fun WallpaperMenu(
                                 }
                         )
 
+                        MenuItemWithIcon(
+                                icon = Icons.Rounded.Info,
+                                text = stringResource(R.string.information),
+                                onClick = {
+                                    showImageInfoDialog = true
+                                }
+                        )
+
+                        HorizontalDivider(
+                                modifier = Modifier.padding(vertical = 8.dp),
+                                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+                        )
+
+                        // Destructive Action Section
+                        MenuItemWithIcon(
+                                icon = Icons.Rounded.Delete,
+                                text = stringResource(R.string.delete),
+                                onClick = {
+                                    deleteSure = true
+                                },
+                                isDestructive = true
+                        )
+
                         HorizontalDivider(
                                 modifier = Modifier.padding(vertical = 8.dp),
                                 color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
@@ -321,21 +337,6 @@ fun WallpaperMenu(
                                         setShowDialog(false)
                                     }
                                 }
-                        )
-
-                        HorizontalDivider(
-                                modifier = Modifier.padding(vertical = 8.dp),
-                                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
-                        )
-
-                        // Destructive Action Section
-                        MenuItemWithIcon(
-                                icon = Icons.Rounded.Delete,
-                                text = stringResource(R.string.delete),
-                                onClick = {
-                                    deleteSure = true
-                                },
-                                isDestructive = true
                         )
                     }
                 }
